@@ -188,3 +188,21 @@
 23:29:40 | INFO | Voyager initialized with 'curious' personality
 23:29:40 | INFO | Game initialized with Council of Three architecture
 23:29:40 | DEBUG | Voyager deciding action...
+23:30:05 | INFO | Game loaded from savegame.json
+23:30:05 | DEBUG | Added intent: distract with 5 exemplars
+23:30:05 | DEBUG | Added intent: force with 5 exemplars
+23:30:05 | DEBUG | Added intent: finesse with 5 exemplars
+23:30:05 | DEBUG | Added intent: charm with 5 exemplars
+23:30:05 | DEBUG | Added intent: intimidate with 5 exemplars
+23:30:05 | DEBUG | Added intent: deceive with 5 exemplars
+23:30:05 | DEBUG | Added intent: investigate with 5 exemplars
+23:30:05 | DEBUG | Added intent: use_item with 5 exemplars
+23:30:05 | DEBUG | Added intent: defend with 5 exemplars
+23:30:05 | DEBUG | Added intent: improvise with 5 exemplars
+23:30:05 | INFO | Loading embedding model: all-MiniLM-L6-v2
+23:30:12 | INFO | Precomputed embeddings for 10 intents (50 total exemplars)
+23:30:12 | INFO | Initializing Arbiter with ollama:llama3.2:1b
+23:30:13 | INFO | Initializing Chronicler with ollama:llama3.2:3b
+23:30:13 | INFO | Voyager initialized with 'curious' personality
+23:30:13 | INFO | Game initialized with Council of Three architecture
+23:30:13 | DEBUG | Voyager deciding action...
