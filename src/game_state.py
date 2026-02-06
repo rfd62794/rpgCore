@@ -164,6 +164,49 @@ class GameState(BaseModel):
         
         return context
     
+    def update_relationship(
+        self,
+        location_id: str,
+        npc_id: str,
+        delta_disposition: int = 0,
+        new_tags: List[str] | None = None
+    ) -> None:
+        """
+        Update NPC relationship in social graph.
+        
+        Args:
+            location_id: Room/location identifier
+            npc_id: NPC name
+            delta_disposition: Change to disposition (-100 to +100)
+            new_tags: Tags to add (e.g., ["grudge"], ["knows_secret"])
+        """
+        # Ensure location exists in graph
+        if location_id not in self.social_graph:
+            self.social_graph[location_id] = {}
+        
+        # Get or create relationship
+        if npc_id not in self.social_graph[location_id]:
+            self.social_graph[location_id][npc_id] = Relationship()
+        
+        rel = self.social_graph[location_id][npc_id]
+        
+        # Update disposition (clamped to -100/+100)
+        rel.disposition = max(-100, min(100, rel.disposition + delta_disposition))
+        
+        # Add new tags (avoid duplicates)
+        if new_tags:
+            for tag in new_tags:
+                if tag not in rel.tags:
+                    rel.tags.append(tag)
+        
+        # Update turn counter
+        rel.last_interaction_turn = self.turn_count
+        
+        logger.info(
+            f"Relationship updated: {npc_id} @ {location_id} "
+            f"(disp: {rel.disposition:+d}, tags: {rel.tags})"
+        )
+    
     def apply_outcome(self, outcome: "ActionOutcome", target_npc: str | None = None) -> None:  # type: ignore
         """
         Update game state based on action outcome.
