@@ -277,6 +277,21 @@ class GameREPL:
 
 def main():
     """Entry point for the game."""
+    # Parse CLI arguments
+    parser = argparse.ArgumentParser(description="Semantic RPG Core - D&D Terminal Game")
+    parser.add_argument(
+        "--auto",
+        action="store_true",
+        help="Enable auto-play mode with Voyager agent"
+    )
+    parser.add_argument(
+        "--personality",
+        choices=["curious", "aggressive", "tactical", "chaotic"],
+        default="curious",
+        help="Voyager personality (default: curious)"
+    )
+    args = parser.parse_args()
+    
     # Configure logging
     logger.remove()  # Remove default handler
     logger.add(
@@ -290,7 +305,7 @@ def main():
     )
     
     # Start game
-    game = GameREPL()
+    game = GameREPL(auto_mode=args.auto)
     game.run()
 
 
