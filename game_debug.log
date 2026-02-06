@@ -242,3 +242,15 @@
 23:32:40 | INFO | Voyager initialized with 'curious' personality
 23:32:40 | INFO | Game initialized with Council of Three architecture
 23:32:40 | DEBUG | Voyager deciding action...
+23:34:31 | INFO | Game loaded from savegame.json
+23:34:31 | DEBUG | Added intent: distract with 5 exemplars
+23:34:31 | DEBUG | Added intent: force with 5 exemplars
+23:34:31 | DEBUG | Added intent: finesse with 5 exemplars
+23:34:31 | DEBUG | Added intent: charm with 5 exemplars
+23:34:31 | DEBUG | Added intent: intimidate with 5 exemplars
+23:34:31 | DEBUG | Added intent: deceive with 5 exemplars
+23:34:31 | DEBUG | Added intent: investigate with 5 exemplars
+23:34:31 | DEBUG | Added intent: use_item with 5 exemplars
+23:34:31 | DEBUG | Added intent: defend with 5 exemplars
+23:34:31 | DEBUG | Added intent: improvise with 5 exemplars
+23:34:31 | INFO | Loading embedding model: all-MiniLM-L6-v2
