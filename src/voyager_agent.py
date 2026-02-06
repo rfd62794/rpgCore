@@ -93,15 +93,10 @@ class VoyagerAgent:
             "- 'I kick the table over to create a distraction'\n"
         )
         
-        # Initialize Pydantic AI agent with NATIVE Ollama model
-        # Bypasses OpenAI v1 bridge entirely - uses Ollama's /api directly
-        ollama_model = OllamaModel(
-            model_name=model_name,  # Use exact name from 'ollama list'
-            base_url='http://127.0.0.1:11434'  # Native Ollama endpoint
-        )
-        
+        # Initialize Pydantic AI agent
+        # Use same simple format as Arbiter and Chronicler
         self.agent = Agent(
-            model=ollama_model,
+            model=f"ollama:{model_name}",
             output_type=VoyagerDecision,
             system_prompt=system_prompt
         )
