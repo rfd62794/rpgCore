@@ -1,0 +1,40 @@
+{
+  "player": {
+    "name": "Adventurer",
+    "hp": 100,
+    "max_hp": 100,
+    "gold": 50,
+    "inventory": []
+  },
+  "current_room": "tavern",
+  "rooms": {
+    "tavern": {
+      "name": "The Rusty Flagon",
+      "description": "A dimly lit tavern filled with the smell of ale and roasted meat. Rowdy patrons fill the wooden tables.",
+      "npcs": [
+        {
+          "name": "Guard",
+          "state": "neutral",
+          "hp": 80,
+          "description": "A stern-looking town guard watching the entrance"
+        },
+        {
+          "name": "Bartender",
+          "state": "neutral",
+          "hp": 30,
+          "description": "A burly man wiping mugs behind the bar"
+        }
+      ],
+      "items": [
+        "wooden table",
+        "beer mug",
+        "chair"
+      ],
+      "exits": {
+        "north": "town_square",
+        "east": "alley"
+      }
+    }
+  },
+  "turn_count": 1
+}

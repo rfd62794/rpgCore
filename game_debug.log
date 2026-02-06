@@ -50,3 +50,23 @@
 22:56:38 | INFO | Loading embedding model: all-MiniLM-L6-v2
 22:56:42 | INFO | Precomputed embeddings for 10 intents (50 total exemplars)
 22:56:42 | INFO | Initializing Pydantic AI agent with ollama:llama3.2
+22:58:05 | DEBUG | Added intent: distract with 5 exemplars
+22:58:05 | DEBUG | Added intent: force with 5 exemplars
+22:58:05 | DEBUG | Added intent: finesse with 5 exemplars
+22:58:05 | DEBUG | Added intent: charm with 5 exemplars
+22:58:05 | DEBUG | Added intent: intimidate with 5 exemplars
+22:58:05 | DEBUG | Added intent: deceive with 5 exemplars
+22:58:05 | DEBUG | Added intent: investigate with 5 exemplars
+22:58:05 | DEBUG | Added intent: use_item with 5 exemplars
+22:58:05 | DEBUG | Added intent: defend with 5 exemplars
+22:58:05 | DEBUG | Added intent: improvise with 5 exemplars
+22:58:05 | INFO | Loading embedding model: all-MiniLM-L6-v2
+22:58:08 | INFO | Precomputed embeddings for 10 intents (50 total exemplars)
+22:58:08 | INFO | Initializing Pydantic AI agent with ollama:llama3.2
+22:58:09 | INFO | Game initialized successfully
+22:58:25 | INFO | Intent resolution: 'Ask the guard for directions' → charm (confidence: 0.543, matched exemplar: 'Convince the guard to let me pass with words')
+22:58:25 | DEBUG | Generating outcome for intent 'charm'
+22:58:25 | ERROR | LLM generation failed: status_code: 404, model_name: llama3.2, body: 404 page not found
+22:58:25 | WARNING | Using fallback outcome generation
+22:58:25 | INFO | Guard: neutral → neutral
+22:58:25 | INFO | Game saved to savegame.json
