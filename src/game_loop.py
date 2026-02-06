@@ -36,13 +36,14 @@ class GameREPL:
         self,
         state: GameState | None = None,
         save_path: Path | None = None
-    ):
+    def __init__(self, state=None, save_path=None, auto_mode=False):
         """
-        Initialize game with optional saved state.
+        Initialize the game REPL.
         
         Args:
-            state: Existing GameState (or None to create new)
-            save_path: Path for auto-saving (default: ./savegame.json)
+            state: Optional pre-configured GameState
+            save_path: Path to save file
+            auto_mode: If True, use Voyager agent for automated play
         """
         self.console = Console()
         self.save_path = save_path or Path("savegame.json")
