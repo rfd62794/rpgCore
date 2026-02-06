@@ -95,13 +95,9 @@ class VoyagerAgent:
         )
         
         # Initialize Pydantic AI agent
-        model = OpenAIModel(
-            model_name=f"ollama:{model_name}",
-            base_url="http://localhost:11434/v1"
-        )
-        
+        # Ollama compatibility through env var (already set above)
         self.agent = Agent(
-            model=model,
+            model=f"ollama:{model_name}",
             output_type=VoyagerDecision,
             system_prompt=system_prompt
         )

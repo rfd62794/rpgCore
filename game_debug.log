@@ -138,3 +138,18 @@
 23:08:05 | ERROR | Chronicler failed: status_code: 404, model_name: llama3.2:3b, body: 404 page not found
 23:08:05 | WARNING | Using fallback chronicler prose
 23:08:05 | INFO | Game saved to savegame.json
+23:26:20 | INFO | Game loaded from savegame.json
+23:26:20 | DEBUG | Added intent: distract with 5 exemplars
+23:26:20 | DEBUG | Added intent: force with 5 exemplars
+23:26:20 | DEBUG | Added intent: finesse with 5 exemplars
+23:26:20 | DEBUG | Added intent: charm with 5 exemplars
+23:26:20 | DEBUG | Added intent: intimidate with 5 exemplars
+23:26:20 | DEBUG | Added intent: deceive with 5 exemplars
+23:26:20 | DEBUG | Added intent: investigate with 5 exemplars
+23:26:20 | DEBUG | Added intent: use_item with 5 exemplars
+23:26:20 | DEBUG | Added intent: defend with 5 exemplars
+23:26:20 | DEBUG | Added intent: improvise with 5 exemplars
+23:26:20 | INFO | Loading embedding model: all-MiniLM-L6-v2
+23:26:24 | INFO | Precomputed embeddings for 10 intents (50 total exemplars)
+23:26:24 | INFO | Initializing Arbiter with ollama:llama3.2:1b
+23:26:25 | INFO | Initializing Chronicler with ollama:llama3.2:3b
