@@ -80,6 +80,7 @@ class Room(BaseModel):
     npcs: List[NPC] = Field(default_factory=list)
     items: List[str] = Field(default_factory=list)
     exits: Dict[str, str] = Field(default_factory=dict)  # direction -> room_name
+    tags: List[str] = Field(default_factory=list)  # Environmental affixes (e.g., "Sticky Floors", "Dimly Lit")
 
 
 class Relationship(BaseModel):
@@ -155,6 +156,9 @@ class GameState(BaseModel):
                 }
                 emoji = state_emoji.get(npc.state, "")
                 context += f"  - {npc.name} {emoji} ({npc.state}): {npc.description}\n"
+        
+        if room.tags:
+            context += f"\nEnvironment: {', '.join(room.tags)}\n"
         
         if room.items:
             context += f"\nItems: {', '.join(room.items)}\n"
@@ -274,7 +278,8 @@ def create_tavern_scenario() -> GameState:
             )
         ],
         items=["wooden table", "beer mug", "chair"],
-        exits={"north": "town_square", "east": "alley"}
+        exits={"north": "town_square", "east": "alley"},
+        tags=["Sticky Floors", "Rowdy Crowd", "Dimly Lit"]  # Environmental affixes
     )
     
     state.rooms["tavern"] = tavern
