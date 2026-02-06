@@ -97,12 +97,14 @@ class ArbiterEngine:
             "- Analyze the player's intent and context\n"
             "- Decide: did the action succeed? (success: bool)\n"
             "- Calculate HP/Gold changes (delta values)\n"
-            "- Determine NPC state changes\n\n"
+            "- Determine NPC state changes\n"
+            "- Provide a narrative_seed (1 phrase describing the vibe/mood)\n\n"
             "Examples:\n"
-            "- 'distract' intent → success: True, npc_state: 'distracted'\n"
-            "- 'force' intent vs guard → hp_delta: -10, npc_state: 'hostile'\n"
-            "- 'charm' intent (question) → success: True, hp_delta: 0, npc_state: 'neutral'\n\n"
+            "- 'distract' intent → success: True, npc_state: 'distracted', narrative_seed: 'The guard spins around, confused'\n"
+            "- 'force' intent vs guard → hp_delta: -10, npc_state: 'hostile', narrative_seed: 'The guard draws his blade, furious'\n"
+            "- 'charm' intent (question) → success: True, narrative_seed: 'The guard sighs, weary but helpful'\n\n"
             "CRITICAL: Even simple social actions should have success: True.\n"
+            "Always provide a narrative_seed that gives the Chronicler flavor.\n"
             "DO NOT default to 'nothing happens'.\n"
         )
     

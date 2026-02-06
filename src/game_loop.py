@@ -67,6 +67,10 @@ class GameREPL:
         self.console.print("[cyan]Loading Chronicler (narrative engine)...[/cyan]")
         self.chronicler = ChroniclerEngine(model_name='ollama:llama3.2:3b', tone='humorous')
         
+        # Initialize Quartermaster (loot system)
+        from loot_system import LootSystem
+        self.loot = LootSystem()
+        
         logger.info("Game initialized with Council of Three architecture")
     
     def display_context(self) -> None:
@@ -137,6 +141,19 @@ class GameREPL:
             f"npc_state={arbiter_result.new_npc_state}"
         )
         
+        # Step 2.5: Quartermaster checks for loot (if investigate or force)
+        loot_item = None
+        if arbiter_result.success and intent_match.intent_id in ["investigate", "force"]:
+            room = self.state.rooms.get(self.state.current_room)
+            location_name = room.name if room else "unknown"
+            loot_item = self.loot.generate_loot(
+                location=location_name,
+                intent=intent_match.intent_id
+            )
+            if loot_item:
+                self.state.player.inventory.append(loot_item.name)
+                logger.info(f"Loot added to inventory: {loot_item.name}")
+        
         # Step 3: Update game state BEFORE narration
         # Infer target NPC
         target_npc = arbiter_result.target_npc_id
@@ -174,7 +191,8 @@ class GameREPL:
                 'hp_delta': arbiter_result.hp_delta,
                 'gold_delta': arbiter_result.gold_delta,
                 'new_npc_state': arbiter_result.new_npc_state,
-                'reasoning': arbiter_result.reasoning
+                'reasoning': arbiter_result.reasoning,
+                'narrative_seed': arbiter_result.narrative_seed
             },
             context=context
         )
@@ -183,9 +201,16 @@ class GameREPL:
         success_icon = "✅" if arbiter_result.success else "❌"
         narrative_color = "green" if arbiter_result.success else "yellow"
         
+        # Build output with optional loot notification
+        output_text = chronicler_result.narrative
+        if loot_item:
+            output_text += f"\n\n💎 **Loot found**: {loot_item.name} ({loot_item.description})"
+            if loot_item.stat_bonus:
+                output_text += f" [{loot_item.stat_bonus}]"
+        
         self.console.print(
             Panel(
-                chronicler_result.narrative,
+                output_text,
                 title=f"[bold {narrative_color}]{success_icon} Outcome[/bold {narrative_color}]",
                 border_style=narrative_color
             )

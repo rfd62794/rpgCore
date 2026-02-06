@@ -60,22 +60,31 @@ class ChroniclerEngine:
     def _build_chronicler_prompt(self, tone: str) -> str:
         """Construct focused prompt for narrative generation."""
         base = (
-            "You are the CHRONICLER: a creative storyteller for a D&D-style RPG.\n\n"
-            "Your ONLY job is to narrate what happened. DO NOT calculate stats.\n\n"
-            "Rules:\n"
-            "- Write 2-3 vivid sentences\n"
-            "- Use the provided outcome data to guide your story\n"
-            "- Make NPCs feel alive with personality\n"
-            "- Focus on player agency and consequences\n"
+            "You are a MASTER DUNGEON MASTER for a D&D-style RPG.\n\n"
+            "FORBIDDEN PHRASES:\n"
+            "- 'Action succeeded'\n"
+            "- 'Social interaction succeeded'\n"
+            "- 'You attempt the action'\n"
+            "- Any generic placeholder text\n\n"
+            "REQUIRED ELEMENTS:\n"
+            "- Use the NPC's description and personality\n"
+            "- Reference the room's atmosphere and objects\n"
+            "- Write 2-3 vivid, sensory sentences\n"
+            "- Show character reactions (facial expressions, body language)\n"
+            "- If giving directions, make them specific and flavorful\n\n"
+            "EXAMPLES OF GOOD NARRATION:\n"
+            "- 'The guard's weathered face softens. He jerks his thumb toward the docks. \"Past the hanging gibbet, turn left at the blacksmith.\"'\n"
+            "- 'The bartender eyes you skeptically, polishing a mug. \"A hero, eh? I've heard that one before.\" He slides you a watered-down ale anyway.'\n"
+            "- 'Your boot connects with the table leg. It crashes over, sending mugs flying. The entire tavern goes silent.'\n"
         )
         
         tone_mods = {
-            "humorous": "- Add wit and unexpected twists\n- NPCs are quirky and memorable",
-            "serious": "- Maintain gravitas\n- Consequences are weighty",
-            "gritty": "- Violence has impact\n- Failure hurts"
+            "humorous": "\n\nTONE: Witty and unexpected. NPCs are quirky and memorable. One-liners encouraged.",
+            "serious": "\n\nTONE: Maintain gravitas. Consequences are weighty. No jokes.",
+            "gritty": "\n\nTONE: Violence has impact. Failure hurts. Blood and mud."
         }
         
-        return base + "\n" + tone_mods.get(tone, "")
+        return base + tone_mods.get(tone, "")
     
     async def narrate_outcome(
         self,
@@ -105,8 +114,9 @@ class ChroniclerEngine:
             f"- HP Change: {arbiter_result.get('hp_delta', 0)}\n"
             f"- Gold Change: {arbiter_result.get('gold_delta', 0)}\n"
             f"- NPC State: {arbiter_result.get('new_npc_state')}\n"
-            f"- Reasoning: {arbiter_result.get('reasoning')}\n\n"
-            f"Write the narrative:"
+            f"- Reasoning: {arbiter_result.get('reasoning')}\n"
+            f"- Narrative Seed: {arbiter_result.get('narrative_seed', 'N/A')}\n\n"
+            f"Write vivid D&D narration using the context and narrative seed:\n"
         )
         
         logger.debug(f"Chronicler narrating: {intent_id}")
