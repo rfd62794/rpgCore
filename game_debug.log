@@ -153,3 +153,38 @@
 23:26:24 | INFO | Precomputed embeddings for 10 intents (50 total exemplars)
 23:26:24 | INFO | Initializing Arbiter with ollama:llama3.2:1b
 23:26:25 | INFO | Initializing Chronicler with ollama:llama3.2:3b
+23:27:23 | INFO | Game loaded from savegame.json
+23:27:23 | DEBUG | Added intent: distract with 5 exemplars
+23:27:23 | DEBUG | Added intent: force with 5 exemplars
+23:27:23 | DEBUG | Added intent: finesse with 5 exemplars
+23:27:23 | DEBUG | Added intent: charm with 5 exemplars
+23:27:23 | DEBUG | Added intent: intimidate with 5 exemplars
+23:27:23 | DEBUG | Added intent: deceive with 5 exemplars
+23:27:23 | DEBUG | Added intent: investigate with 5 exemplars
+23:27:23 | DEBUG | Added intent: use_item with 5 exemplars
+23:27:23 | DEBUG | Added intent: defend with 5 exemplars
+23:27:23 | DEBUG | Added intent: improvise with 5 exemplars
+23:27:23 | INFO | Loading embedding model: all-MiniLM-L6-v2
+23:27:53 | INFO | Precomputed embeddings for 10 intents (50 total exemplars)
+23:27:53 | INFO | Initializing Arbiter with ollama:llama3.2:1b
+23:27:53 | INFO | Initializing Chronicler with ollama:llama3.2:3b
+23:27:53 | INFO | Voyager initialized with 'curious' personality
+23:27:53 | INFO | Game initialized with Council of Three architecture
+23:29:35 | INFO | Game loaded from savegame.json
+23:29:35 | DEBUG | Added intent: distract with 5 exemplars
+23:29:35 | DEBUG | Added intent: force with 5 exemplars
+23:29:35 | DEBUG | Added intent: finesse with 5 exemplars
+23:29:35 | DEBUG | Added intent: charm with 5 exemplars
+23:29:35 | DEBUG | Added intent: intimidate with 5 exemplars
+23:29:35 | DEBUG | Added intent: deceive with 5 exemplars
+23:29:35 | DEBUG | Added intent: investigate with 5 exemplars
+23:29:35 | DEBUG | Added intent: use_item with 5 exemplars
+23:29:35 | DEBUG | Added intent: defend with 5 exemplars
+23:29:35 | DEBUG | Added intent: improvise with 5 exemplars
+23:29:35 | INFO | Loading embedding model: all-MiniLM-L6-v2
+23:29:40 | INFO | Precomputed embeddings for 10 intents (50 total exemplars)
+23:29:40 | INFO | Initializing Arbiter with ollama:llama3.2:1b
+23:29:40 | INFO | Initializing Chronicler with ollama:llama3.2:3b
+23:29:40 | INFO | Voyager initialized with 'curious' personality
+23:29:40 | INFO | Game initialized with Council of Three architecture
+23:29:40 | DEBUG | Voyager deciding action...

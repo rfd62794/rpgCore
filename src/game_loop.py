@@ -251,6 +251,7 @@ class GameREPL:
         return True
     
     def display_welcome(self):
+        """Display welcome banner."""
         self.console.print(
             Panel(
                 "[bold cyan]Welcome to the Semantic RPG![/bold cyan]\n\n"
@@ -259,25 +260,89 @@ class GameREPL:
                 border_style="cyan"
             )
         )
+    
+    def run(self):
+        """Main game loop (REPL or auto-play)."""
+        self.display_welcome()
         
-        while True:
-            # Display current context
-            self.console.print("\n" + "─" * 80 + "\n")
-            self.display_context()
-            
-            # Get player input
-            try:
-                player_input = Prompt.ask("\n[bold]What do you do?[/bold]")
-            except (KeyboardInterrupt, EOFError):
-                self.console.print("\n[yellow]Goodbye![/yellow]")
-                break
-            
-            # Process action
-            should_continue = self.process_action(player_input)
-            
-            if not should_continue:
-                self.console.print("\n[yellow]Thanks for playing![/yellow]")
-                break
+        if self.auto_mode:
+            self._run_auto_mode()
+        else:
+            self._run_interactive_mode()
+    
+    def _run_auto_mode(self):
+        """
+        Auto-play mode: Voyager agent makes decisions.
+        
+        Features:
+        - 2-second sleep between turns for readability
+        - Stutter check (prevents infinite loops)
+        - QA trace output
+        """
+        import time
+        
+        self.console.print("\n[bold magenta]🤖 AUTO-PLAY MODE ACTIVATED[/bold magenta]")
+        self.console.print("[yellow]Voyager will play the game automatically. Press Ctrl+C to stop.[/yellow]\n")
+        
+        turn_count = 0
+        max_turns = 50  # Safety limit
+        
+        try:
+            while turn_count < max_turns:
+                turn_count += 1
+                self.console.print(f"\n[bold cyan]═══ Turn {turn_count} ═══[/bold cyan]")
+                
+                # Display current scene
+                self.display_context()
+                
+                # Get Voyager decision
+                scene_context = self.state.get_context_str()
+                player_stats = {
+                    'hp': self.state.player.hp,
+                    'max_hp': self.state.player.max_hp,
+                    'gold': self.state.player.gold,
+                    'inventory': self.state.player.inventory
+                }
+                
+                self.console.print("\n[bold blue]⚙️ Voyager thinking...[/bold blue]")
+                decision = self.voyager.decide_action_sync(
+                    scene_context=scene_context,
+                    player_stats=player_stats,
+                    turn_history=self.turn_history
+                )
+                
+                player_input = decision.action
+                
+                # Stutter check
+                if self.turn_history and self.turn_history[-1] == player_input:
+                    self.console.print("[yellow]⚠️  Stutter detected! Forcing random variation...[/yellow]")
+                    player_input = "I look around the room carefully"
+                
+                # QA Trace
+                self.console.print(f"\n[bold green]🗣️  VOYAGER[/bold green]: \"{player_input}\"")
+                self.console.print(f"[dim]💭 Reasoning: {decision.reasoning}[/dim]")
+                
+                # Add to history
+                self.turn_history.append(player_input)
+                if len(self.turn_history) > 5:
+                    self.turn_history.pop(0)
+                
+                # Process action through Council
+                should_continue = self.process_action(player_input)
+                
+                if not should_continue or not self.state.player.is_alive():
+                    break
+                
+                # Sleep for readability
+                time.sleep(2)
+                
+        except KeyboardInterrupt:
+            self.console.print("\n\n[yellow]Auto-play interrupted by user.[/yellow]")
+        
+        self.console.print(f"\n[bold]Auto-play completed after {turn_count} turns.[/bold]")
+    
+    def _run_interactive_mode(self):
+        """Interactive mode: Human player input."""
 
 
 def main():
