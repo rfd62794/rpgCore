@@ -17,6 +17,13 @@ from pydantic_ai import Agent
 from pydantic_ai.models.openai import OpenAIModel
 from loguru import logger
 
+# Try to import OpenAI provider - fallback to basic if not available
+try:
+    from openai import OpenAI
+    HAS_OPENAI_CLIENT = True
+except ImportError:
+    HAS_OPENAI_CLIENT = False
+
 
 class VoyagerDecision(BaseModel):
     """Single action decision from the Voyager."""
@@ -94,10 +101,20 @@ class VoyagerAgent:
             "- 'I kick the table over to create a distraction'\n"
         )
         
-        # Initialize Pydantic AI agent
-        # Ollama compatibility through env var (already set above)
+        # Initialize Pydantic AI agent with explicit OpenAI client for Ollama
+        # Use 127.0.0.1 instead of localhost to avoid Windows DNS lag
+        if HAS_OPENAI_CLIENT:
+            client = OpenAI(
+                base_url="http://127.0.0.1:11434/v1",
+                api_key="ollama"  # Required by client, ignored by Ollama
+            )
+            model = OpenAIModel(model_name=model_name, openai_client=client)
+        else:
+            # Fallback: try direct model string
+            model = f"ollama:{model_name}"
+        
         self.agent = Agent(
-            model=f"ollama:{model_name}",
+            model=model,
             output_type=VoyagerDecision,
             system_prompt=system_prompt
         )
