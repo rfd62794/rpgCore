@@ -2,8 +2,10 @@
 Main Game Loop: REPL for Semantic RPG
 
 Orchestrates the Sense → Input → Resolve → Update cycle.
+Main game loop (REPL) for the Semantic RPG Core.
 """
 
+import argparse
 from pathlib import Path
 
 from loguru import logger
