@@ -168,9 +168,15 @@ class SemanticResolver:
             # Compute similarity against all exemplars for this intent
             scores = util.cos_sim(input_embedding, exemplar_embeddings)[0]
             
+            # Convert torch tensor to numpy for compatibility
+            if hasattr(scores, 'numpy'):
+                scores_np = scores.cpu().numpy()
+            else:
+                scores_np = np.array(scores)
+            
             # Take the MAX score (closest exemplar match)
-            max_score = float(np.max(scores))
-            max_idx = int(np.argmax(scores))
+            max_score = float(np.max(scores_np))
+            max_idx = int(np.argmax(scores_np))
             
             # Track the best intent across all intents
             if max_score > best_score:
