@@ -104,3 +104,37 @@
 23:04:37 | ERROR | Chronicler failed: status_code: 404, model_name: llama3.2:3b, body: 404 page not found
 23:04:37 | WARNING | Using fallback chronicler prose
 23:04:37 | INFO | Game saved to savegame.json
+23:07:38 | INFO | Game loaded from savegame.json
+23:07:38 | DEBUG | Added intent: distract with 5 exemplars
+23:07:38 | DEBUG | Added intent: force with 5 exemplars
+23:07:38 | DEBUG | Added intent: finesse with 5 exemplars
+23:07:38 | DEBUG | Added intent: charm with 5 exemplars
+23:07:38 | DEBUG | Added intent: intimidate with 5 exemplars
+23:07:38 | DEBUG | Added intent: deceive with 5 exemplars
+23:07:38 | DEBUG | Added intent: investigate with 5 exemplars
+23:07:38 | DEBUG | Added intent: use_item with 5 exemplars
+23:07:38 | DEBUG | Added intent: defend with 5 exemplars
+23:07:38 | DEBUG | Added intent: improvise with 5 exemplars
+23:07:38 | INFO | Loading embedding model: all-MiniLM-L6-v2
+23:07:43 | INFO | Precomputed embeddings for 10 intents (50 total exemplars)
+23:07:43 | INFO | Initializing Arbiter with ollama:llama3.2:1b
+23:07:44 | INFO | Initializing Chronicler with ollama:llama3.2:3b
+23:07:44 | INFO | Game initialized with Council of Three architecture
+23:07:52 | INFO | Intent resolution: 'I ask the bartender how much for a drink?' → charm (confidence: 0.585, matched exemplar: 'Flatter the bartender to get free information')
+23:07:52 | DEBUG | Arbiter resolving intent 'charm'
+23:07:53 | ERROR | Arbiter failed: status_code: 404, model_name: llama3.2:1b, body: 404 page not found
+23:07:53 | WARNING | Using fallback arbiter logic
+23:07:53 | INFO | Arbiter: success=True, hp_delta=0, npc_state=neutral
+23:07:53 | DEBUG | Chronicler narrating: charm
+23:07:53 | ERROR | Chronicler failed: status_code: 404, model_name: llama3.2:3b, body: 404 page not found
+23:07:53 | WARNING | Using fallback chronicler prose
+23:07:53 | INFO | Game saved to savegame.json
+23:08:05 | INFO | Intent resolution: 'Buy an ale' → distract (confidence: 0.371, matched exemplar: 'Throw a beer mug at someone to create a distraction')
+23:08:05 | DEBUG | Arbiter resolving intent 'distract'
+23:08:05 | ERROR | Arbiter failed: status_code: 404, model_name: llama3.2:1b, body: 404 page not found
+23:08:05 | WARNING | Using fallback arbiter logic
+23:08:05 | INFO | Arbiter: success=True, hp_delta=0, npc_state=distracted
+23:08:05 | DEBUG | Chronicler narrating: distract
+23:08:05 | ERROR | Chronicler failed: status_code: 404, model_name: llama3.2:3b, body: 404 page not found
+23:08:05 | WARNING | Using fallback chronicler prose
+23:08:05 | INFO | Game saved to savegame.json

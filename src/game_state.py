@@ -82,6 +82,20 @@ class Room(BaseModel):
     exits: Dict[str, str] = Field(default_factory=dict)  # direction -> room_name
 
 
+class Relationship(BaseModel):
+    """
+    NPC relationship tracking for persistent social memory.
+    
+    Design:
+    - disposition: -100 (Hate) to 100 (Love)
+    - tags: Behavioral flags like "grudge", "knows_secret", "ally"
+    - last_interaction_turn: For time-based effects
+    """
+    disposition: int = Field(default=0, ge=-100, le=100)
+    tags: List[str] = Field(default_factory=list)
+    last_interaction_turn: int = 0
+
+
 class GameState(BaseModel):
     """Complete state of the game world."""
     
@@ -89,6 +103,32 @@ class GameState(BaseModel):
     current_room: str = "tavern"
     rooms: Dict[str, Room] = Field(default_factory=dict)
     turn_count: int = 0
+    
+    # DGT Social Graph: Location-scoped NPC relationships
+    # Format: { "tavern": { "Bartender": Relationship(...), "Guard": Relationship(...) } }
+    social_graph: Dict[str, Dict[str, Relationship]] = Field(default_factory=dict)
+    
+    def get_local_context(self) -> str:
+        """
+        Generate scoped social context for current location only.
+        
+        This prevents VRAM bloat by only sending relevant NPC data to AI.
+        Returns relationship tags and disposition for NPCs in current room.
+        """
+        local_rels = self.social_graph.get(self.current_room, {})
+        
+        if not local_rels:
+            return ""
+        
+        context = "\n\nLocal Relationships:\n"
+        for npc_id, rel in local_rels.items():
+            if rel.tags:
+                tags_str = ", ".join(rel.tags)
+                context += f"  - {npc_id}: [{tags_str}] (Disposition: {rel.disposition:+d})\n"
+            elif rel.disposition != 0:
+                context += f"  - {npc_id}: Disposition {rel.disposition:+d}\n"
+        
+        return context
     
     def get_context_str(self) -> str:
         """
@@ -118,6 +158,9 @@ class GameState(BaseModel):
         
         if room.items:
             context += f"\nItems: {', '.join(room.items)}\n"
+        
+        # Append scoped social graph data
+        context += self.get_local_context()
         
         return context
     
