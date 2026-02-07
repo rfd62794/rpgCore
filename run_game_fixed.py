@@ -251,11 +251,20 @@ class SyntheticRealityDirector:
         # Render based on view mode
         if self.view_mode == "iso":
             # Isometric rendering
-            frame = self.renderer.render_frame(self.game_state)
-            frame_str = self.renderer.get_frame_as_string(frame)
+            try:
+                frame = self.renderer.render_frame(self.game_state)
+                frame_str = self.renderer.get_frame_as_string(frame)
+            except Exception as e:
+                print(f"Error rendering isometric frame: {e}")
+                # Fallback to simple text
+                frame_str = f"Isometric view error: {e}"
             
             # Get adjacent entities for dialogue activation
-            adjacent_entities = self.renderer.get_adjacent_entities(self.game_state)
+            try:
+                adjacent_entities = self.renderer.get_adjacent_entities(self.game_state)
+            except Exception as e:
+                print(f"Error getting adjacent entities: {e}")
+                adjacent_entities = []
             
             print(f"\n🎬 [bold cyan]SCENE: {scene_name}[/bold cyan]")
             print(f"📝 {description}")
