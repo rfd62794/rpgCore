@@ -7,6 +7,7 @@ Uses Pydantic for validation and JSON serialization.
 
 from pathlib import Path
 from typing import Dict, List, Literal, Optional
+import numpy as np
 
 from loguru import logger
 from pydantic import BaseModel, Field
@@ -136,7 +137,7 @@ class Relationship(BaseModel):
 
 
 class GameState(BaseModel):
-    """Complete state of the game world."""
+    """Complete state of the game world with vectorized context support."""
     
     player: PlayerStats = Field(default_factory=PlayerStats)
     current_room: str = "tavern"
@@ -164,6 +165,11 @@ class GameState(BaseModel):
     # DGT Social Graph: Location-scoped NPC relationships
     # Format: { "tavern": { "Bartender": Relationship(...), "Guard": Relationship(...) } }
     social_graph: Dict[str, Dict[str, Relationship]] = Field(default_factory=dict)
+    
+    # Phase 2: Vectorized World Engine fields
+    latent_context: Dict[str, Any] = Field(default_factory=dict)  # Active world vectors
+    lore_index: List[Dict[str, Any]] = Field(default_factory=list)  # Historical event vectors
+    active_vectors: Dict[str, np.ndarray] = Field(default_factory=dict)  # Currently loaded vectors
     
     def get_local_context(self) -> str:
         """
