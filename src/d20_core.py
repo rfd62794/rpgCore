@@ -38,6 +38,57 @@ class D20Result:
     narrative_context: str  # Technical explanation for Chronicler
     advantage_type: Optional[str] = None  # "advantage", "disadvantage", or None
     raw_rolls: Optional[Tuple[int, int]] = None  # For advantage/disadvantage transparency
+    
+    def string_summary(self) -> str:
+        """
+        Create a formatted string summary for UI display.
+        
+        Returns:
+            Human-readable summary of the D20 resolution
+        """
+        parts = []
+        
+        # Roll information with advantage/disadvantage
+        if self.advantage_type and self.raw_rolls:
+            if self.advantage_type == "advantage":
+                parts.append(f"🎲 Advantage: {self.raw_rolls[0]} & {self.raw_rolls[1]} → {self.roll}")
+            else:
+                parts.append(f"🎲 Disadvantage: {self.raw_rolls[0]} & {self.raw_rolls[1]} → {self.roll}")
+        else:
+            parts.append(f"🎲 Roll: {self.roll}")
+        
+        # Success/failure
+        result_text = "✅ SUCCESS" if self.success else "❌ FAILURE"
+        result_color = "green" if self.success else "red"
+        parts.append(f"[{result_color}]{result_text}[/{result_color}]")
+        
+        # Math breakdown
+        parts.append(f"Total: {self.total_score} vs DC {self.difficulty_class}")
+        
+        # Consequences
+        if self.hp_delta != 0:
+            hp_color = "red" if self.hp_delta < 0 else "green"
+            hp_symbol = "+" if self.hp_delta > 0 else ""
+            parts.append(f"[{hp_color}]HP: {hp_symbol}{self.hp_delta}[/{hp_color}]")
+        
+        # Reputation changes
+        for faction, delta in self.reputation_deltas.items():
+            if delta != 0:
+                rep_color = "red" if delta < 0 else "green"
+                rep_symbol = "+" if delta > 0 else ""
+                faction_name = faction.replace("_", " ").title()
+                parts.append(f"[{rep_color}]⚖️ {faction_name}: {rep_symbol}{delta}[/{rep_color}]")
+        
+        # State changes
+        for npc_id, new_state in self.npc_state_changes.items():
+            parts.append(f"[yellow]{npc_id} → {new_state}[/yellow]")
+        
+        # Goals completed
+        if self.goals_completed:
+            for goal_id in self.goals_completed:
+                parts.append(f"[green]✨ Goal: {goal_id}[/green]")
+        
+        return " | ".join(parts)
 
 
 class D20Resolver:

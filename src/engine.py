@@ -24,6 +24,7 @@ from world_factory import WorldFactory
 from character_factory import CharacterFactory
 from loot_system import LootSystem
 from utils.context_manager import ContextManager
+from ui.layout_manager import GameDashboard
 
 
 class GameEngine:
@@ -37,11 +38,13 @@ class GameEngine:
         self,
         state: Optional[GameState] = None,
         save_path: Optional[Path] = None,
-        personality: str = "curious"
+        personality: str = "curious",
+        use_dashboard: bool = True
     ):
         """Initialize the engine with all specialized modules."""
         self.console = Console()
         self.save_path = save_path or Path("savegame.json")
+        self.use_dashboard = use_dashboard
         
         # Initialize game state or load existing
         self.state = state or self._create_fresh_state(personality)
@@ -64,6 +67,12 @@ class GameEngine:
         self.loot_system = LootSystem()
         self.context_manager = ContextManager()
         
+        # Initialize dashboard if enabled
+        if self.use_dashboard:
+            self.dashboard = GameDashboard(self.console)
+            self.dashboard.start_dashboard()
+            self.dashboard.display_welcome()
+        
         # Sync world data to state
         self._sync_world_to_state()
         
@@ -71,7 +80,8 @@ class GameEngine:
     
     def _create_fresh_state(self, personality: str) -> GameState:
         """Create fresh game state with character."""
-        player = CharacterFactory.create(personality)
+        character_factory = CharacterFactory()
+        player = character_factory.create(personality)
         state = GameState(player=player)
         state.current_room = "tavern"
         return state
