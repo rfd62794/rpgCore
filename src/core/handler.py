@@ -450,7 +450,27 @@ class DGTWindowHandler:
                     # Create temporary clipped view of background
                     self.canvas.create_image(x, y, image=self.background_buffer, anchor='nw', tags="background_patch")
         
+        # Always draw dynamic entities (they change every frame)
+        self._draw_dynamic_entities()
+        
         self.dirty_rects.clear()
+    
+    def _draw_dynamic_entities(self) -> None:
+        """Draw all dynamic entities"""
+        # Clear previous dynamic entities
+        self.canvas.delete("dynamic")
+        
+        # Draw current dynamic entities
+        for entity in self.dynamic_entities:
+            if entity.get('position') and entity.get('sprite_id'):
+                sprite = self.raster_cache.get_sprite(entity['sprite_id'])
+                if sprite:
+                    x, y = entity['position']
+                    self.canvas.create_image(
+                        x, y, image=sprite, anchor='nw',
+                        tags="dynamic"
+                    )
+                    self._mark_dirty(x, y, sprite.width(), sprite.height())
     
     def _update_performance_metrics(self, pulse_start: float) -> None:
         """Update FPS and performance metrics"""
@@ -540,23 +560,7 @@ class DGTWindowHandler:
                         # Skip invalid pixels
                         continue
     
-    def _draw_baked_background(self) -> None:
-        """Draw the baked background to canvas"""
-        if self.background_buffer:
-            self.canvas.create_image(0, 0, image=self.background_buffer, anchor='nw', tags="background")
         
-        # Draw dynamic entities
-        for entity in self.dynamic_entities:
-            if entity.get('position') and entity.get('sprite_id'):
-                sprite = self.raster_cache.get_sprite(entity['sprite_id'])
-                if sprite:
-                    x, y = entity['position']
-                    self.canvas.create_image(
-                        x, y, image=sprite, anchor='nw',
-                        tags=f"dynamic_{entity.get('entity_id', 'unknown')}"
-                    )
-                    self._mark_dirty(x, y, sprite.width(), sprite.height())
-    
     def invalidate_background(self) -> None:
         """Mark background as dirty (call when static tiles change)"""
         self.background_dirty = True
