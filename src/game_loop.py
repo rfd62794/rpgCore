@@ -303,6 +303,13 @@ class GameREPL:
                     npc.state = arbiter_result.new_npc_state
                     break
         
+        # Update Global Reputation
+        for faction, delta in arbiter_result.reputation_deltas.items():
+            old_val = self.state.reputation.get(faction, 0)
+            self.state.reputation[faction] = old_val + delta
+            if delta != 0:
+                self.console.print(f"[bold yellow]⚖️ Reputation: {faction.replace('_', ' ').title()} {'increased' if delta > 0 else 'decreased'}! ({self.state.reputation[faction]})[/bold yellow]")
+        
         # TRANSITION: Handle leave_area
         if outcome.success and intent_match.intent_id == "leave_area":
             if room and room.exits:
