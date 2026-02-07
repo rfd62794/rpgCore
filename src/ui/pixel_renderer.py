@@ -285,25 +285,11 @@ class PixelRenderer:
                     self.set_pixel(px, py, pixel)
         else:
             # Draw outline
-            print(f"DEBUG: Drawing outline rectangle at ({x},{y}) size {width}x{height}")
-            print(f"DEBUG: Top edge: y={y}, x from {x} to {x + width - 1}")
             for px in range(x, x + width):
-                print(f"DEBUG: Setting top edge pixel ({px}, {y})")
                 self.set_pixel(px, y, pixel)
-            
-            print(f"DEBUG: Bottom edge: y={y + height - 1}, x from {x} to {x + width - 1}")
-            for px in range(x, x + width):
-                print(f"DEBUG: Setting bottom edge pixel ({px}, {y + height - 1})")
                 self.set_pixel(px, y + height - 1, pixel)
-            
-            print(f"DEBUG: Left edge: x={x}, y from {y} to {y + height - 1}")
             for py in range(y, y + height):
-                print(f"DEBUG: Setting left edge pixel ({x}, {py})")
                 self.set_pixel(x, py, pixel)
-            
-            print(f"DEBUG: Right edge: x={x + width - 1}, y from {y} to {y + height - 1}")
-            for py in range(y, y + height):
-                print(f"DEBUG: Setting right edge pixel ({x + width - 1}, {py})")
                 self.set_pixel(x + width - 1, py, pixel)
     
     def render_to_string(self) -> str:

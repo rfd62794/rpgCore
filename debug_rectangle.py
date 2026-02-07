@@ -37,6 +37,11 @@ for py in range(y, y + height):
 renderer.clear()
 renderer.draw_rectangle(2, 2, 5, 3, pixel, fill=False)
 
+# Check immediately after drawing
+print("IMMEDIATE check after draw_rectangle:")
+print(f"Pixel (6,2): empty={renderer.pixels[6][2].is_empty()}")
+print(f"Pixel (6,4): empty={renderer.pixels[6][4].is_empty()}")
+
 # Check what was actually drawn
 print("Rectangle from (2,2) with width=5, height=3:")
 print("Expected corners: (2,2), (6,2), (2,4), (6,4)")
