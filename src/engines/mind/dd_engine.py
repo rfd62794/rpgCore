@@ -26,6 +26,7 @@ from core.constants import (
     MOVEMENT_RANGE_TILES, INTENT_COOLDOWN_MS, PERSISTENCE_INTERVAL_TURNS
 )
 from core.system_config import MindConfig
+from utils.asset_loader import AssetLoader
 
 
 class CommandStatus(Enum):
@@ -71,20 +72,35 @@ class DDEngine:
     """Deterministic D20 logic and state management with Command Pattern"""
     
     def __init__(self, config: Optional[MindConfig] = None):
-        self.config = config or MindConfig(seed="DEFAULT")
-        self.state: GameState = GameState()
+        self.config = config or MindConfig()
+        self.seed = self.config.seed if self.config else "MIND_ZERO"
+        
+        # Core state
+        self.state = GameState(
+            player_position=(10, 10),
+            turn_count=0,
+            timestamp=time.time()
+        )
+        
+        # Command processing
         self.command_queue = CommandQueue()
         self.command_history: List[CommandResult] = []
+        self._processing_lock = asyncio.Lock()
         
-        # Timing and cooldowns
-        self.last_intent_time: float = 0.0
-        self.last_turn_time: float = 0.0
+        # Timing
+        self.last_intent_time = 0.0
+        self.last_turn_time = time.time()
         
-        # World Engine reference (to be injected)
+        # External dependencies (injected)
         self.world_engine = None
+        self.chronos_engine = None
         
-        # Validation rules
-        self.validation_rules = self._initialize_validation_rules()
+        # Object DNA integration
+        self.asset_loader = AssetLoader()
+        from utils.asset_loader import ObjectRegistry
+        self.object_registry = ObjectRegistry(self.asset_loader)
+        
+        logger.info(f"🧠 D&D Engine initialized with seed: {self.seed}")
         
         # Async processing
         self._processing_lock = asyncio.Lock()
@@ -280,34 +296,107 @@ class DDEngine:
         return CommandResult(
             success=True,
             new_state=self.state.copy(),
-            delta=delta,
-            message=f"Moved to {intent.target_position}"
+            message=f"Moved to {intent.target_position}",
+            execution_time_ms=0
         )
     
     async def _execute_interaction_command(self, command: Command) -> CommandResult:
-        """Execute interaction command"""
+        """Execute interaction command using Object DNA D20 system"""
         intent: InteractionIntent = command.intent
         
-        # Find interaction trigger at current position
-        triggers = self._get_triggers_at_position(self.state.player_position)
+        # Get target object
+        target_object = self.object_registry.get_object_at(intent.target_position)
         
-        if not triggers:
+        if not target_object:
             return CommandResult(
                 success=False,
-                message="No interactable entity at current position"
+                message=f"No object at position {intent.target_position}",
+                execution_time_ms=0
             )
         
-        # Execute interaction
-        trigger = triggers[0]  # Use first trigger for now
-        await self._execute_trigger(trigger, intent.parameters)
+        char = target_object.characteristics
         
-        logger.info(f"🧠 Interaction executed: {intent.interaction_type}")
+        # Get D20 check data for this interaction
+        if not hasattr(char, 'd20_checks') or intent.interaction_type not in char.d20_checks:
+            return CommandResult(
+                success=False,
+                message=f"No D20 check defined for {intent.interaction_type} on {target_object.asset_id}",
+                execution_time_ms=0
+            )
+        
+        d20_data = char.d20_checks[intent.interaction_type]
+        difficulty = d20_data['difficulty']
+        skill = d20_data['skill']
+        success_action = d20_data['success']
+        
+        # Roll D20 with deterministic seed
+        import random
+        roll_seed = f"{self.seed}_interaction_{self.state.turn_count}_{intent.target_position}_{intent.interaction_type}"
+        rng = random.Random(roll_seed)
+        d20_roll = rng.randint(1, 20)
+        
+        # Apply skill bonus (simplified - would use character skill in full implementation)
+        skill_bonus = 0  # TODO: Get from character sheet
+        
+        # Calculate result
+        total_roll = d20_roll + skill_bonus
+        success = total_roll >= difficulty
+        
+        # Log the systemic interaction
+        logger.info(f"🎲 Voyager encountered [{target_object.asset_id}] at {intent.target_position}. "
+                   f"Attempting [{intent.interaction_type}] (DC {difficulty})...")
+        logger.info(f"🎯 Roll: {d20_roll} + {skill_bonus} = {total_roll} vs DC {difficulty} -> {'SUCCESS' if success else 'FAILURE'}")
+        
+        # Create world delta for the interaction result
+        if success:
+            delta = WorldDelta(
+                position=intent.target_position,
+                delta_type="object_interaction",
+                data={
+                    "object_id": target_object.asset_id,
+                    "interaction": intent.interaction_type,
+                    "result": "success",
+                    "action": success_action,
+                    "roll": d20_roll,
+                    "difficulty": difficulty
+                }
+            )
+            
+            # Update player position to interaction target if needed
+            if intent.target_position != self.state.player_position:
+                self.state.player_position = intent.target_position
+            
+            message = f"✅ Successfully {intent.interaction_type} {target_object.asset_id}! (Roll: {total_roll}/{difficulty})"
+        else:
+            delta = WorldDelta(
+                position=intent.target_position,
+                delta_type="object_interaction",
+                data={
+                    "object_id": target_object.asset_id,
+                    "interaction": intent.interaction_type,
+                    "result": "failure",
+                    "roll": d20_roll,
+                    "difficulty": difficulty
+                }
+            )
+            
+            message = f"❌ Failed to {intent.interaction_type} {target_object.asset_id}! (Roll: {total_roll}/{difficulty})"
+        
+        # Apply delta to state
+        await self.apply_world_delta(delta)
         
         return CommandResult(
-            success=True,
+            success=success,
             new_state=self.state.copy(),
-            message=f"Interacted with {intent.target_entity}"
+            message=message,
+            execution_time_ms=0
         )
+    
+    def get_command_history(self, limit: int = 10) -> List[CommandResult]:
+        """Get recent command history (Facade method)"""
+        return self.command_history[-limit:]
+    
+    # === COMMAND EXECUTION ===
     
     async def _execute_ponder_command(self, command: Command) -> CommandResult:
         """Execute ponder command (LLM processing)"""
@@ -371,31 +460,59 @@ class DDEngine:
         )
     
     async def _validate_interaction_intent(self, intent: InteractionIntent) -> IntentValidation:
-        """Validate interaction intent"""
-        # Check if there are interactable entities at current position
-        triggers = await self._get_triggers_at_position(self.state.player_position)
+        """Validate interaction intent using Object DNA"""
+        # Get object at target position using Object Registry
+        target_object = self.object_registry.get_object_at(intent.target_position)
         
-        if not triggers:
+        if not target_object:
             return IntentValidation(
                 is_valid=False,
                 validation_result=ValidationResult.RULE_VIOLATION,
-                message="No interactable entity at current position"
+                message=f"No object at position {intent.target_position}"
             )
         
-        # Check if interaction type is valid
-        valid_interactions = [t.trigger_type for t in triggers if t.active]
-        
-        if intent.interaction_type not in valid_interactions:
+        # Get object characteristics
+        if not target_object.characteristics:
             return IntentValidation(
                 is_valid=False,
                 validation_result=ValidationResult.RULE_VIOLATION,
-                message=f"Invalid interaction: {intent.interaction_type}"
+                message=f"Object {target_object.asset_id} has no interaction characteristics"
+            )
+        
+        char = target_object.characteristics
+        
+        # Check if interaction type is available in d20_checks
+        if not hasattr(char, 'd20_checks') or not char.d20_checks:
+            return IntentValidation(
+                is_valid=False,
+                validation_result=ValidationResult.RULE_VIOLATION,
+                message=f"Object {target_object.asset_id} has no D20 interactions defined"
+            )
+        
+        # Check if requested interaction is valid for this object
+        if intent.interaction_type not in char.d20_checks:
+            available_checks = list(char.d20_checks.keys())
+            return IntentValidation(
+                is_valid=False,
+                validation_result=ValidationResult.RULE_VIOLATION,
+                message=f"Invalid interaction '{intent.interaction_type}' for {target_object.asset_id}. Available: {available_checks}"
+            )
+        
+        # Check range (interaction must be adjacent or at same position)
+        player_pos = self.state.player_position
+        distance = abs(player_pos[0] - intent.target_position[0]) + abs(player_pos[1] - intent.target_position[1])
+        
+        if distance > 1:  # Adjacent or same position only
+            return IntentValidation(
+                is_valid=False,
+                validation_result=ValidationResult.OUT_OF_RANGE,
+                message=f"Object {target_object.asset_id} out of range (distance: {distance})"
             )
         
         return IntentValidation(
             is_valid=True,
             validation_result=ValidationResult.VALID,
-            message="Interaction validated"
+            message=f"Interaction '{intent.interaction_type}' validated for {target_object.asset_id}"
         )
     
     def _validate_ponder_intent(self, intent: PonderIntent) -> IntentValidation:

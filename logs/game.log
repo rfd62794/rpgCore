@@ -6531,3 +6531,549 @@
 2026-02-07 13:05:02 | INFO | utils.asset_loader:_generate_effect_sprites:236 | 🎨 Generated 5 effect sprites
 2026-02-07 13:05:02 | INFO | utils.asset_loader:__init__:94 | 🎨 Asset Loader initialized - 37 assets loaded
 2026-02-07 13:05:17 | INFO | utils.logger:initialize:59 | 📝 Logging system initialized
+2026-02-07 13:09:45 | INFO | utils.logger:initialize:59 | 📝 Logging system initialized
+2026-02-07 13:09:45 | INFO | utils.asset_loader:_load_object_definitions:157 | 📦 Loaded 29 object definitions
+2026-02-07 13:09:45 | INFO | utils.asset_loader:_load_prefab_definitions:186 | 🏗️ Loaded 10 prefab definitions
+2026-02-07 13:09:45 | INFO | utils.asset_loader:_generate_tile_sprites:197 | 🎨 Generated 11 tile sprites
+2026-02-07 13:09:45 | INFO | utils.asset_loader:_generate_object_sprites:206 | 🎨 Generated 37 object sprites
+2026-02-07 13:09:45 | INFO | utils.asset_loader:_generate_actor_sprites:226 | 🎨 Generated actor sprites for multiple states
+2026-02-07 13:09:45 | INFO | utils.asset_loader:_generate_effect_sprites:236 | 🎨 Generated 5 effect sprites
+2026-02-07 13:09:45 | INFO | utils.asset_loader:__init__:94 | 🎨 Asset Loader initialized - 37 assets loaded
+2026-02-07 13:09:45 | INFO | utils.asset_loader:__init__:452 | 🏗️ Object Registry initialized
+2026-02-07 13:09:45 | INFO | engines.world.world_engine:__init__:122 | 🌍 World Engine initialized with seed: VOLUME_2_PREMIERE
+2026-02-07 13:09:45 | INFO | utils.asset_loader:_load_object_definitions:157 | 📦 Loaded 29 object definitions
+2026-02-07 13:09:45 | INFO | utils.asset_loader:_load_prefab_definitions:186 | 🏗️ Loaded 10 prefab definitions
+2026-02-07 13:09:45 | INFO | utils.asset_loader:_generate_tile_sprites:197 | 🎨 Generated 11 tile sprites
+2026-02-07 13:09:45 | INFO | utils.asset_loader:_generate_object_sprites:206 | 🎨 Generated 37 object sprites
+2026-02-07 13:09:45 | INFO | utils.asset_loader:_generate_actor_sprites:226 | 🎨 Generated actor sprites for multiple states
+2026-02-07 13:09:45 | INFO | utils.asset_loader:_generate_effect_sprites:236 | 🎨 Generated 5 effect sprites
+2026-02-07 13:09:45 | INFO | utils.asset_loader:__init__:94 | 🎨 Asset Loader initialized - 37 assets loaded
+2026-02-07 13:10:11 | INFO | utils.logger:initialize:59 | 📝 Logging system initialized
+2026-02-07 13:10:11 | INFO | utils.asset_loader:_load_object_definitions:157 | 📦 Loaded 29 object definitions
+2026-02-07 13:10:11 | INFO | utils.asset_loader:_load_prefab_definitions:186 | 🏗️ Loaded 10 prefab definitions
+2026-02-07 13:10:11 | INFO | utils.asset_loader:_generate_tile_sprites:197 | 🎨 Generated 11 tile sprites
+2026-02-07 13:10:11 | INFO | utils.asset_loader:_generate_object_sprites:206 | 🎨 Generated 37 object sprites
+2026-02-07 13:10:11 | INFO | utils.asset_loader:_generate_actor_sprites:226 | 🎨 Generated actor sprites for multiple states
+2026-02-07 13:10:11 | INFO | utils.asset_loader:_generate_effect_sprites:236 | 🎨 Generated 5 effect sprites
+2026-02-07 13:10:11 | INFO | utils.asset_loader:__init__:94 | 🎨 Asset Loader initialized - 37 assets loaded
+2026-02-07 13:10:11 | INFO | utils.asset_loader:__init__:452 | 🏗️ Object Registry initialized
+2026-02-07 13:10:11 | INFO | engines.world.world_engine:__init__:122 | 🌍 World Engine initialized with seed: VOLUME_2_PREMIERE
+2026-02-07 13:10:11 | INFO | utils.asset_loader:_load_object_definitions:157 | 📦 Loaded 29 object definitions
+2026-02-07 13:10:11 | INFO | utils.asset_loader:_load_prefab_definitions:186 | 🏗️ Loaded 10 prefab definitions
+2026-02-07 13:10:11 | INFO | utils.asset_loader:_generate_tile_sprites:197 | 🎨 Generated 11 tile sprites
+2026-02-07 13:10:11 | INFO | utils.asset_loader:_generate_object_sprites:206 | 🎨 Generated 37 object sprites
+2026-02-07 13:10:11 | INFO | utils.asset_loader:_generate_actor_sprites:226 | 🎨 Generated actor sprites for multiple states
+2026-02-07 13:10:11 | INFO | utils.asset_loader:_generate_effect_sprites:236 | 🎨 Generated 5 effect sprites
+2026-02-07 13:10:11 | INFO | utils.asset_loader:__init__:94 | 🎨 Asset Loader initialized - 37 assets loaded
+2026-02-07 13:10:11 | INFO | utils.asset_loader:__init__:452 | 🏗️ Object Registry initialized
+2026-02-07 13:10:11 | INFO | engines.mind.dd_engine:__init__:103 | 🧠 D&D Engine initialized with seed: VOLUME_2_PREMIERE
+2026-02-07 13:10:11 | INFO | engines.mind.dd_engine:__init__:108 | 🧠 D&D Engine initialized - Command Pattern ready
+2026-02-07 13:10:11 | INFO | actors.voyager:__init__:69 | 🧭 Pathfinding Navigator initialized: 50x50
+2026-02-07 13:10:11 | INFO | actors.voyager:__init__:185 | 🎯 Intent Generator initialized
+2026-02-07 13:10:11 | INFO | actors.voyager:__init__:333 | 🚶 Voyager initialized - STATE_PONDERING support ready
+2026-02-07 13:10:11 | INFO | utils.asset_loader:_load_object_definitions:157 | 📦 Loaded 29 object definitions
+2026-02-07 13:10:11 | INFO | utils.asset_loader:_load_prefab_definitions:186 | 🏗️ Loaded 10 prefab definitions
+2026-02-07 13:10:11 | INFO | utils.asset_loader:_generate_tile_sprites:197 | 🎨 Generated 11 tile sprites
+2026-02-07 13:10:11 | INFO | utils.asset_loader:_generate_object_sprites:206 | 🎨 Generated 37 object sprites
+2026-02-07 13:10:11 | INFO | utils.asset_loader:_generate_actor_sprites:226 | 🎨 Generated actor sprites for multiple states
+2026-02-07 13:10:11 | INFO | utils.asset_loader:_generate_effect_sprites:236 | 🎨 Generated 5 effect sprites
+2026-02-07 13:10:11 | INFO | utils.asset_loader:__init__:94 | 🎨 Asset Loader initialized - 37 assets loaded
+2026-02-07 13:10:19 | INFO | utils.logger:initialize:59 | 📝 Logging system initialized
+2026-02-07 13:10:19 | INFO | utils.asset_loader:_load_object_definitions:157 | 📦 Loaded 29 object definitions
+2026-02-07 13:10:19 | INFO | utils.asset_loader:_load_prefab_definitions:186 | 🏗️ Loaded 10 prefab definitions
+2026-02-07 13:10:19 | INFO | utils.asset_loader:_generate_tile_sprites:197 | 🎨 Generated 11 tile sprites
+2026-02-07 13:10:19 | INFO | utils.asset_loader:_generate_object_sprites:206 | 🎨 Generated 37 object sprites
+2026-02-07 13:10:19 | INFO | utils.asset_loader:_generate_actor_sprites:226 | 🎨 Generated actor sprites for multiple states
+2026-02-07 13:10:19 | INFO | utils.asset_loader:_generate_effect_sprites:236 | 🎨 Generated 5 effect sprites
+2026-02-07 13:10:19 | INFO | utils.asset_loader:__init__:94 | 🎨 Asset Loader initialized - 37 assets loaded
+2026-02-07 13:10:19 | INFO | utils.asset_loader:__init__:452 | 🏗️ Object Registry initialized
+2026-02-07 13:10:19 | INFO | engines.world.world_engine:__init__:122 | 🌍 World Engine initialized with seed: VOLUME_2_PREMIERE
+2026-02-07 13:10:19 | INFO | utils.asset_loader:_load_object_definitions:157 | 📦 Loaded 29 object definitions
+2026-02-07 13:10:19 | INFO | utils.asset_loader:_load_prefab_definitions:186 | 🏗️ Loaded 10 prefab definitions
+2026-02-07 13:10:19 | INFO | utils.asset_loader:_generate_tile_sprites:197 | 🎨 Generated 11 tile sprites
+2026-02-07 13:10:19 | INFO | utils.asset_loader:_generate_object_sprites:206 | 🎨 Generated 37 object sprites
+2026-02-07 13:10:19 | INFO | utils.asset_loader:_generate_actor_sprites:226 | 🎨 Generated actor sprites for multiple states
+2026-02-07 13:10:19 | INFO | utils.asset_loader:_generate_effect_sprites:236 | 🎨 Generated 5 effect sprites
+2026-02-07 13:10:19 | INFO | utils.asset_loader:__init__:94 | 🎨 Asset Loader initialized - 37 assets loaded
+2026-02-07 13:10:19 | INFO | utils.asset_loader:__init__:452 | 🏗️ Object Registry initialized
+2026-02-07 13:10:19 | INFO | engines.mind.dd_engine:__init__:103 | 🧠 D&D Engine initialized with seed: VOLUME_2_PREMIERE
+2026-02-07 13:10:19 | INFO | engines.mind.dd_engine:__init__:108 | 🧠 D&D Engine initialized - Command Pattern ready
+2026-02-07 13:10:19 | INFO | actors.voyager:__init__:69 | 🧭 Pathfinding Navigator initialized: 50x50
+2026-02-07 13:10:19 | INFO | actors.voyager:__init__:185 | 🎯 Intent Generator initialized
+2026-02-07 13:10:19 | INFO | actors.voyager:__init__:333 | 🚶 Voyager initialized - STATE_PONDERING support ready
+2026-02-07 13:10:19 | INFO | utils.asset_loader:_load_object_definitions:157 | 📦 Loaded 29 object definitions
+2026-02-07 13:10:19 | INFO | utils.asset_loader:_load_prefab_definitions:186 | 🏗️ Loaded 10 prefab definitions
+2026-02-07 13:10:19 | INFO | utils.asset_loader:_generate_tile_sprites:197 | 🎨 Generated 11 tile sprites
+2026-02-07 13:10:19 | INFO | utils.asset_loader:_generate_object_sprites:206 | 🎨 Generated 37 object sprites
+2026-02-07 13:10:19 | INFO | utils.asset_loader:_generate_actor_sprites:226 | 🎨 Generated actor sprites for multiple states
+2026-02-07 13:10:19 | INFO | utils.asset_loader:_generate_effect_sprites:236 | 🎨 Generated 5 effect sprites
+2026-02-07 13:10:19 | INFO | utils.asset_loader:__init__:94 | 🎨 Asset Loader initialized - 37 assets loaded
+2026-02-07 13:10:19 | INFO | utils.asset_loader:__init__:452 | 🏗️ Object Registry initialized
+2026-02-07 13:10:36 | INFO | utils.logger:initialize:59 | 📝 Logging system initialized
+2026-02-07 13:10:36 | INFO | utils.asset_loader:_load_object_definitions:157 | 📦 Loaded 29 object definitions
+2026-02-07 13:10:36 | INFO | utils.asset_loader:_load_prefab_definitions:186 | 🏗️ Loaded 10 prefab definitions
+2026-02-07 13:10:36 | INFO | utils.asset_loader:_generate_tile_sprites:197 | 🎨 Generated 11 tile sprites
+2026-02-07 13:10:36 | INFO | utils.asset_loader:_generate_object_sprites:206 | 🎨 Generated 37 object sprites
+2026-02-07 13:10:36 | INFO | utils.asset_loader:_generate_actor_sprites:226 | 🎨 Generated actor sprites for multiple states
+2026-02-07 13:10:36 | INFO | utils.asset_loader:_generate_effect_sprites:236 | 🎨 Generated 5 effect sprites
+2026-02-07 13:10:36 | INFO | utils.asset_loader:__init__:94 | 🎨 Asset Loader initialized - 37 assets loaded
+2026-02-07 13:10:36 | INFO | utils.asset_loader:__init__:452 | 🏗️ Object Registry initialized
+2026-02-07 13:10:36 | INFO | engines.world.world_engine:__init__:122 | 🌍 World Engine initialized with seed: VOLUME_2_PREMIERE
+2026-02-07 13:10:37 | INFO | utils.asset_loader:_load_object_definitions:157 | 📦 Loaded 29 object definitions
+2026-02-07 13:10:37 | INFO | utils.asset_loader:_load_prefab_definitions:186 | 🏗️ Loaded 10 prefab definitions
+2026-02-07 13:10:37 | INFO | utils.asset_loader:_generate_tile_sprites:197 | 🎨 Generated 11 tile sprites
+2026-02-07 13:10:37 | INFO | utils.asset_loader:_generate_object_sprites:206 | 🎨 Generated 37 object sprites
+2026-02-07 13:10:37 | INFO | utils.asset_loader:_generate_actor_sprites:226 | 🎨 Generated actor sprites for multiple states
+2026-02-07 13:10:37 | INFO | utils.asset_loader:_generate_effect_sprites:236 | 🎨 Generated 5 effect sprites
+2026-02-07 13:10:37 | INFO | utils.asset_loader:__init__:94 | 🎨 Asset Loader initialized - 37 assets loaded
+2026-02-07 13:10:37 | INFO | utils.asset_loader:__init__:452 | 🏗️ Object Registry initialized
+2026-02-07 13:10:37 | INFO | engines.mind.dd_engine:__init__:103 | 🧠 D&D Engine initialized with seed: VOLUME_2_PREMIERE
+2026-02-07 13:10:37 | INFO | engines.mind.dd_engine:__init__:108 | 🧠 D&D Engine initialized - Command Pattern ready
+2026-02-07 13:10:37 | INFO | actors.voyager:__init__:69 | 🧭 Pathfinding Navigator initialized: 50x50
+2026-02-07 13:10:37 | INFO | actors.voyager:__init__:185 | 🎯 Intent Generator initialized
+2026-02-07 13:10:37 | INFO | actors.voyager:__init__:333 | 🚶 Voyager initialized - STATE_PONDERING support ready
+2026-02-07 13:10:37 | INFO | utils.asset_loader:_load_object_definitions:157 | 📦 Loaded 29 object definitions
+2026-02-07 13:10:37 | INFO | utils.asset_loader:_load_prefab_definitions:186 | 🏗️ Loaded 10 prefab definitions
+2026-02-07 13:10:37 | INFO | utils.asset_loader:_generate_tile_sprites:197 | 🎨 Generated 11 tile sprites
+2026-02-07 13:10:37 | INFO | utils.asset_loader:_generate_object_sprites:206 | 🎨 Generated 37 object sprites
+2026-02-07 13:10:37 | INFO | utils.asset_loader:_generate_actor_sprites:226 | 🎨 Generated actor sprites for multiple states
+2026-02-07 13:10:37 | INFO | utils.asset_loader:_generate_effect_sprites:236 | 🎨 Generated 5 effect sprites
+2026-02-07 13:10:37 | INFO | utils.asset_loader:__init__:94 | 🎨 Asset Loader initialized - 37 assets loaded
+2026-02-07 13:10:37 | INFO | utils.asset_loader:__init__:452 | 🏗️ Object Registry initialized
+2026-02-07 13:10:54 | INFO | utils.logger:initialize:59 | 📝 Logging system initialized
+2026-02-07 13:10:54 | INFO | utils.asset_loader:_load_object_definitions:157 | 📦 Loaded 29 object definitions
+2026-02-07 13:10:54 | INFO | utils.asset_loader:_load_prefab_definitions:186 | 🏗️ Loaded 10 prefab definitions
+2026-02-07 13:10:54 | INFO | utils.asset_loader:_generate_tile_sprites:197 | 🎨 Generated 11 tile sprites
+2026-02-07 13:10:54 | INFO | utils.asset_loader:_generate_object_sprites:206 | 🎨 Generated 37 object sprites
+2026-02-07 13:10:54 | INFO | utils.asset_loader:_generate_actor_sprites:226 | 🎨 Generated actor sprites for multiple states
+2026-02-07 13:10:54 | INFO | utils.asset_loader:_generate_effect_sprites:236 | 🎨 Generated 5 effect sprites
+2026-02-07 13:10:54 | INFO | utils.asset_loader:__init__:94 | 🎨 Asset Loader initialized - 37 assets loaded
+2026-02-07 13:10:54 | INFO | utils.asset_loader:__init__:452 | 🏗️ Object Registry initialized
+2026-02-07 13:10:54 | INFO | engines.world.world_engine:__init__:122 | 🌍 World Engine initialized with seed: VOLUME_2_PREMIERE
+2026-02-07 13:10:54 | INFO | utils.asset_loader:_load_object_definitions:157 | 📦 Loaded 29 object definitions
+2026-02-07 13:10:54 | INFO | utils.asset_loader:_load_prefab_definitions:186 | 🏗️ Loaded 10 prefab definitions
+2026-02-07 13:10:54 | INFO | utils.asset_loader:_generate_tile_sprites:197 | 🎨 Generated 11 tile sprites
+2026-02-07 13:10:54 | INFO | utils.asset_loader:_generate_object_sprites:206 | 🎨 Generated 37 object sprites
+2026-02-07 13:10:54 | INFO | utils.asset_loader:_generate_actor_sprites:226 | 🎨 Generated actor sprites for multiple states
+2026-02-07 13:10:54 | INFO | utils.asset_loader:_generate_effect_sprites:236 | 🎨 Generated 5 effect sprites
+2026-02-07 13:10:54 | INFO | utils.asset_loader:__init__:94 | 🎨 Asset Loader initialized - 37 assets loaded
+2026-02-07 13:10:54 | INFO | utils.asset_loader:__init__:452 | 🏗️ Object Registry initialized
+2026-02-07 13:10:54 | INFO | engines.mind.dd_engine:__init__:103 | 🧠 D&D Engine initialized with seed: VOLUME_2_PREMIERE
+2026-02-07 13:10:54 | INFO | engines.mind.dd_engine:__init__:108 | 🧠 D&D Engine initialized - Command Pattern ready
+2026-02-07 13:10:54 | INFO | actors.voyager:__init__:69 | 🧭 Pathfinding Navigator initialized: 50x50
+2026-02-07 13:10:54 | INFO | actors.voyager:__init__:185 | 🎯 Intent Generator initialized
+2026-02-07 13:10:54 | INFO | actors.voyager:__init__:333 | 🚶 Voyager initialized - STATE_PONDERING support ready
+2026-02-07 13:10:54 | INFO | utils.asset_loader:_load_object_definitions:157 | 📦 Loaded 29 object definitions
+2026-02-07 13:10:54 | INFO | utils.asset_loader:_load_prefab_definitions:186 | 🏗️ Loaded 10 prefab definitions
+2026-02-07 13:10:54 | INFO | utils.asset_loader:_generate_tile_sprites:197 | 🎨 Generated 11 tile sprites
+2026-02-07 13:10:54 | INFO | utils.asset_loader:_generate_object_sprites:206 | 🎨 Generated 37 object sprites
+2026-02-07 13:10:54 | INFO | utils.asset_loader:_generate_actor_sprites:226 | 🎨 Generated actor sprites for multiple states
+2026-02-07 13:10:54 | INFO | utils.asset_loader:_generate_effect_sprites:236 | 🎨 Generated 5 effect sprites
+2026-02-07 13:10:54 | INFO | utils.asset_loader:__init__:94 | 🎨 Asset Loader initialized - 37 assets loaded
+2026-02-07 13:10:54 | INFO | utils.asset_loader:__init__:452 | 🏗️ Object Registry initialized
+2026-02-07 13:11:01 | INFO | utils.logger:initialize:59 | 📝 Logging system initialized
+2026-02-07 13:11:01 | INFO | utils.asset_loader:_load_object_definitions:157 | 📦 Loaded 29 object definitions
+2026-02-07 13:11:01 | INFO | utils.asset_loader:_load_prefab_definitions:186 | 🏗️ Loaded 10 prefab definitions
+2026-02-07 13:11:01 | INFO | utils.asset_loader:_generate_tile_sprites:197 | 🎨 Generated 11 tile sprites
+2026-02-07 13:11:01 | INFO | utils.asset_loader:_generate_object_sprites:206 | 🎨 Generated 37 object sprites
+2026-02-07 13:11:01 | INFO | utils.asset_loader:_generate_actor_sprites:226 | 🎨 Generated actor sprites for multiple states
+2026-02-07 13:11:01 | INFO | utils.asset_loader:_generate_effect_sprites:236 | 🎨 Generated 5 effect sprites
+2026-02-07 13:11:01 | INFO | utils.asset_loader:__init__:94 | 🎨 Asset Loader initialized - 37 assets loaded
+2026-02-07 13:11:01 | INFO | utils.asset_loader:__init__:452 | 🏗️ Object Registry initialized
+2026-02-07 13:11:01 | INFO | engines.world.world_engine:__init__:122 | 🌍 World Engine initialized with seed: VOLUME_2_PREMIERE
+2026-02-07 13:11:01 | INFO | utils.asset_loader:_load_object_definitions:157 | 📦 Loaded 29 object definitions
+2026-02-07 13:11:01 | INFO | utils.asset_loader:_load_prefab_definitions:186 | 🏗️ Loaded 10 prefab definitions
+2026-02-07 13:11:01 | INFO | utils.asset_loader:_generate_tile_sprites:197 | 🎨 Generated 11 tile sprites
+2026-02-07 13:11:01 | INFO | utils.asset_loader:_generate_object_sprites:206 | 🎨 Generated 37 object sprites
+2026-02-07 13:11:01 | INFO | utils.asset_loader:_generate_actor_sprites:226 | 🎨 Generated actor sprites for multiple states
+2026-02-07 13:11:01 | INFO | utils.asset_loader:_generate_effect_sprites:236 | 🎨 Generated 5 effect sprites
+2026-02-07 13:11:01 | INFO | utils.asset_loader:__init__:94 | 🎨 Asset Loader initialized - 37 assets loaded
+2026-02-07 13:11:01 | INFO | utils.asset_loader:__init__:452 | 🏗️ Object Registry initialized
+2026-02-07 13:11:01 | INFO | engines.mind.dd_engine:__init__:103 | 🧠 D&D Engine initialized with seed: VOLUME_2_PREMIERE
+2026-02-07 13:11:01 | INFO | engines.mind.dd_engine:__init__:108 | 🧠 D&D Engine initialized - Command Pattern ready
+2026-02-07 13:11:01 | INFO | actors.voyager:__init__:69 | 🧭 Pathfinding Navigator initialized: 50x50
+2026-02-07 13:11:01 | INFO | actors.voyager:__init__:185 | 🎯 Intent Generator initialized
+2026-02-07 13:11:01 | INFO | actors.voyager:__init__:333 | 🚶 Voyager initialized - STATE_PONDERING support ready
+2026-02-07 13:11:01 | INFO | utils.asset_loader:_load_object_definitions:157 | 📦 Loaded 29 object definitions
+2026-02-07 13:11:01 | INFO | utils.asset_loader:_load_prefab_definitions:186 | 🏗️ Loaded 10 prefab definitions
+2026-02-07 13:11:01 | INFO | utils.asset_loader:_generate_tile_sprites:197 | 🎨 Generated 11 tile sprites
+2026-02-07 13:11:01 | INFO | utils.asset_loader:_generate_object_sprites:206 | 🎨 Generated 37 object sprites
+2026-02-07 13:11:01 | INFO | utils.asset_loader:_generate_actor_sprites:226 | 🎨 Generated actor sprites for multiple states
+2026-02-07 13:11:01 | INFO | utils.asset_loader:_generate_effect_sprites:236 | 🎨 Generated 5 effect sprites
+2026-02-07 13:11:01 | INFO | utils.asset_loader:__init__:94 | 🎨 Asset Loader initialized - 37 assets loaded
+2026-02-07 13:11:01 | INFO | utils.asset_loader:__init__:452 | 🏗️ Object Registry initialized
+2026-02-07 13:11:11 | INFO | utils.logger:initialize:59 | 📝 Logging system initialized
+2026-02-07 13:11:11 | INFO | utils.asset_loader:_load_object_definitions:157 | 📦 Loaded 29 object definitions
+2026-02-07 13:11:11 | INFO | utils.asset_loader:_load_prefab_definitions:186 | 🏗️ Loaded 10 prefab definitions
+2026-02-07 13:11:11 | INFO | utils.asset_loader:_generate_tile_sprites:197 | 🎨 Generated 11 tile sprites
+2026-02-07 13:11:11 | INFO | utils.asset_loader:_generate_object_sprites:206 | 🎨 Generated 37 object sprites
+2026-02-07 13:11:11 | INFO | utils.asset_loader:_generate_actor_sprites:226 | 🎨 Generated actor sprites for multiple states
+2026-02-07 13:11:11 | INFO | utils.asset_loader:_generate_effect_sprites:236 | 🎨 Generated 5 effect sprites
+2026-02-07 13:11:11 | INFO | utils.asset_loader:__init__:94 | 🎨 Asset Loader initialized - 37 assets loaded
+2026-02-07 13:11:11 | INFO | utils.asset_loader:__init__:452 | 🏗️ Object Registry initialized
+2026-02-07 13:11:11 | INFO | engines.world.world_engine:__init__:122 | 🌍 World Engine initialized with seed: VOLUME_2_PREMIERE
+2026-02-07 13:11:11 | INFO | utils.asset_loader:_load_object_definitions:157 | 📦 Loaded 29 object definitions
+2026-02-07 13:11:11 | INFO | utils.asset_loader:_load_prefab_definitions:186 | 🏗️ Loaded 10 prefab definitions
+2026-02-07 13:11:11 | INFO | utils.asset_loader:_generate_tile_sprites:197 | 🎨 Generated 11 tile sprites
+2026-02-07 13:11:11 | INFO | utils.asset_loader:_generate_object_sprites:206 | 🎨 Generated 37 object sprites
+2026-02-07 13:11:11 | INFO | utils.asset_loader:_generate_actor_sprites:226 | 🎨 Generated actor sprites for multiple states
+2026-02-07 13:11:11 | INFO | utils.asset_loader:_generate_effect_sprites:236 | 🎨 Generated 5 effect sprites
+2026-02-07 13:11:11 | INFO | utils.asset_loader:__init__:94 | 🎨 Asset Loader initialized - 37 assets loaded
+2026-02-07 13:11:11 | INFO | utils.asset_loader:__init__:452 | 🏗️ Object Registry initialized
+2026-02-07 13:11:11 | INFO | engines.mind.dd_engine:__init__:103 | 🧠 D&D Engine initialized with seed: VOLUME_2_PREMIERE
+2026-02-07 13:11:11 | INFO | engines.mind.dd_engine:__init__:108 | 🧠 D&D Engine initialized - Command Pattern ready
+2026-02-07 13:11:11 | INFO | actors.voyager:__init__:69 | 🧭 Pathfinding Navigator initialized: 50x50
+2026-02-07 13:11:11 | INFO | actors.voyager:__init__:185 | 🎯 Intent Generator initialized
+2026-02-07 13:11:11 | INFO | actors.voyager:__init__:333 | 🚶 Voyager initialized - STATE_PONDERING support ready
+2026-02-07 13:11:11 | INFO | utils.asset_loader:_load_object_definitions:157 | 📦 Loaded 29 object definitions
+2026-02-07 13:11:11 | INFO | utils.asset_loader:_load_prefab_definitions:186 | 🏗️ Loaded 10 prefab definitions
+2026-02-07 13:11:11 | INFO | utils.asset_loader:_generate_tile_sprites:197 | 🎨 Generated 11 tile sprites
+2026-02-07 13:11:11 | INFO | utils.asset_loader:_generate_object_sprites:206 | 🎨 Generated 37 object sprites
+2026-02-07 13:11:11 | INFO | utils.asset_loader:_generate_actor_sprites:226 | 🎨 Generated actor sprites for multiple states
+2026-02-07 13:11:11 | INFO | utils.asset_loader:_generate_effect_sprites:236 | 🎨 Generated 5 effect sprites
+2026-02-07 13:11:11 | INFO | utils.asset_loader:__init__:94 | 🎨 Asset Loader initialized - 37 assets loaded
+2026-02-07 13:11:11 | INFO | utils.asset_loader:__init__:452 | 🏗️ Object Registry initialized
+2026-02-07 13:11:20 | INFO | utils.logger:initialize:59 | 📝 Logging system initialized
+2026-02-07 13:11:20 | INFO | utils.asset_loader:_load_object_definitions:157 | 📦 Loaded 29 object definitions
+2026-02-07 13:11:20 | INFO | utils.asset_loader:_load_prefab_definitions:186 | 🏗️ Loaded 10 prefab definitions
+2026-02-07 13:11:20 | INFO | utils.asset_loader:_generate_tile_sprites:197 | 🎨 Generated 11 tile sprites
+2026-02-07 13:11:20 | INFO | utils.asset_loader:_generate_object_sprites:206 | 🎨 Generated 37 object sprites
+2026-02-07 13:11:20 | INFO | utils.asset_loader:_generate_actor_sprites:226 | 🎨 Generated actor sprites for multiple states
+2026-02-07 13:11:20 | INFO | utils.asset_loader:_generate_effect_sprites:236 | 🎨 Generated 5 effect sprites
+2026-02-07 13:11:20 | INFO | utils.asset_loader:__init__:94 | 🎨 Asset Loader initialized - 37 assets loaded
+2026-02-07 13:11:20 | INFO | utils.asset_loader:__init__:452 | 🏗️ Object Registry initialized
+2026-02-07 13:11:20 | INFO | engines.world.world_engine:__init__:122 | 🌍 World Engine initialized with seed: VOLUME_2_PREMIERE
+2026-02-07 13:11:20 | INFO | utils.asset_loader:_load_object_definitions:157 | 📦 Loaded 29 object definitions
+2026-02-07 13:11:20 | INFO | utils.asset_loader:_load_prefab_definitions:186 | 🏗️ Loaded 10 prefab definitions
+2026-02-07 13:11:20 | INFO | utils.asset_loader:_generate_tile_sprites:197 | 🎨 Generated 11 tile sprites
+2026-02-07 13:11:20 | INFO | utils.asset_loader:_generate_object_sprites:206 | 🎨 Generated 37 object sprites
+2026-02-07 13:11:20 | INFO | utils.asset_loader:_generate_actor_sprites:226 | 🎨 Generated actor sprites for multiple states
+2026-02-07 13:11:20 | INFO | utils.asset_loader:_generate_effect_sprites:236 | 🎨 Generated 5 effect sprites
+2026-02-07 13:11:20 | INFO | utils.asset_loader:__init__:94 | 🎨 Asset Loader initialized - 37 assets loaded
+2026-02-07 13:11:20 | INFO | utils.asset_loader:__init__:452 | 🏗️ Object Registry initialized
+2026-02-07 13:11:20 | INFO | engines.mind.dd_engine:__init__:103 | 🧠 D&D Engine initialized with seed: VOLUME_2_PREMIERE
+2026-02-07 13:11:20 | INFO | engines.mind.dd_engine:__init__:108 | 🧠 D&D Engine initialized - Command Pattern ready
+2026-02-07 13:11:20 | INFO | actors.voyager:__init__:69 | 🧭 Pathfinding Navigator initialized: 50x50
+2026-02-07 13:11:20 | INFO | actors.voyager:__init__:185 | 🎯 Intent Generator initialized
+2026-02-07 13:11:20 | INFO | actors.voyager:__init__:333 | 🚶 Voyager initialized - STATE_PONDERING support ready
+2026-02-07 13:11:20 | INFO | utils.asset_loader:_load_object_definitions:157 | 📦 Loaded 29 object definitions
+2026-02-07 13:11:20 | INFO | utils.asset_loader:_load_prefab_definitions:186 | 🏗️ Loaded 10 prefab definitions
+2026-02-07 13:11:20 | INFO | utils.asset_loader:_generate_tile_sprites:197 | 🎨 Generated 11 tile sprites
+2026-02-07 13:11:20 | INFO | utils.asset_loader:_generate_object_sprites:206 | 🎨 Generated 37 object sprites
+2026-02-07 13:11:20 | INFO | utils.asset_loader:_generate_actor_sprites:226 | 🎨 Generated actor sprites for multiple states
+2026-02-07 13:11:20 | INFO | utils.asset_loader:_generate_effect_sprites:236 | 🎨 Generated 5 effect sprites
+2026-02-07 13:11:20 | INFO | utils.asset_loader:__init__:94 | 🎨 Asset Loader initialized - 37 assets loaded
+2026-02-07 13:11:20 | INFO | utils.asset_loader:__init__:452 | 🏗️ Object Registry initialized
+2026-02-07 13:11:28 | INFO | utils.logger:initialize:59 | 📝 Logging system initialized
+2026-02-07 13:11:28 | INFO | utils.asset_loader:_load_object_definitions:157 | 📦 Loaded 29 object definitions
+2026-02-07 13:11:28 | INFO | utils.asset_loader:_load_prefab_definitions:186 | 🏗️ Loaded 10 prefab definitions
+2026-02-07 13:11:28 | INFO | utils.asset_loader:_generate_tile_sprites:197 | 🎨 Generated 11 tile sprites
+2026-02-07 13:11:28 | INFO | utils.asset_loader:_generate_object_sprites:206 | 🎨 Generated 37 object sprites
+2026-02-07 13:11:28 | INFO | utils.asset_loader:_generate_actor_sprites:226 | 🎨 Generated actor sprites for multiple states
+2026-02-07 13:11:28 | INFO | utils.asset_loader:_generate_effect_sprites:236 | 🎨 Generated 5 effect sprites
+2026-02-07 13:11:28 | INFO | utils.asset_loader:__init__:94 | 🎨 Asset Loader initialized - 37 assets loaded
+2026-02-07 13:11:28 | INFO | utils.asset_loader:__init__:452 | 🏗️ Object Registry initialized
+2026-02-07 13:11:28 | INFO | engines.world.world_engine:__init__:122 | 🌍 World Engine initialized with seed: VOLUME_2_PREMIERE
+2026-02-07 13:11:28 | INFO | utils.asset_loader:_load_object_definitions:157 | 📦 Loaded 29 object definitions
+2026-02-07 13:11:28 | INFO | utils.asset_loader:_load_prefab_definitions:186 | 🏗️ Loaded 10 prefab definitions
+2026-02-07 13:11:28 | INFO | utils.asset_loader:_generate_tile_sprites:197 | 🎨 Generated 11 tile sprites
+2026-02-07 13:11:28 | INFO | utils.asset_loader:_generate_object_sprites:206 | 🎨 Generated 37 object sprites
+2026-02-07 13:11:28 | INFO | utils.asset_loader:_generate_actor_sprites:226 | 🎨 Generated actor sprites for multiple states
+2026-02-07 13:11:28 | INFO | utils.asset_loader:_generate_effect_sprites:236 | 🎨 Generated 5 effect sprites
+2026-02-07 13:11:28 | INFO | utils.asset_loader:__init__:94 | 🎨 Asset Loader initialized - 37 assets loaded
+2026-02-07 13:11:28 | INFO | utils.asset_loader:__init__:452 | 🏗️ Object Registry initialized
+2026-02-07 13:11:28 | INFO | engines.mind.dd_engine:__init__:103 | 🧠 D&D Engine initialized with seed: VOLUME_2_PREMIERE
+2026-02-07 13:11:28 | INFO | engines.mind.dd_engine:__init__:108 | 🧠 D&D Engine initialized - Command Pattern ready
+2026-02-07 13:11:28 | INFO | actors.voyager:__init__:69 | 🧭 Pathfinding Navigator initialized: 50x50
+2026-02-07 13:11:28 | INFO | actors.voyager:__init__:185 | 🎯 Intent Generator initialized
+2026-02-07 13:11:28 | INFO | actors.voyager:__init__:333 | 🚶 Voyager initialized - STATE_PONDERING support ready
+2026-02-07 13:11:28 | INFO | utils.asset_loader:_load_object_definitions:157 | 📦 Loaded 29 object definitions
+2026-02-07 13:11:28 | INFO | utils.asset_loader:_load_prefab_definitions:186 | 🏗️ Loaded 10 prefab definitions
+2026-02-07 13:11:28 | INFO | utils.asset_loader:_generate_tile_sprites:197 | 🎨 Generated 11 tile sprites
+2026-02-07 13:11:28 | INFO | utils.asset_loader:_generate_object_sprites:206 | 🎨 Generated 37 object sprites
+2026-02-07 13:11:28 | INFO | utils.asset_loader:_generate_actor_sprites:226 | 🎨 Generated actor sprites for multiple states
+2026-02-07 13:11:28 | INFO | utils.asset_loader:_generate_effect_sprites:236 | 🎨 Generated 5 effect sprites
+2026-02-07 13:11:28 | INFO | utils.asset_loader:__init__:94 | 🎨 Asset Loader initialized - 37 assets loaded
+2026-02-07 13:11:28 | INFO | utils.asset_loader:__init__:452 | 🏗️ Object Registry initialized
+2026-02-07 13:11:38 | INFO | utils.logger:initialize:59 | 📝 Logging system initialized
+2026-02-07 13:11:38 | INFO | utils.asset_loader:_load_object_definitions:157 | 📦 Loaded 29 object definitions
+2026-02-07 13:11:38 | INFO | utils.asset_loader:_load_prefab_definitions:186 | 🏗️ Loaded 10 prefab definitions
+2026-02-07 13:11:38 | INFO | utils.asset_loader:_generate_tile_sprites:197 | 🎨 Generated 11 tile sprites
+2026-02-07 13:11:38 | INFO | utils.asset_loader:_generate_object_sprites:206 | 🎨 Generated 37 object sprites
+2026-02-07 13:11:38 | INFO | utils.asset_loader:_generate_actor_sprites:226 | 🎨 Generated actor sprites for multiple states
+2026-02-07 13:11:38 | INFO | utils.asset_loader:_generate_effect_sprites:236 | 🎨 Generated 5 effect sprites
+2026-02-07 13:11:38 | INFO | utils.asset_loader:__init__:94 | 🎨 Asset Loader initialized - 37 assets loaded
+2026-02-07 13:11:38 | INFO | utils.asset_loader:__init__:452 | 🏗️ Object Registry initialized
+2026-02-07 13:11:38 | INFO | engines.world.world_engine:__init__:122 | 🌍 World Engine initialized with seed: VOLUME_2_PREMIERE
+2026-02-07 13:11:38 | INFO | utils.asset_loader:_load_object_definitions:157 | 📦 Loaded 29 object definitions
+2026-02-07 13:11:38 | INFO | utils.asset_loader:_load_prefab_definitions:186 | 🏗️ Loaded 10 prefab definitions
+2026-02-07 13:11:38 | INFO | utils.asset_loader:_generate_tile_sprites:197 | 🎨 Generated 11 tile sprites
+2026-02-07 13:11:38 | INFO | utils.asset_loader:_generate_object_sprites:206 | 🎨 Generated 37 object sprites
+2026-02-07 13:11:38 | INFO | utils.asset_loader:_generate_actor_sprites:226 | 🎨 Generated actor sprites for multiple states
+2026-02-07 13:11:38 | INFO | utils.asset_loader:_generate_effect_sprites:236 | 🎨 Generated 5 effect sprites
+2026-02-07 13:11:38 | INFO | utils.asset_loader:__init__:94 | 🎨 Asset Loader initialized - 37 assets loaded
+2026-02-07 13:11:38 | INFO | utils.asset_loader:__init__:452 | 🏗️ Object Registry initialized
+2026-02-07 13:11:38 | INFO | engines.mind.dd_engine:__init__:103 | 🧠 D&D Engine initialized with seed: VOLUME_2_PREMIERE
+2026-02-07 13:11:38 | INFO | engines.mind.dd_engine:__init__:108 | 🧠 D&D Engine initialized - Command Pattern ready
+2026-02-07 13:11:38 | INFO | actors.voyager:__init__:69 | 🧭 Pathfinding Navigator initialized: 50x50
+2026-02-07 13:11:38 | INFO | actors.voyager:__init__:185 | 🎯 Intent Generator initialized
+2026-02-07 13:11:38 | INFO | actors.voyager:__init__:333 | 🚶 Voyager initialized - STATE_PONDERING support ready
+2026-02-07 13:11:38 | INFO | utils.asset_loader:_load_object_definitions:157 | 📦 Loaded 29 object definitions
+2026-02-07 13:11:38 | INFO | utils.asset_loader:_load_prefab_definitions:186 | 🏗️ Loaded 10 prefab definitions
+2026-02-07 13:11:38 | INFO | utils.asset_loader:_generate_tile_sprites:197 | 🎨 Generated 11 tile sprites
+2026-02-07 13:11:38 | INFO | utils.asset_loader:_generate_object_sprites:206 | 🎨 Generated 37 object sprites
+2026-02-07 13:11:38 | INFO | utils.asset_loader:_generate_actor_sprites:226 | 🎨 Generated actor sprites for multiple states
+2026-02-07 13:11:38 | INFO | utils.asset_loader:_generate_effect_sprites:236 | 🎨 Generated 5 effect sprites
+2026-02-07 13:11:38 | INFO | utils.asset_loader:__init__:94 | 🎨 Asset Loader initialized - 37 assets loaded
+2026-02-07 13:11:38 | INFO | utils.asset_loader:__init__:452 | 🏗️ Object Registry initialized
+2026-02-07 13:11:48 | INFO | utils.logger:initialize:59 | 📝 Logging system initialized
+2026-02-07 13:11:48 | INFO | utils.asset_loader:_load_object_definitions:157 | 📦 Loaded 29 object definitions
+2026-02-07 13:11:48 | INFO | utils.asset_loader:_load_prefab_definitions:186 | 🏗️ Loaded 10 prefab definitions
+2026-02-07 13:11:48 | INFO | utils.asset_loader:_generate_tile_sprites:197 | 🎨 Generated 11 tile sprites
+2026-02-07 13:11:48 | INFO | utils.asset_loader:_generate_object_sprites:206 | 🎨 Generated 37 object sprites
+2026-02-07 13:11:48 | INFO | utils.asset_loader:_generate_actor_sprites:226 | 🎨 Generated actor sprites for multiple states
+2026-02-07 13:11:48 | INFO | utils.asset_loader:_generate_effect_sprites:236 | 🎨 Generated 5 effect sprites
+2026-02-07 13:11:48 | INFO | utils.asset_loader:__init__:94 | 🎨 Asset Loader initialized - 37 assets loaded
+2026-02-07 13:11:48 | INFO | utils.asset_loader:__init__:452 | 🏗️ Object Registry initialized
+2026-02-07 13:11:48 | INFO | engines.world.world_engine:__init__:122 | 🌍 World Engine initialized with seed: VOLUME_2_PREMIERE
+2026-02-07 13:11:48 | INFO | utils.asset_loader:_load_object_definitions:157 | 📦 Loaded 29 object definitions
+2026-02-07 13:11:48 | INFO | utils.asset_loader:_load_prefab_definitions:186 | 🏗️ Loaded 10 prefab definitions
+2026-02-07 13:11:48 | INFO | utils.asset_loader:_generate_tile_sprites:197 | 🎨 Generated 11 tile sprites
+2026-02-07 13:11:48 | INFO | utils.asset_loader:_generate_object_sprites:206 | 🎨 Generated 37 object sprites
+2026-02-07 13:11:48 | INFO | utils.asset_loader:_generate_actor_sprites:226 | 🎨 Generated actor sprites for multiple states
+2026-02-07 13:11:48 | INFO | utils.asset_loader:_generate_effect_sprites:236 | 🎨 Generated 5 effect sprites
+2026-02-07 13:11:48 | INFO | utils.asset_loader:__init__:94 | 🎨 Asset Loader initialized - 37 assets loaded
+2026-02-07 13:11:48 | INFO | utils.asset_loader:__init__:452 | 🏗️ Object Registry initialized
+2026-02-07 13:11:48 | INFO | engines.mind.dd_engine:__init__:103 | 🧠 D&D Engine initialized with seed: VOLUME_2_PREMIERE
+2026-02-07 13:11:48 | INFO | engines.mind.dd_engine:__init__:108 | 🧠 D&D Engine initialized - Command Pattern ready
+2026-02-07 13:11:48 | INFO | actors.voyager:__init__:69 | 🧭 Pathfinding Navigator initialized: 50x50
+2026-02-07 13:11:48 | INFO | actors.voyager:__init__:185 | 🎯 Intent Generator initialized
+2026-02-07 13:11:48 | INFO | actors.voyager:__init__:333 | 🚶 Voyager initialized - STATE_PONDERING support ready
+2026-02-07 13:11:48 | INFO | utils.asset_loader:_load_object_definitions:157 | 📦 Loaded 29 object definitions
+2026-02-07 13:11:48 | INFO | utils.asset_loader:_load_prefab_definitions:186 | 🏗️ Loaded 10 prefab definitions
+2026-02-07 13:11:48 | INFO | utils.asset_loader:_generate_tile_sprites:197 | 🎨 Generated 11 tile sprites
+2026-02-07 13:11:48 | INFO | utils.asset_loader:_generate_object_sprites:206 | 🎨 Generated 37 object sprites
+2026-02-07 13:11:48 | INFO | utils.asset_loader:_generate_actor_sprites:226 | 🎨 Generated actor sprites for multiple states
+2026-02-07 13:11:48 | INFO | utils.asset_loader:_generate_effect_sprites:236 | 🎨 Generated 5 effect sprites
+2026-02-07 13:11:48 | INFO | utils.asset_loader:__init__:94 | 🎨 Asset Loader initialized - 37 assets loaded
+2026-02-07 13:11:48 | INFO | utils.asset_loader:__init__:452 | 🏗️ Object Registry initialized
+2026-02-07 13:11:48 | ERROR | actors.voyager:_follow_quest_objective:706 | 💥 Quest navigation failed: 'NoneType' object has no attribute 'get_current_objective'
+2026-02-07 13:12:02 | INFO | utils.logger:initialize:59 | 📝 Logging system initialized
+2026-02-07 13:12:02 | INFO | utils.asset_loader:_load_object_definitions:157 | 📦 Loaded 29 object definitions
+2026-02-07 13:12:02 | INFO | utils.asset_loader:_load_prefab_definitions:186 | 🏗️ Loaded 10 prefab definitions
+2026-02-07 13:12:02 | INFO | utils.asset_loader:_generate_tile_sprites:197 | 🎨 Generated 11 tile sprites
+2026-02-07 13:12:02 | INFO | utils.asset_loader:_generate_object_sprites:206 | 🎨 Generated 37 object sprites
+2026-02-07 13:12:02 | INFO | utils.asset_loader:_generate_actor_sprites:226 | 🎨 Generated actor sprites for multiple states
+2026-02-07 13:12:02 | INFO | utils.asset_loader:_generate_effect_sprites:236 | 🎨 Generated 5 effect sprites
+2026-02-07 13:12:02 | INFO | utils.asset_loader:__init__:94 | 🎨 Asset Loader initialized - 37 assets loaded
+2026-02-07 13:12:02 | INFO | utils.asset_loader:__init__:452 | 🏗️ Object Registry initialized
+2026-02-07 13:12:02 | INFO | engines.world.world_engine:__init__:122 | 🌍 World Engine initialized with seed: VOLUME_2_PREMIERE
+2026-02-07 13:12:02 | INFO | utils.asset_loader:_load_object_definitions:157 | 📦 Loaded 29 object definitions
+2026-02-07 13:12:02 | INFO | utils.asset_loader:_load_prefab_definitions:186 | 🏗️ Loaded 10 prefab definitions
+2026-02-07 13:12:02 | INFO | utils.asset_loader:_generate_tile_sprites:197 | 🎨 Generated 11 tile sprites
+2026-02-07 13:12:02 | INFO | utils.asset_loader:_generate_object_sprites:206 | 🎨 Generated 37 object sprites
+2026-02-07 13:12:02 | INFO | utils.asset_loader:_generate_actor_sprites:226 | 🎨 Generated actor sprites for multiple states
+2026-02-07 13:12:02 | INFO | utils.asset_loader:_generate_effect_sprites:236 | 🎨 Generated 5 effect sprites
+2026-02-07 13:12:02 | INFO | utils.asset_loader:__init__:94 | 🎨 Asset Loader initialized - 37 assets loaded
+2026-02-07 13:12:02 | INFO | utils.asset_loader:__init__:452 | 🏗️ Object Registry initialized
+2026-02-07 13:12:02 | INFO | engines.mind.dd_engine:__init__:103 | 🧠 D&D Engine initialized with seed: VOLUME_2_PREMIERE
+2026-02-07 13:12:02 | INFO | engines.mind.dd_engine:__init__:108 | 🧠 D&D Engine initialized - Command Pattern ready
+2026-02-07 13:12:02 | INFO | actors.voyager:__init__:70 | 🧭 Pathfinding Navigator initialized: 50x50
+2026-02-07 13:12:02 | INFO | actors.voyager:__init__:186 | 🎯 Intent Generator initialized
+2026-02-07 13:12:02 | INFO | actors.voyager:__init__:334 | 🚶 Voyager initialized - STATE_PONDERING support ready
+2026-02-07 13:12:02 | INFO | utils.asset_loader:_load_object_definitions:157 | 📦 Loaded 29 object definitions
+2026-02-07 13:12:02 | INFO | utils.asset_loader:_load_prefab_definitions:186 | 🏗️ Loaded 10 prefab definitions
+2026-02-07 13:12:02 | INFO | utils.asset_loader:_generate_tile_sprites:197 | 🎨 Generated 11 tile sprites
+2026-02-07 13:12:02 | INFO | utils.asset_loader:_generate_object_sprites:206 | 🎨 Generated 37 object sprites
+2026-02-07 13:12:02 | INFO | utils.asset_loader:_generate_actor_sprites:226 | 🎨 Generated actor sprites for multiple states
+2026-02-07 13:12:02 | INFO | utils.asset_loader:_generate_effect_sprites:236 | 🎨 Generated 5 effect sprites
+2026-02-07 13:12:02 | INFO | utils.asset_loader:__init__:94 | 🎨 Asset Loader initialized - 37 assets loaded
+2026-02-07 13:12:02 | INFO | utils.asset_loader:__init__:452 | 🏗️ Object Registry initialized
+2026-02-07 13:12:02 | ERROR | actors.voyager:_follow_quest_objective:707 | 💥 Quest navigation failed: 'NoneType' object has no attribute 'get_current_objective'
+2026-02-07 13:12:03 | ERROR | actors.voyager:_follow_quest_objective:707 | 💥 Quest navigation failed: 'NoneType' object has no attribute 'get_current_objective'
+2026-02-07 13:12:03 | ERROR | actors.voyager:_follow_quest_objective:707 | 💥 Quest navigation failed: 'NoneType' object has no attribute 'get_current_objective'
+2026-02-07 13:12:04 | ERROR | actors.voyager:_follow_quest_objective:707 | 💥 Quest navigation failed: 'NoneType' object has no attribute 'get_current_objective'
+2026-02-07 13:12:04 | ERROR | actors.voyager:_follow_quest_objective:707 | 💥 Quest navigation failed: 'NoneType' object has no attribute 'get_current_objective'
+2026-02-07 13:12:05 | ERROR | actors.voyager:_follow_quest_objective:707 | 💥 Quest navigation failed: 'NoneType' object has no attribute 'get_current_objective'
+2026-02-07 13:12:05 | ERROR | actors.voyager:_follow_quest_objective:707 | 💥 Quest navigation failed: 'NoneType' object has no attribute 'get_current_objective'
+2026-02-07 13:12:06 | ERROR | actors.voyager:_follow_quest_objective:707 | 💥 Quest navigation failed: 'NoneType' object has no attribute 'get_current_objective'
+2026-02-07 13:12:06 | ERROR | actors.voyager:_follow_quest_objective:707 | 💥 Quest navigation failed: 'NoneType' object has no attribute 'get_current_objective'
+2026-02-07 13:12:07 | ERROR | actors.voyager:_follow_quest_objective:707 | 💥 Quest navigation failed: 'NoneType' object has no attribute 'get_current_objective'
+2026-02-07 13:12:07 | ERROR | actors.voyager:_follow_quest_objective:707 | 💥 Quest navigation failed: 'NoneType' object has no attribute 'get_current_objective'
+2026-02-07 13:12:08 | ERROR | actors.voyager:_follow_quest_objective:707 | 💥 Quest navigation failed: 'NoneType' object has no attribute 'get_current_objective'
+2026-02-07 13:12:08 | ERROR | actors.voyager:_follow_quest_objective:707 | 💥 Quest navigation failed: 'NoneType' object has no attribute 'get_current_objective'
+2026-02-07 13:12:09 | ERROR | actors.voyager:_follow_quest_objective:707 | 💥 Quest navigation failed: 'NoneType' object has no attribute 'get_current_objective'
+2026-02-07 13:12:09 | ERROR | actors.voyager:_follow_quest_objective:707 | 💥 Quest navigation failed: 'NoneType' object has no attribute 'get_current_objective'
+2026-02-07 13:12:10 | ERROR | actors.voyager:_follow_quest_objective:707 | 💥 Quest navigation failed: 'NoneType' object has no attribute 'get_current_objective'
+2026-02-07 13:12:10 | ERROR | actors.voyager:_follow_quest_objective:707 | 💥 Quest navigation failed: 'NoneType' object has no attribute 'get_current_objective'
+2026-02-07 13:12:11 | ERROR | actors.voyager:_follow_quest_objective:707 | 💥 Quest navigation failed: 'NoneType' object has no attribute 'get_current_objective'
+2026-02-07 13:12:11 | ERROR | actors.voyager:_follow_quest_objective:707 | 💥 Quest navigation failed: 'NoneType' object has no attribute 'get_current_objective'
+2026-02-07 13:12:12 | ERROR | actors.voyager:_follow_quest_objective:707 | 💥 Quest navigation failed: 'NoneType' object has no attribute 'get_current_objective'
+2026-02-07 13:12:12 | ERROR | actors.voyager:_follow_quest_objective:707 | 💥 Quest navigation failed: 'NoneType' object has no attribute 'get_current_objective'
+2026-02-07 13:12:13 | ERROR | actors.voyager:_follow_quest_objective:707 | 💥 Quest navigation failed: 'NoneType' object has no attribute 'get_current_objective'
+2026-02-07 13:12:14 | ERROR | actors.voyager:_follow_quest_objective:707 | 💥 Quest navigation failed: 'NoneType' object has no attribute 'get_current_objective'
+2026-02-07 13:12:14 | ERROR | actors.voyager:_follow_quest_objective:707 | 💥 Quest navigation failed: 'NoneType' object has no attribute 'get_current_objective'
+2026-02-07 13:12:15 | ERROR | actors.voyager:_follow_quest_objective:707 | 💥 Quest navigation failed: 'NoneType' object has no attribute 'get_current_objective'
+2026-02-07 13:12:15 | ERROR | actors.voyager:_follow_quest_objective:707 | 💥 Quest navigation failed: 'NoneType' object has no attribute 'get_current_objective'
+2026-02-07 13:12:16 | ERROR | actors.voyager:_follow_quest_objective:707 | 💥 Quest navigation failed: 'NoneType' object has no attribute 'get_current_objective'
+2026-02-07 13:12:16 | ERROR | actors.voyager:_follow_quest_objective:707 | 💥 Quest navigation failed: 'NoneType' object has no attribute 'get_current_objective'
+2026-02-07 13:12:17 | ERROR | actors.voyager:_follow_quest_objective:707 | 💥 Quest navigation failed: 'NoneType' object has no attribute 'get_current_objective'
+2026-02-07 13:12:17 | ERROR | actors.voyager:_follow_quest_objective:707 | 💥 Quest navigation failed: 'NoneType' object has no attribute 'get_current_objective'
+2026-02-07 13:12:18 | ERROR | actors.voyager:_follow_quest_objective:707 | 💥 Quest navigation failed: 'NoneType' object has no attribute 'get_current_objective'
+2026-02-07 13:12:18 | ERROR | actors.voyager:_follow_quest_objective:707 | 💥 Quest navigation failed: 'NoneType' object has no attribute 'get_current_objective'
+2026-02-07 13:12:19 | ERROR | actors.voyager:_follow_quest_objective:707 | 💥 Quest navigation failed: 'NoneType' object has no attribute 'get_current_objective'
+2026-02-07 13:12:19 | ERROR | actors.voyager:_follow_quest_objective:707 | 💥 Quest navigation failed: 'NoneType' object has no attribute 'get_current_objective'
+2026-02-07 13:12:20 | ERROR | actors.voyager:_follow_quest_objective:707 | 💥 Quest navigation failed: 'NoneType' object has no attribute 'get_current_objective'
+2026-02-07 13:12:20 | ERROR | actors.voyager:_follow_quest_objective:707 | 💥 Quest navigation failed: 'NoneType' object has no attribute 'get_current_objective'
+2026-02-07 13:12:21 | ERROR | actors.voyager:_follow_quest_objective:707 | 💥 Quest navigation failed: 'NoneType' object has no attribute 'get_current_objective'
+2026-02-07 13:12:21 | ERROR | actors.voyager:_follow_quest_objective:707 | 💥 Quest navigation failed: 'NoneType' object has no attribute 'get_current_objective'
+2026-02-07 13:12:22 | ERROR | actors.voyager:_follow_quest_objective:707 | 💥 Quest navigation failed: 'NoneType' object has no attribute 'get_current_objective'
+2026-02-07 13:12:22 | ERROR | actors.voyager:_follow_quest_objective:707 | 💥 Quest navigation failed: 'NoneType' object has no attribute 'get_current_objective'
+2026-02-07 13:12:23 | ERROR | actors.voyager:_follow_quest_objective:707 | 💥 Quest navigation failed: 'NoneType' object has no attribute 'get_current_objective'
+2026-02-07 13:12:23 | ERROR | actors.voyager:_follow_quest_objective:707 | 💥 Quest navigation failed: 'NoneType' object has no attribute 'get_current_objective'
+2026-02-07 13:12:24 | ERROR | actors.voyager:_follow_quest_objective:707 | 💥 Quest navigation failed: 'NoneType' object has no attribute 'get_current_objective'
+2026-02-07 13:12:24 | ERROR | actors.voyager:_follow_quest_objective:707 | 💥 Quest navigation failed: 'NoneType' object has no attribute 'get_current_objective'
+2026-02-07 13:12:25 | ERROR | actors.voyager:_follow_quest_objective:707 | 💥 Quest navigation failed: 'NoneType' object has no attribute 'get_current_objective'
+2026-02-07 13:12:25 | ERROR | actors.voyager:_follow_quest_objective:707 | 💥 Quest navigation failed: 'NoneType' object has no attribute 'get_current_objective'
+2026-02-07 13:12:26 | ERROR | actors.voyager:_follow_quest_objective:707 | 💥 Quest navigation failed: 'NoneType' object has no attribute 'get_current_objective'
+2026-02-07 13:12:26 | ERROR | actors.voyager:_follow_quest_objective:707 | 💥 Quest navigation failed: 'NoneType' object has no attribute 'get_current_objective'
+2026-02-07 13:12:27 | ERROR | actors.voyager:_follow_quest_objective:707 | 💥 Quest navigation failed: 'NoneType' object has no attribute 'get_current_objective'
+2026-02-07 13:12:27 | ERROR | actors.voyager:_follow_quest_objective:707 | 💥 Quest navigation failed: 'NoneType' object has no attribute 'get_current_objective'
+2026-02-07 13:12:28 | ERROR | actors.voyager:_follow_quest_objective:707 | 💥 Quest navigation failed: 'NoneType' object has no attribute 'get_current_objective'
+2026-02-07 13:12:28 | ERROR | actors.voyager:_follow_quest_objective:707 | 💥 Quest navigation failed: 'NoneType' object has no attribute 'get_current_objective'
+2026-02-07 13:12:29 | ERROR | actors.voyager:_follow_quest_objective:707 | 💥 Quest navigation failed: 'NoneType' object has no attribute 'get_current_objective'
+2026-02-07 13:12:30 | ERROR | actors.voyager:_follow_quest_objective:707 | 💥 Quest navigation failed: 'NoneType' object has no attribute 'get_current_objective'
+2026-02-07 13:12:30 | ERROR | actors.voyager:_follow_quest_objective:707 | 💥 Quest navigation failed: 'NoneType' object has no attribute 'get_current_objective'
+2026-02-07 13:12:31 | ERROR | actors.voyager:_follow_quest_objective:707 | 💥 Quest navigation failed: 'NoneType' object has no attribute 'get_current_objective'
+2026-02-07 13:12:31 | ERROR | actors.voyager:_follow_quest_objective:707 | 💥 Quest navigation failed: 'NoneType' object has no attribute 'get_current_objective'
+2026-02-07 13:12:32 | ERROR | actors.voyager:_follow_quest_objective:707 | 💥 Quest navigation failed: 'NoneType' object has no attribute 'get_current_objective'
+2026-02-07 13:12:32 | ERROR | actors.voyager:_follow_quest_objective:707 | 💥 Quest navigation failed: 'NoneType' object has no attribute 'get_current_objective'
+2026-02-07 13:12:33 | ERROR | actors.voyager:_follow_quest_objective:707 | 💥 Quest navigation failed: 'NoneType' object has no attribute 'get_current_objective'
+2026-02-07 13:12:33 | ERROR | actors.voyager:_follow_quest_objective:707 | 💥 Quest navigation failed: 'NoneType' object has no attribute 'get_current_objective'
+2026-02-07 13:12:34 | ERROR | actors.voyager:_follow_quest_objective:707 | 💥 Quest navigation failed: 'NoneType' object has no attribute 'get_current_objective'
+2026-02-07 13:12:34 | ERROR | actors.voyager:_follow_quest_objective:707 | 💥 Quest navigation failed: 'NoneType' object has no attribute 'get_current_objective'
+2026-02-07 13:12:35 | ERROR | actors.voyager:_follow_quest_objective:707 | 💥 Quest navigation failed: 'NoneType' object has no attribute 'get_current_objective'
+2026-02-07 13:12:35 | ERROR | actors.voyager:_follow_quest_objective:707 | 💥 Quest navigation failed: 'NoneType' object has no attribute 'get_current_objective'
+2026-02-07 13:12:36 | ERROR | actors.voyager:_follow_quest_objective:707 | 💥 Quest navigation failed: 'NoneType' object has no attribute 'get_current_objective'
+2026-02-07 13:12:36 | ERROR | actors.voyager:_follow_quest_objective:707 | 💥 Quest navigation failed: 'NoneType' object has no attribute 'get_current_objective'
+2026-02-07 13:12:37 | ERROR | actors.voyager:_follow_quest_objective:707 | 💥 Quest navigation failed: 'NoneType' object has no attribute 'get_current_objective'
+2026-02-07 13:12:37 | ERROR | actors.voyager:_follow_quest_objective:707 | 💥 Quest navigation failed: 'NoneType' object has no attribute 'get_current_objective'
+2026-02-07 13:12:38 | ERROR | actors.voyager:_follow_quest_objective:707 | 💥 Quest navigation failed: 'NoneType' object has no attribute 'get_current_objective'
+2026-02-07 13:12:38 | ERROR | actors.voyager:_follow_quest_objective:707 | 💥 Quest navigation failed: 'NoneType' object has no attribute 'get_current_objective'
+2026-02-07 13:12:39 | ERROR | actors.voyager:_follow_quest_objective:707 | 💥 Quest navigation failed: 'NoneType' object has no attribute 'get_current_objective'
+2026-02-07 13:12:39 | ERROR | actors.voyager:_follow_quest_objective:707 | 💥 Quest navigation failed: 'NoneType' object has no attribute 'get_current_objective'
+2026-02-07 13:12:40 | ERROR | actors.voyager:_follow_quest_objective:707 | 💥 Quest navigation failed: 'NoneType' object has no attribute 'get_current_objective'
+2026-02-07 13:12:40 | ERROR | actors.voyager:_follow_quest_objective:707 | 💥 Quest navigation failed: 'NoneType' object has no attribute 'get_current_objective'
+2026-02-07 13:12:41 | ERROR | actors.voyager:_follow_quest_objective:707 | 💥 Quest navigation failed: 'NoneType' object has no attribute 'get_current_objective'
+2026-02-07 13:12:41 | ERROR | actors.voyager:_follow_quest_objective:707 | 💥 Quest navigation failed: 'NoneType' object has no attribute 'get_current_objective'
+2026-02-07 13:12:42 | ERROR | actors.voyager:_follow_quest_objective:707 | 💥 Quest navigation failed: 'NoneType' object has no attribute 'get_current_objective'
+2026-02-07 13:12:42 | ERROR | actors.voyager:_follow_quest_objective:707 | 💥 Quest navigation failed: 'NoneType' object has no attribute 'get_current_objective'
+2026-02-07 13:12:43 | ERROR | actors.voyager:_follow_quest_objective:707 | 💥 Quest navigation failed: 'NoneType' object has no attribute 'get_current_objective'
+2026-02-07 13:12:43 | ERROR | actors.voyager:_follow_quest_objective:707 | 💥 Quest navigation failed: 'NoneType' object has no attribute 'get_current_objective'
+2026-02-07 13:12:44 | ERROR | actors.voyager:_follow_quest_objective:707 | 💥 Quest navigation failed: 'NoneType' object has no attribute 'get_current_objective'
+2026-02-07 13:12:44 | ERROR | actors.voyager:_follow_quest_objective:707 | 💥 Quest navigation failed: 'NoneType' object has no attribute 'get_current_objective'
+2026-02-07 13:12:45 | ERROR | actors.voyager:_follow_quest_objective:707 | 💥 Quest navigation failed: 'NoneType' object has no attribute 'get_current_objective'
+2026-02-07 13:12:45 | ERROR | actors.voyager:_follow_quest_objective:707 | 💥 Quest navigation failed: 'NoneType' object has no attribute 'get_current_objective'
+2026-02-07 13:12:46 | ERROR | actors.voyager:_follow_quest_objective:707 | 💥 Quest navigation failed: 'NoneType' object has no attribute 'get_current_objective'
+2026-02-07 13:12:47 | ERROR | actors.voyager:_follow_quest_objective:707 | 💥 Quest navigation failed: 'NoneType' object has no attribute 'get_current_objective'
+2026-02-07 13:12:47 | ERROR | actors.voyager:_follow_quest_objective:707 | 💥 Quest navigation failed: 'NoneType' object has no attribute 'get_current_objective'
+2026-02-07 13:12:48 | ERROR | actors.voyager:_follow_quest_objective:707 | 💥 Quest navigation failed: 'NoneType' object has no attribute 'get_current_objective'
+2026-02-07 13:12:48 | ERROR | actors.voyager:_follow_quest_objective:707 | 💥 Quest navigation failed: 'NoneType' object has no attribute 'get_current_objective'
+2026-02-07 13:12:49 | ERROR | actors.voyager:_follow_quest_objective:707 | 💥 Quest navigation failed: 'NoneType' object has no attribute 'get_current_objective'
+2026-02-07 13:12:49 | ERROR | actors.voyager:_follow_quest_objective:707 | 💥 Quest navigation failed: 'NoneType' object has no attribute 'get_current_objective'
+2026-02-07 13:12:50 | ERROR | actors.voyager:_follow_quest_objective:707 | 💥 Quest navigation failed: 'NoneType' object has no attribute 'get_current_objective'
+2026-02-07 13:12:50 | ERROR | actors.voyager:_follow_quest_objective:707 | 💥 Quest navigation failed: 'NoneType' object has no attribute 'get_current_objective'
+2026-02-07 13:12:51 | ERROR | actors.voyager:_follow_quest_objective:707 | 💥 Quest navigation failed: 'NoneType' object has no attribute 'get_current_objective'
+2026-02-07 13:12:51 | ERROR | actors.voyager:_follow_quest_objective:707 | 💥 Quest navigation failed: 'NoneType' object has no attribute 'get_current_objective'
+2026-02-07 13:12:52 | ERROR | actors.voyager:_follow_quest_objective:707 | 💥 Quest navigation failed: 'NoneType' object has no attribute 'get_current_objective'
+2026-02-07 13:12:52 | ERROR | actors.voyager:_follow_quest_objective:707 | 💥 Quest navigation failed: 'NoneType' object has no attribute 'get_current_objective'
+2026-02-07 13:12:53 | ERROR | actors.voyager:_follow_quest_objective:707 | 💥 Quest navigation failed: 'NoneType' object has no attribute 'get_current_objective'
+2026-02-07 13:12:53 | ERROR | actors.voyager:_follow_quest_objective:707 | 💥 Quest navigation failed: 'NoneType' object has no attribute 'get_current_objective'
+2026-02-07 13:12:54 | ERROR | actors.voyager:_follow_quest_objective:707 | 💥 Quest navigation failed: 'NoneType' object has no attribute 'get_current_objective'
+2026-02-07 13:12:54 | ERROR | actors.voyager:_follow_quest_objective:707 | 💥 Quest navigation failed: 'NoneType' object has no attribute 'get_current_objective'
+2026-02-07 13:12:55 | ERROR | actors.voyager:_follow_quest_objective:707 | 💥 Quest navigation failed: 'NoneType' object has no attribute 'get_current_objective'
+2026-02-07 13:12:55 | ERROR | actors.voyager:_follow_quest_objective:707 | 💥 Quest navigation failed: 'NoneType' object has no attribute 'get_current_objective'
+2026-02-07 13:12:56 | ERROR | actors.voyager:_follow_quest_objective:707 | 💥 Quest navigation failed: 'NoneType' object has no attribute 'get_current_objective'
+2026-02-07 13:12:56 | ERROR | actors.voyager:_follow_quest_objective:707 | 💥 Quest navigation failed: 'NoneType' object has no attribute 'get_current_objective'
+2026-02-07 13:12:57 | ERROR | actors.voyager:_follow_quest_objective:707 | 💥 Quest navigation failed: 'NoneType' object has no attribute 'get_current_objective'
+2026-02-07 13:12:57 | ERROR | actors.voyager:_follow_quest_objective:707 | 💥 Quest navigation failed: 'NoneType' object has no attribute 'get_current_objective'
+2026-02-07 13:12:58 | ERROR | actors.voyager:_follow_quest_objective:707 | 💥 Quest navigation failed: 'NoneType' object has no attribute 'get_current_objective'
+2026-02-07 13:12:58 | ERROR | actors.voyager:_follow_quest_objective:707 | 💥 Quest navigation failed: 'NoneType' object has no attribute 'get_current_objective'
+2026-02-07 13:12:59 | ERROR | actors.voyager:_follow_quest_objective:707 | 💥 Quest navigation failed: 'NoneType' object has no attribute 'get_current_objective'
+2026-02-07 13:12:59 | ERROR | actors.voyager:_follow_quest_objective:707 | 💥 Quest navigation failed: 'NoneType' object has no attribute 'get_current_objective'
+2026-02-07 13:13:00 | ERROR | actors.voyager:_follow_quest_objective:707 | 💥 Quest navigation failed: 'NoneType' object has no attribute 'get_current_objective'
+2026-02-07 13:13:00 | ERROR | actors.voyager:_follow_quest_objective:707 | 💥 Quest navigation failed: 'NoneType' object has no attribute 'get_current_objective'
+2026-02-07 13:13:01 | ERROR | actors.voyager:_follow_quest_objective:707 | 💥 Quest navigation failed: 'NoneType' object has no attribute 'get_current_objective'
+2026-02-07 13:13:01 | ERROR | actors.voyager:_follow_quest_objective:707 | 💥 Quest navigation failed: 'NoneType' object has no attribute 'get_current_objective'
+2026-02-07 13:13:02 | ERROR | actors.voyager:_follow_quest_objective:707 | 💥 Quest navigation failed: 'NoneType' object has no attribute 'get_current_objective'
+2026-02-07 13:13:03 | ERROR | actors.voyager:_follow_quest_objective:707 | 💥 Quest navigation failed: 'NoneType' object has no attribute 'get_current_objective'
+2026-02-07 13:13:03 | ERROR | actors.voyager:_follow_quest_objective:707 | 💥 Quest navigation failed: 'NoneType' object has no attribute 'get_current_objective'
+2026-02-07 13:13:04 | ERROR | actors.voyager:_follow_quest_objective:707 | 💥 Quest navigation failed: 'NoneType' object has no attribute 'get_current_objective'
+2026-02-07 13:13:04 | ERROR | actors.voyager:_follow_quest_objective:707 | 💥 Quest navigation failed: 'NoneType' object has no attribute 'get_current_objective'
+2026-02-07 13:13:05 | ERROR | actors.voyager:_follow_quest_objective:707 | 💥 Quest navigation failed: 'NoneType' object has no attribute 'get_current_objective'
+2026-02-07 13:13:05 | ERROR | actors.voyager:_follow_quest_objective:707 | 💥 Quest navigation failed: 'NoneType' object has no attribute 'get_current_objective'
+2026-02-07 13:13:06 | ERROR | actors.voyager:_follow_quest_objective:707 | 💥 Quest navigation failed: 'NoneType' object has no attribute 'get_current_objective'
+2026-02-07 13:13:06 | ERROR | actors.voyager:_follow_quest_objective:707 | 💥 Quest navigation failed: 'NoneType' object has no attribute 'get_current_objective'
+2026-02-07 13:13:07 | ERROR | actors.voyager:_follow_quest_objective:707 | 💥 Quest navigation failed: 'NoneType' object has no attribute 'get_current_objective'
+2026-02-07 13:13:07 | ERROR | actors.voyager:_follow_quest_objective:707 | 💥 Quest navigation failed: 'NoneType' object has no attribute 'get_current_objective'
+2026-02-07 13:13:08 | ERROR | actors.voyager:_follow_quest_objective:707 | 💥 Quest navigation failed: 'NoneType' object has no attribute 'get_current_objective'
+2026-02-07 13:13:08 | ERROR | actors.voyager:_follow_quest_objective:707 | 💥 Quest navigation failed: 'NoneType' object has no attribute 'get_current_objective'
+2026-02-07 13:13:09 | ERROR | actors.voyager:_follow_quest_objective:707 | 💥 Quest navigation failed: 'NoneType' object has no attribute 'get_current_objective'
+2026-02-07 13:13:09 | ERROR | actors.voyager:_follow_quest_objective:707 | 💥 Quest navigation failed: 'NoneType' object has no attribute 'get_current_objective'
+2026-02-07 13:13:10 | ERROR | actors.voyager:_follow_quest_objective:707 | 💥 Quest navigation failed: 'NoneType' object has no attribute 'get_current_objective'
+2026-02-07 13:13:10 | ERROR | actors.voyager:_follow_quest_objective:707 | 💥 Quest navigation failed: 'NoneType' object has no attribute 'get_current_objective'
+2026-02-07 13:13:11 | ERROR | actors.voyager:_follow_quest_objective:707 | 💥 Quest navigation failed: 'NoneType' object has no attribute 'get_current_objective'
+2026-02-07 13:13:11 | ERROR | actors.voyager:_follow_quest_objective:707 | 💥 Quest navigation failed: 'NoneType' object has no attribute 'get_current_objective'
+2026-02-07 13:13:12 | ERROR | actors.voyager:_follow_quest_objective:707 | 💥 Quest navigation failed: 'NoneType' object has no attribute 'get_current_objective'
+2026-02-07 13:13:12 | ERROR | actors.voyager:_follow_quest_objective:707 | 💥 Quest navigation failed: 'NoneType' object has no attribute 'get_current_objective'
+2026-02-07 13:13:13 | ERROR | actors.voyager:_follow_quest_objective:707 | 💥 Quest navigation failed: 'NoneType' object has no attribute 'get_current_objective'
+2026-02-07 13:13:13 | ERROR | actors.voyager:_follow_quest_objective:707 | 💥 Quest navigation failed: 'NoneType' object has no attribute 'get_current_objective'
+2026-02-07 13:13:14 | ERROR | actors.voyager:_follow_quest_objective:707 | 💥 Quest navigation failed: 'NoneType' object has no attribute 'get_current_objective'
+2026-02-07 13:13:14 | ERROR | actors.voyager:_follow_quest_objective:707 | 💥 Quest navigation failed: 'NoneType' object has no attribute 'get_current_objective'
+2026-02-07 13:13:15 | ERROR | actors.voyager:_follow_quest_objective:707 | 💥 Quest navigation failed: 'NoneType' object has no attribute 'get_current_objective'
+2026-02-07 13:13:15 | ERROR | actors.voyager:_follow_quest_objective:707 | 💥 Quest navigation failed: 'NoneType' object has no attribute 'get_current_objective'
+2026-02-07 13:13:16 | ERROR | actors.voyager:_follow_quest_objective:707 | 💥 Quest navigation failed: 'NoneType' object has no attribute 'get_current_objective'
+2026-02-07 13:13:16 | ERROR | actors.voyager:_follow_quest_objective:707 | 💥 Quest navigation failed: 'NoneType' object has no attribute 'get_current_objective'
+2026-02-07 13:13:17 | ERROR | actors.voyager:_follow_quest_objective:707 | 💥 Quest navigation failed: 'NoneType' object has no attribute 'get_current_objective'
+2026-02-07 13:13:17 | ERROR | actors.voyager:_follow_quest_objective:707 | 💥 Quest navigation failed: 'NoneType' object has no attribute 'get_current_objective'
+2026-02-07 13:13:18 | ERROR | actors.voyager:_follow_quest_objective:707 | 💥 Quest navigation failed: 'NoneType' object has no attribute 'get_current_objective'
+2026-02-07 13:13:18 | ERROR | actors.voyager:_follow_quest_objective:707 | 💥 Quest navigation failed: 'NoneType' object has no attribute 'get_current_objective'
+2026-02-07 13:13:19 | ERROR | actors.voyager:_follow_quest_objective:707 | 💥 Quest navigation failed: 'NoneType' object has no attribute 'get_current_objective'
+2026-02-07 13:13:20 | ERROR | actors.voyager:_follow_quest_objective:707 | 💥 Quest navigation failed: 'NoneType' object has no attribute 'get_current_objective'
+2026-02-07 13:13:20 | ERROR | actors.voyager:_follow_quest_objective:707 | 💥 Quest navigation failed: 'NoneType' object has no attribute 'get_current_objective'
+2026-02-07 13:13:21 | ERROR | actors.voyager:_follow_quest_objective:707 | 💥 Quest navigation failed: 'NoneType' object has no attribute 'get_current_objective'
+2026-02-07 13:13:21 | ERROR | actors.voyager:_follow_quest_objective:707 | 💥 Quest navigation failed: 'NoneType' object has no attribute 'get_current_objective'
+2026-02-07 13:13:22 | ERROR | actors.voyager:_follow_quest_objective:707 | 💥 Quest navigation failed: 'NoneType' object has no attribute 'get_current_objective'
+2026-02-07 13:13:22 | ERROR | actors.voyager:_follow_quest_objective:707 | 💥 Quest navigation failed: 'NoneType' object has no attribute 'get_current_objective'
+2026-02-07 13:13:23 | ERROR | actors.voyager:_follow_quest_objective:707 | 💥 Quest navigation failed: 'NoneType' object has no attribute 'get_current_objective'
+2026-02-07 13:13:23 | ERROR | actors.voyager:_follow_quest_objective:707 | 💥 Quest navigation failed: 'NoneType' object has no attribute 'get_current_objective'
+2026-02-07 13:13:24 | ERROR | actors.voyager:_follow_quest_objective:707 | 💥 Quest navigation failed: 'NoneType' object has no attribute 'get_current_objective'
+2026-02-07 13:13:24 | ERROR | actors.voyager:_follow_quest_objective:707 | 💥 Quest navigation failed: 'NoneType' object has no attribute 'get_current_objective'
+2026-02-07 13:13:25 | ERROR | actors.voyager:_follow_quest_objective:707 | 💥 Quest navigation failed: 'NoneType' object has no attribute 'get_current_objective'
+2026-02-07 13:13:25 | ERROR | actors.voyager:_follow_quest_objective:707 | 💥 Quest navigation failed: 'NoneType' object has no attribute 'get_current_objective'
+2026-02-07 13:13:26 | ERROR | actors.voyager:_follow_quest_objective:707 | 💥 Quest navigation failed: 'NoneType' object has no attribute 'get_current_objective'
+2026-02-07 13:13:26 | ERROR | actors.voyager:_follow_quest_objective:707 | 💥 Quest navigation failed: 'NoneType' object has no attribute 'get_current_objective'
+2026-02-07 13:13:27 | ERROR | actors.voyager:_follow_quest_objective:707 | 💥 Quest navigation failed: 'NoneType' object has no attribute 'get_current_objective'
+2026-02-07 13:13:27 | ERROR | actors.voyager:_follow_quest_objective:707 | 💥 Quest navigation failed: 'NoneType' object has no attribute 'get_current_objective'
+2026-02-07 13:13:28 | ERROR | actors.voyager:_follow_quest_objective:707 | 💥 Quest navigation failed: 'NoneType' object has no attribute 'get_current_objective'
+2026-02-07 13:13:28 | ERROR | actors.voyager:_follow_quest_objective:707 | 💥 Quest navigation failed: 'NoneType' object has no attribute 'get_current_objective'
+2026-02-07 13:13:29 | ERROR | actors.voyager:_follow_quest_objective:707 | 💥 Quest navigation failed: 'NoneType' object has no attribute 'get_current_objective'
+2026-02-07 13:13:29 | ERROR | actors.voyager:_follow_quest_objective:707 | 💥 Quest navigation failed: 'NoneType' object has no attribute 'get_current_objective'
+2026-02-07 13:13:30 | ERROR | actors.voyager:_follow_quest_objective:707 | 💥 Quest navigation failed: 'NoneType' object has no attribute 'get_current_objective'
+2026-02-07 13:13:30 | ERROR | actors.voyager:_follow_quest_objective:707 | 💥 Quest navigation failed: 'NoneType' object has no attribute 'get_current_objective'
+2026-02-07 13:13:31 | ERROR | actors.voyager:_follow_quest_objective:707 | 💥 Quest navigation failed: 'NoneType' object has no attribute 'get_current_objective'
+2026-02-07 13:13:31 | ERROR | actors.voyager:_follow_quest_objective:707 | 💥 Quest navigation failed: 'NoneType' object has no attribute 'get_current_objective'
+2026-02-07 13:13:32 | ERROR | actors.voyager:_follow_quest_objective:707 | 💥 Quest navigation failed: 'NoneType' object has no attribute 'get_current_objective'
+2026-02-07 13:13:32 | ERROR | actors.voyager:_follow_quest_objective:707 | 💥 Quest navigation failed: 'NoneType' object has no attribute 'get_current_objective'
+2026-02-07 13:13:33 | ERROR | actors.voyager:_follow_quest_objective:707 | 💥 Quest navigation failed: 'NoneType' object has no attribute 'get_current_objective'
+2026-02-07 13:13:33 | ERROR | actors.voyager:_follow_quest_objective:707 | 💥 Quest navigation failed: 'NoneType' object has no attribute 'get_current_objective'
+2026-02-07 13:13:34 | ERROR | actors.voyager:_follow_quest_objective:707 | 💥 Quest navigation failed: 'NoneType' object has no attribute 'get_current_objective'
+2026-02-07 13:13:34 | ERROR | actors.voyager:_follow_quest_objective:707 | 💥 Quest navigation failed: 'NoneType' object has no attribute 'get_current_objective'
+2026-02-07 13:13:35 | ERROR | actors.voyager:_follow_quest_objective:707 | 💥 Quest navigation failed: 'NoneType' object has no attribute 'get_current_objective'
+2026-02-07 13:13:35 | ERROR | actors.voyager:_follow_quest_objective:707 | 💥 Quest navigation failed: 'NoneType' object has no attribute 'get_current_objective'
+2026-02-07 13:13:36 | ERROR | actors.voyager:_follow_quest_objective:707 | 💥 Quest navigation failed: 'NoneType' object has no attribute 'get_current_objective'
+2026-02-07 13:13:37 | ERROR | actors.voyager:_follow_quest_objective:707 | 💥 Quest navigation failed: 'NoneType' object has no attribute 'get_current_objective'
+2026-02-07 13:13:37 | ERROR | actors.voyager:_follow_quest_objective:707 | 💥 Quest navigation failed: 'NoneType' object has no attribute 'get_current_objective'
+2026-02-07 13:13:38 | ERROR | actors.voyager:_follow_quest_objective:707 | 💥 Quest navigation failed: 'NoneType' object has no attribute 'get_current_objective'
+2026-02-07 13:13:38 | ERROR | actors.voyager:_follow_quest_objective:707 | 💥 Quest navigation failed: 'NoneType' object has no attribute 'get_current_objective'
+2026-02-07 13:13:39 | ERROR | actors.voyager:_follow_quest_objective:707 | 💥 Quest navigation failed: 'NoneType' object has no attribute 'get_current_objective'

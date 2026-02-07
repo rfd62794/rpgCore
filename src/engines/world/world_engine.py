@@ -221,15 +221,20 @@ class WorldEngine:
         
         # Create chunk
         chunk = Chunk(
-            position=chunk_pos,
-            size=CHUNK_SIZE,
-            seed=f"{self.seed}_chunk_{chunk_pos[0]}_{chunk_pos[1]}"
+            chunk_pos,
+            CHUNK_SIZE,
+            f"{self.seed}_chunk_{chunk_pos[0]}_{chunk_pos[1]}",
+            {},  # tiles
+            []   # interest_points
         )
+        
+        # Initialize tiles dict properly
+        chunk.tiles = {}
         
         # Add tiles to chunk
         for y, tile_row in enumerate(tiles):
             for x, tile_data in enumerate(tile_row):
-                chunk.set_tile(x, y, tile_data.tile)
+                chunk.tiles[(x, y)] = tile_data.tile
         
         # Store chunk
         self.chunks[chunk_pos] = chunk
@@ -467,7 +472,7 @@ class WorldEngine:
                         seed_value=hash(f"{chunk_seed}_{i}") % 1000000,
                         discovered=False
                     )
-                    chunk.add_interest_point(interest_point)
+                    chunk.interest_points = [interest_point]
                     self.interest_points.append(interest_point)
                     
                     logger.debug(f"🏗️ Spawned {object_def.asset_id} at {world_pos}")
@@ -519,6 +524,14 @@ class WorldEngine:
                 if chunk_pos not in self.chunks and chunk_pos not in self._generation_set:
                     self._generation_queue.append(chunk_pos)
                     self._generation_set.add(chunk_pos)
+    
+    async def _process_generation_queue(self) -> None:
+        """Process background chunk generation queue"""
+        while self._generation_queue:
+            chunk_pos = self._generation_queue.pop()
+            
+            if chunk_pos not in self.chunks:
+                await self._generate_chunk(chunk_pos)
     
     def get_world_deltas(self) -> Dict[Tuple[int, int], WorldDelta]:
         """Get world state changes (for persistence)"""

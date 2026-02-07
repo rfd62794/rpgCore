@@ -22,7 +22,8 @@ from core.state import (
     InterestPoint, validate_position, DIRECTION_VECTORS
 )
 from core.constants import (
-    VOYAGER_PONDERING_TIMEOUT_SECONDS, MOVEMENT_RANGE_TILES
+    MOVEMENT_RANGE_TILES, INTENT_COOLDOWN_MS, PERSISTENCE_INTERVAL_TURNS,
+    PATHFINDING_MAX_ITERATIONS, VOYAGER_INTERACTION_RANGE
 )
 from core.system_config import VoyagerConfig
 from narrative.chronos import ChronosEngine, ChronosEngineFactory
@@ -338,8 +339,9 @@ class Voyager:
         """Generate next intent based on state and quest objectives (Facade method)"""
         start_time = time.time()
 
-        # Update position in Chronos Engine
-        await self.chronos_engine.update_character_position(self.current_position)
+        # Update position in Chronos Engine (if available)
+        if self.chronos_engine:
+            await self.chronos_engine.update_character_position(self.current_position)
 
         intent = None
 
@@ -457,19 +459,165 @@ class Voyager:
     # === STATE MACHINE ===
     
     async def _generate_idle_intent(self, game_state: GameState) -> Optional[Union[MovementIntent, InteractionIntent, PonderIntent]]:
-        """Generate intent when idle - now quest-driven"""
-        # Check if we have pending discoveries to ponder
+        """Generate intent when idle - now quest-driven with object awareness"""
+        current_pos = game_state.player_position
+        
+        # PRIORITY 1: Check for nearby interactable objects (Object DNA awareness)
+        interaction_intent = await self._check_nearby_objects(current_pos)
+        if interaction_intent:
+            logger.info(f"🎯 Object-Aware Voyager: Found interactable object at {interaction_intent.target_position}")
+            return interaction_intent
+        
+        # PRIORITY 2: Check if we have pending discoveries to ponder
         if self.discovered_interest_points:
             for ip in self.discovered_interest_points:
-                if not ip.manifestation and time.time() - self.last_discovery_time > 2.0:
-                    # Time to ponder this discovery
-                    return await self._create_ponder_intent(ip)
+                if not ip.visited:
+                    # Generate ponder intent for unvisited interest point
+                    ponder_intent = PonderIntent(
+                        interest_point=ip,
+                        parameters={"discovery_time": ip.discovery_time},
+                        timestamp=time.time()
+                    )
+                    logger.info(f"🤔 Pondering unvisited interest point at {ip.position}")
+                    return ponder_intent
         
-        # Follow quest objectives or legacy script
+        # PRIORITY 3: Follow quest objectives if in quest mode
         if self.quest_mode:
-            return await self._follow_quest_objective(game_state)
+            intent = await self._follow_quest_objective(game_state)
+            if intent:
+                return intent
         else:
             return await self._follow_legacy_script(game_state)
+    
+    async def _check_nearby_objects(self, current_position: Tuple[int, int]) -> Optional[InteractionIntent]:
+        """Check for nearby objects with D20 interactions and prioritize them"""
+        if not self.dd_engine or not hasattr(self.dd_engine, 'object_registry'):
+            return None
+        
+        object_registry = self.dd_engine.object_registry
+        # Check adjacent positions (including current position)
+        adjacent_positions = [
+            current_position,  # Current position
+            (current_position[0] + 1, current_position[1]),  # Right
+            (current_position[0] - 1, current_position[1]),  # Left
+            (current_position[0], current_position[1] + 1),  # Down
+            (current_position[0], current_position[1] - 1),  # Up
+        ]
+        
+        # Prioritize objects by interaction difficulty and value
+        best_interaction = None
+        best_priority = -1
+        
+        for pos in adjacent_positions:
+            if not validate_position(pos):
+                continue
+                
+            obj = object_registry.get_object_at(pos)
+            if not obj or not obj.characteristics:
+                continue
+            
+            char = obj.characteristics
+            
+            # Check if object has D20 interactions
+            if not hasattr(char, 'd20_checks') or not char.d20_checks:
+                continue
+            
+            # Calculate interaction priority based on object characteristics
+            priority = self._calculate_interaction_priority(obj, char)
+            
+            if priority > best_priority:
+                # Choose the best available interaction
+                best_interaction_type = self._choose_best_interaction(char.d20_checks)
+                
+                if best_interaction_type:
+                    best_interaction = InteractionIntent(
+                        target_entity=obj.asset_id,
+                        interaction_type=best_interaction_type,
+                        target_position=pos,
+                        parameters={"object_id": obj.asset_id},
+                        timestamp=time.time()
+                    )
+                    best_priority = priority
+        
+        return best_interaction
+    
+    def _calculate_interaction_priority(self, obj, characteristics) -> int:
+        """Calculate priority for interacting with an object"""
+        priority = 0
+        
+        # Base priority from rarity (rarer objects are more interesting)
+        if hasattr(characteristics, 'rarity'):
+            priority += int((1.0 - characteristics.rarity) * 20)
+        
+        # Priority from tags (certain tags are more interesting)
+        if hasattr(characteristics, 'tags'):
+            tag_priorities = {
+                'magical': 15,
+                'rare': 12,
+                'valuable': 10,
+                'mysterious': 8,
+                'container': 6,
+                'interactive': 5,
+                'hazard': -5,  # Avoid hazards unless necessary
+                'trap': -8
+            }
+            
+            for tag in characteristics.tags:
+                if tag in tag_priorities:
+                    priority += tag_priorities[tag]
+        
+        # Priority from material (some materials are more interesting)
+        if hasattr(characteristics, 'material'):
+            material_priorities = {
+                'magical_crystal': 10,
+                'energy': 8,
+                'iron': 6,
+                'glass_metal': 7,
+                'stone': 3,
+                'wood': 2,
+                'organic': 1
+            }
+            
+            if characteristics.material in material_priorities:
+                priority += material_priorities[characteristics.material]
+        
+        return priority
+    
+    def _choose_best_interaction(self, d20_checks: Dict[str, Any]) -> Optional[str]:
+        """Choose the best interaction type from available D20 checks"""
+        interaction_priorities = {
+            'lockpick': 10,      # High value - containers
+            'examine': 8,        # Information gathering
+            'harvest': 7,        # Resource gathering
+            'open': 6,           # Access
+            'search': 5,         # Discovery
+            'study': 4,          # Learning
+            'identify': 3,       # Understanding
+            'avoid': -5,         # Defensive
+            'disarm': 2,        # Safety
+            'cut': 1,            # Resource
+            'burn': -2,          # Destructive
+            'push': 0,           # Repositioning
+        }
+        
+        best_interaction = None
+        best_priority = -1
+        
+        for interaction_type, check_data in d20_checks.items():
+            priority = interaction_priorities.get(interaction_type, 0)
+            
+            # Consider difficulty (easier tasks might be prioritized for success)
+            difficulty = check_data.get('difficulty', 10)
+            if difficulty <= 12:  # Relatively easy
+                priority += 2
+            elif difficulty >= 18:  # Very hard
+                priority -= 2
+            
+            if priority > best_priority:
+                best_priority = priority
+                best_interaction = interaction_type
+        
+        return best_interaction
     
     async def _generate_pondering_intent(self, game_state: GameState) -> Optional[PonderIntent]:
         """Generate intent when pondering"""
