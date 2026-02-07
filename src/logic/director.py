@@ -194,7 +194,7 @@ class AutonomousDirector:
         logger.debug("📋 Planning phase: Generating narrative beacons")
         
         # Generate new beacons periodically
-        if len(self.beacon_history) == 0 or turn_count % self.beacon_generation_interval == 0:
+        if len(self.beacon_history) == 0 or self.turn_count % self.beacon_generation_interval == 0:
             await self._generate_narrative_beacons()
         
         # Select highest priority beacon
