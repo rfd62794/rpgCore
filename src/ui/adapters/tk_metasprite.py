@@ -210,7 +210,7 @@ class EnhancedTkinterAdapter:
         
         # Staff (left side)
         for y in range(6, 16):
-            pixels[y][4] = 'brown'
+            pixels[y][4] = 'tan'  # Tkinter-compatible wood color
         
         return pixels
     
@@ -323,7 +323,7 @@ class EnhancedTkinterAdapter:
         else:
             fps = self.fps_counter
         
-        info_text = f"FPS: {fps} | Frame: {self.frame_count} | {self.player_role.title()} at ({self.player_x}, {self.player_y})"
+        info_text = f"FPS: {fps} | Frame: {self.frame_count} | {self.player_role.value.title()} at ({self.player_x}, {self.player_y})"
         self.canvas.create_text(
             5, 5, text=info_text, fill='white', anchor='nw', font=('Courier', 8)
         )
@@ -361,9 +361,9 @@ class EnhancedTkinterAdapter:
             
             # Add dialogue
             if success:
-                self.add_dialogue(f"The {self.player_role.title()} succeeds!")
+                self.add_dialogue(f"The {self.player_role.value.title()} succeeds!")
             else:
-                self.add_dialogue(f"The {self.player_role.title()} fails...")
+                self.add_dialogue(f"The {self.player_role.value.title()} fails...")
             
             self.last_action_time = current_time
         
