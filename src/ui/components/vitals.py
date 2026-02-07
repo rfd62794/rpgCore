@@ -171,7 +171,7 @@ class VitalsComponent:
         fatigue_bar = self._create_progress_bar(fatigue_pct, 10, fatigue_color, pulse)
         table.add_row(
             Text("FATIGUE", style="bold"),
-            f"{vital_status.fatigue_pct:.0f}%"
+            f"{vital_status.get_fatigue_percentage():.0f}%"
         )
         table.add_row(fatigue_bar, "")
         table.add_row("", "")  # Spacer

@@ -327,7 +327,17 @@ class DashboardUI:
         
         from game_state import GameState
         game_state = GameState(player=player)
-        game_state.position = self.state.viewport_state.player_position
+        
+        # Fix position tuple issue
+        if isinstance(self.state.viewport_state.player_position, tuple):
+            game_state.position = Coordinate(
+                self.state.viewport_state.player_position[0], 
+                self.state.viewport_state.player_position[1], 
+                0
+            )
+        else:
+            game_state.position = Coordinate(0, 0, 0)
+            
         game_state.player_angle = self.state.viewport_state.player_angle
         game_state.world_time = self.state.system_status.get("turn", 0)
         
