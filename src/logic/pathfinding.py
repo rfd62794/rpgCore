@@ -99,14 +99,14 @@ class PathfindingGrid:
     
     def _generate_default_collision_map(self) -> None:
         """Generate a default collision map."""
-        # Create border walls
+        # Mark border walls as non-walkable by setting them to None
         for x in range(self.width):
-            self._grid[0][x] = PathNode((x, 0), 0, 0, 0, None)
-            self._grid[self.height-1][x] = PathNode((x, self.height-1), 0, 0, 0, None)
+            self._grid[0][x] = None  # Top border
+            self._grid[self.height-1][x] = None  # Bottom border
         
         for y in range(self.height):
-            self._grid[y][0] = PathNode((0, y), 0, 0, 0, None)
-            self._grid[y][self.width-1] = PathNode((self.width-1, y), 0, 0, 0, None)
+            self._grid[y][0] = None  # Left border
+            self._grid[y][self.width-1] = None  # Right border
         
         # Add some interior walls (check bounds)
         wall_start_x = min(5, self.width - 1)
@@ -117,7 +117,7 @@ class PathfindingGrid:
         for x in range(wall_start_x, wall_end_x + 1):
             for y in range(wall_start_y, wall_end_y + 1):
                 if x < self.width and y < self.height:
-                    self._grid[y][x] = PathNode((x, y), 0, 0, 0, None)
+                    self._grid[y][x] = None  # Mark as wall
     
     def _apply_tile_map(self, tile_map: List[int], offset: Tuple[int, int]) -> None:
         """Apply tile map to grid."""
@@ -144,8 +144,8 @@ class PathfindingGrid:
         """Check if a position is walkable."""
         x, y = position
         if 0 <= x < self.width and 0 <= y < self.height:
-            node = self._grid[y][x]
-            return node is not None and self._is_tile_walkable(node)
+            # Position is walkable if grid cell is not None (not a wall)
+            return self._grid[y][x] is not None
         return False
     
     def _is_tile_walkable(self, node: PathNode) -> bool:
