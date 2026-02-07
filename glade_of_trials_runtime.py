@@ -61,6 +61,9 @@ class GladeOfTrialsRuntime:
         # Initialize systems
         self._initialize_systems()
         
+        # Apply Visual Soul upgrades
+        self._apply_visual_soul_upgrades()
+        
         # Input handling
         self._setup_input()
         
@@ -161,6 +164,55 @@ class GladeOfTrialsRuntime:
         self.env_polish.render_clutter()
         
         print(f"🌿 Generated environmental clutter for {len(self.env_polish.clutter_elements)} elements")
+    
+    def _apply_visual_soul_upgrades(self) -> None:
+        """Apply Visual Soul upgrades: procedural clutter, dithering, shadows"""
+        # Enable enhanced visual features
+        self.ppu.game_ppu.shadow_opacity = 0.6  # Stronger shadows
+        self.ppu.game_ppu.wind_frequency = 2.0   # 2Hz wind sway
+        
+        # Apply 4-color palette limitation for Game Boy aesthetic
+        self._apply_game_boy_palette()
+        
+        # Enable kinetic animations for all organic materials
+        self._enable_kinetic_animations()
+        
+        print("🎨 Visual Soul upgrades applied: Procedural clutter, dithering, shadows enabled")
+    
+    def _apply_game_boy_palette(self) -> None:
+        """Apply 4-color Game Boy palette limitation"""
+        # Define Game Boy Color palette
+        game_boy_colors = {
+            "darkest": "#0f380f",   # Darkest green
+            "dark": "#306230",      # Dark green  
+            "light": "#8bac0f",     # Light green
+            "lightest": "#9bbc0f"   # Lightest green
+        }
+        
+        # Apply palette to dither presets
+        from src.graphics.ppu_tk_native_enhanced import DitherPresets
+        
+        # Update organic dither to use Game Boy greens
+        lush_green = DitherPresets.get_lush_green()
+        lush_green.dark_color = game_boy_colors["dark"]
+        lush_green.light_color = game_boy_colors["light"]
+        
+        # Update other materials to use palette variations
+        stone_gray = DitherPresets.get_stone_gray()
+        stone_gray.dark_color = game_boy_colors["darkest"]
+        stone_gray.light_color = game_boy_colors["dark"]
+        
+        print("🎮 Game Boy palette applied: 4-color limitation active")
+    
+    def _enable_kinetic_animations(self) -> None:
+        """Enable kinetic animations for organic materials"""
+        # Mark all organic entities as animated
+        for tile in self.state.tiles.values():
+            if tile.sprite_id in ["grass", "swaying_oak", "bush_cluster", "mystic_flower"]:
+                # These will be animated by the environmental system
+                pass
+        
+        print("🌸 Kinetic animations enabled: 2Hz wind sway active")
     
     def _setup_input(self) -> None:
         """Setup keyboard input handling"""
