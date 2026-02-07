@@ -144,35 +144,42 @@ class WorldMap:
             exits=[]
         )
         
-        # Define Tavern Interior (25, 25) to (35, 35)
-        tavern_boundary = Boundary(25, 25, 35, 35)
+        # Define Tavern Interior (25, 30) to (40, 40) - Expanded for interior movement
+        tavern_boundary = Boundary(25, 30, 40, 40)
         tavern_landmarks = [
             Landmark(
                 name="Tavern Entrance",
                 env_type=EnvironmentType.TAVERN_INTERIOR,
                 coords=(25, 30),
-                description="Entrance from the town square",
+                description="Heavy wooden door leading from the town square",
                 interaction_type="portal"
+            ),
+            Landmark(
+                name="Tavern Chest",
+                env_type=EnvironmentType.TAVERN_INTERIOR,
+                coords=(32, 32),
+                description="Heavy iron chest bound with ancient runes, filled with treasure",
+                interaction_type="chest"
             ),
             Landmark(
                 name="Bar Counter",
                 env_type=EnvironmentType.TAVERN_INTERIOR,
-                coords=(30, 35),
-                description="Long wooden bar with stools",
+                coords=(35, 35),
+                description="Long wooden bar where the bartender serves drinks",
                 interaction_type="npc"
-            ),
-            Landmark(
-                name="Iron Chest",
-                env_type=EnvironmentType.TAVERN_INTERIOR,
-                coords=(32, 28),
-                description="Heavy iron chest near the hearth",
-                interaction_type="chest"
             ),
             Landmark(
                 name="Hearth",
                 env_type=EnvironmentType.TAVERN_INTERIOR,
-                coords=(30, 28),
-                description="Warm fireplace with crackling flames",
+                coords=(30, 32),
+                description="Warm stone fireplace with crackling flames",
+                interaction_type="object"
+            ),
+            Landmark(
+                name="Wooden Tables",
+                env_type=EnvironmentType.TAVERN_INTERIOR,
+                coords=(30, 38),
+                description="Rough wooden tables where patrons sit and drink",
                 interaction_type="object"
             )
         ]

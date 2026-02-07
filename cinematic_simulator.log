@@ -4100,3 +4100,203 @@
 02:03:55 | INFO | 🛑 Stopping Cinematic Simulator
 02:03:55 | INFO | 🛑 SimulatorHost stopped
 02:03:55 | INFO | 🎬 Cinematic Simulator stopped
+02:05:07 | DEBUG | Added intent: distract with 5 exemplars
+02:05:07 | DEBUG | Added intent: force with 5 exemplars
+02:05:07 | DEBUG | Added intent: finesse with 5 exemplars
+02:05:07 | DEBUG | Added intent: charm with 5 exemplars
+02:05:07 | DEBUG | Added intent: intimidate with 5 exemplars
+02:05:07 | DEBUG | Added intent: deceive with 5 exemplars
+02:05:07 | DEBUG | Added intent: investigate with 5 exemplars
+02:05:07 | DEBUG | Added intent: use_item with 5 exemplars
+02:05:07 | DEBUG | Added intent: defend with 5 exemplars
+02:05:07 | DEBUG | Added intent: leave_area with 5 exemplars
+02:05:07 | DEBUG | Added intent: improvise with 5 exemplars
+02:05:07 | INFO | Semantic Baker initialized with model: all-MiniLM-L6-v2
+02:05:07 | INFO | Loaded 11 pre-baked intent embeddings (55 total examples)
+02:05:07 | INFO | ✅ Instant boot: Loaded pre-baked embeddings
+02:05:07 | INFO | 🏛️ SimulatorHost initialized - Single Source of Truth
+02:05:07 | INFO | 🎬 CinematicSimulator initialized
+02:05:07 | INFO | 🚀 Initializing Cinematic Simulator...
+02:05:07 | INFO | 🚀 Initializing SimulatorHost...
+02:05:07 | INFO | 🆕 Creating new game state
+02:05:07 | INFO | ⚖️ Loading Arbiter (Deterministic Logic Core)...
+02:05:07 | INFO | Deterministic Arbiter (Iron Frame) initialized.
+02:05:07 | INFO | 📖 Loading Chronicler (Narrative Engine)...
+02:05:07 | INFO | Initializing Chronicler with ollama:llama3.2:1b
+02:05:07 | INFO | 🎲 Loading Quartermaster...
+02:05:07 | INFO | 💎 Loading Loot System...
+02:05:07 | INFO | LootSystem initialized without artifact support
+02:05:07 | INFO | ✅ SimulatorHost initialization complete
+02:05:07 | INFO | 🎬 Autonomous Director initialized
+02:05:07 | DEBUG | 🗺️ Pathfinding grid initialized: 64x64
+02:05:07 | INFO | 🧭 Navigation system initialized
+02:05:07 | INFO | 🎥 Cinematic camera initialized
+02:05:07 | INFO | 🎬 Camera controller initialized
+02:05:07 | DEBUG | 💬 Dialogue box initialized
+02:05:07 | INFO | 🎬 Cinematic pauses system initialized
+02:05:07 | INFO | 🖥️ TerminalView initialized - Observer of SimulatorHost
+02:05:07 | INFO | 🖼️ GUIView initialized - Observer of SimulatorHost
+02:05:07 | DEBUG | 👁️ Added observer: TerminalView
+02:05:07 | DEBUG | 👁️ Added observer: GUIView
+02:05:07 | INFO | ✅ Cinematic Simulator initialized successfully
+02:05:07 | INFO | 🖥️ Starting terminal-only mode
+02:05:07 | INFO | 🎬 Starting autonomous cinematic mode
+02:05:07 | INFO | 🎬 Starting Autonomous Director Mode
+02:05:07 | INFO | 🎭 Generating initial narrative beacons
+02:05:07 | INFO | 🎯 Generated landmark beacon: Tavern Door at (20, 10)
+02:05:07 | INFO | 🎯 Generated travel beacon: Tavern Interior at (25, 30)
+02:05:07 | INFO | 🎯 Generated travel beacon: Forest Path at (10, 21)
+02:05:07 | INFO | 🎯 New beacon: Visit Tavern Door
+02:05:07 | INFO | 🛤️ Path set: 20 steps to (20, 10)
+02:05:07 | INFO | 🎯 Generated beacon: Visit Tavern Door at (20, 10)
+02:05:07 | INFO | 🎯 New beacon: Travel to Tavern Interior
+02:05:07 | INFO | 🛤️ Path set: 30 steps to (25, 30)
+02:05:07 | INFO | 🎯 Generated beacon: Travel to Tavern Interior at (25, 30)
+02:05:07 | INFO | 🎯 New beacon: Travel to Forest Path
+02:05:07 | INFO | 🛤️ Path set: 21 steps to (10, 21)
+02:05:07 | INFO | 🎯 Generated beacon: Travel to Forest Path at (10, 21)
+02:05:07 | INFO | 🚀 Initializing SimulatorHost...
+02:05:07 | INFO | 🆕 Creating new game state
+02:05:07 | INFO | ⚖️ Loading Arbiter (Deterministic Logic Core)...
+02:05:07 | INFO | Deterministic Arbiter (Iron Frame) initialized.
+02:05:07 | INFO | 📖 Loading Chronicler (Narrative Engine)...
+02:05:07 | INFO | Initializing Chronicler with ollama:llama3.2:1b
+02:05:07 | INFO | 🎲 Loading Quartermaster...
+02:05:07 | INFO | 💎 Loading Loot System...
+02:05:07 | INFO | LootSystem initialized without artifact support
+02:05:07 | INFO | ✅ SimulatorHost initialization complete
+02:05:07 | INFO | 🚀 SimulatorHost started
+02:05:07 | INFO | 🎬 Director loop started
+02:05:07 | DEBUG | 📋 Planning phase: Generating narrative beacons
+02:05:07 | INFO | 🎯 Generated landmark beacon: Tavern Door at (20, 10)
+02:05:07 | INFO | 🎯 Generated travel beacon: Tavern Interior at (25, 30)
+02:05:07 | INFO | 🎯 Generated travel beacon: Forest Path at (10, 21)
+02:05:07 | INFO | 🎯 Selected beacon: Visit Tavern Door
+02:05:07 | INFO | 🎮 Starting 30 FPS game loop
+02:05:07 | INFO | 🎬 Cinematic loop started
+02:05:08 | DEBUG | 🚶 Executing phase: Moving to (20, 10)
+02:05:08 | INFO | 🛤️ Path set: 20 steps to (20, 10)
+02:05:08 | DEBUG | 📤 Action queued: I move southeast
+02:05:08 | DEBUG | 🔍 Parsing intent for: I move southeast
+02:05:08 | INFO | Loading embedding model on-demand: all-MiniLM-L6-v2
+02:05:14 | INFO | Intent resolution: 'I move southeast' → leave_area (confidence: 0.485, matched exemplar: 'Go to the next location')
+02:05:14 | DEBUG | ⚖️ Arbiter resolving: leave_area
+02:05:14 | DEBUG | 🎲 Quartermaster calculating outcome...
+02:05:14 | DEBUG | Action: leave_area | Tags: [] | Roll: 7 + Attr: 10 + Item: 0 + Tag: 0 = 17 vs DC: 10 (10 + 0) -> SUCCESS
+02:05:14 | DEBUG | 🔄 Applying state changes...
+02:05:14 | INFO | Social consequences applied for None (success=True)
+02:05:14 | DEBUG | 📍 Voyager position updated to (0, 1)
+02:05:14 | INFO | 🚶️ Voyager moved south (leave_area intent)
+02:05:14 | INFO | 🗺️ Loaded 3 locations from manifest
+02:05:14 | INFO | 🗺️ Location Resolver initialized
+02:05:14 | INFO | 🗺️ Location updated: forest_path
+02:05:14 | DEBUG | 🗺️ Discovered new coordinate: (0, 1)
+02:05:14 | INFO | 🗺️ Boundary hit in town_square
+02:05:14 | INFO | 🎬 Scene-Lock engaged: --- ENTERING TOWN_SQUARE --- (duration: 2.0s)
+02:05:14 | DEBUG | 📖 Generating narrative...
+02:05:14 | DEBUG | Chronicler streaming: leave_area
+02:05:14 | INFO | 🎬 Scene locked - waiting for transition to complete
+02:05:14 | INFO | 🎬 Scene locked - waiting for transition to complete
+02:05:15 | INFO | 🎬 Scene locked - waiting for transition to complete
+02:05:15 | INFO | 🎬 Scene locked - waiting for transition to complete
+02:05:16 | INFO | 🎬 Scene-Lock released - Movement resumed
+02:05:16 | DEBUG | 📤 Action queued: I move southeast
+02:05:16 | DEBUG | 📤 Action queued: I move southeast
+02:05:17 | DEBUG | 📤 Action queued: I move southeast
+02:05:17 | DEBUG | 📤 Action queued: I move southeast
+02:05:18 | DEBUG | 📤 Action queued: I move southeast
+02:05:18 | DEBUG | 📤 Action queued: I move southeast
+02:05:19 | DEBUG | 📤 Action queued: I move southeast
+02:05:19 | DEBUG | 📤 Action queued: I move southeast
+02:05:20 | DEBUG | 📤 Action queued: I move southeast
+02:05:20 | DEBUG | 📤 Action queued: I move southeast
+02:05:21 | DEBUG | 📤 Action queued: I move southeast
+02:05:21 | DEBUG | 📤 Action queued: I move southeast
+02:05:22 | DEBUG | 📤 Action queued: I move southeast
+02:05:23 | DEBUG | 📤 Action queued: I move southeast
+02:05:23 | DEBUG | 📤 Action queued: I move southeast
+02:05:25 | DEBUG | 🚶 Executing phase: Moving to (20, 10)
+02:05:25 | INFO | 🛤️ Path set: 20 steps to (20, 10)
+02:05:25 | DEBUG | 📤 Action queued: I move southeast
+02:05:25 | DEBUG | 📤 Action queued: I move southeast
+02:05:26 | DEBUG | 📤 Action queued: I move southeast
+02:05:26 | DEBUG | 📤 Action queued: I move southeast
+02:05:27 | DEBUG | 📤 Action queued: I move southeast
+02:05:27 | DEBUG | 📤 Action queued: I move southeast
+02:05:28 | DEBUG | 📤 Action queued: I move southeast
+02:05:28 | DEBUG | 📤 Action queued: I move southeast
+02:05:29 | DEBUG | 📤 Action queued: I move southeast
+02:05:29 | DEBUG | 📤 Action queued: I move southeast
+02:05:30 | DEBUG | 📤 Action queued: I move southeast
+02:05:30 | DEBUG | 📤 Action queued: I move southeast
+02:05:31 | DEBUG | 📤 Action queued: I move southeast
+02:05:31 | DEBUG | 📤 Action queued: I move southeast
+02:05:32 | DEBUG | 📤 Action queued: I move southeast
+02:05:32 | DEBUG | 📤 Action queued: I move southeast
+02:05:33 | DEBUG | 📤 Action queued: I move southeast
+02:05:33 | DEBUG | 📤 Action queued: I move southeast
+02:05:34 | DEBUG | 📤 Action queued: I move southeast
+02:05:34 | DEBUG | 📤 Action queued: I move southeast
+02:05:36 | DEBUG | 🚶 Executing phase: Moving to (20, 10)
+02:05:36 | INFO | 🛤️ Path set: 20 steps to (20, 10)
+02:05:36 | DEBUG | 📤 Action queued: I move southeast
+02:05:36 | DEBUG | 📤 Action queued: I move southeast
+02:05:37 | DEBUG | 📤 Action queued: I move southeast
+02:05:37 | DEBUG | 📤 Action queued: I move southeast
+02:05:38 | DEBUG | 📤 Action queued: I move southeast
+02:05:38 | DEBUG | 📤 Action queued: I move southeast
+02:05:39 | DEBUG | 📤 Action queued: I move southeast
+02:05:39 | DEBUG | 📤 Action queued: I move southeast
+02:05:40 | DEBUG | 📤 Action queued: I move southeast
+02:05:40 | DEBUG | 📤 Action queued: I move southeast
+02:05:41 | DEBUG | 📤 Action queued: I move southeast
+02:05:41 | DEBUG | 📤 Action queued: I move southeast
+02:05:42 | DEBUG | 📤 Action queued: I move southeast
+02:05:42 | DEBUG | 📤 Action queued: I move southeast
+02:05:43 | DEBUG | 📤 Action queued: I move southeast
+02:05:43 | DEBUG | 📤 Action queued: I move southeast
+02:05:44 | DEBUG | 📤 Action queued: I move southeast
+02:05:44 | DEBUG | 📤 Action queued: I move southeast
+02:05:45 | DEBUG | 📤 Action queued: I move southeast
+02:05:45 | DEBUG | 📤 Action queued: I move southeast
+02:05:47 | DEBUG | 🚶 Executing phase: Moving to (20, 10)
+02:05:47 | INFO | 🛤️ Path set: 20 steps to (20, 10)
+02:05:47 | DEBUG | 📤 Action queued: I move southeast
+02:05:47 | DEBUG | 📤 Action queued: I move southeast
+02:05:48 | DEBUG | 📤 Action queued: I move southeast
+02:05:48 | DEBUG | 📤 Action queued: I move southeast
+02:05:49 | DEBUG | 📤 Action queued: I move southeast
+02:05:49 | DEBUG | 📤 Action queued: I move southeast
+02:05:50 | ERROR | Chronicler stream failed after 1 retries: Exceeded maximum retries (1) for output validation
+02:05:50 | ERROR | Chronicler stream failed: Exceeded maximum retries (1) for output validation
+02:05:50 | INFO | Game saved to golden_reel_scenic.json
+02:05:50 | INFO | ✅ Action processed: leave_area -> SUCCESS
+02:05:50 | DEBUG | 🔍 Parsing intent for: I move southeast
+02:05:50 | INFO | Intent resolution: 'I move southeast' → leave_area (confidence: 0.485, matched exemplar: 'Go to the next location')
+02:05:50 | DEBUG | ⚖️ Arbiter resolving: leave_area
+02:05:50 | DEBUG | 🎲 Quartermaster calculating outcome...
+02:05:50 | DEBUG | Action: leave_area | Tags: [] | Roll: 12 + Attr: 10 + Item: 0 + Tag: 0 = 22 vs DC: 10 (10 + 0) -> SUCCESS
+02:05:50 | DEBUG | 🔄 Applying state changes...
+02:05:50 | INFO | Social consequences applied for None (success=True)
+02:05:50 | DEBUG | 📍 Voyager position updated to (0, 2)
+02:05:50 | INFO | 🚶️ Voyager moved south (leave_area intent)
+02:05:50 | INFO | 🗺️ Loaded 3 locations from manifest
+02:05:50 | INFO | 🗺️ Location Resolver initialized
+02:05:50 | INFO | 🗺️ Location updated: forest_path
+02:05:50 | DEBUG | 🗺️ Discovered new coordinate: (0, 2)
+02:05:50 | INFO | 🗺️ Boundary hit in town_square
+02:05:50 | INFO | 🎬 Scene-Lock engaged: --- ENTERING TOWN_SQUARE --- (duration: 2.0s)
+02:05:50 | DEBUG | 📖 Generating narrative...
+02:05:50 | DEBUG | Chronicler streaming: leave_area
+02:05:50 | INFO | 🎬 Scene locked - waiting for transition to complete
+02:05:50 | INFO | 🎬 Scene locked - waiting for transition to complete
+02:05:51 | INFO | 🎬 Scene locked - waiting for transition to complete
+02:05:51 | INFO | 🎬 Scene locked - waiting for transition to complete
+02:05:51 | INFO | 🖥️ Terminal mode stopped by user
+02:05:51 | INFO | 🛑 Stopping Cinematic Simulator
+02:05:52 | INFO | 🎬 Scene-Lock released - Movement resumed
+02:05:52 | INFO | 🛑 SimulatorHost stopped
+02:05:52 | INFO | 🎬 Cinematic Simulator stopped
+02:05:52 | INFO | 🛑 Stopping Cinematic Simulator
+02:05:52 | INFO | 🛑 SimulatorHost stopped
+02:05:52 | INFO | 🎬 Cinematic Simulator stopped
