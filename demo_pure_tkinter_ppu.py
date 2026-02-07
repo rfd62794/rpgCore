@@ -15,11 +15,20 @@ import tkinter as tk
 from tkinter import ttk
 import time
 import random
+from loguru import logger
 
 # Add src to path
 sys.path.append(os.path.join(os.path.dirname(__file__), 'src'))
 
-from graphics.ppu_tk_native import NativeTkinterGameWindow, RenderEntity, RenderLayer
+# Try new tri-modal engine first, fallback to legacy
+try:
+    from engines.body import PPUBody, create_ppu_body, DisplayMode
+    TRI_MODAL_ENGINE = True
+except ImportError:
+    # Fallback to legacy graphics
+    from graphics.ppu_tk_native import NativeTkinterGameWindow, RenderEntity, RenderLayer
+    TRI_MODAL_ENGINE = False
+
 from utils.asset_loader import AssetLoader
 
 class PureTkinterDemo:
@@ -34,8 +43,18 @@ class PureTkinterDemo:
         main_frame = ttk.Frame(self.root, padding="10")
         main_frame.grid(row=0, column=0, sticky=(tk.W, tk.E, tk.N, tk.S))
         
-        # Create PPU window
-        self.ppu_window = NativeTkinterGameWindow("Pure Tkinter PPU")
+        # Create PPU window (tri-modal or legacy)
+        if TRI_MODAL_ENGINE:
+            self.ppu_body = create_ppu_body()
+            if self.ppu_body:
+                self.ppu_window = self.ppu_body  # Use body as interface
+                logger.info("🎭 Using Tri-Modal PPU Body")
+            else:
+                logger.warning("⚠️ Failed to create PPU body, falling back to legacy")
+                self.ppu_window = NativeTkinterGameWindow("Pure Tkinter PPU")
+                TRI_MODAL_ENGINE = False
+        else:
+            self.ppu_window = NativeTkinterGameWindow("Pure Tkinter PPU")
         
         # Asset loader for object DNA
         self.asset_loader = AssetLoader()
