@@ -177,18 +177,26 @@ palettes:
   legion_red:
     description: "Red palette for legion warriors"
     colors:
-      - 0: "transparent"
-      - 1: "dark_red"
-      - 2: "red"
-      - 3: "light_red"
-      - 4: "silver"
-      - 5: "wheat"
-      - 6: "gray60"
+      0: "transparent"
+      1: "dark_red"
+      2: "red"
+      3: "light_red"
+      4: "silver"
+      5: "wheat"
+      6: "gray60"
       7: "gray40"
     
   arcane_blue:
     description: "Blue palette for arcane mages"
     colors:
+      0: "transparent"
+      1: "dark_blue"
+      2: "blue"
+      3: "light_blue"
+      4: "purple"
+      5: "wheat"
+      6: "tan"
+      7: "gray40"
       - 0: "transparent"
       - 1: "dark_blue"
       - 2: "blue"
