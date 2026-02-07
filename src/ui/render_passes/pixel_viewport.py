@@ -1,20 +1,22 @@
 """
-Pixel Viewport Pass - Half-Block Pixel Art Rendering
+Pixel Viewport Pass - Game Boy Hardware Parity
 
-Zone A: Main viewport with 2:1 pixel ratio.
-Provides solid 8-bit sprites for the Voyager and entities with Game Boy/NES visual parity.
+Zone A: Main viewport with Virtual PPU three-layer rendering.
+Background (BG): TileMap from WorldLedger
+Window (WIN): TextBox and Status Bar overlay
+Objects (OBJ): 16x16 Metasprites for actors
 """
 
 from typing import Dict, List, Tuple, Optional, Any
 from dataclasses import dataclass
-import time
-from unittest.mock import Mock
 
 from loguru import logger
 
 from . import BaseRenderPass, RenderContext, RenderResult, RenderPassType
-from ui.pixel_renderer import PixelRenderer, ColorPalette
-from ui.sprite_registry import SpriteRegistry
+from ...pixel_renderer import PixelRenderer, ColorPalette
+from ...sprite_registry import SpriteRegistry
+from ...tile_bank import TileBank, TileType
+from ...models.metasprite import Metasprite, MetaspriteConfig, CharacterRole
 
 
 class _InternalPixelViewport:
