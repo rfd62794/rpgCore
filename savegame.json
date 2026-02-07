@@ -1,7 +1,7 @@
 {
   "player": {
     "name": "Adventurer",
-    "hp": 99,
+    "hp": 64,
     "max_hp": 100,
     "gold": 50,
     "inventory": [],
@@ -20,7 +20,7 @@
       "npcs": [
         {
           "name": "Guard",
-          "state": "neutral",
+          "state": "charmed",
           "hp": 80,
           "description": "A stern-looking town guard watching the entrance"
         },

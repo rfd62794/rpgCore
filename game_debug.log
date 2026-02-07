@@ -844,3 +844,69 @@
 21:37:17 | INFO | Game initialized with Council of Three architecture
 21:37:17 | INFO | Voyager Heuristic: Selected force with score -8
 21:37:17 | INFO | Intent resolution: 'I intimidate the guard.' → charm (confidence: 0.621, matched exemplar: 'Convince the guard to let me pass with words')
+21:37:45 | INFO | Game loaded from savegame.json
+21:37:45 | DEBUG | Added intent: distract with 5 exemplars
+21:37:45 | DEBUG | Added intent: force with 5 exemplars
+21:37:45 | DEBUG | Added intent: finesse with 5 exemplars
+21:37:45 | DEBUG | Added intent: charm with 5 exemplars
+21:37:45 | DEBUG | Added intent: intimidate with 5 exemplars
+21:37:45 | DEBUG | Added intent: deceive with 5 exemplars
+21:37:45 | DEBUG | Added intent: investigate with 5 exemplars
+21:37:45 | DEBUG | Added intent: use_item with 5 exemplars
+21:37:45 | DEBUG | Added intent: defend with 5 exemplars
+21:37:45 | DEBUG | Added intent: improvise with 5 exemplars
+21:37:45 | INFO | Loading embedding model: all-MiniLM-L6-v2
+21:37:49 | INFO | Precomputed embeddings for 10 intents (50 total exemplars)
+21:37:49 | INFO | Deterministic Arbiter (Iron Frame) initialized.
+21:37:50 | INFO | Initializing Chronicler with ollama:llama3.2:1b
+21:37:50 | INFO | Voyager initialized (Deterministic) with 'aggressive' personality
+21:37:50 | INFO | Game initialized with Council of Three architecture
+21:37:50 | INFO | Voyager Heuristic: Selected force with score -8
+21:37:50 | INFO | Intent resolution: 'I intimidate the guard.' → charm (confidence: 0.621, matched exemplar: 'Convince the guard to let me pass with words')
+21:37:50 | DEBUG | Action: charm | Tags: ['Sticky Floors', 'Rowdy Crowd', 'Dimly Lit'] | Roll: 16 + Attr: 0 + Item: 0 + Tag: 0 = 16 vs DC: 10 (10 + -2) -> SUCCESS
+21:37:50 | INFO | Quartermaster: success=True, roll=16 vs DC 10
+21:37:50 | DEBUG | Chronicler streaming: charm
+21:37:50 | ERROR | Chronicler stream failed: AbstractAgent.run_stream() got an unexpected keyword argument 'result_type'
+21:37:50 | INFO | Game saved to savegame.json
+21:37:52 | INFO | Voyager Heuristic: Selected force with score -8
+21:37:52 | INFO | Intent resolution: 'I look around the room carefully' → investigate (confidence: 0.668, matched exemplar: 'Search the room carefully for hidden clues')
+21:37:52 | DEBUG | Action: investigate | Tags: ['Sticky Floors', 'Rowdy Crowd', 'Dimly Lit'] | Roll: 1 + Attr: 0 + Item: 0 + Tag: 0 = 1 vs DC: 25 (10 + 10) -> FAILURE
+21:37:52 | INFO | Quartermaster: success=False, roll=1 vs DC 25
+21:37:52 | DEBUG | Chronicler streaming: investigate
+21:37:52 | ERROR | Chronicler stream failed: AbstractAgent.run_stream() got an unexpected keyword argument 'result_type'
+21:37:52 | INFO | Game saved to savegame.json
+21:37:54 | INFO | Voyager Heuristic: Selected force with score -8
+21:37:54 | INFO | Intent resolution: 'I intimidate the guard.' → charm (confidence: 0.621, matched exemplar: 'Convince the guard to let me pass with words')
+21:37:54 | DEBUG | Action: charm | Tags: ['Sticky Floors', 'Rowdy Crowd', 'Dimly Lit'] | Roll: 5 + Attr: 0 + Item: 0 + Tag: 0 = 5 vs DC: 10 (10 + -2) -> FAILURE
+21:37:54 | INFO | Quartermaster: success=False, roll=5 vs DC 10
+21:37:54 | DEBUG | Chronicler streaming: charm
+21:37:54 | ERROR | Chronicler stream failed: AbstractAgent.run_stream() got an unexpected keyword argument 'result_type'
+21:37:54 | INFO | Game saved to savegame.json
+21:37:56 | INFO | Voyager Heuristic: Selected force with score -8
+21:37:56 | INFO | Intent resolution: 'I look around the room carefully' → investigate (confidence: 0.668, matched exemplar: 'Search the room carefully for hidden clues')
+21:37:56 | DEBUG | Action: investigate | Tags: ['Sticky Floors', 'Rowdy Crowd', 'Dimly Lit'] | Roll: 4 + Attr: 0 + Item: 0 + Tag: 0 = 4 vs DC: 25 (10 + 10) -> FAILURE
+21:37:56 | INFO | Quartermaster: success=False, roll=4 vs DC 25
+21:37:56 | DEBUG | Chronicler streaming: investigate
+21:37:56 | ERROR | Chronicler stream failed: AbstractAgent.run_stream() got an unexpected keyword argument 'result_type'
+21:37:56 | INFO | Game saved to savegame.json
+21:37:58 | INFO | Voyager Heuristic: Selected force with score -8
+21:37:58 | INFO | Intent resolution: 'I intimidate the guard.' → charm (confidence: 0.621, matched exemplar: 'Convince the guard to let me pass with words')
+21:37:58 | DEBUG | Action: charm | Tags: ['Sticky Floors', 'Rowdy Crowd', 'Dimly Lit'] | Roll: 10 + Attr: 0 + Item: 0 + Tag: 0 = 10 vs DC: 10 (10 + -2) -> SUCCESS
+21:37:58 | INFO | Quartermaster: success=True, roll=10 vs DC 10
+21:37:58 | DEBUG | Chronicler streaming: charm
+21:37:58 | ERROR | Chronicler stream failed: AbstractAgent.run_stream() got an unexpected keyword argument 'result_type'
+21:37:58 | INFO | Game saved to savegame.json
+21:38:00 | INFO | Voyager Heuristic: Selected force with score -8
+21:38:00 | INFO | Intent resolution: 'I look around the room carefully' → investigate (confidence: 0.668, matched exemplar: 'Search the room carefully for hidden clues')
+21:38:00 | DEBUG | Action: investigate | Tags: ['Sticky Floors', 'Rowdy Crowd', 'Dimly Lit'] | Roll: 9 + Attr: 0 + Item: 0 + Tag: 0 = 9 vs DC: 25 (10 + 10) -> FAILURE
+21:38:00 | INFO | Quartermaster: success=False, roll=9 vs DC 25
+21:38:00 | DEBUG | Chronicler streaming: investigate
+21:38:00 | ERROR | Chronicler stream failed: AbstractAgent.run_stream() got an unexpected keyword argument 'result_type'
+21:38:00 | INFO | Game saved to savegame.json
+21:38:02 | INFO | Voyager Heuristic: Selected force with score -8
+21:38:02 | INFO | Intent resolution: 'I intimidate the guard.' → charm (confidence: 0.621, matched exemplar: 'Convince the guard to let me pass with words')
+21:38:02 | DEBUG | Action: charm | Tags: ['Sticky Floors', 'Rowdy Crowd', 'Dimly Lit'] | Roll: 12 + Attr: 0 + Item: 0 + Tag: 0 = 12 vs DC: 10 (10 + -2) -> SUCCESS
+21:38:02 | INFO | Quartermaster: success=True, roll=12 vs DC 10
+21:38:02 | DEBUG | Chronicler streaming: charm
+21:38:02 | ERROR | Chronicler stream failed: AbstractAgent.run_stream() got an unexpected keyword argument 'result_type'
+21:38:02 | INFO | Game saved to savegame.json
