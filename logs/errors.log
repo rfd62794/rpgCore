@@ -6177,3 +6177,12 @@
 2026-02-07 13:32:25 | ERROR | utils.asset_loader:_generate_actor_sprites:536 | 💥 Failed to generate actor sprites: Size must be a sequence of length 2
 2026-02-07 13:32:25 | ERROR | utils.asset_loader:_generate_fallback_sprites:564 | 💥 Failed to generate fallback sprites: Size must be a sequence of length 2
 2026-02-07 13:32:25 | ERROR | utils.asset_loader:_generate_effect_sprites:299 | 💥 Failed to generate effect sprites: Size must be a sequence of length 2
+2026-02-07 13:32:42 | ERROR | utils.asset_loader:_generate_actor_sprites:536 | 💥 Failed to generate actor sprites: Size must be a sequence of length 2
+2026-02-07 13:32:42 | ERROR | utils.asset_loader:_generate_fallback_sprites:564 | 💥 Failed to generate fallback sprites: Size must be a sequence of length 2
+2026-02-07 13:32:42 | ERROR | utils.asset_loader:_generate_effect_sprites:299 | 💥 Failed to generate effect sprites: Size must be a sequence of length 2
+2026-02-07 13:32:42 | ERROR | utils.asset_loader:_generate_actor_sprites:536 | 💥 Failed to generate actor sprites: Size must be a sequence of length 2
+2026-02-07 13:32:42 | ERROR | utils.asset_loader:_generate_fallback_sprites:564 | 💥 Failed to generate fallback sprites: Size must be a sequence of length 2
+2026-02-07 13:32:42 | ERROR | utils.asset_loader:_generate_effect_sprites:299 | 💥 Failed to generate effect sprites: Size must be a sequence of length 2
+2026-02-07 13:32:42 | ERROR | utils.asset_loader:_generate_actor_sprites:536 | 💥 Failed to generate actor sprites: Size must be a sequence of length 2
+2026-02-07 13:32:42 | ERROR | utils.asset_loader:_generate_fallback_sprites:564 | 💥 Failed to generate fallback sprites: Size must be a sequence of length 2
+2026-02-07 13:32:42 | ERROR | utils.asset_loader:_generate_effect_sprites:299 | 💥 Failed to generate effect sprites: Size must be a sequence of length 2

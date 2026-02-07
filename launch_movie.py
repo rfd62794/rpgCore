@@ -151,19 +151,19 @@ class ObserverView:
     
     def spawn_forest_objects(self) -> None:
         """Spawn forest objects for the Voyager to discover"""
-        # Spawn test objects around the forest
-        test_objects = [
-            ('iron_chest', (12, 10)),    # High priority container
-            ('wooden_door', (10, 12)),   # Medium priority barrier
-            ('campfire', (11, 9)),       # Low priority hazard
-            ('ancient_ruins', (13, 11)), # High priority mysterious
-            ('crystal', (9, 10)),       # High priority magical
-            ('forest_guardian', (15, 10)), # Combat encounter
-        ]
+        # Get available objects from asset loader
+        available_objects = list(self.asset_loader.registry.keys())
+        
+        # Select some objects to spawn
+        spawn_objects = []
+        for obj_id in available_objects:
+            if obj_id in ['crystal', 'iron_chest', 'wooden_door', 'campfire', 'ancient_ruins', 'forest_guardian']:
+                spawn_objects.append((obj_id, (12 + len(spawn_objects), 10)))
         
         self.log_event("🏗️ Spawning Forest Objects...")
+        self.log_event(f"📦 Available objects: {available_objects[:5]}...")
         
-        for object_id, position in test_objects:
+        for object_id, position in spawn_objects:
             guardian_def = self.asset_loader.get_asset_definition(object_id)
             if not guardian_def:
                 self.log_event(f"❌ {object_id} not found in asset definitions")
