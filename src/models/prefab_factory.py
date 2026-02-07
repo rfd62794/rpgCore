@@ -1,59 +1,26 @@
 """
-PrefabFactory - Runtime Asset Loader
+Refactored PrefabFactory - SOLID Architecture
 
-Instantiates pre-baked characters, objects, and environments from the
-binary assets.dgt file. This is the runtime component that loads assets
-via memory mapping for sub-millisecond performance.
-
-The PrefabFactory provides:
-- Character instantiation with palette swapping
-- Object creation with pre-baked interactions
-- Environment loading with RLE decompression
-- Palette application at runtime for memory efficiency
+Orchestrates asset loading, caching, and instantiation through dependency injection.
+Follows SOLID principles with clear separation of concerns.
 """
 
-import pickle
-import gzip
-import mmap
 import time
 from pathlib import Path
-from typing import Dict, List, Any, Optional, Tuple, Union
-from dataclasses import dataclass
-import struct
+from typing import Dict, List, Any, Optional, Tuple
 
 from loguru import logger
 
-
-@dataclass
-class CharacterInstance:
-    """Runtime instance of a pre-baked character."""
-    character_id: str
-    sprite_data: List[List[Optional[str]]]
-    palette: List[str]
-    metadata: Dict[str, Any]
-    position: Tuple[int, int] = (0, 0)
-    animation_frame: int = 0
-
-
-@dataclass
-class ObjectInstance:
-    """Runtime instance of a pre-baked object."""
-    object_id: str
-    sprite_data: Dict[str, Any]
-    interaction_id: str
-    position: Tuple[int, int] = (0, 0)
-    active: bool = True
-
-
-@dataclass
-class EnvironmentInstance:
-    """Runtime instance of a pre-baked environment."""
-    environment_id: str
-    tile_map: List[List[int]]
-    dimensions: Tuple[int, int]
-    objects: List[ObjectInstance]
-    npcs: List[Dict[str, Any]]
-    metadata: Dict[str, Any]
+from .interfaces import IAssetLoader, IInstantiationFactory, IInteractionProvider, IAssetRegistry
+from .asset_loader import BinaryAssetLoader
+from .instantiation_factory import (
+    AssetInstantiationFactory, 
+    CharacterInstance, 
+    ObjectInstance, 
+    EnvironmentInstance,
+    InstantiationFactoryFactory
+)
+from .cache_manager import LRUCacheManager, CacheManagerFactory
 
 
 class PrefabFactory:
