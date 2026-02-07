@@ -1,0 +1,777 @@
+# Objects Manifest - Systemic Entity Definitions with DNA
+# Enhanced with characteristics for Mind Pillar D20 interactions
+
+# Environmental Objects (10)
+thorns:
+  characteristics:
+    material: "organic"
+    state: "sharp"
+    rarity: 0.6
+    integrity: 50
+    weight: "light"
+    triggers:
+      on_touch: "apply_damage"
+      on_burn: "destroy_thorns"
+      on_cut: "harvest_thorns"
+    tags: ["hazard", "organic", "painful", "flammable"]
+    interaction_hooks: ["avoid", "burn", "cut", "harvest"]
+    resistances: ["blunt"]
+    weaknesses: ["fire", "sharp"]
+    d20_checks:
+      harvest: {"difficulty": 10, "skill": "survival", "success": "gather_thorns"}
+      avoid: {"difficulty": 12, "skill": "agility", "success": "safe_passage"}
+  collision: true
+  friction: 0.3
+  sprite_id: "thorns"
+  metadata:
+    damage_amount: 5
+    damage_type: "piercing"
+    harvest_yield: "thorn_material"
+
+boulder:
+  characteristics:
+    material: "stone"
+    state: "solid"
+    rarity: 0.4
+    integrity: 200
+    weight: "heavy"
+    triggers:
+      on_mine: "drop_stone"
+      on_push: "check_strength"
+      on_climb: "check_surface"
+    tags: ["obstacle", "heavy", "mineral", "immovable"]
+    interaction_hooks: ["push", "mine", "climb", "examine"]
+    resistances: ["blunt", "sharp", "fire"]
+    weaknesses: ["explosive", "magic"]
+    d20_checks:
+      push: {"difficulty": 18, "skill": "strength", "success": "move_boulder"}
+      mine: {"difficulty": 15, "skill": "mining", "success": "extract_stone"}
+      climb: {"difficulty": 14, "skill": "athletics", "success": "scale_boulder"}
+  collision: true
+  friction: 0.1
+  sprite_id: "boulder"
+  metadata:
+    weight_value: 1000
+    strength_required: 15
+    stone_yield: "stone_material"
+
+tree:
+  characteristics:
+    material: "wood"
+    state: "alive"
+    rarity: 0.8
+    integrity: 100
+    weight: "medium"
+    triggers:
+      on_chop: "drop_wood"
+      on_burn: "create_fire"
+      on_climb: "check_branches"
+    tags: ["organic", "resource", "flammable", "climbable"]
+    interaction_hooks: ["chop", "burn", "climb", "examine"]
+    resistances: ["blunt"]
+    weaknesses: ["fire", "sharp", "lightning"]
+    d20_checks:
+      chop: {"difficulty": 12, "skill": "woodcutting", "success": "harvest_wood"}
+      climb: {"difficulty": 10, "skill": "athletics", "success": "reach_canopy"}
+      examine: {"difficulty": 8, "skill": "nature", "success": "identify_tree_type"}
+  collision: false
+  friction: 0.5
+  sprite_id: "tree"
+  metadata:
+    wood_yield: 5
+    burn_time: 30
+    tree_type: "oak"
+
+river:
+  characteristics:
+    material: "water"
+    state: "flowing"
+    rarity: 0.7
+    integrity: 1000
+    weight: "liquid"
+    triggers:
+      on_cross: "check_swimming"
+      on_drink: "restore_thirst"
+      on_fish: "catch_fish"
+    tags: ["liquid", "hazard", "resource", "passable"]
+    interaction_hooks: ["cross", "drink", "fish", "examine"]
+    resistances: ["blunt", "sharp"]
+    weaknesses: ["fire", "electric", "ice"]
+    d20_checks:
+      cross: {"difficulty": 14, "skill": "swimming", "success": "safe_crossing"}
+      fish: {"difficulty": 12, "skill": "fishing", "success": "catch_fish"}
+      drink: {"difficulty": 5, "skill": "survival", "success": "purify_water"}
+  collision: false
+  friction: 0.8
+  sprite_id: "river"
+  metadata:
+    flow_speed: 2
+    drowning_damage: 3
+    water_purity: "fresh"
+
+campfire:
+  characteristics:
+    material: "energy"
+    state: "burning"
+    rarity: 0.3
+    integrity: 25
+    weight: "none"
+    triggers:
+      on_touch: "apply_burn"
+      on_extinguish: "create_ash"
+      on_cook: "cook_food"
+      on_nearby: "spread_fire"
+    tags: ["fire", "heat", "temporary", "hazard"]
+    interaction_hooks: ["extinguish", "cook", "add_fuel", "avoid"]
+    resistances: ["blunt", "sharp"]
+    weaknesses: ["water", "earth"]
+    d20_checks:
+      cook: {"difficulty": 8, "skill": "cooking", "success": "prepare_meal"}
+      extinguish: {"difficulty": 10, "skill": "survival", "success": "douse_fire"}
+      add_fuel: {"difficulty": 5, "skill": "survival", "success": "extend_fire"}
+  collision: false
+  friction: 0.2
+  sprite_id: "campfire"
+  metadata:
+    heat_radius: 3
+    burn_damage: 2
+    fuel_consumption: 1
+    fire_intensity: "medium"
+
+mushroom_circle:
+  characteristics:
+    material: "fungal"
+    state: "mystical"
+    rarity: 0.2
+    integrity: 30
+    weight: "light"
+    triggers:
+      on_harvest: "gather_mushrooms"
+      on_consume: "apply_effect"
+      on_study: "learn_properties"
+    tags: ["organic", "magical", "consumable", "rare"]
+    interaction_hooks: ["harvest", "consume", "study", "identify"]
+    resistances: ["blunt"]
+    weaknesses: ["fire", "holy"]
+    d20_checks:
+      harvest: {"difficulty": 10, "skill": "herbalism", "success": "collect_mushrooms"}
+      identify: {"difficulty": 14, "skill": "arcana", "success": "determine_properties"}
+      consume: {"difficulty": 12, "skill": "fortitude", "success": "resist_poison"}
+  collision: false
+  friction: 0.4
+  sprite_id: "mushroom_circle"
+  metadata:
+    effect_type: "hallucination"
+    effect_duration: 60
+    mushroom_variety: "mystic"
+
+ancient_ruins:
+  characteristics:
+    material: "stone"
+    state: "crumbled"
+    rarity: 0.1
+    integrity: 150
+    weight: "immovable"
+    triggers:
+      on_examine: "reveal_lore"
+      on_excavate: "find_artifacts"
+      on_study: "learn_history"
+    tags: ["structure", "historical", "mysterious", "permanent"]
+    interaction_hooks: ["examine", "excavate", "study", "document"]
+    resistances: ["blunt", "sharp", "fire", "magic"]
+    weaknesses: ["time", "earthquake"]
+    d20_checks:
+      examine: {"difficulty": 12, "skill": "history", "success": "decipher_inscriptions"}
+      excavate: {"difficulty": 16, "skill": "archaeology", "success": "uncover_artifact"}
+      study: {"difficulty": 14, "skill": "investigation", "success": "understand_ruins"}
+  collision: true
+  friction: 0.3
+  sprite_id: "ancient_ruins"
+  metadata:
+    lore_fragments: 3
+    artifact_chance: 0.3
+    ruin_age: "ancient"
+
+herb_grove:
+  characteristics:
+    material: "organic"
+    state: "flowering"
+    rarity: 0.5
+    integrity: 40
+    weight: "light"
+    triggers:
+      on_harvest: "gather_herbs"
+      on_crush: "create_potion"
+      on_study: "identify_properties"
+    tags: ["organic", "medicinal", "renewable", "valuable"]
+    interaction_hooks: ["harvest", "crush", "study", "cultivate"]
+    resistances: ["blunt"]
+    weaknesses: ["fire", "frost", "disease"]
+    d20_checks:
+      harvest: {"difficulty": 8, "skill": "herbalism", "success": "collect_herbs"}
+      identify: {"difficulty": 10, "skill": "nature", "success": "recognize_herb"}
+      cultivate: {"difficulty": 12, "skill": "herbalism", "success": "grow_more"}
+  collision: false
+  friction: 0.6
+  sprite_id: "herb_grove"
+  metadata:
+    herb_types: ["healing", "mana", "poison"]
+    regrowth_time: 100
+    herb_potency: "medium"
+
+spider_web:
+  characteristics:
+    material: "silk"
+    state: "sticky"
+    rarity: 0.4
+    integrity: 20
+    weight: "negligible"
+    triggers:
+      on_touch: "entangle"
+      on_cut: "release_web"
+      on_burn: "destroy_web"
+    tags: ["hazard", "organic", "trap", "flammable"]
+    interaction_hooks: ["avoid", "cut", "burn", "collect"]
+    resistances: ["blunt"]
+    weaknesses: ["fire", "sharp"]
+    d20_checks:
+      avoid: {"difficulty": 13, "skill": "acrobatics", "success": "dodge_web"}
+      cut: {"difficulty": 8, "skill": "weaponry", "success": "slice_through"}
+      collect: {"difficulty": 10, "skill": "survival", "success": "gather_silk"}
+  collision: false
+  friction: 0.1
+  sprite_id: "spider_web"
+  metadata:
+    entangle_duration: 5
+    web_strength: 5
+    silk_quality: "fine"
+
+# Structural Objects (10)
+wooden_door:
+  characteristics:
+    material: "wood"
+    state: "closed"
+    rarity: 0.6
+    integrity: 75
+    weight: "medium"
+    triggers:
+      on_open: "check_locked"
+      on_break: "splinter_wood"
+      on_lockpick: "d20_lockpick_check"
+      on_burn: "destroy_door"
+    tags: ["structure", "barrier", "openable", "flammable"]
+    interaction_hooks: ["open", "lockpick", "break", "knock", "burn"]
+    resistances: ["blunt"]
+    weaknesses: ["fire", "sharp", "explosive"]
+    d20_checks:
+      lockpick: {"difficulty": 15, "skill": "thievery", "success": "unlock_door"}
+      break: {"difficulty": 18, "skill": "strength", "success": "force_door"}
+      knock: {"difficulty": 5, "skill": "perception", "success": "detect_response"}
+  collision: true
+  friction: 0.4
+  sprite_id: "wooden_door"
+  metadata:
+    lock_difficulty: 15
+    break_strength: 20
+    door_type: "wooden"
+
+stone_wall:
+  characteristics:
+    material: "stone"
+    state: "solid"
+    rarity: 0.8
+    integrity: 300
+    weight: "immovable"
+    triggers:
+      on_mine: "drop_stone"
+      on_climb: "check_surface"
+      on_carve: "create_inscription"
+    tags: ["structure", "barrier", "permanent", "immovable"]
+    interaction_hooks: ["climb", "examine", "carve", "study"]
+    resistances: ["blunt", "sharp", "fire", "magic"]
+    weaknesses: ["explosive", "earthquake"]
+    d20_checks:
+      climb: {"difficulty": 18, "skill": "athletics", "success": "scale_wall"}
+      carve: {"difficulty": 14, "skill": "stonework", "success": "inscribe_wall"}
+      examine: {"difficulty": 10, "skill": "investigation", "success": "find_weakness"}
+  collision: true
+  friction: 0.1
+  sprite_id: "stone_wall"
+  metadata:
+    climb_difficulty: 18
+    carvable: true
+    wall_thickness: "thick"
+
+window:
+  characteristics:
+    material: "glass"
+    state: "intact"
+    rarity: 0.5
+    integrity: 40
+    weight: "light"
+    triggers:
+      on_break: "shatter_glass"
+      on_look: "see_through"
+      on_open: "check_lock"
+    tags: ["structure", "transparent", "fragile", "barrier"]
+    interaction_hooks: ["break", "look", "open", "examine"]
+    resistances: ["fire", "blunt"]
+    weaknesses: ["sharp", "impact", "sound"]
+    d20_checks:
+      break: {"difficulty": 12, "skill": "strength", "success": "shatter_window"}
+      open: {"difficulty": 10, "skill": "thievery", "success": "unlock_window"}
+      look: {"difficulty": 5, "skill": "perception", "success": "see_inside"}
+  collision: false
+  friction: 0.0
+  sprite_id: "window"
+  metadata:
+    visibility_range: 10
+    shatter_damage: 3
+    glass_type: "clear"
+
+wooden_chair:
+  characteristics:
+    material: "wood"
+    state: "stable"
+    rarity: 0.4
+    integrity: 60
+    weight: "light"
+    triggers:
+      on_sit: "rest_character"
+      on_break: "drop_wood"
+      on_move: "reposition_chair"
+    tags: ["furniture", "rest", "movable", "flammable"]
+    interaction_hooks: ["sit", "move", "break", "examine"]
+    resistances: ["blunt"]
+    weaknesses: ["fire", "heavy_impact"]
+    d20_checks:
+      sit: {"difficulty": 5, "skill": "endurance", "success": "gain_rest"}
+      move: {"difficulty": 8, "skill": "strength", "success": "reposition"}
+      examine: {"difficulty": 6, "skill": "investigation", "success": "assess_condition"}
+  collision: false
+  friction: 0.4
+  sprite_id: "wooden_chair"
+  metadata:
+    rest_bonus: 10
+    comfort_level: 5
+    chair_condition: "good"
+
+wooden_table:
+  characteristics:
+    material: "wood"
+    state: "stable"
+    rarity: 0.4
+    integrity: 80
+    weight: "medium"
+    triggers:
+      on_search: "find_items"
+      on_place: "store_items"
+      on_break: "drop_wood"
+    tags: ["furniture", "surface", "storage", "flammable"]
+    interaction_hooks: ["search", "place", "examine", "move"]
+    resistances: ["blunt"]
+    weaknesses: ["fire", "heavy_impact"]
+    d20_checks:
+      search: {"difficulty": 12, "skill": "investigation", "success": "find_hidden"}
+      place: {"difficulty": 5, "skill": "dexterity", "success": "place_item"}
+      move: {"difficulty": 10, "skill": "strength", "success": "reposition"}
+  collision: true
+  friction: 0.4
+  sprite_id: "wooden_table"
+  metadata:
+    storage_capacity: 5
+    search_chance: 0.3
+    table_size: "medium"
+
+iron_chest:
+  characteristics:
+    material: "iron"
+    state: "locked"
+    rarity: 0.2
+    integrity: 150
+    weight: "heavy"
+    triggers:
+      on_interact: "d20_lockpick_check"
+      on_damage: "apply_dent"
+      on_open: "reveal_contents"
+      on_force: "break_lock"
+    tags: ["container", "heavy", "metallic", "secure"]
+    interaction_hooks: ["lockpick", "break", "examine", "force"]
+    resistances: ["blunt", "sharp", "fire"]
+    weaknesses: ["acid", "rust", "heavy_force"]
+    d20_checks:
+      lockpick: {"difficulty": 20, "skill": "thievery", "success": "pick_lock"}
+      force: {"difficulty": 22, "skill": "strength", "success": "break_lock"}
+      examine: {"difficulty": 10, "skill": "investigation", "success": "assess_lock"}
+  collision: true
+  friction: 0.2
+  sprite_id: "iron_chest"
+  metadata:
+    lock_difficulty: 20
+    contents_value: "high"
+    dent_resistance: 25
+    chest_quality: "iron"
+
+lever:
+  characteristics:
+    material: "stone"
+    state: "neutral"
+    rarity: 0.3
+    integrity: 90
+    weight: "medium"
+    triggers:
+      on_pull: "activate_mechanism"
+      on_examine: "identify_function"
+      on_jam: "break_lever"
+    tags: ["mechanism", "switch", "interactive", "mechanical"]
+    interaction_hooks: ["pull", "examine", "repair", "jam"]
+    resistances: ["blunt", "fire"]
+    weaknesses: ["heavy_force", "rust"]
+    d20_checks:
+      pull: {"difficulty": 8, "skill": "strength", "success": "activate_mechanism"}
+      examine: {"difficulty": 12, "skill": "engineering", "success": "understand_function"}
+      repair: {"difficulty": 14, "skill": "tinkering", "success": "fix_lever"}
+  collision: false
+  friction: 0.3
+  sprite_id: "lever"
+  metadata:
+    mechanism_type: "secret_door"
+    activation_range: 5
+    lever_condition: "functional"
+
+pressure_plate:
+  characteristics:
+    material: "stone"
+    state: "inactive"
+    rarity: 0.3
+    integrity: 100
+    weight: "immovable"
+    triggers:
+      on_step: "activate_trap"
+      on_examine: "detect_pressure"
+      on_disable: "disarm_trap"
+    tags: ["trap", "mechanism", "hidden", "dangerous"]
+    interaction_hooks: ["avoid", "disarm", "examine", "trigger"]
+    resistances: ["blunt", "fire", "sharp"]
+    weaknesses: ["precise_tool", "magic"]
+    d20_checks:
+      disarm: {"difficulty": 16, "skill": "thievery", "success": "disable_trap"}
+      detect: {"difficulty": 14, "skill": "perception", "success": "find_pressure_plate"}
+      avoid: {"difficulty": 12, "skill": "acrobatics", "success": "step_around"}
+  collision: false
+  friction: 0.1
+  sprite_id: "pressure_plate"
+  metadata:
+    trap_type: "darts"
+    trigger_weight: 50
+    plate_visibility: "hidden"
+
+torch:
+  characteristics:
+    material: "wood_fire"
+    state: "lit"
+    rarity: 0.4
+    integrity: 35
+    weight: "light"
+    triggers:
+      on_extinguish: "create_darkness"
+      on_relight: "create_light"
+      on_use: "scare_creatures"
+      on_fuel: "extend_burn"
+    tags: ["light", "fire", "temporary", "portable"]
+    interaction_hooks: ["extinguish", "relight", "take", "fuel"]
+    resistances: ["blunt"]
+    weaknesses: ["water", "wind", "time"]
+    d20_checks:
+      relight: {"difficulty": 8, "skill": "survival", "success": "restart_flame"}
+      fuel: {"difficulty": 6, "skill": "survival", "success": "add_fuel"}
+      scare: {"difficulty": 12, "skill": "intimidation", "success": "flee_creatures"}
+  collision: false
+  friction: 0.3
+  sprite_id: "torch"
+  metadata:
+    light_radius: 5
+    burn_time: 60
+    scare_radius: 3
+
+signpost:
+  characteristics:
+    material: "wood"
+    state: "weathered"
+    rarity: 0.5
+    integrity: 70
+    weight: "medium"
+    triggers:
+      on_read: "display_message"
+      on_carve: "add_text"
+      on_destroy: "splinter_sign"
+    tags: ["information", "directional", "customizable", "flammable"]
+    interaction_hooks: ["read", "carve", "examine", "destroy"]
+    resistances: ["blunt"]
+    weaknesses: ["fire", "sharp", "weather"]
+    d20_checks:
+      read: {"difficulty": 5, "skill": "literacy", "success": "understand_message"}
+      carve: {"difficulty": 10, "skill": "woodworking", "success": "add_inscription"}
+      examine: {"difficulty": 8, "skill": "investigation", "success": "assess_condition"}
+  collision: false
+  friction: 0.4
+  sprite_id: "signpost"
+  metadata:
+    message_type: "directions"
+    max_characters: 50
+    sign_condition: "weathered"
+
+# Interactive Objects (10)
+alchemy_lab:
+  characteristics:
+    material: "glass_metal"
+    state: "organized"
+    rarity: 0.1
+    integrity: 60
+    triggers:
+      on_use: "brew_potion"
+      on_examine: "identify_ingredients"
+    tags: ["magical", "crafting", "complex"]
+    interaction_hooks: ["brew", "examine", "clean"]
+  collision: true
+  friction: 0.3
+  sprite_id: "alchemy_lab"
+  metadata:
+    potion_types: ["healing", "mana", "poison"]
+    skill_required: 10
+
+anvil:
+  characteristics:
+    material: "iron"
+    state: "sturdy"
+    rarity: 0.2
+    integrity: 200
+    triggers:
+      on_use: "forge_item"
+      on_repair: "fix_equipment"
+    tags: ["crafting", "metal", "heavy"]
+    interaction_hooks: ["forge", "repair", "examine"]
+  collision: true
+  friction: 0.1
+  sprite_id: "anvil"
+  metadata:
+    forge_types: ["weapons", "armor", "tools"]
+    skill_required: 15
+
+bookshelf:
+  characteristics:
+    material: "wood_paper"
+    state: "organized"
+    rarity: 0.4
+    integrity: 50
+    triggers:
+      on_search: "find_lore"
+      on_read: "gain_knowledge"
+    tags: ["knowledge", "storage", "flammable"]
+    interaction_hooks: ["search", "read", "organize"]
+  collision: true
+  friction: 0.4
+  sprite_id: "bookshelf"
+  metadata:
+    knowledge_types: ["history", "magic", "skills"]
+    burn_resistance: 5
+
+crystal:
+  characteristics:
+    material: "magical_crystal"
+    state: "glowing"
+    rarity: 0.05
+    integrity: 80
+    weight: "light"
+    triggers:
+      on_touch: "absorb_mana"
+      on_break: "release_energy"
+      on_study: "learn_properties"
+    tags: ["magical", "rare", "energy", "valuable"]
+    interaction_hooks: ["touch", "break", "study", "examine"]
+    resistances: ["blunt", "sharp"]
+    weaknesses: ["magic", "dispel"]
+    d20_checks:
+      examine: {"difficulty": 10, "skill": "arcana", "success": "learn_properties"}
+      study: {"difficulty": 12, "skill": "investigation", "success": "understand_crystal"}
+      touch: {"difficulty": 8, "skill": "magic", "success": "absorb_mana"}
+  collision: false
+  friction: 0.0
+  sprite_id: "crystal"
+  metadata:
+    mana_amount: 50
+    energy_type: "arcane"
+    crystal_type: "magical"
+
+forest_guardian:
+  characteristics:
+    material: "stone_wood"
+    state: "alert"
+    rarity: 0.02
+    integrity: 150
+    weight: "heavy"
+    triggers:
+      on_approach: "challenge_intruder"
+      on_defeat: "open_gate"
+      on_victory: "repel_intruder"
+    tags: ["armored", "guardian", "sentinel", "stone", "defensive"]
+    interaction_hooks: ["attack", "defend", "intimidate", "negotiate"]
+    resistances: ["blunt", "sharp", "fire"]
+    weaknesses: ["magic", "acid"]
+    d20_checks:
+      attack: {"difficulty": 12, "skill": "strength", "success": "deal_damage"}
+      defend: {"difficulty": 14, "skill": "defense", "success": "block_attack"}
+      intimidate: {"difficulty": 15, "skill": "intimidation", "success": "flee"}
+    combat_stats:
+      hp: 50
+      str: 10
+      def: 8
+      initiative: 6
+  collision: true
+  friction: 0.8
+  sprite_id: "forest_guardian"
+  metadata:
+    guardian_type: "gatekeeper"
+    armor_class: 16
+    weapon_damage: "2d6+3"
+    special_attack: "shield_bash"
+    gate_access: "requires_defeat"
+
+fountain:
+  characteristics:
+    material: "stone_water"
+    state: "flowing"
+    rarity: 0.3
+    integrity: 150
+    triggers:
+      on_drink: "restore_health"
+      on_wash: "clean_curses"
+    tags: ["water", "healing", "magical"]
+    interaction_hooks: ["drink", "wash", "examine"]
+  collision: false
+  friction: 0.6
+  sprite_id: "fountain"
+  metadata:
+    heal_amount: 20
+    curse_removal: true
+
+animated_flower:
+  characteristics:
+    material: "organic_flora"
+    state: "swaying"
+    rarity: 0.8
+    integrity: 20
+    triggers:
+      on_touch: "pollen_release"
+      on_wind: "sway_animation"
+    tags: ["animated", "flora", "wind_sensitive", "decorative"]
+    interaction_hooks: ["examine", "touch", "collect"]
+    d20_checks:
+      examine: {"difficulty": 5, "skill": "nature", "success": "observe_pollen"}
+      collect: {"difficulty": 8, "skill": "dexterity", "success": "gather_flower"}
+      touch: {"difficulty": 3, "skill": "nature", "success": "feel_petals"}
+    animation_frames:
+      wind_sway: ["flower_frame_1", "flower_frame_2", "flower_frame_3"]
+      frame_duration: 500  # milliseconds per frame
+    visual_effects:
+      pollen_particles: true
+      color_shift: ["pink", "light_pink", "white"]
+  collision: false
+  friction: 0.1
+  sprite_id: "animated_flower"
+  metadata:
+    flower_type: "wind_sway"
+    pollen_count: 5
+    sway_amplitude: 2
+    aesthetic_style: "sonic_field": true
+
+magic_portal:
+  characteristics:
+    material: "energy"
+    state: "active"
+    rarity: 0.05
+    integrity: 100
+    triggers:
+      on_enter: "teleport_character"
+      on_disrupt: "collapse_portal"
+    tags: ["magical", "transport", "unstable"]
+    interaction_hooks: ["enter", "disrupt", "study"]
+  collision: false
+  friction: 0.0
+  sprite_id: "magic_portal"
+  metadata:
+    destination_type: "random"
+    stability: 0.7
+
+merchant_stall:
+  characteristics:
+    material: "wood_cloth"
+    state: "setup"
+    rarity: 0.2
+    integrity: 60
+    triggers:
+      on_trade: "exchange_goods"
+      on_haggle: "negotiate_price"
+    tags: ["commerce", "npc", "temporary"]
+    interaction_hooks: ["trade", "haggle", "examine"]
+  collision: true
+  friction: 0.4
+  sprite_id: "merchant_stall"
+  metadata:
+    trade_types: ["potions", "scrolls", "tools"]
+    merchant_present: false
+
+ritual_circle:
+  characteristics:
+    material: "stone_chalk"
+    state: "charged"
+    rarity: 0.08
+    integrity: 70
+    triggers:
+      on_use: "cast_ritual"
+      on_desecrate: "corrupt_circle"
+    tags: ["magical", "ritual", "sacred"]
+    interaction_hooks: ["use", "desecrate", "study"]
+  collision: false
+  friction: 0.2
+  sprite_id: "ritual_circle"
+  metadata:
+    ritual_types: ["summoning", "protection", "divination"]
+    power_level: 25
+
+treasure_map:
+  characteristics:
+    material: "paper_ink"
+    state: "faded"
+    rarity: 0.15
+    integrity: 20
+    triggers:
+      on_read: "reveal_location"
+      on_follow: "navigate_to_treasure"
+    tags: ["information", "treasure", "consumable"]
+    interaction_hooks: ["read", "follow", "examine"]
+  collision: false
+  friction: 0.0
+  sprite_id: "treasure_map"
+  metadata:
+    treasure_type: "ancient_artifact"
+    difficulty_level: 15
+
+well:
+  characteristics:
+    material: "stone_water"
+    state: "deep"
+    rarity: 0.3
+    integrity: 180
+    triggers:
+      on_lower_bucket: "draw_water"
+      on_fall: "apply_damage"
+    tags: ["water", "depth", "hazard"]
+    interaction_hooks: ["draw_water", "examine", "climb"]
+  collision: false
+  friction: 0.1
+  sprite_id: "well"
+  metadata:
+    water_depth: 50
+    fall_damage: 20
+    bucket_capacity: 5
