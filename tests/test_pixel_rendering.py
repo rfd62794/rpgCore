@@ -510,7 +510,8 @@ class TestPixelRenderer:
         
         # Should contain ANSI color codes and block characters
         assert '\033[' in result  # ANSI escape sequence
-        assert '▀' in result or '▄' in result  # Block characters
+        # When both upper and lower pixels are same color, it becomes a full block
+        assert '█' in result  # Full block character
 
 
 class TestPixelViewport:
