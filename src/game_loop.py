@@ -20,8 +20,9 @@ from rich.live import Live
 from game_state import GameState, create_tavern_scenario
 from semantic_engine import SemanticResolver, create_default_intent_library
 
-from sync_engines import ArbiterEngine, ChroniclerEngine
+from sync_engines import ChroniclerEngine
 from quartermaster import Quartermaster
+from deterministic_arbiter import DeterministicArbiter
 
 
 class GameREPL:
@@ -77,9 +78,9 @@ class GameREPL:
         # Set context window limit (2048 tokens = ~1.5GB less VRAM per model)
         os.environ["OLLAMA_NUM_CTX"] = "2048"
         
-        # Initialize Council of Three
-        self.console.print("[cyan]Loading Arbiter (logic engine - 1B)...[/cyan]")
-        self.arbiter = ArbiterEngine(model_name='ollama:llama3.2:1b')
+        # Initialize Logic Core (Iron Frame)
+        self.console.print("[cyan]Loading Arbiter (Deterministic Logic Core)...[/cyan]")
+        self.arbiter = DeterministicArbiter()
         
         self.console.print("[cyan]Loading Chronicler (narrative engine - 1B)...[/cyan]")
         # Unified 1B model (High Temp for creativity)
@@ -177,22 +178,19 @@ class GameREPL:
         # Step 2: Arbiter resolves logic (state changes)
         self.console.print("[dim]⚖️  Arbiter calculating...[/dim]")
         
-        context = self.state.get_context_str()
+        # Get room tags
+        room = self.state.rooms.get(self.state.current_room)
+        room_tags = room.tags if room else []
         
         arbiter_result = self.arbiter.resolve_action_sync(
             intent_id=intent_match.intent_id,
             player_input=player_input,
             context=context,
-            player_hp=self.state.player.hp,
-            player_gold=self.state.player.gold
+            room_tags=room_tags
         )
         
         # Step 2.5: Quartermaster calculates final outcome
         self.console.print("[dim]🎲 Quartermaster rolling dice...[/dim]")
-        
-        # Get room tags
-        room = self.state.rooms.get(self.state.current_room)
-        room_tags = room.tags if room else []
         
         # Calculate outcome
         outcome = self.quartermaster.calculate_outcome(

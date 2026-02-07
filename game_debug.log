@@ -795,3 +795,33 @@
 21:33:05 | INFO | Voyager Heuristic: Selected force with score -8
 21:33:05 | INFO | Intent resolution: 'I look around the room carefully' → investigate (confidence: 0.668, matched exemplar: 'Search the room carefully for hidden clues')
 21:33:05 | DEBUG | Arbiter assessing intent 'investigate'
+21:34:11 | INFO | Game loaded from savegame.json
+21:34:11 | DEBUG | Added intent: distract with 5 exemplars
+21:34:11 | DEBUG | Added intent: force with 5 exemplars
+21:34:11 | DEBUG | Added intent: finesse with 5 exemplars
+21:34:11 | DEBUG | Added intent: charm with 5 exemplars
+21:34:11 | DEBUG | Added intent: intimidate with 5 exemplars
+21:34:11 | DEBUG | Added intent: deceive with 5 exemplars
+21:34:11 | DEBUG | Added intent: investigate with 5 exemplars
+21:34:11 | DEBUG | Added intent: use_item with 5 exemplars
+21:34:11 | DEBUG | Added intent: defend with 5 exemplars
+21:34:11 | DEBUG | Added intent: improvise with 5 exemplars
+21:34:11 | INFO | Loading embedding model: all-MiniLM-L6-v2
+21:34:13 | INFO | Precomputed embeddings for 10 intents (50 total exemplars)
+21:34:13 | INFO | Initializing Arbiter with ollama:llama3.2:1b
+21:34:13 | INFO | Initializing Chronicler with ollama:llama3.2:1b
+21:34:13 | INFO | Voyager initialized (Deterministic) with 'aggressive' personality
+21:34:13 | INFO | Game initialized with Council of Three architecture
+21:34:13 | INFO | Voyager Heuristic: Selected force with score -8
+21:34:13 | INFO | Intent resolution: 'I intimidate the guard.' → charm (confidence: 0.621, matched exemplar: 'Convince the guard to let me pass with words')
+21:34:13 | DEBUG | Arbiter assessing intent 'charm'
+21:34:14 | ERROR | Arbiter failed: status_code: 400, model_name: ollama:llama3.2:1b, body: {'message': 'model is required', 'type': 'api_error', 'param': None, 'code': None}
+21:34:14 | WARNING | Using fallback arbiter logic
+21:34:14 | DEBUG | Action: charm | Tags: ['Sticky Floors', 'Rowdy Crowd', 'Dimly Lit'] | Roll: 17 + Attr: 0 + Item: 0 + Tag: 0 = 17 vs DC: 10 (10 + 0) -> SUCCESS
+21:34:14 | INFO | Quartermaster: success=True, roll=17 vs DC 10
+21:34:14 | DEBUG | Chronicler streaming: charm
+21:34:14 | ERROR | Chronicler stream failed: AbstractAgent.run_stream() got an unexpected keyword argument 'result_type'
+21:34:14 | INFO | Game saved to savegame.json
+21:34:16 | INFO | Voyager Heuristic: Selected force with score -8
+21:34:16 | INFO | Intent resolution: 'I look around the room carefully' → investigate (confidence: 0.668, matched exemplar: 'Search the room carefully for hidden clues')
+21:34:16 | DEBUG | Arbiter assessing intent 'investigate'
