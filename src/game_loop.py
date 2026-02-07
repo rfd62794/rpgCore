@@ -23,7 +23,8 @@ from semantic_engine import SemanticResolver, create_default_intent_library
 from sync_engines import ChroniclerEngine
 from quartermaster import Quartermaster
 from deterministic_arbiter import DeterministicArbiter
-from world_map import create_starter_campaign, Location, WorldObject
+from world_map import Location, WorldObject
+from location_factory import create_dynamic_world
 
 
 class GameREPL:
@@ -54,11 +55,10 @@ class GameREPL:
             personality: Personality for Voyager agent (default: curious)
         """
         self.console = Console()
-        self.save_path = save_path or Path("savegame.json")
         self.auto_mode = auto_mode
         
         # Initialize game state
-        self.world_map = create_starter_campaign()
+        self.world_map = create_dynamic_world()
         
         if state:
             self.state = state
@@ -235,7 +235,8 @@ class GameREPL:
             intent_id=intent_match.intent_id,
             player_input=player_input,
             context=context,
-            room_tags=room_tags
+            room_tags=room_tags,
+            reputation=self.state.reputation
         )
         
         # Step 2.5: Quartermaster calculates final outcome
