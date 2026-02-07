@@ -217,6 +217,9 @@ class SyntheticRealityDirector:
             # Show welcome message
             self.director_console.display_welcome()
             
+            # Update static canvas with initial game state
+            self.static_canvas.update_game_state(self.game_state)
+            
             # Calculate initial perception range
             wisdom = self.game_state.player.attributes.get("wisdom", 10)
             intelligence = self.game_state.player.attributes.get("intelligence", 10)
@@ -265,7 +268,7 @@ class SyntheticRealityDirector:
         if self.view_mode == "iso":
             # Isometric rendering
             try:
-                # Update static canvas with game state
+                # Update static canvas with current game state
                 self.static_canvas.update_game_state(self.game_state)
                 
                 # Show detailed isometric view separately for clarity
