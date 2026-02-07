@@ -6025,3 +6025,7 @@
 2026-02-07 13:13:38 | ERROR | actors.voyager:_follow_quest_objective:707 | 💥 Quest navigation failed: 'NoneType' object has no attribute 'get_current_objective'
 2026-02-07 13:13:38 | ERROR | actors.voyager:_follow_quest_objective:707 | 💥 Quest navigation failed: 'NoneType' object has no attribute 'get_current_objective'
 2026-02-07 13:13:39 | ERROR | actors.voyager:_follow_quest_objective:707 | 💥 Quest navigation failed: 'NoneType' object has no attribute 'get_current_objective'
+2026-02-07 13:16:50 | ERROR | engines.mind.dd_engine:_execute_command:242 | 💥 Command execution failed: WorldDelta.__init__() missing 1 required positional argument: 'timestamp'
+2026-02-07 13:16:51 | ERROR | engines.mind.dd_engine:_execute_command:242 | 💥 Command execution failed: WorldDelta.__init__() missing 1 required positional argument: 'timestamp'
+2026-02-07 13:16:51 | ERROR | engines.mind.dd_engine:_execute_command:242 | 💥 Command execution failed: WorldDelta.__init__() missing 1 required positional argument: 'timestamp'
+2026-02-07 13:16:52 | ERROR | engines.mind.dd_engine:_execute_command:242 | 💥 Command execution failed: WorldDelta.__init__() missing 1 required positional argument: 'timestamp'

@@ -359,7 +359,8 @@ class DDEngine:
                     "action": success_action,
                     "roll": d20_roll,
                     "difficulty": difficulty
-                }
+                },
+                timestamp=time.time()
             )
             
             # Update player position to interaction target if needed
@@ -377,7 +378,8 @@ class DDEngine:
                     "result": "failure",
                     "roll": d20_roll,
                     "difficulty": difficulty
-                }
+                },
+                timestamp=time.time()
             )
             
             message = f"❌ Failed to {intent.interaction_type} {target_object.asset_id}! (Roll: {total_roll}/{difficulty})"

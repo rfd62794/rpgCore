@@ -7349,3 +7349,50 @@
 2026-02-07 13:16:37 | INFO | utils.asset_loader:_generate_effect_sprites:238 | 🎨 Generated 5 effect sprites
 2026-02-07 13:16:37 | INFO | utils.asset_loader:__init__:95 | 🎨 Asset Loader initialized - 37 assets loaded
 2026-02-07 13:16:37 | INFO | utils.asset_loader:__init__:454 | 🏗️ Object Registry initialized
+2026-02-07 13:16:50 | INFO | utils.logger:initialize:59 | 📝 Logging system initialized
+2026-02-07 13:16:50 | INFO | utils.asset_loader:_load_object_definitions:159 | 📦 Loaded 29 object definitions
+2026-02-07 13:16:50 | INFO | utils.asset_loader:_load_prefab_definitions:188 | 🏗️ Loaded 10 prefab definitions
+2026-02-07 13:16:50 | INFO | utils.asset_loader:_generate_tile_sprites:199 | 🎨 Generated 11 tile sprites
+2026-02-07 13:16:50 | INFO | utils.asset_loader:_generate_object_sprites:208 | 🎨 Generated 37 object sprites
+2026-02-07 13:16:50 | INFO | utils.asset_loader:_generate_actor_sprites:228 | 🎨 Generated actor sprites for multiple states
+2026-02-07 13:16:50 | INFO | utils.asset_loader:_generate_effect_sprites:238 | 🎨 Generated 5 effect sprites
+2026-02-07 13:16:50 | INFO | utils.asset_loader:__init__:95 | 🎨 Asset Loader initialized - 37 assets loaded
+2026-02-07 13:16:50 | INFO | utils.asset_loader:__init__:454 | 🏗️ Object Registry initialized
+2026-02-07 13:16:50 | INFO | engines.world.world_engine:__init__:122 | 🌍 World Engine initialized with seed: VOLUME_2_PREMIERE
+2026-02-07 13:16:50 | INFO | utils.asset_loader:_load_object_definitions:159 | 📦 Loaded 29 object definitions
+2026-02-07 13:16:50 | INFO | utils.asset_loader:_load_prefab_definitions:188 | 🏗️ Loaded 10 prefab definitions
+2026-02-07 13:16:50 | INFO | utils.asset_loader:_generate_tile_sprites:199 | 🎨 Generated 11 tile sprites
+2026-02-07 13:16:50 | INFO | utils.asset_loader:_generate_object_sprites:208 | 🎨 Generated 37 object sprites
+2026-02-07 13:16:50 | INFO | utils.asset_loader:_generate_actor_sprites:228 | 🎨 Generated actor sprites for multiple states
+2026-02-07 13:16:50 | INFO | utils.asset_loader:_generate_effect_sprites:238 | 🎨 Generated 5 effect sprites
+2026-02-07 13:16:50 | INFO | utils.asset_loader:__init__:95 | 🎨 Asset Loader initialized - 37 assets loaded
+2026-02-07 13:16:50 | INFO | utils.asset_loader:__init__:454 | 🏗️ Object Registry initialized
+2026-02-07 13:16:50 | INFO | engines.mind.dd_engine:__init__:103 | 🧠 D&D Engine initialized with seed: VOLUME_2_PREMIERE
+2026-02-07 13:16:50 | INFO | engines.mind.dd_engine:__init__:108 | 🧠 D&D Engine initialized - Command Pattern ready
+2026-02-07 13:16:50 | INFO | actors.voyager:__init__:70 | 🧭 Pathfinding Navigator initialized: 50x50
+2026-02-07 13:16:50 | INFO | actors.voyager:__init__:186 | 🎯 Intent Generator initialized
+2026-02-07 13:16:50 | INFO | actors.voyager:__init__:334 | 🚶 Voyager initialized - STATE_PONDERING support ready
+2026-02-07 13:16:50 | INFO | utils.asset_loader:_load_object_definitions:159 | 📦 Loaded 29 object definitions
+2026-02-07 13:16:50 | INFO | utils.asset_loader:_load_prefab_definitions:188 | 🏗️ Loaded 10 prefab definitions
+2026-02-07 13:16:50 | INFO | utils.asset_loader:_generate_tile_sprites:199 | 🎨 Generated 11 tile sprites
+2026-02-07 13:16:50 | INFO | utils.asset_loader:_generate_object_sprites:208 | 🎨 Generated 37 object sprites
+2026-02-07 13:16:50 | INFO | utils.asset_loader:_generate_actor_sprites:228 | 🎨 Generated actor sprites for multiple states
+2026-02-07 13:16:50 | INFO | utils.asset_loader:_generate_effect_sprites:238 | 🎨 Generated 5 effect sprites
+2026-02-07 13:16:50 | INFO | utils.asset_loader:__init__:95 | 🎨 Asset Loader initialized - 37 assets loaded
+2026-02-07 13:16:50 | INFO | utils.asset_loader:__init__:454 | 🏗️ Object Registry initialized
+2026-02-07 13:16:50 | INFO | actors.voyager:_generate_idle_intent:468 | 🎯 Object-Aware Voyager: Found interactable object at (9, 10)
+2026-02-07 13:16:50 | INFO | engines.mind.dd_engine:_execute_interaction_command:346 | 🎲 Voyager encountered [crystal] at (9, 10). Attempting [examine] (DC 10)...
+2026-02-07 13:16:50 | INFO | engines.mind.dd_engine:_execute_interaction_command:348 | 🎯 Roll: 18 + 0 = 18 vs DC 10 -> SUCCESS
+2026-02-07 13:16:50 | ERROR | engines.mind.dd_engine:_execute_command:242 | 💥 Command execution failed: WorldDelta.__init__() missing 1 required positional argument: 'timestamp'
+2026-02-07 13:16:51 | INFO | actors.voyager:_generate_idle_intent:468 | 🎯 Object-Aware Voyager: Found interactable object at (9, 10)
+2026-02-07 13:16:51 | INFO | engines.mind.dd_engine:_execute_interaction_command:346 | 🎲 Voyager encountered [crystal] at (9, 10). Attempting [examine] (DC 10)...
+2026-02-07 13:16:51 | INFO | engines.mind.dd_engine:_execute_interaction_command:348 | 🎯 Roll: 18 + 0 = 18 vs DC 10 -> SUCCESS
+2026-02-07 13:16:51 | ERROR | engines.mind.dd_engine:_execute_command:242 | 💥 Command execution failed: WorldDelta.__init__() missing 1 required positional argument: 'timestamp'
+2026-02-07 13:16:51 | INFO | actors.voyager:_generate_idle_intent:468 | 🎯 Object-Aware Voyager: Found interactable object at (9, 10)
+2026-02-07 13:16:51 | INFO | engines.mind.dd_engine:_execute_interaction_command:346 | 🎲 Voyager encountered [crystal] at (9, 10). Attempting [examine] (DC 10)...
+2026-02-07 13:16:51 | INFO | engines.mind.dd_engine:_execute_interaction_command:348 | 🎯 Roll: 18 + 0 = 18 vs DC 10 -> SUCCESS
+2026-02-07 13:16:51 | ERROR | engines.mind.dd_engine:_execute_command:242 | 💥 Command execution failed: WorldDelta.__init__() missing 1 required positional argument: 'timestamp'
+2026-02-07 13:16:52 | INFO | actors.voyager:_generate_idle_intent:468 | 🎯 Object-Aware Voyager: Found interactable object at (9, 10)
+2026-02-07 13:16:52 | INFO | engines.mind.dd_engine:_execute_interaction_command:346 | 🎲 Voyager encountered [crystal] at (9, 10). Attempting [examine] (DC 10)...
+2026-02-07 13:16:52 | INFO | engines.mind.dd_engine:_execute_interaction_command:348 | 🎯 Roll: 18 + 0 = 18 vs DC 10 -> SUCCESS
+2026-02-07 13:16:52 | ERROR | engines.mind.dd_engine:_execute_command:242 | 💥 Command execution failed: WorldDelta.__init__() missing 1 required positional argument: 'timestamp'

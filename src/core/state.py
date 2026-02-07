@@ -357,6 +357,7 @@ class InteractionIntent:
     intent_type: str = IntentType.INTERACTION.value
     target_entity: str = ""
     interaction_type: str = ""
+    target_position: Tuple[int, int] = (0, 0)
     parameters: Dict[str, Any] = field(default_factory=dict)
     timestamp: float = field(default_factory=time.time)
 
