@@ -278,18 +278,24 @@ class TinyFarmProcessor:
     
     def _create_material_palette(self, material_type: MaterialType) -> List[str]:
         """Create DGT-compatible palette for material type"""
+        # Handle string material types as well
+        if isinstance(material_type, str):
+            material_str = material_type.lower()
+        else:
+            material_str = material_type.value.lower() if hasattr(material_type, 'value') else str(material_type).lower()
+        
         palettes = {
-            MaterialType.ORGANIC: ["#4b7845", "#3a6b35", "#2d5a27", "#1a4d1a"],
-            MaterialType.WOOD: ["#8b4513", "#6b3410", "#5d2f0d", "#4a2408"],
-            MaterialType.STONE: ["#8b8680", "#757575", "#696969", "#5a5a5a"],
-            MaterialType.METAL: ["#c0c0c0", "#a9a9a9", "#808080", "#696969"],
-            MaterialType.WATER: ["#4682b4", "#5f9ea0", "#87ceeb", "#b0e0e6"],
-            MaterialType.FIRE: ["#ff6347", "#ff4500", "#ff8c00", "#ffa500"],
-            MaterialType.CRYSTAL: ["#9370db", "#8a2be2", "#9932cc", "#ba55d3"],
-            MaterialType.VOID: ["#1a1a2e", "#16213e", "#0f3460", "#533483"]
+            "organic": ["#4b7845", "#3a6b35", "#2d5a27", "#1a4d1a"],
+            "wood": ["#8b4513", "#6b3410", "#5d2f0d", "#4a2408"],
+            "stone": ["#8b8680", "#757575", "#696969", "#5a5a5a"],
+            "metal": ["#c0c0c0", "#a9a9a9", "#808080", "#696969"],
+            "water": ["#4682b4", "#5f9ea0", "#87ceeb", "#b0e0e6"],
+            "fire": ["#ff6347", "#ff4500", "#ff8c00", "#ffa500"],
+            "crystal": ["#9370db", "#8a2be2", "#9932cc", "#ba55d3"],
+            "void": ["#1a1a2e", "#16213e", "#0f3460", "#533483"]
         }
         
-        return palettes.get(material_type, palettes[MaterialType.ORGANIC])
+        return palettes.get(material_str, palettes["organic"])
     
     def _create_asset_metadata(self, config: TinyFarmAssetConfig) -> AssetMetadata:
         """Create asset metadata with DGT DNA tags"""
@@ -309,10 +315,13 @@ class TinyFarmProcessor:
         if "Harvestable" in config.tags:
             interaction_hooks.append("on_harvest")
         
+        # Handle material type as string
+        material_id = config.material_type.value if hasattr(config.material_type, 'value') else str(config.material_type)
+        
         return AssetMetadata(
             asset_id=config.dgt_sprite_id,
             asset_type=config.asset_type,
-            material_id=config.material_type,
+            material_id=material_id,
             description=config.description,
             tags=tags,
             collision="collision" in tags,
