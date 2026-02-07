@@ -292,6 +292,7 @@ class SimulationServer:
         self.physics_engine = PhysicsEngine() if self.config.enable_physics else None
         self.d20_system = D20System() if self.config.enable_d20 else None
         self.genetic_service = GeneticBreedingService() if self.config.enable_genetics else None
+        self.racing_service = RacingService() if self.config.enable_racing else None
         
         # State management
         self.current_state = GameState()
@@ -378,6 +379,12 @@ class SimulationServer:
             if new_turtle_packets:
                 logger.info(f"🧬 {len(new_turtle_packets)} new turtles born")
                 self._sync_turtles_to_entities(new_turtle_packets)
+        
+        # Update racing service (terrain-aware movement)
+        if self.racing_service:
+            race_state = self.racing_service.update_race(dt)
+            if race_state:
+                self._sync_race_to_entities(race_state)
         
         # Update frame count
         self.frame_count += 1
@@ -546,6 +553,67 @@ class SimulationServer:
             return {}
         
         return self.genetic_service.get_population_stats()
+    
+    def _sync_race_to_entities(self, race_state: Dict[str, Any]):
+        """Sync racing state to entity system"""
+        for turtle_id, racer_data in race_state.get('racers', {}).items():
+            # Check if racer entity exists
+            if turtle_id in self.entity_system.entities:
+                entity = self.entity_system.entities[turtle_id]
+                
+                # Update position
+                entity.x = int(racer_data['x'])
+                entity.y = int(racer_data['y'])
+                
+                # Update racing metadata
+                entity.metadata.update({
+                    'race_position': racer_data['position'],
+                    'race_speed': racer_data['speed'],
+                    'race_stamina': racer_data['stamina'],
+                    'race_checkpoint': racer_data['current_checkpoint'],
+                    'race_distance': racer_data['distance'],
+                    'race_finished': racer_data['finished']
+                })
+    
+    def start_race(self, participants: List[str]) -> bool:
+        """Start a race with specified participants"""
+        if not self.racing_service:
+            logger.warning("🏁 Racing service not enabled")
+            return False
+        
+        # Register participants
+        for turtle_id in participants:
+            if turtle_id in self.entity_system.entities:
+                entity = self.entity_system.entities[turtle_id]
+                
+                # Create genome from entity metadata or use default
+                genome_data = entity.metadata.get('genome_data', {})
+                if genome_data:
+                    genome = TurboGenome(**genome_data)
+                else:
+                    # Create default genome
+                    genome = TurboGenome(
+                        turtle_id=turtle_id,
+                        generation=entity.metadata.get('generation', 0)
+                    )
+                
+                # Register with racing service
+                self.racing_service.register_racer(turtle_id, genome)
+        
+        # Start the race
+        return self.racing_service.start_race()
+    
+    def get_race_leaderboard(self, limit: int = 10) -> List[Dict[str, Any]]:
+        """Get current race leaderboard"""
+        if not self.racing_service:
+            return []
+        
+        return self.racing_service.get_leaderboard(limit)
+    
+    def save_race_log(self, filename: Optional[str] = None):
+        """Save race results to log"""
+        if self.racing_service:
+            self.racing_service.save_race_log(filename)
     
     def _update_performance_stats(self, dt: float):
         """Update performance statistics"""
