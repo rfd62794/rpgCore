@@ -1,0 +1,58 @@
+[build-system]
+requires = ["maturin>=1.0,<2.0"]
+build-backend = "maturin"
+
+[project]
+name = "dgt-harvest-rust"
+version = "0.1.0"
+description = "High-performance Rust-powered sprite analysis for DGT engine"
+authors = [{name = "DGT Team"}]
+license = {text = "MIT"}
+requires-python = ">=3.12"
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Rust",
+    "Topic :: Games/Entertainment",
+    "Topic :: Multimedia :: Graphics",
+]
+dependencies = [
+    "pydantic>=2.6.0",
+    "loguru>=0.7.2",
+    "rich>=13.7.0",
+    "Pillow>=10.2.0",
+    "numpy>=1.26.4",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.4.4",
+    "pytest-cov>=4.1.0",
+    "pytest-mock>=3.12.0",
+    "black>=24.1.1",
+    "isort>=5.13.2",
+    "mypy>=1.8.0",
+    "types-Pillow>=10.2.0.20240106",
+]
+
+[tool.maturin]
+python-source = "python"
+module-name = "dgt_harvest_rust._dgt_harvest_rust"
+features = ["pyo3/extension-module"]
+
+[tool.black]
+line-length = 88
+target-version = ['py312']
+
+[tool.isort]
+profile = "black"
+line_length = 88
+
+[tool.mypy]
+python_version = "3.12"
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = true

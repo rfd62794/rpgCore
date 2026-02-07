@@ -3,30 +3,20 @@ Rust-Powered Sprite Scanner - Material Triage Engine
 High-performance intelligent asset analysis with Rust backend
 """
 
-import ctypes
 import sys
-from typing import Tuple, Optional, Dict, Any
 from pathlib import Path
+from typing import Tuple, Optional, Dict, Any
 from loguru import logger
-import subprocess
 
-# Load the compiled Rust library
+# Try to import the compiled Rust module using PyO3/maturin
 try:
-    # Try to load the compiled Rust module
-    if sys.platform.startswith('win'):
-        lib_path = Path(__file__).parent / "maturin" / "dgt_harvest_rust.dll"
-    else:
-        lib_path = Path(__file__).parent / "libdgt_harvest_rust.so"
-    
-    if lib_path.exists():
-        rust_lib = ctypes.CDLL(str(lib_path))
-        logger.success(f"🦀 Loaded Rust Material Triage Engine from {lib_path}")
-    else:
-        logger.warning("⚠️ Rust Material Triage Engine not found, falling back to Python implementation")
-        rust_lib = None
-except Exception as e:
-    logger.error(f"⚠️ Failed to load Rust library: {e}")
-    rust_lib = None
+    import dgt_harvest_rust
+    RUST_AVAILABLE = True
+    logger.success("🦀 Loaded Rust Material Triage Engine")
+except ImportError as e:
+    RUST_AVAILABLE = False
+    logger.warning(f"⚠️ Rust Material Triage Engine not available: {e}")
+    logger.info("🐍 Using Python fallback scanner")
 
 
 class RustSpriteScanner:
@@ -39,12 +29,10 @@ class RustSpriteScanner:
         self.gray_threshold = gray_threshold
         self.diversity_threshold = diversity_threshold
         
-        # Try to load Rust Material Triage Engine
-        self.rust_engine = None
-        if rust_lib:
+        # Initialize Rust Material Triage Engine if available
+        self.rust_engine: Optional[dgt_harvest_rust.MaterialTriageEngine] = None
+        if RUST_AVAILABLE:
             try:
-                # Import the Rust Material Triage Engine
-                import dgt_harvest_rust
                 self.rust_engine = dgt_harvest_rust.MaterialTriageEngine()
                 logger.info("🚀 Using Rust Material Triage Engine for intelligent analysis")
             except Exception as e:
@@ -61,15 +49,11 @@ class RustSpriteScanner:
     def _analyze_with_rust(self, pixels: bytes, width: int, height: int) -> Dict[str, Any]:
         """Use Rust Material Triage Engine for maximum intelligence"""
         try:
-            # Use Rust Material Triage Engine
-            from dgt_harvest_rust import MaterialTriageEngine
-            
-            # Convert pixels to bytes for Rust
-            import pyo3
-            py_bytes = pyo3.PyBytes(pixels)
+            if not self.rust_engine:
+                raise RuntimeError("Rust engine not initialized")
             
             # Get complete Material DNA analysis
-            material_dna = self.rust_engine.analyze_sprite(py_bytes, width, height)
+            material_dna = self.rust_engine.analyze_sprite(pixels, width, height)
             
             # Convert Material DNA to analysis format
             analysis = {
@@ -187,13 +171,8 @@ class RustSpriteScanner:
         if self.rust_engine:
             try:
                 # Use Rust Material Triage Engine for edge cleaning
-                from dgt_harvest_rust import MaterialTriageEngine
-                import pyo3
-                
-                py_bytes = pyo3.PyBytes(pixels)
-                
                 # Get Alpha-Bounding Box from Rust
-                abb = self.rust_engine.get_alpha_bounding_box(py_bytes, width, height)
+                abb = self.rust_engine.get_alpha_bounding_box(pixels, width, height)
                 x, y, bbox_width, bbox_height = abb
                 
                 # Create cleaned pixels based on ABB

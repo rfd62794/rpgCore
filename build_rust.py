@@ -50,11 +50,11 @@ def check_maturin():
 
 
 def build_rust_module():
-    """Build the Rust module using maturin build mode (Python 3.12 compatible)"""
-    rust_dir = Path('dgt_harvest_rust')
+    """Build the Rust module using maturin with pyproject.toml support"""
+    project_root = Path('.')
     
-    if not rust_dir.exists():
-        logger.error(f"❌ Rust directory not found: {rust_dir}")
+    if not (project_root / 'pyproject.toml').exists():
+        logger.error("❌ pyproject.toml not found in project root")
         return False
     
     # Set environment variables for proper Python detection
@@ -64,23 +64,20 @@ def build_rust_module():
     env["PYO3_PYTHON"] = sys.executable
     env["PYO3_USE_ABI3_FORWARD_COMPATIBILITY"] = "1"
     
-    # Use build mode instead of develop (no virtualenv required)
-    logger.info("🔨 Building Rust harvest core in build mode (Python 3.12 compatible)...")
+    # Use develop mode for rapid iteration
+    logger.info("🔨 Building Rust harvest core in develop mode (Python 3.12 compatible)...")
     
     try:
-        # Use maturin build (works without virtualenv)
-        command = ['maturin', 'build', '--release', '--target-dir', '..']
+        # Use maturin develop for rapid iteration
+        command = ['maturin', 'develop', '--release']
         
         logger.info(f"Running: {' '.join(command)}")
-        result = subprocess.run(command, cwd=rust_dir, capture_output=True, text=True, 
+        result = subprocess.run(command, cwd=project_root, capture_output=True, text=True, 
                               encoding='utf-8', errors='replace', env=env)
         
         if result.returncode == 0:
             logger.success("✅ Rust module built successfully")
             logger.info(result.stdout)
-            
-            # Install the DLL directly (no wheel needed)
-            logger.info("📦 Rust DLL built successfully!")
             
             # Verify the module can be imported
             logger.info("🔍 Verifying Rust module import...")

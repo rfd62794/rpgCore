@@ -8,7 +8,7 @@ name = "dgt_harvest_rust"
 crate-type = ["cdylib"]
 
 [dependencies]
-pyo3 = { version = "0.20", features = ["extension-module"] }
+pyo3 = { version = "0.23", features = ["extension-module", "abi3-py312"] }
 image = "0.24"
 rayon = "1.8"
 imageproc = "0.23"
