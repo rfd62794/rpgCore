@@ -8149,3 +8149,123 @@
 2026-02-07 13:36:44 | INFO | actors.voyager:_discover_next_interest_point:801 | 🔍 No nearby Interest Points - expanding search
 2026-02-07 13:36:44 | INFO | actors.voyager:_explore_further:825 | 🗺️ Exploring new area: (40, 42)
 2026-02-07 13:36:44 | INFO | actors.voyager:_follow_legacy_script:756 | 🚶 Script position reached: (40, 42)
+2026-02-07 13:37:49 | INFO | utils.logger:initialize:59 | 📝 Logging system initialized
+2026-02-07 13:37:49 | ERROR | utils.asset_loader:_load_object_definitions:219 | 💥 Failed to load objects.yaml: expected '<document start>', but found '<anchor>'
+  in "assets\objects.yaml", line 22, column 1
+2026-02-07 13:37:49 | INFO | utils.asset_loader:_load_prefab_definitions:245 | 🏗️ Loaded 10 prefab definitions
+2026-02-07 13:37:49 | INFO | utils.asset_loader:_generate_tile_sprites:256 | 🎨 Generated 11 tile sprites
+2026-02-07 13:37:49 | INFO | utils.asset_loader:_generate_object_sprites:265 | 🎨 Generated 10 object sprites
+2026-02-07 13:37:49 | ERROR | utils.asset_loader:_generate_actor_sprites:554 | 💥 Failed to generate actor sprites: Size must be a sequence of length 2
+2026-02-07 13:37:49 | ERROR | utils.asset_loader:_generate_fallback_sprites:582 | 💥 Failed to generate fallback sprites: Size must be a sequence of length 2
+2026-02-07 13:37:49 | ERROR | utils.asset_loader:_generate_effect_sprites:299 | 💥 Failed to generate effect sprites: Size must be a sequence of length 2
+2026-02-07 13:37:49 | INFO | utils.asset_loader:_load_assets:129 | 🎨 Asset Loader initialized - 0 assets loaded
+2026-02-07 13:37:49 | INFO | utils.asset_loader:__init__:110 | 🎨 Asset Loader initialized - 0 assets loaded
+2026-02-07 13:37:49 | INFO | utils.asset_loader:__init__:664 | 🏗️ Object Registry initialized
+2026-02-07 13:37:49 | INFO | engines.world.world_engine:__init__:122 | 🌍 World Engine initialized with seed: FOREST_GATE_001
+2026-02-07 13:37:49 | ERROR | utils.asset_loader:_load_object_definitions:219 | 💥 Failed to load objects.yaml: expected '<document start>', but found '<anchor>'
+  in "assets\objects.yaml", line 22, column 1
+2026-02-07 13:37:49 | INFO | utils.asset_loader:_load_prefab_definitions:245 | 🏗️ Loaded 10 prefab definitions
+2026-02-07 13:37:49 | INFO | utils.asset_loader:_generate_tile_sprites:256 | 🎨 Generated 11 tile sprites
+2026-02-07 13:37:49 | INFO | utils.asset_loader:_generate_object_sprites:265 | 🎨 Generated 10 object sprites
+2026-02-07 13:37:49 | ERROR | utils.asset_loader:_generate_actor_sprites:554 | 💥 Failed to generate actor sprites: Size must be a sequence of length 2
+2026-02-07 13:37:49 | ERROR | utils.asset_loader:_generate_fallback_sprites:582 | 💥 Failed to generate fallback sprites: Size must be a sequence of length 2
+2026-02-07 13:37:49 | ERROR | utils.asset_loader:_generate_effect_sprites:299 | 💥 Failed to generate effect sprites: Size must be a sequence of length 2
+2026-02-07 13:37:49 | INFO | utils.asset_loader:_load_assets:129 | 🎨 Asset Loader initialized - 0 assets loaded
+2026-02-07 13:37:49 | INFO | utils.asset_loader:__init__:110 | 🎨 Asset Loader initialized - 0 assets loaded
+2026-02-07 13:37:49 | INFO | utils.asset_loader:__init__:664 | 🏗️ Object Registry initialized
+2026-02-07 13:37:49 | INFO | engines.mind.combat_resolver:__init__:128 | ⚔️ Combat Resolver initialized
+2026-02-07 13:37:49 | INFO | engines.mind.dd_engine:__init__:104 | 🧠 D&D Engine initialized with seed: FOREST_GATE_001
+2026-02-07 13:37:49 | INFO | engines.mind.dd_engine:__init__:109 | 🧠 D&D Engine initialized - Command Pattern ready
+2026-02-07 13:37:49 | INFO | actors.voyager:__init__:70 | 🧭 Pathfinding Navigator initialized: 50x50
+2026-02-07 13:37:49 | INFO | actors.voyager:__init__:186 | 🎯 Intent Generator initialized
+2026-02-07 13:37:49 | INFO | actors.voyager:__init__:340 | 🚶 Voyager initialized - STATE_PONDERING support ready
+2026-02-07 13:37:49 | ERROR | utils.asset_loader:_load_object_definitions:219 | 💥 Failed to load objects.yaml: expected '<document start>', but found '<anchor>'
+  in "assets\objects.yaml", line 22, column 1
+2026-02-07 13:37:49 | INFO | utils.asset_loader:_load_prefab_definitions:245 | 🏗️ Loaded 10 prefab definitions
+2026-02-07 13:37:49 | INFO | utils.asset_loader:_generate_tile_sprites:256 | 🎨 Generated 11 tile sprites
+2026-02-07 13:37:50 | INFO | utils.asset_loader:_generate_object_sprites:265 | 🎨 Generated 10 object sprites
+2026-02-07 13:37:50 | ERROR | utils.asset_loader:_generate_actor_sprites:554 | 💥 Failed to generate actor sprites: Size must be a sequence of length 2
+2026-02-07 13:37:50 | ERROR | utils.asset_loader:_generate_fallback_sprites:582 | 💥 Failed to generate fallback sprites: Size must be a sequence of length 2
+2026-02-07 13:37:50 | ERROR | utils.asset_loader:_generate_effect_sprites:299 | 💥 Failed to generate effect sprites: Size must be a sequence of length 2
+2026-02-07 13:37:50 | INFO | utils.asset_loader:_load_assets:129 | 🎨 Asset Loader initialized - 0 assets loaded
+2026-02-07 13:37:50 | INFO | utils.asset_loader:__init__:110 | 🎨 Asset Loader initialized - 0 assets loaded
+2026-02-07 13:37:50 | INFO | engines.mind.combat_resolver:__init__:128 | ⚔️ Combat Resolver initialized
+2026-02-07 13:37:50 | INFO | graphics.ppu_tk_native:__init__:428 | 🎨 Native Tkinter PPU initialized with multi-mode support
+2026-02-07 13:37:50 | INFO | actors.voyager:_follow_legacy_script:756 | 🚶 Script position reached: (10, 25)
+2026-02-07 13:37:51 | INFO | actors.voyager:_follow_legacy_script:756 | 🚶 Script position reached: (10, 20)
+2026-02-07 13:37:52 | INFO | actors.voyager:_follow_legacy_script:756 | 🚶 Script position reached: (10, 10)
+2026-02-07 13:37:54 | INFO | actors.voyager:_follow_legacy_script:756 | 🚶 Script position reached: (20, 10)
+2026-02-07 13:37:55 | INFO | actors.voyager:_follow_legacy_script:756 | 🚶 Script position reached: (25, 30)
+2026-02-07 13:37:56 | INFO | actors.voyager:_follow_legacy_script:756 | 🚶 Script position reached: (32, 32)
+2026-02-07 13:37:57 | INFO | actors.voyager:_follow_legacy_script:745 | 🚶 Legacy script complete - switching to Interest Point Discovery
+2026-02-07 13:37:57 | INFO | actors.voyager:_discover_next_interest_point:801 | 🔍 No nearby Interest Points - expanding search
+2026-02-07 13:37:57 | INFO | actors.voyager:_explore_further:825 | 🗺️ Exploring new area: (18, 23)
+2026-02-07 13:37:57 | INFO | actors.voyager:_follow_legacy_script:756 | 🚶 Script position reached: (18, 23)
+2026-02-07 13:37:58 | INFO | actors.voyager:_follow_legacy_script:745 | 🚶 Legacy script complete - switching to Interest Point Discovery
+2026-02-07 13:37:58 | INFO | actors.voyager:_discover_next_interest_point:801 | 🔍 No nearby Interest Points - expanding search
+2026-02-07 13:37:58 | INFO | actors.voyager:_explore_further:825 | 🗺️ Exploring new area: (15, 32)
+2026-02-07 13:37:58 | INFO | actors.voyager:_follow_legacy_script:756 | 🚶 Script position reached: (15, 32)
+2026-02-07 13:37:59 | INFO | actors.voyager:_follow_legacy_script:745 | 🚶 Legacy script complete - switching to Interest Point Discovery
+2026-02-07 13:37:59 | INFO | actors.voyager:_discover_next_interest_point:801 | 🔍 No nearby Interest Points - expanding search
+2026-02-07 13:37:59 | INFO | actors.voyager:_explore_further:825 | 🗺️ Exploring new area: (0, 32)
+2026-02-07 13:38:00 | INFO | actors.voyager:_follow_legacy_script:756 | 🚶 Script position reached: (0, 32)
+2026-02-07 13:38:00 | INFO | actors.voyager:_follow_legacy_script:745 | 🚶 Legacy script complete - switching to Interest Point Discovery
+2026-02-07 13:38:00 | INFO | actors.voyager:_discover_next_interest_point:801 | 🔍 No nearby Interest Points - expanding search
+2026-02-07 13:38:00 | INFO | actors.voyager:_explore_further:825 | 🗺️ Exploring new area: (0, 49)
+2026-02-07 13:38:01 | INFO | actors.voyager:_follow_legacy_script:756 | 🚶 Script position reached: (0, 49)
+2026-02-07 13:38:01 | INFO | actors.voyager:_follow_legacy_script:745 | 🚶 Legacy script complete - switching to Interest Point Discovery
+2026-02-07 13:38:01 | INFO | actors.voyager:_discover_next_interest_point:801 | 🔍 No nearby Interest Points - expanding search
+2026-02-07 13:38:01 | INFO | actors.voyager:_explore_further:825 | 🗺️ Exploring new area: (0, 44)
+2026-02-07 13:38:02 | INFO | actors.voyager:_follow_legacy_script:756 | 🚶 Script position reached: (0, 44)
+2026-02-07 13:38:02 | INFO | actors.voyager:_follow_legacy_script:745 | 🚶 Legacy script complete - switching to Interest Point Discovery
+2026-02-07 13:38:02 | INFO | actors.voyager:_discover_next_interest_point:801 | 🔍 No nearby Interest Points - expanding search
+2026-02-07 13:38:02 | INFO | actors.voyager:_explore_further:825 | 🗺️ Exploring new area: (0, 38)
+2026-02-07 13:38:03 | INFO | actors.voyager:_follow_legacy_script:756 | 🚶 Script position reached: (0, 38)
+2026-02-07 13:38:04 | INFO | actors.voyager:_follow_legacy_script:745 | 🚶 Legacy script complete - switching to Interest Point Discovery
+2026-02-07 13:38:04 | INFO | actors.voyager:_discover_next_interest_point:801 | 🔍 No nearby Interest Points - expanding search
+2026-02-07 13:38:04 | INFO | actors.voyager:_explore_further:825 | 🗺️ Exploring new area: (0, 27)
+2026-02-07 13:38:04 | INFO | actors.voyager:_follow_legacy_script:756 | 🚶 Script position reached: (0, 27)
+2026-02-07 13:38:05 | INFO | actors.voyager:_follow_legacy_script:745 | 🚶 Legacy script complete - switching to Interest Point Discovery
+2026-02-07 13:38:05 | INFO | actors.voyager:_discover_next_interest_point:801 | 🔍 No nearby Interest Points - expanding search
+2026-02-07 13:38:05 | INFO | actors.voyager:_explore_further:825 | 🗺️ Exploring new area: (10, 45)
+2026-02-07 13:38:05 | INFO | actors.voyager:_follow_legacy_script:756 | 🚶 Script position reached: (10, 45)
+2026-02-07 13:38:06 | INFO | actors.voyager:_follow_legacy_script:745 | 🚶 Legacy script complete - switching to Interest Point Discovery
+2026-02-07 13:38:06 | INFO | actors.voyager:_discover_next_interest_point:801 | 🔍 No nearby Interest Points - expanding search
+2026-02-07 13:38:06 | INFO | actors.voyager:_explore_further:825 | 🗺️ Exploring new area: (28, 36)
+2026-02-07 13:38:07 | INFO | actors.voyager:_follow_legacy_script:756 | 🚶 Script position reached: (28, 36)
+2026-02-07 13:38:07 | INFO | actors.voyager:_follow_legacy_script:745 | 🚶 Legacy script complete - switching to Interest Point Discovery
+2026-02-07 13:38:07 | INFO | actors.voyager:_discover_next_interest_point:801 | 🔍 No nearby Interest Points - expanding search
+2026-02-07 13:38:07 | INFO | actors.voyager:_explore_further:825 | 🗺️ Exploring new area: (24, 40)
+2026-02-07 13:38:08 | INFO | actors.voyager:_follow_legacy_script:756 | 🚶 Script position reached: (24, 40)
+2026-02-07 13:38:08 | INFO | actors.voyager:_follow_legacy_script:745 | 🚶 Legacy script complete - switching to Interest Point Discovery
+2026-02-07 13:38:08 | INFO | actors.voyager:_discover_next_interest_point:801 | 🔍 No nearby Interest Points - expanding search
+2026-02-07 13:38:08 | INFO | actors.voyager:_explore_further:825 | 🗺️ Exploring new area: (41, 38)
+2026-02-07 13:38:09 | INFO | actors.voyager:_follow_legacy_script:756 | 🚶 Script position reached: (41, 38)
+2026-02-07 13:38:09 | INFO | actors.voyager:_follow_legacy_script:745 | 🚶 Legacy script complete - switching to Interest Point Discovery
+2026-02-07 13:38:09 | INFO | actors.voyager:_discover_next_interest_point:801 | 🔍 No nearby Interest Points - expanding search
+2026-02-07 13:38:09 | INFO | actors.voyager:_explore_further:825 | 🗺️ Exploring new area: (49, 18)
+2026-02-07 13:38:10 | INFO | actors.voyager:_follow_legacy_script:756 | 🚶 Script position reached: (49, 18)
+2026-02-07 13:38:11 | INFO | actors.voyager:_follow_legacy_script:745 | 🚶 Legacy script complete - switching to Interest Point Discovery
+2026-02-07 13:38:11 | INFO | actors.voyager:_discover_next_interest_point:801 | 🔍 No nearby Interest Points - expanding search
+2026-02-07 13:38:11 | INFO | actors.voyager:_explore_further:825 | 🗺️ Exploring new area: (49, 28)
+2026-02-07 13:38:11 | INFO | actors.voyager:_follow_legacy_script:756 | 🚶 Script position reached: (49, 28)
+2026-02-07 13:38:12 | INFO | actors.voyager:_follow_legacy_script:745 | 🚶 Legacy script complete - switching to Interest Point Discovery
+2026-02-07 13:38:12 | INFO | actors.voyager:_discover_next_interest_point:801 | 🔍 No nearby Interest Points - expanding search
+2026-02-07 13:38:12 | INFO | actors.voyager:_explore_further:825 | 🗺️ Exploring new area: (37, 46)
+2026-02-07 13:38:13 | INFO | actors.voyager:_follow_legacy_script:756 | 🚶 Script position reached: (37, 46)
+2026-02-07 13:38:13 | INFO | actors.voyager:_follow_legacy_script:745 | 🚶 Legacy script complete - switching to Interest Point Discovery
+2026-02-07 13:38:13 | INFO | actors.voyager:_discover_next_interest_point:801 | 🔍 No nearby Interest Points - expanding search
+2026-02-07 13:38:13 | INFO | actors.voyager:_explore_further:825 | 🗺️ Exploring new area: (24, 28)
+2026-02-07 13:38:14 | INFO | actors.voyager:_follow_legacy_script:756 | 🚶 Script position reached: (24, 28)
+2026-02-07 13:38:14 | INFO | actors.voyager:_follow_legacy_script:745 | 🚶 Legacy script complete - switching to Interest Point Discovery
+2026-02-07 13:38:14 | INFO | actors.voyager:_discover_next_interest_point:801 | 🔍 No nearby Interest Points - expanding search
+2026-02-07 13:38:14 | INFO | actors.voyager:_explore_further:825 | 🗺️ Exploring new area: (36, 11)
+2026-02-07 13:38:15 | INFO | actors.voyager:_follow_legacy_script:756 | 🚶 Script position reached: (36, 11)
+2026-02-07 13:38:15 | INFO | actors.voyager:_follow_legacy_script:745 | 🚶 Legacy script complete - switching to Interest Point Discovery
+2026-02-07 13:38:15 | INFO | actors.voyager:_discover_next_interest_point:801 | 🔍 No nearby Interest Points - expanding search
+2026-02-07 13:38:15 | INFO | actors.voyager:_explore_further:825 | 🗺️ Exploring new area: (48, 16)
+2026-02-07 13:38:16 | INFO | actors.voyager:_follow_legacy_script:756 | 🚶 Script position reached: (48, 16)
+2026-02-07 13:38:17 | INFO | actors.voyager:_follow_legacy_script:745 | 🚶 Legacy script complete - switching to Interest Point Discovery
+2026-02-07 13:38:17 | INFO | actors.voyager:_discover_next_interest_point:801 | 🔍 No nearby Interest Points - expanding search
+2026-02-07 13:38:17 | INFO | actors.voyager:_explore_further:825 | 🗺️ Exploring new area: (39, 14)
+2026-02-07 13:38:17 | INFO | actors.voyager:_follow_legacy_script:756 | 🚶 Script position reached: (39, 14)
