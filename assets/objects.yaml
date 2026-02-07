@@ -1,0 +1,224 @@
+---
+# Core Object Definitions
+# ADR 086: The Fault-Tolerant Asset Pipeline
+# Links Materials to Sprites - The Blueprint Layer
+
+# Wooden Objects
+wooden_door:
+  material: "oak_wood"
+  sprite_id: "door_wood"
+  state: "closed"
+  integrity: 75
+  collision: true
+  friction: 0.4
+  interaction_hooks: ["examine", "open"]
+  d20_checks:
+    lockpick: {"difficulty": 15, "skill": "thievery", "success": "unlock_door"}
+    force: {"difficulty": 12, "skill": "strength", "success": "break_door"}
+  triggers:
+    on_open: "unlock_required"
+    on_break: "splinter_effect"
+
+wooden_chest:
+  material: "pine_wood"
+  sprite_id: "chest_wood"
+  state: "locked"
+  integrity: 60
+  collision: true
+  friction: 0.4
+  interaction_hooks: ["examine", "open", "search"]
+  d20_checks:
+    lockpick: {"difficulty": 18, "skill": "thievery", "success": "unlock_chest"}
+    force: {"difficulty": 14, "skill": "strength", "success": "smash_chest"}
+  triggers:
+    on_open: "loot_release"
+    on_break: "item_destruction"
+
+wooden_box:
+  material: "pine_wood"
+  sprite_id: "box_wood"
+  state: "closed"
+  integrity: 40
+  collision: true
+  friction: 0.4
+  interaction_hooks: ["examine", "open", "take"]
+  d20_checks:
+    open: {"difficulty": 10, "skill": "dexterity", "success": "open_box"}
+    force: {"difficulty": 8, "skill": "strength", "success": "smash_box"}
+  triggers:
+    on_open: "item_release"
+    on_break: "wood_fragmentation"
+
+signpost:
+  material: "oak_wood"
+  sprite_id: "sign_wood"
+  state: "weathered"
+  integrity: 70
+  collision: false
+  friction: 0.4
+  interaction_hooks: ["examine", "read"]
+  d20_checks:
+    read: {"difficulty": 5, "skill": "literacy", "success": "read_sign"}
+
+# Stone Objects
+stone_wall:
+  material: "granite"
+  sprite_id: "wall_stone"
+  state: "intact"
+  integrity: 150
+  collision: true
+  friction: 0.8
+  interaction_hooks: ["examine", "touch"]
+  d20_checks:
+    climb: {"difficulty": 20, "skill": "athletics", "success": "climb_wall"}
+    break: {"difficulty": 25, "skill": "strength", "success": "break_wall"}
+  triggers:
+    on_break: "collapse_effect"
+
+crystal:
+  material: "crystal"
+  sprite_id: "crystal"
+  state: "pristine"
+  integrity: 40
+  collision: false
+  friction: 0.2
+  interaction_hooks: ["examine", "touch", "harvest"]
+  d20_checks:
+    examine: {"difficulty": 10, "skill": "arcana", "success": "detect_magic"}
+    harvest: {"difficulty": 15, "skill": "mining", "success": "extract_crystal"}
+  triggers:
+    on_touch: "magical_resonance"
+    on_break: "shard_explosion"
+
+# Metal Objects
+iron_chest:
+  material: "iron"
+  sprite_id: "chest_iron"
+  state: "locked"
+  integrity: 120
+  collision: true
+  friction: 0.6
+  interaction_hooks: ["examine", "open", "search"]
+  d20_checks:
+    lockpick: {"difficulty": 20, "skill": "thievery", "success": "unlock_chest"}
+    force: {"difficulty": 18, "skill": "strength", "success": "smash_chest"}
+  triggers:
+    on_open: "loot_release"
+    on_break: "metal_fragmentation"
+
+metal_door:
+  material: "steel"
+  sprite_id: "door_metal"
+  state: "sealed"
+  integrity: 100
+  collision: true
+  friction: 0.6
+  interaction_hooks: ["examine", "open"]
+  d20_checks:
+    force: {"difficulty": 22, "skill": "strength", "success": "bend_door"}
+    mechanics: {"difficulty": 18, "skill": "tinkering", "success": "open_mechanism"}
+  triggers:
+    on_open: "mechanism_required"
+    on_break: "metal_fragmentation"
+
+# Organic Objects
+tree:
+  material: "oak_wood"
+  sprite_id: "tree"
+  state: "healthy"
+  integrity: 80
+  collision: true
+  friction: 0.4
+  interaction_hooks: ["examine", "touch", "chop"]
+  d20_checks:
+    climb: {"difficulty": 12, "skill": "athletics", "success": "climb_tree"}
+    chop: {"difficulty": 10, "skill": "woodcutting", "success": "harvest_wood"}
+  triggers:
+    on_chop: "wood_harvest"
+    on_burn: "ash_production"
+
+bush:
+  material: "plant_matter"
+  sprite_id: "bush"
+  state: "flowering"
+  integrity: 20
+  collision: false
+  friction: 0.2
+  interaction_hooks: ["examine", "touch", "gather", "hide"]
+  d20_checks:
+    gather: {"difficulty": 5, "skill": "foraging", "success": "harvest_berries"}
+    hide: {"difficulty": 8, "skill": "stealth", "success": "hide_in_bush"}
+  triggers:
+    on_gather: "berry_harvest"
+    on_burn: "quick_ash"
+
+# Animated Objects (Sonic Field)
+sonic_flower:
+  material: "flower_petals"
+  sprite_id: "flower_anim_set"
+  state: "swaying"
+  integrity: 20
+  collision: false
+  friction: 0.1
+  tags: ["animated", "flora", "wind_sensitive", "sonic"]
+  interaction_hooks: ["examine", "touch", "collect"]
+  d20_checks:
+    examine: {"difficulty": 5, "skill": "nature", "success": "observe_pollen"}
+    collect: {"difficulty": 8, "skill": "dexterity", "success": "gather_flower"}
+    touch: {"difficulty": 3, "skill": "nature", "success": "feel_petals"}
+  triggers:
+    on_touch: "pollen_release"
+    on_wind: "sway_animation"
+  animation: "sonic_flower_sway"
+
+animated_flower:
+  material: "flower_petals"
+  sprite_id: "flower_animated"
+  state: "swaying"
+  integrity: 20
+  collision: false
+  friction: 0.1
+  tags: ["animated", "flora", "wind_sensitive"]
+  interaction_hooks: ["examine", "touch", "collect"]
+  d20_checks:
+    examine: {"difficulty": 5, "skill": "nature", "success": "observe_pollen"}
+    collect: {"difficulty": 8, "skill": "dexterity", "success": "gather_flower"}
+    touch: {"difficulty": 3, "skill": "nature", "success": "feel_petals"}
+  triggers:
+    on_touch: "pollen_release"
+    on_wind: "sway_animation"
+  animation: "flower_sway"
+
+# Liquid Objects
+water_puddle:
+  material: "water_base"
+  sprite_id: "water"
+  state: "fresh"
+  integrity: 100
+  collision: false
+  friction: 0.1
+  tags: ["fluid", "wet", "passable", "clean"]
+  interaction_hooks: ["examine", "touch", "drink"]
+  d20_checks:
+    drink: {"difficulty": 3, "skill": "survival", "success": "safe_drink"}
+    examine: {"difficulty": 5, "skill": "nature", "success": "check_purity"}
+  triggers:
+    on_drink: "hydration"
+    on_touch: "wet_effect"
+
+# Special Objects
+ancient_ruins:
+  material: "ancient_stone"
+  sprite_id: "ruins"
+  state: "crumbling"
+  integrity: 200
+  collision: true
+  friction: 0.7
+  tags: ["ancient", "mysterious", "structural"]
+  interaction_hooks: ["examine", "touch", "explore"]
+  d20_checks:
+    examine: {"difficulty": 15, "skill": "history", "success": "read_ruins"}
+    explore: {"difficulty": 18, "skill": "investigation", "success": "find_secret"}
+  triggers:
+    on_examine: "lore_discovery"
+    on_touch: "ancient_magic"
