@@ -128,7 +128,7 @@ class GameState(BaseModel):
     # Global standing with world powers
     reputation: Dict[str, int] = Field(
         default_factory=lambda: {
-            "city_watch": 0,
+            "law": 0,
             "underworld": 0,
             "clergy": 0
         }
