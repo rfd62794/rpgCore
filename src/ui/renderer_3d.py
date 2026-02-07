@@ -193,8 +193,7 @@ class ASCIIDoomRenderer:
     def _is_wall(self, chunk: WorldChunk, x: float, y: float) -> bool:
         """Check if a position is a wall."""
         # Check if coordinate is outside chunk boundaries
-        chunk_x = chunk.coordinate.x if hasattr(chunk, 'coordinate') else 0
-        chunk_y = chunk.coordinate.y if hasattr(chunk, 'coordinate') else 0
+        chunk_x, chunk_y, chunk_t = chunk.coordinate
         
         # Simple boundary check
         if x < chunk_x or x >= chunk_x + 1 or y < chunk_y or y >= chunk_y + 1:
