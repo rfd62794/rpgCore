@@ -445,7 +445,7 @@ class AutonomousDirector:
         """
         Generate narrative beacons using physical landmarks from the world map.
         
-        Enhanced to prioritize interior objects and provide specific targets.
+        Enhanced with Scene-Specific Scripting to prevent cross-biome drift.
         
         Args:
             context: Current game context
@@ -460,6 +460,11 @@ class AutonomousDirector:
             # Get current position and environment
             current_pos = self.get_voyager_position()
             current_env = self.world_map.get_current_environment(current_pos[0], current_pos[1])
+            
+            # Get current location name for scene-specific filtering
+            current_location = self.simulator.get_state().current_location if self.simulator.get_state() else "Unknown"
+            
+            logger.info(f"🎭 Director generating beacons for environment: {current_env.value} at location: {current_location}")
             
             # Priority 1: If in interior, target interactive objects
             if current_env == EnvironmentType.TAVERN_INTERIOR:
@@ -492,23 +497,60 @@ class AutonomousDirector:
                 beacons.append(beacon_data)
                 logger.info(f"🎯 Generated portal beacon: {current_landmark.name} at {current_landmark.coords}")
             
-            # Priority 3: If no interior/portal targets, generate travel beacons
+            # Priority 3: Scene-specific travel beacons (no cross-biome drift)
             if len(beacons) < num_beacons:
-                for env_type in [EnvironmentType.TOWN_SQUARE, EnvironmentType.TAVERN_INTERIOR, EnvironmentType.FOREST_PATH]:
-                    if env_type != current_env and len(beacons) < num_beacons:
-                        entry_point = self.world_map.get_zone_entry_point(env_type)
-                        if entry_point:
-                            zone = self.world_map.zones.get(env_type)
-                            beacon_data = {
-                                'beacon_id': f"travel_{env_type.value}",
-                                'target_coords': entry_point,
-                                'description': f"Travel to {zone.name}",
-                                'priority': 2,
-                                'intent_type': 'travel',
-                                'reasoning': f"Entry point to {zone.name}"
-                            }
-                            beacons.append(beacon_data)
-                            logger.info(f"🎯 Generated travel beacon: {zone.name} at {entry_point}")
+                # Only generate travel beacons to locations in the current environment
+                if current_env == EnvironmentType.TOWN_SQUARE:
+                    # Town Square beacons
+                    town_landmarks = self.world_map.get_landmarks_in_zone(current_env)
+                    portal_landmarks = [lm for lm in town_landmarks if lm.interaction_type in ["portal", "door"]]
+                    
+                    for landmark in portal_landmarks[:num_beacons]:
+                        beacon_data = {
+                            'beacon_id': f"visit_{landmark.name.lower().replace(' ', '_')}",
+                            'target_coords': landmark.coords,
+                            'description': f"Visit {landmark.name}",
+                            'priority': 1,
+                            'intent_type': 'explore',
+                            'reasoning': landmark.description
+                        }
+                        beacons.append(beacon_data)
+                        logger.info(f"🎯 Generated town square beacon: {landmark.name} at {landmark.coords}")
+                
+                elif current_env == EnvironmentType.FOREST_PATH:
+                    # Forest Path beacons
+                    forest_landmarks = self.world_map.get_landmarks_in_zone(current_env)
+                    object_landmarks = [lm for lm in forest_landmarks if lm.interaction_type in ["chest", "object"]]
+                    
+                    for landmark in object_landmarks[:num_beacons]:
+                        beacon_data = {
+                            'beacon_id': f"investigate_{landmark.name.lower().replace(' ', '_')}",
+                            'target_coords': landmark.coords,
+                            'description': f"Investigate {landmark.name}",
+                            'priority': 1,
+                            'intent_type': 'explore',
+                            'reasoning': landmark.description
+                        }
+                        beacons.append(beacon_data)
+                        logger.info(f"🎯 Generated forest path beacon: {landmark.name} at {landmark.coords}")
+                
+                elif current_env == EnvironmentType.TAVERN_INTERIOR:
+                    # Already handled interior objects above
+                    pass
+            
+            # Priority 4: If no scene-specific beacons, generate fallback
+            if len(beacons) < num_beacons:
+                current_pos = self.get_voyager_position()
+                fallback_beacon = {
+                    'beacon_id': 'explore_current_area',
+                    'target_coords': (current_pos[0] + 3, current_pos[1] + 3),
+                    'description': f"Explore the {current_location}",
+                    'priority': 3,
+                    'intent_type': 'explore',
+                    'reasoning': f"Basic exploration in {current_location}"
+                }
+                beacons.append(fallback_beacon)
+                logger.info(f"🎯 Generated fallback beacon: {current_location} at {current_pos}")
             
         except Exception as e:
             logger.error(f"❌ Failed to generate narrative beacons: {e}")
