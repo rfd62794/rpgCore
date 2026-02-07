@@ -129,6 +129,7 @@ class DGTLauncher:
         
         try:
             # Import and run asset baker
+            baker_path = self.src_dir / "utils" / "asset_baker.py"
             sys.path.append(str(self.src_dir / "utils"))
             from asset_baker import DGTAssetBaker
             
