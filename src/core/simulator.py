@@ -25,6 +25,7 @@ from deterministic_arbiter import DeterministicArbiter
 from sync_engines import ChroniclerEngine
 from quartermaster import Quartermaster
 from loot_system import LootSystem
+from core.world_map import get_world_map, EnvironmentType
 
 
 class ViewMode(Enum):
@@ -165,6 +166,13 @@ class SimulatorHost:
         self.chronicler: Optional[ChroniclerEngine] = None
         self.quartermaster: Optional[Quartermaster] = None
         self.loot_system: Optional[LootSystem] = None
+        
+        # World map for spatial authority
+        self.world_map = get_world_map()
+        
+        # View management
+        self.views: List[SimulatorView] = []
+        self.view_mode: ViewMode = ViewMode.TERMINAL
         
         # Timing and loop control
         self.target_fps = 30
@@ -366,6 +374,7 @@ class SimulatorHost:
             # BIOME TRANSITION HOOK: Update location if position changed
             if position_changed:
                 self._update_location_context()
+                self._check_spatial_transitions()
             
             # Loot generation
             loot_item = None
