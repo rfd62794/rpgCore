@@ -9,12 +9,16 @@ ADR 020: The Historian Utility & Sedimentary World-Gen Implementation
 
 import sqlite3
 import random
-import math
 from typing import Dict, List, Optional, Tuple, Any
 from dataclasses import dataclass
 from enum import Enum
 import json
 from datetime import datetime, timedelta
+import sys
+import os
+
+# Add src to path for imports
+sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
 
 from loguru import logger
 from world_ledger import WorldLedger, Coordinate, WorldChunk

@@ -305,7 +305,15 @@ class WorldFactory:
         Returns:
             List of historical descriptions
         """
-        return self.world_ledger.get_historical_context(coord, 0)
+        tags = self.world_ledger.get_historical_tags(coord)
+        
+        # Convert tags to descriptions
+        context = []
+        for tag in tags:
+            if tag["intensity"] > 0.3:  # Only show significant tags
+                context.append(tag["description"])
+        
+        return context
     
     def create_location_with_history(
         self, 
