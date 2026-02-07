@@ -93,7 +93,7 @@ class SemanticResolver:
         self.intent_library = intent_library
         self.confidence_threshold = confidence_threshold
         self.model_name = model_name
-        self.embeddings_path = embeddings_path or Path("data/embeddings.safetensors")
+        self.embeddings_path = embeddings_path or Path("assets/intent_vectors.safetensors")
         
         # Try to load pre-baked embeddings for instant boot
         if self._load_prebaked_embeddings():
@@ -117,7 +117,7 @@ class SemanticResolver:
         
         try:
             # Load pre-baked embeddings
-            from utils.bake_embeddings import SemanticBaker
+            from utils.baker import SemanticBaker
             baker = SemanticBaker(model_name=self.model_name)
             all_embeddings = baker.load_embeddings(self.embeddings_path)
             
