@@ -15,6 +15,7 @@ from enum import Enum
 import time
 from pathlib import Path
 import json
+import math
 
 import numpy as np
 from loguru import logger
@@ -23,6 +24,7 @@ from pydantic import BaseModel
 # Import game components
 from .narrative_engine import ActionOutcome, NarrativeEngine
 from .game_state import GameState, NPC
+from .logic.orientation import OrientationManager, Orientation
 
 
 class PreCachePriority(Enum):
