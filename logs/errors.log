@@ -6124,3 +6124,29 @@
 2026-02-07 13:30:54 | ERROR | utils.asset_loader:_generate_actor_sprites:536 | 💥 Failed to generate actor sprites: Size must be a sequence of length 2
 2026-02-07 13:30:54 | ERROR | utils.asset_loader:_generate_fallback_sprites:564 | 💥 Failed to generate fallback sprites: Size must be a sequence of length 2
 2026-02-07 13:30:54 | ERROR | utils.asset_loader:_generate_effect_sprites:299 | 💥 Failed to generate effect sprites: Size must be a sequence of length 2
+2026-02-07 13:31:06 | ERROR | utils.asset_loader:_generate_actor_sprites:536 | 💥 Failed to generate actor sprites: Size must be a sequence of length 2
+2026-02-07 13:31:06 | ERROR | utils.asset_loader:_generate_fallback_sprites:564 | 💥 Failed to generate fallback sprites: Size must be a sequence of length 2
+2026-02-07 13:31:06 | ERROR | utils.asset_loader:_generate_effect_sprites:299 | 💥 Failed to generate effect sprites: Size must be a sequence of length 2
+2026-02-07 13:31:06 | ERROR | utils.asset_loader:_generate_actor_sprites:536 | 💥 Failed to generate actor sprites: Size must be a sequence of length 2
+2026-02-07 13:31:06 | ERROR | utils.asset_loader:_generate_fallback_sprites:564 | 💥 Failed to generate fallback sprites: Size must be a sequence of length 2
+2026-02-07 13:31:06 | ERROR | utils.asset_loader:_generate_effect_sprites:299 | 💥 Failed to generate effect sprites: Size must be a sequence of length 2
+2026-02-07 13:31:06 | ERROR | utils.asset_loader:_generate_actor_sprites:536 | 💥 Failed to generate actor sprites: Size must be a sequence of length 2
+2026-02-07 13:31:06 | ERROR | utils.asset_loader:_generate_fallback_sprites:564 | 💥 Failed to generate fallback sprites: Size must be a sequence of length 2
+2026-02-07 13:31:06 | ERROR | utils.asset_loader:_generate_effect_sprites:299 | 💥 Failed to generate effect sprites: Size must be a sequence of length 2
+2026-02-07 13:31:36 | ERROR | utils.asset_loader:_generate_actor_sprites:536 | 💥 Failed to generate actor sprites: Size must be a sequence of length 2
+2026-02-07 13:31:36 | ERROR | utils.asset_loader:_generate_fallback_sprites:564 | 💥 Failed to generate fallback sprites: Size must be a sequence of length 2
+2026-02-07 13:31:36 | ERROR | utils.asset_loader:_generate_effect_sprites:299 | 💥 Failed to generate effect sprites: Size must be a sequence of length 2
+2026-02-07 13:31:36 | ERROR | utils.asset_loader:_generate_actor_sprites:536 | 💥 Failed to generate actor sprites: Size must be a sequence of length 2
+2026-02-07 13:31:36 | ERROR | utils.asset_loader:_generate_fallback_sprites:564 | 💥 Failed to generate fallback sprites: Size must be a sequence of length 2
+2026-02-07 13:31:36 | ERROR | utils.asset_loader:_generate_effect_sprites:299 | 💥 Failed to generate effect sprites: Size must be a sequence of length 2
+2026-02-07 13:31:36 | ERROR | utils.asset_loader:_generate_actor_sprites:536 | 💥 Failed to generate actor sprites: Size must be a sequence of length 2
+2026-02-07 13:31:36 | ERROR | utils.asset_loader:_generate_fallback_sprites:564 | 💥 Failed to generate fallback sprites: Size must be a sequence of length 2
+2026-02-07 13:31:36 | ERROR | utils.asset_loader:_generate_effect_sprites:299 | 💥 Failed to generate effect sprites: Size must be a sequence of length 2
+2026-02-07 13:31:36 | ERROR | actors.voyager:_follow_quest_objective:718 | 💥 Quest navigation failed: 'NoneType' object has no attribute 'get_current_objective'
+2026-02-07 13:31:37 | ERROR | actors.voyager:_follow_quest_objective:718 | 💥 Quest navigation failed: 'NoneType' object has no attribute 'get_current_objective'
+2026-02-07 13:31:38 | ERROR | actors.voyager:_follow_quest_objective:718 | 💥 Quest navigation failed: 'NoneType' object has no attribute 'get_current_objective'
+2026-02-07 13:31:38 | ERROR | actors.voyager:_follow_quest_objective:718 | 💥 Quest navigation failed: 'NoneType' object has no attribute 'get_current_objective'
+2026-02-07 13:31:39 | ERROR | actors.voyager:_follow_quest_objective:718 | 💥 Quest navigation failed: 'NoneType' object has no attribute 'get_current_objective'
+2026-02-07 13:31:39 | ERROR | actors.voyager:_follow_quest_objective:718 | 💥 Quest navigation failed: 'NoneType' object has no attribute 'get_current_objective'
+2026-02-07 13:31:40 | ERROR | actors.voyager:_follow_quest_objective:718 | 💥 Quest navigation failed: 'NoneType' object has no attribute 'get_current_objective'
+2026-02-07 13:31:40 | ERROR | actors.voyager:_follow_quest_objective:718 | 💥 Quest navigation failed: 'NoneType' object has no attribute 'get_current_objective'

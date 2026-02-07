@@ -7867,3 +7867,93 @@
 2026-02-07 13:30:54 | INFO | utils.asset_loader:__init__:110 | 🎨 Asset Loader initialized - 0 assets loaded
 2026-02-07 13:30:54 | INFO | engines.mind.combat_resolver:__init__:128 | ⚔️ Combat Resolver initialized
 2026-02-07 13:30:54 | INFO | graphics.ppu_tk_native:__init__:386 | 🎨 Native Tkinter PPU initialized with multi-mode support
+2026-02-07 13:31:06 | INFO | utils.logger:initialize:59 | 📝 Logging system initialized
+2026-02-07 13:31:06 | INFO | utils.asset_loader:_load_object_definitions:216 | 📦 Loaded 30 object definitions
+2026-02-07 13:31:06 | INFO | utils.asset_loader:_load_prefab_definitions:245 | 🏗️ Loaded 10 prefab definitions
+2026-02-07 13:31:06 | INFO | utils.asset_loader:_generate_tile_sprites:256 | 🎨 Generated 11 tile sprites
+2026-02-07 13:31:06 | INFO | utils.asset_loader:_generate_object_sprites:265 | 🎨 Generated 38 object sprites
+2026-02-07 13:31:06 | ERROR | utils.asset_loader:_generate_actor_sprites:536 | 💥 Failed to generate actor sprites: Size must be a sequence of length 2
+2026-02-07 13:31:06 | ERROR | utils.asset_loader:_generate_fallback_sprites:564 | 💥 Failed to generate fallback sprites: Size must be a sequence of length 2
+2026-02-07 13:31:06 | ERROR | utils.asset_loader:_generate_effect_sprites:299 | 💥 Failed to generate effect sprites: Size must be a sequence of length 2
+2026-02-07 13:31:06 | INFO | utils.asset_loader:_load_assets:129 | 🎨 Asset Loader initialized - 0 assets loaded
+2026-02-07 13:31:06 | INFO | utils.asset_loader:__init__:110 | 🎨 Asset Loader initialized - 0 assets loaded
+2026-02-07 13:31:06 | INFO | utils.asset_loader:__init__:624 | 🏗️ Object Registry initialized
+2026-02-07 13:31:06 | INFO | engines.world.world_engine:__init__:122 | 🌍 World Engine initialized with seed: FOREST_GATE_001
+2026-02-07 13:31:06 | INFO | utils.asset_loader:_load_object_definitions:216 | 📦 Loaded 30 object definitions
+2026-02-07 13:31:06 | INFO | utils.asset_loader:_load_prefab_definitions:245 | 🏗️ Loaded 10 prefab definitions
+2026-02-07 13:31:06 | INFO | utils.asset_loader:_generate_tile_sprites:256 | 🎨 Generated 11 tile sprites
+2026-02-07 13:31:06 | INFO | utils.asset_loader:_generate_object_sprites:265 | 🎨 Generated 38 object sprites
+2026-02-07 13:31:06 | ERROR | utils.asset_loader:_generate_actor_sprites:536 | 💥 Failed to generate actor sprites: Size must be a sequence of length 2
+2026-02-07 13:31:06 | ERROR | utils.asset_loader:_generate_fallback_sprites:564 | 💥 Failed to generate fallback sprites: Size must be a sequence of length 2
+2026-02-07 13:31:06 | ERROR | utils.asset_loader:_generate_effect_sprites:299 | 💥 Failed to generate effect sprites: Size must be a sequence of length 2
+2026-02-07 13:31:06 | INFO | utils.asset_loader:_load_assets:129 | 🎨 Asset Loader initialized - 0 assets loaded
+2026-02-07 13:31:06 | INFO | utils.asset_loader:__init__:110 | 🎨 Asset Loader initialized - 0 assets loaded
+2026-02-07 13:31:06 | INFO | utils.asset_loader:__init__:624 | 🏗️ Object Registry initialized
+2026-02-07 13:31:06 | INFO | engines.mind.combat_resolver:__init__:128 | ⚔️ Combat Resolver initialized
+2026-02-07 13:31:06 | INFO | engines.mind.dd_engine:__init__:104 | 🧠 D&D Engine initialized with seed: FOREST_GATE_001
+2026-02-07 13:31:06 | INFO | engines.mind.dd_engine:__init__:109 | 🧠 D&D Engine initialized - Command Pattern ready
+2026-02-07 13:31:06 | INFO | actors.voyager:__init__:70 | 🧭 Pathfinding Navigator initialized: 50x50
+2026-02-07 13:31:06 | INFO | actors.voyager:__init__:186 | 🎯 Intent Generator initialized
+2026-02-07 13:31:06 | INFO | actors.voyager:__init__:334 | 🚶 Voyager initialized - STATE_PONDERING support ready
+2026-02-07 13:31:06 | INFO | utils.asset_loader:_load_object_definitions:216 | 📦 Loaded 30 object definitions
+2026-02-07 13:31:06 | INFO | utils.asset_loader:_load_prefab_definitions:245 | 🏗️ Loaded 10 prefab definitions
+2026-02-07 13:31:06 | INFO | utils.asset_loader:_generate_tile_sprites:256 | 🎨 Generated 11 tile sprites
+2026-02-07 13:31:06 | INFO | utils.asset_loader:_generate_object_sprites:265 | 🎨 Generated 38 object sprites
+2026-02-07 13:31:06 | ERROR | utils.asset_loader:_generate_actor_sprites:536 | 💥 Failed to generate actor sprites: Size must be a sequence of length 2
+2026-02-07 13:31:06 | ERROR | utils.asset_loader:_generate_fallback_sprites:564 | 💥 Failed to generate fallback sprites: Size must be a sequence of length 2
+2026-02-07 13:31:06 | ERROR | utils.asset_loader:_generate_effect_sprites:299 | 💥 Failed to generate effect sprites: Size must be a sequence of length 2
+2026-02-07 13:31:06 | INFO | utils.asset_loader:_load_assets:129 | 🎨 Asset Loader initialized - 0 assets loaded
+2026-02-07 13:31:06 | INFO | utils.asset_loader:__init__:110 | 🎨 Asset Loader initialized - 0 assets loaded
+2026-02-07 13:31:06 | INFO | engines.mind.combat_resolver:__init__:128 | ⚔️ Combat Resolver initialized
+2026-02-07 13:31:06 | INFO | graphics.ppu_tk_native:__init__:386 | 🎨 Native Tkinter PPU initialized with multi-mode support
+2026-02-07 13:31:36 | INFO | utils.logger:initialize:59 | 📝 Logging system initialized
+2026-02-07 13:31:36 | INFO | utils.asset_loader:_load_object_definitions:216 | 📦 Loaded 30 object definitions
+2026-02-07 13:31:36 | INFO | utils.asset_loader:_load_prefab_definitions:245 | 🏗️ Loaded 10 prefab definitions
+2026-02-07 13:31:36 | INFO | utils.asset_loader:_generate_tile_sprites:256 | 🎨 Generated 11 tile sprites
+2026-02-07 13:31:36 | INFO | utils.asset_loader:_generate_object_sprites:265 | 🎨 Generated 38 object sprites
+2026-02-07 13:31:36 | ERROR | utils.asset_loader:_generate_actor_sprites:536 | 💥 Failed to generate actor sprites: Size must be a sequence of length 2
+2026-02-07 13:31:36 | ERROR | utils.asset_loader:_generate_fallback_sprites:564 | 💥 Failed to generate fallback sprites: Size must be a sequence of length 2
+2026-02-07 13:31:36 | ERROR | utils.asset_loader:_generate_effect_sprites:299 | 💥 Failed to generate effect sprites: Size must be a sequence of length 2
+2026-02-07 13:31:36 | INFO | utils.asset_loader:_load_assets:129 | 🎨 Asset Loader initialized - 0 assets loaded
+2026-02-07 13:31:36 | INFO | utils.asset_loader:__init__:110 | 🎨 Asset Loader initialized - 0 assets loaded
+2026-02-07 13:31:36 | INFO | utils.asset_loader:__init__:624 | 🏗️ Object Registry initialized
+2026-02-07 13:31:36 | INFO | engines.world.world_engine:__init__:122 | 🌍 World Engine initialized with seed: FOREST_GATE_001
+2026-02-07 13:31:36 | INFO | utils.asset_loader:_load_object_definitions:216 | 📦 Loaded 30 object definitions
+2026-02-07 13:31:36 | INFO | utils.asset_loader:_load_prefab_definitions:245 | 🏗️ Loaded 10 prefab definitions
+2026-02-07 13:31:36 | INFO | utils.asset_loader:_generate_tile_sprites:256 | 🎨 Generated 11 tile sprites
+2026-02-07 13:31:36 | INFO | utils.asset_loader:_generate_object_sprites:265 | 🎨 Generated 38 object sprites
+2026-02-07 13:31:36 | ERROR | utils.asset_loader:_generate_actor_sprites:536 | 💥 Failed to generate actor sprites: Size must be a sequence of length 2
+2026-02-07 13:31:36 | ERROR | utils.asset_loader:_generate_fallback_sprites:564 | 💥 Failed to generate fallback sprites: Size must be a sequence of length 2
+2026-02-07 13:31:36 | ERROR | utils.asset_loader:_generate_effect_sprites:299 | 💥 Failed to generate effect sprites: Size must be a sequence of length 2
+2026-02-07 13:31:36 | INFO | utils.asset_loader:_load_assets:129 | 🎨 Asset Loader initialized - 0 assets loaded
+2026-02-07 13:31:36 | INFO | utils.asset_loader:__init__:110 | 🎨 Asset Loader initialized - 0 assets loaded
+2026-02-07 13:31:36 | INFO | utils.asset_loader:__init__:624 | 🏗️ Object Registry initialized
+2026-02-07 13:31:36 | INFO | engines.mind.combat_resolver:__init__:128 | ⚔️ Combat Resolver initialized
+2026-02-07 13:31:36 | INFO | engines.mind.dd_engine:__init__:104 | 🧠 D&D Engine initialized with seed: FOREST_GATE_001
+2026-02-07 13:31:36 | INFO | engines.mind.dd_engine:__init__:109 | 🧠 D&D Engine initialized - Command Pattern ready
+2026-02-07 13:31:36 | INFO | actors.voyager:__init__:70 | 🧭 Pathfinding Navigator initialized: 50x50
+2026-02-07 13:31:36 | INFO | actors.voyager:__init__:186 | 🎯 Intent Generator initialized
+2026-02-07 13:31:36 | INFO | actors.voyager:__init__:334 | 🚶 Voyager initialized - STATE_PONDERING support ready
+2026-02-07 13:31:36 | INFO | utils.asset_loader:_load_object_definitions:216 | 📦 Loaded 30 object definitions
+2026-02-07 13:31:36 | INFO | utils.asset_loader:_load_prefab_definitions:245 | 🏗️ Loaded 10 prefab definitions
+2026-02-07 13:31:36 | INFO | utils.asset_loader:_generate_tile_sprites:256 | 🎨 Generated 11 tile sprites
+2026-02-07 13:31:36 | INFO | utils.asset_loader:_generate_object_sprites:265 | 🎨 Generated 38 object sprites
+2026-02-07 13:31:36 | ERROR | utils.asset_loader:_generate_actor_sprites:536 | 💥 Failed to generate actor sprites: Size must be a sequence of length 2
+2026-02-07 13:31:36 | ERROR | utils.asset_loader:_generate_fallback_sprites:564 | 💥 Failed to generate fallback sprites: Size must be a sequence of length 2
+2026-02-07 13:31:36 | ERROR | utils.asset_loader:_generate_effect_sprites:299 | 💥 Failed to generate effect sprites: Size must be a sequence of length 2
+2026-02-07 13:31:36 | INFO | utils.asset_loader:_load_assets:129 | 🎨 Asset Loader initialized - 0 assets loaded
+2026-02-07 13:31:36 | INFO | utils.asset_loader:__init__:110 | 🎨 Asset Loader initialized - 0 assets loaded
+2026-02-07 13:31:36 | INFO | engines.mind.combat_resolver:__init__:128 | ⚔️ Combat Resolver initialized
+2026-02-07 13:31:36 | INFO | graphics.ppu_tk_native:__init__:386 | 🎨 Native Tkinter PPU initialized with multi-mode support
+2026-02-07 13:31:36 | ERROR | actors.voyager:_follow_quest_objective:718 | 💥 Quest navigation failed: 'NoneType' object has no attribute 'get_current_objective'
+2026-02-07 13:31:36 | INFO | actors.voyager:_follow_legacy_script:736 | 🚶 Script position reached: (10, 25)
+2026-02-07 13:31:37 | ERROR | actors.voyager:_follow_quest_objective:718 | 💥 Quest navigation failed: 'NoneType' object has no attribute 'get_current_objective'
+2026-02-07 13:31:38 | ERROR | actors.voyager:_follow_quest_objective:718 | 💥 Quest navigation failed: 'NoneType' object has no attribute 'get_current_objective'
+2026-02-07 13:31:38 | INFO | actors.voyager:_follow_legacy_script:736 | 🚶 Script position reached: (10, 20)
+2026-02-07 13:31:38 | ERROR | actors.voyager:_follow_quest_objective:718 | 💥 Quest navigation failed: 'NoneType' object has no attribute 'get_current_objective'
+2026-02-07 13:31:39 | ERROR | actors.voyager:_follow_quest_objective:718 | 💥 Quest navigation failed: 'NoneType' object has no attribute 'get_current_objective'
+2026-02-07 13:31:39 | INFO | actors.voyager:_follow_legacy_script:736 | 🚶 Script position reached: (10, 10)
+2026-02-07 13:31:39 | ERROR | actors.voyager:_follow_quest_objective:718 | 💥 Quest navigation failed: 'NoneType' object has no attribute 'get_current_objective'
+2026-02-07 13:31:40 | ERROR | actors.voyager:_follow_quest_objective:718 | 💥 Quest navigation failed: 'NoneType' object has no attribute 'get_current_objective'
+2026-02-07 13:31:40 | INFO | actors.voyager:_follow_legacy_script:736 | 🚶 Script position reached: (20, 10)
+2026-02-07 13:31:40 | ERROR | actors.voyager:_follow_quest_objective:718 | 💥 Quest navigation failed: 'NoneType' object has no attribute 'get_current_objective'

@@ -127,13 +127,27 @@ class ObserverView:
         
         self.session_log.append(formatted_message)
         
-        if self.enable_graphics and hasattr(self, 'console_text'):
-            self.console_text.insert(tk.END, formatted_message + "\n")
-            self.console_text.see(tk.END)
-            self.root.update_idletasks()
-        
         # Also print to console
         print(formatted_message)
+        
+        # Update GUI in main thread
+        if self.enable_graphics and hasattr(self, 'console_text'):
+            try:
+                # Schedule GUI update in main thread
+                self.root.after(0, self._update_console_gui, formatted_message)
+            except Exception as e:
+                print(f"⚠️ GUI update error: {e}")
+    
+    def _update_console_gui(self, message: str) -> None:
+        """Update console GUI from main thread"""
+        try:
+            if hasattr(self, 'console_text'):
+                import tkinter as tk
+                self.console_text.insert(tk.END, message + "\n")
+                self.console_text.see(tk.END)
+                self.root.update_idletasks()
+        except Exception as e:
+            print(f"⚠️ Console GUI update error: {e}")
     
     def spawn_forest_objects(self) -> None:
         """Spawn forest objects for the Voyager to discover"""
