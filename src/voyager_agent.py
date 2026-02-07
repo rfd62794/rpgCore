@@ -14,6 +14,7 @@ Design:
 import os
 from pydantic import BaseModel, Field
 from pydantic_ai import Agent
+from pydantic_ai.models.openai import OpenAIModel
 from loguru import logger
 
 
@@ -98,9 +99,16 @@ class VoyagerAgent:
         )
         
         # Initialize Pydantic AI agent
-        # Use same simple format as Arbiter and Chronicler
+        # Use OpenAIModel for better compatibility with local Ollama
+        # This fixes 404 errors by explicitly setting the base_url
+        model = OpenAIModel(
+            model_name=model_name,
+            base_url=f"{os.environ['OLLAMA_BASE_URL']}/v1",
+            api_key='ollama',  # Required but ignored
+        )
+        
         self.agent = Agent(
-            model=f"ollama:{model_name}",
+            model=model,
             output_type=VoyagerDecision,
             system_prompt=system_prompt
         )
