@@ -6463,3 +6463,5 @@ expected alphabetic or numeric character, but found '.'
 2026-02-07 15:51:28 | ERROR | body.ppu:create_ppu_body:410 | ❌ Failed to create PPU body
 2026-02-07 15:51:31 | ERROR | body.dispatcher:initialize:75 | ❌ Failed to initialize PPU: NativeTkinterPPU.__init__() missing 1 required positional argument: 'asset_loader'
 2026-02-07 15:51:31 | ERROR | body.ppu:create_ppu_body:410 | ❌ Failed to create PPU body
+2026-02-07 15:51:44 | ERROR | body.dispatcher:initialize:75 | ❌ Failed to initialize PPU: too many values to unpack (expected 2)
+2026-02-07 15:51:44 | ERROR | body.ppu:create_ppu_body:424 | ❌ Failed to create PPU body

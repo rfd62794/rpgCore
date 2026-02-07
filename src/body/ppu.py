@@ -89,15 +89,7 @@ class PPUBody(DisplayBody):
         
         # Create PPU display
         try:
-            # Create a mock asset loader for PPU
-            class MockAssetLoader:
-                def get_asset_definition(self, asset_id):
-                    return None
-                def get_spawnable_objects(self):
-                    return []
-            
-            mock_asset_loader = MockAssetLoader()
-            self.ppu = NativeTkinterPPU(self.root, mock_asset_loader)
+            self.ppu = NativeTkinterPPU(self.root)
         except Exception as e:
             logger.error(f"❌ Failed to create PPU: {e}")
             self.ppu = None
