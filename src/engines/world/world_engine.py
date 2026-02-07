@@ -234,33 +234,13 @@ class WorldEngine:
         
         generation_time = time.time() - start_time
         logger.debug(f"🌍 Generated chunk {chunk_pos} in {generation_time:.3f}s")
-            for local_x in range(CHUNK_SIZE):
-                world_x = chunk_pos[0] * CHUNK_SIZE + local_x
-                world_y = chunk_pos[1] * CHUNK_SIZE + local_y
-                
-                tile = await self._generate_tile((world_x, world_y))
-                tile_row.append(tile)
-            tiles.append(tile_row)
-        
-        # Generate interest points for this chunk
-        interest_points = await self._generate_chunk_interest_points(chunk_pos)
-        
-        # Create chunk
-        chunk = Chunk(
-            chunk_x=chunk_pos[0],
-            chunk_y=chunk_pos[1],
-            tiles=tiles,
-            interest_points=interest_points,
-            generated=True
-        )
-        
-        self.chunks[chunk_pos] = chunk
-        self.interest_points.extend(interest_points)
-        
-        generation_time = (time.time() - start_time) * 1000
-        logger.debug(f"🌍 Generated chunk {chunk_pos} in {generation_time:.1f}ms")
     
-    async def _generate_tile(self, position: Tuple[int, int]) -> TileData:
+    def set_chronos_engine(self, chronos_engine: ChronosEngine) -> None:
+        """Inject Chronos Engine dependency for task spawning"""
+        self.chronos_engine = chronos_engine
+        logger.info("🌍 Chronos Engine dependency injected for task spawning")
+    
+    async def _generate_tile(self, position: Tuple[int, int]) -> Tile:
         """Generate a single tile"""
         # Generate noise value
         noise_value = self._generate_perlin_noise(position)
