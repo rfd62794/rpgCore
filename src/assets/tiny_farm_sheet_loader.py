@@ -234,11 +234,10 @@ class TinyFarmSheetLoader:
                 if image.size != (16, 16):
                     image = image.resize((16, 16), Image.Resampling.LANCZOS)
                 
-                # Convert to tkinter PhotoImage
-                tk_image = ImageTk.PhotoImage(image)
-                
-                # Scale for display using PIL resize instead of zoom
+                # Scale for display using PIL resize (4x for visibility)
                 scaled_image = image.resize((64, 64), Image.Resampling.NEAREST)
+                
+                # Convert to tkinter PhotoImage AFTER all PIL processing
                 tk_image = ImageTk.PhotoImage(scaled_image)
                 
                 # Store sprite
