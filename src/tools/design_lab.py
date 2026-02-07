@@ -13,40 +13,132 @@ import json
 from pathlib import Path
 import sys
 import os
+from typing import Dict, List, Optional, Protocol
+from dataclasses import dataclass
+from abc import ABC, abstractmethod
+from loguru import logger
+from pydantic import BaseModel, Field, validator
 
 # Add src to path
 sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
 sys.path.append(os.path.join(os.path.dirname(__file__), '..', '..'))
 
+# Domain Models
+class Color(BaseModel):
+    """Color representation with validation"""
+    hex_value: str = Field(regex=r'^#[0-9A-Fa-f]{6}$')
+    
+    @validator('hex_value')
+    def validate_hex(cls, v):
+        if not v.startswith('#') or len(v) != 7:
+            raise ValueError('Color must be in hex format #RRGGBB')
+        return v
+
+class DitherPattern(BaseModel):
+    """Dither pattern configuration"""
+    name: str
+    intensity: float = Field(ge=0.0, le=1.0)
+    pattern_type: str
+
+class AssetTemplate(BaseModel):
+    """Asset template configuration"""
+    name: str
+    description: str
+    base_color: Color
+    pattern: DitherPattern
+    animation_frames: int = Field(ge=1, le=4)
+    frame_duration: int = Field(ge=0)
+    use_case: List[str]
+    sonic_field_compatible: bool = False
+
+# Abstract Interfaces
+class DitheringEngine(ABC):
+    """Abstract dithering engine interface"""
+    
+    @abstractmethod
+    def get_pattern_list(self) -> List[str]:
+        """Get available pattern names"""
+        pass
+    
+    @abstractmethod
+    def apply_dither(self, color: str, pattern: str) -> List[List[str]]:
+        """Apply dither pattern to color"""
+        pass
+
+class TemplateGenerator(ABC):
+    """Abstract template generator interface"""
+    
+    @abstractmethod
+    def generate_template(self, template_type: str, color: str) -> List[List[str]]:
+        """Generate template pattern"""
+        pass
+
+class AssetExporter(ABC):
+    """Abstract asset exporter interface"""
+    
+    @abstractmethod
+    def export(self, data: Dict, path: Path) -> bool:
+        """Export data to file"""
+        pass
+
+# Concrete Implementations
+class YAMLExporter(AssetExporter):
+    """YAML file exporter"""
+    
+    def export(self, data: Dict, path: Path) -> bool:
+        try:
+            with open(path, 'w') as f:
+                yaml.dump(data, f, default_flow_style=False)
+            logger.info(f"Exported to {path}")
+            return True
+        except Exception as e:
+            logger.error(f"Export failed: {e}")
+            return False
+
+class AssetValidator:
+    """Asset data validator"""
+    
+    @staticmethod
+    def validate_template(template_data: Dict) -> Optional[AssetTemplate]:
+        """Validate and parse template data"""
+        try:
+            return AssetTemplate(**template_data)
+        except Exception as e:
+            logger.warning(f"Template validation failed: {e}")
+            return None
+
 # Try direct imports first
 try:
-    from tools.dithering_engine import DitheringEngine, TemplateGenerator
+    from tools.dithering_engine import DitheringEngine as ConcreteDitheringEngine, TemplateGenerator as ConcreteTemplateGenerator
 except ImportError:
-    from dithering_engine import DitheringEngine, TemplateGenerator
+    from dithering_engine import DitheringEngine as ConcreteDitheringEngine, TemplateGenerator as ConcreteTemplateGenerator
 
 try:
     from assets.parser import AssetParser
 except ImportError:
+    logger.warning("AssetParser not available, using fallback")
     # Create a simple fallback for testing
     class AssetParser:
-        def __init__(self, path):
+        def __init__(self, path: Path):
             self.path = path
-        def load_all_assets(self):
+        def load_all_assets(self) -> Dict:
             return {'templates': {}, 'materials': {}, 'objects': {}}
 
 try:
     from assets.fabricator_tkinter import AssetFabricator
 except ImportError:
+    logger.warning("AssetFabricator not available, using fallback")
     # Create a simple fallback for testing
     class AssetFabricator:
         def __init__(self):
             self.registry = {}
-        def generate_all_sprites(self, data):
+        def generate_all_sprites(self, data: Dict) -> Dict:
             return {}
 
 try:
     from assets.registry import AssetRegistry
 except ImportError:
+    logger.warning("AssetRegistry not available, using fallback")
     # Create a simple fallback for testing
     class AssetRegistry:
         def __init__(self):
@@ -55,11 +147,11 @@ except ImportError:
             self.animations = {}
             self.entities = {}
             self.sprites = {}
-        def load_from_parsed_data(self, data, sprites):
+        def load_from_parsed_data(self, data: Dict, sprites: Dict) -> None:
             pass
-        def get_all_objects(self):
+        def get_all_objects(self) -> Dict:
             return {}
-        def get_registry_stats(self):
+        def get_registry_stats(self) -> Dict:
             return {'objects': 0, 'materials': 0, 'animations': 0, 'entities': 0, 'sprites': 0}
 
 class DGTDesignLab:
