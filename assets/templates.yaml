@@ -1,0 +1,202 @@
+---
+# DGT Templates Registry
+# ADR 088: The Pre-Bake Design Protocol
+# Pre-define the "Sonic Field" and "Metasprite" silhouettes
+
+# Organic Templates (Sonic Field Focus)
+organic_sway:
+  description: "Organic sway pattern for grass/flowers with wind-sway animation"
+  base_color: "#228B22"
+  pattern: "organic"
+  intensity: 0.3
+  animation_frames: 2
+  frame_duration: 500
+  dither_pattern: "checkerboard"
+  use_case: ["grass", "flowers", "plants"]
+  sonic_field_compatible: true
+
+flower_sway:
+  description: "Flower-specific sway pattern with petal animation"
+  base_color: "#FFB6C1"
+  pattern: "dots"
+  intensity: 0.2
+  animation_frames: 3
+  frame_duration: 400
+  dither_pattern: "organic"
+  use_case: ["flowers", "petals", "plants"]
+  sonic_field_compatible: true
+
+grass_wave:
+  description: "Grass wave pattern for field movement"
+  base_color: "#32CD32"
+  pattern: "diagonal"
+  intensity: 0.4
+  animation_frames: 2
+  frame_duration: 600
+  dither_pattern: "noise"
+  use_case: ["grass", "field", "ground"]
+  sonic_field_compatible: true
+
+# Hard Templates (Structural Focus)
+hard_inert:
+  description: "Hard inert pattern for stones/walls with no animation"
+  base_color: "#808080"
+  pattern: "checkerboard"
+  intensity: 0.4
+  animation_frames: 1
+  frame_duration: 0
+  dither_pattern: "cross"
+  use_case: ["stone", "wall", "structure"]
+  sonic_field_compatible: false
+
+stone_texture:
+  description: "Stone texture with mineral patterns"
+  base_color: "#696969"
+  pattern: "noise"
+  intensity: 0.5
+  animation_frames: 1
+  frame_duration: 0
+  dither_pattern: "fabric"
+  use_case: ["stone", "rock", "mineral"]
+  sonic_field_compatible: false
+
+metal_surface:
+  description: "Metal surface with sheen effect"
+  base_color: "#464646"
+  pattern: "metallic"
+  intensity: 0.3
+  animation_frames: 1
+  frame_duration: 0
+  dither_pattern: "diagonal"
+  use_case: ["metal", "armor", "weapon"]
+  sonic_field_compatible: false
+
+# Actor Templates (Character Focus)
+actor_kinetic:
+  description: "Actor kinetic pattern with breathing animation"
+  base_color: "#0064FF"
+  pattern: "dots"
+  intensity: 0.1
+  animation_frames: 2
+  frame_duration: 1000
+  dither_pattern: "solid"
+  use_case: ["actor", "character", "voyager"]
+  sonic_field_compatible: true
+
+voyager_idle:
+  description: "Voyager idle animation with neck-pivot"
+  base_color: "#0078FF"
+  pattern: "solid"
+  intensity: 0.0
+  animation_frames: 2
+  frame_duration: 800
+  dither_pattern: "solid"
+  use_case: ["voyager", "player", "character"]
+  sonic_field_compatible: true
+
+voyager_walk:
+  description: "Voyager walking animation"
+  base_color: "#0050FF"
+  pattern: "solid"
+  intensity: 0.0
+  animation_frames: 4
+  frame_duration: 200
+  dither_pattern: "solid"
+  use_case: ["voyager", "player", "character"]
+  sonic_field_compatible: true
+
+# Environmental Templates
+water_ripple:
+  description: "Water pattern with ripple animation"
+  base_color: "#0064C8"
+  pattern: "noise"
+  intensity: 0.3
+  animation_frames: 3
+  frame_duration: 600
+  dither_pattern: "organic"
+  use_case: ["water", "liquid", "pool"]
+  sonic_field_compatible: false
+
+fire_flicker:
+  description: "Fire flicker animation"
+  base_color: "#FF4500"
+  pattern: "noise"
+  intensity: 0.6
+  animation_frames: 2
+  frame_duration: 150
+  dither_pattern: "dots"
+  use_case: ["fire", "flame", "torch"]
+  sonic_field_compatible: false
+
+# Special Templates (Game Boy Parity)
+game_boy_green:
+  description: "Classic Game Boy green palette"
+  base_color: "#9BBC0F"
+  pattern: "solid"
+  intensity: 0.0
+  animation_frames: 1
+  frame_duration: 0
+  dither_pattern: "solid"
+  use_case: ["retro", "game_boy", "classic"]
+  sonic_field_compatible: true
+
+game_boy_dark:
+  description: "Dark Game Boy palette for shadows"
+  base_color: "#306230"
+  pattern: "checkerboard"
+  intensity: 0.2
+  animation_frames: 1
+  frame_duration: 0
+  dither_pattern: "cross"
+  use_case: ["retro", "game_boy", "shadow"]
+  sonic_field_compatible: true
+
+# Sonic Field Special Templates
+sonic_field_grass:
+  description: "Sonic Field grass with enhanced sway"
+  base_color: "#228B22"
+  pattern: "organic"
+  intensity: 0.4
+  animation_frames: 2
+  frame_duration: 500
+  dither_pattern: "diagonal"
+  use_case: ["grass", "field", "sonic"]
+  sonic_field_compatible: true
+  sonic_field_priority: "high"
+
+sonic_field_flower:
+  description: "Sonic Field flower with petal animation"
+  base_color: "#FF69B4"
+  pattern: "dots"
+  intensity: 0.3
+  animation_frames: 3
+  frame_duration: 400
+  dither_pattern: "organic"
+  use_case: ["flower", "petal", "sonic"]
+  sonic_field_compatible: true
+  sonic_field_priority: "high"
+
+sonic_field_water:
+  description: "Sonic Field water with gentle movement"
+  base_color: "#4682B4"
+  pattern: "noise"
+  intensity: 0.2
+  animation_frames: 2
+  frame_duration: 800
+  dither_pattern: "organic"
+  use_case: ["water", "liquid", "sonic"]
+  sonic_field_compatible: true
+  sonic_field_priority: "medium"
+
+# Template Metadata
+template_metadata:
+  version: "1.0"
+  created_by: "DGT Design Lab"
+  sonic_field_version: "2.0"
+  game_boy_parity: true
+  max_animation_frames: 4
+  supported_patterns: ["solid", "checkerboard", "diagonal", "dots", "cross", "noise", "organic", "metallic", "fabric"]
+  color_palettes:
+    sonic_field: ["#FFB6C1", "#FF69B4", "#228B22", "#32CD32", "#00FF00"]
+    game_boy: ["#9BBC0F", "#8BAC0F", "#306230", "#0F380F"]
+    classic: ["#808080", "#696969", "#464646", "#000000"]
