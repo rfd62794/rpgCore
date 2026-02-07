@@ -99,6 +99,9 @@ class DGTSystem:
         self.chronos_engine: Optional[ChronosEngine] = None
         self.persona_engine: Optional[PersonaEngine] = None
         
+        # Developer tools
+        self.dev_console: Optional[DeveloperConsole] = None
+        
         # Configuration
         self.config = self._load_config()
         
@@ -177,6 +180,12 @@ class DGTSystem:
             self.world_engine.set_chronos_engine(self.chronos_engine)
             self.chronos_engine.set_persona_engine(self.persona_engine)
             logger.info("🔗 Pillar dependencies connected")
+            
+            # Initialize Developer Console
+            if config.get("enable_console", True):
+                self.dev_console = DeveloperConsole(self)
+                await self.dev_console.start()
+                logger.info("🖥️ Developer Console started")
             
             # Initialize Heartbeat Controller
             try:
