@@ -29,6 +29,7 @@ class TileType(Enum):
 class BiomeType(Enum):
     """World biome types for terrain generation"""
     FOREST = "forest"
+    GRASS = "grass"
     TOWN = "town"
     TAVERN = "tavern"
     MOUNTAIN = "mountain"
