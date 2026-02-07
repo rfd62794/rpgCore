@@ -117,7 +117,6 @@ class WorldEngine:
     # === FACADE INTERFACE ===
     
     async def get_tile_at(self, position: Tuple[int, int]) -> Tile:
-    async def get_tile_at(self, position: Tuple[int, int]) -> TileData:
         """Get tile data at position (Facade method)"""
         if not validate_position(position):
             raise WorldGenerationError(f"Invalid position: {position}")
