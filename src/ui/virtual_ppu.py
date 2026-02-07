@@ -14,6 +14,8 @@ from loguru import logger
 from ui.pixel_renderer import PixelRenderer, Pixel
 from ui.tile_bank import TileBank, TileType
 from models.metasprite import Metasprite, MetaspriteConfig, CharacterRole
+from logic.animator import KineticSpriteController, AnimationState
+from ui.palette_manager import PaletteManager, PaletteType
 
 
 class RenderLayer(Enum):
