@@ -6282,3 +6282,27 @@
 2026-02-07 13:41:03 | ERROR | utils.asset_loader:_generate_actor_sprites:597 | 💥 Failed to generate actor sprites: Size must be a sequence of length 2
 2026-02-07 13:41:03 | ERROR | utils.asset_loader:_generate_fallback_sprites:625 | 💥 Failed to generate fallback sprites: Size must be a sequence of length 2
 2026-02-07 13:41:03 | ERROR | utils.asset_loader:_generate_effect_sprites:342 | 💥 Failed to generate effect sprites: Size must be a sequence of length 2
+2026-02-07 13:42:19 | ERROR | utils.asset_loader:_load_object_definitions:233 | 💥 Failed to load objects.yaml: while scanning an alias
+  in "assets\objects.yaml", line 83, column 9
+expected alphabetic or numeric character, but found '.'
+  in "assets\objects.yaml", line 83, column 19
+2026-02-07 13:42:19 | ERROR | utils.asset_loader:_generate_object_sprites:285 | 💥 Failed to generate object sprites: AssetLoader._create_object_sprite() takes 2 positional arguments but 4 were given
+2026-02-07 13:42:19 | ERROR | utils.asset_loader:_generate_actor_sprites:611 | 💥 Failed to generate actor sprites: Size must be a sequence of length 2
+2026-02-07 13:42:19 | ERROR | utils.asset_loader:_generate_fallback_sprites:639 | 💥 Failed to generate fallback sprites: Size must be a sequence of length 2
+2026-02-07 13:42:19 | ERROR | utils.asset_loader:_generate_effect_sprites:356 | 💥 Failed to generate effect sprites: Size must be a sequence of length 2
+2026-02-07 13:42:19 | ERROR | utils.asset_loader:_load_object_definitions:233 | 💥 Failed to load objects.yaml: while scanning an alias
+  in "assets\objects.yaml", line 83, column 9
+expected alphabetic or numeric character, but found '.'
+  in "assets\objects.yaml", line 83, column 19
+2026-02-07 13:42:19 | ERROR | utils.asset_loader:_generate_object_sprites:285 | 💥 Failed to generate object sprites: AssetLoader._create_object_sprite() takes 2 positional arguments but 4 were given
+2026-02-07 13:42:19 | ERROR | utils.asset_loader:_generate_actor_sprites:611 | 💥 Failed to generate actor sprites: Size must be a sequence of length 2
+2026-02-07 13:42:19 | ERROR | utils.asset_loader:_generate_fallback_sprites:639 | 💥 Failed to generate fallback sprites: Size must be a sequence of length 2
+2026-02-07 13:42:19 | ERROR | utils.asset_loader:_generate_effect_sprites:356 | 💥 Failed to generate effect sprites: Size must be a sequence of length 2
+2026-02-07 13:42:19 | ERROR | utils.asset_loader:_load_object_definitions:233 | 💥 Failed to load objects.yaml: while scanning an alias
+  in "assets\objects.yaml", line 83, column 9
+expected alphabetic or numeric character, but found '.'
+  in "assets\objects.yaml", line 83, column 19
+2026-02-07 13:42:19 | ERROR | utils.asset_loader:_generate_object_sprites:285 | 💥 Failed to generate object sprites: AssetLoader._create_object_sprite() takes 2 positional arguments but 4 were given
+2026-02-07 13:42:19 | ERROR | utils.asset_loader:_generate_actor_sprites:611 | 💥 Failed to generate actor sprites: Size must be a sequence of length 2
+2026-02-07 13:42:19 | ERROR | utils.asset_loader:_generate_fallback_sprites:639 | 💥 Failed to generate fallback sprites: Size must be a sequence of length 2
+2026-02-07 13:42:19 | ERROR | utils.asset_loader:_generate_effect_sprites:356 | 💥 Failed to generate effect sprites: Size must be a sequence of length 2
