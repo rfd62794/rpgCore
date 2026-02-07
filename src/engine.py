@@ -156,12 +156,34 @@ class GameEngine:
         loot_item = self._check_for_loot(d20_result, intent_match.intent_id, room)
         
         # Step 5: Narrate - Generate narrative
-        await self._narrate_outcome(player_input, intent_match.intent_id, d20_result, loot_item)
+        if self.use_dashboard:
+            # Update dashboard with D20 result immediately (instant feedback)
+            self.dashboard.update_dashboard(
+                narrative_content="Generating narrative...",
+                d20_result=d20_result,
+                context=self.state.get_context_str(),
+                active_goals=self.state.goal_stack,
+                completed_goals=[],
+                success=d20_result.success
+            )
         
-        # Step 6: Auto-save
+        final_narrative = await self._narrate_outcome(player_input, intent_match.intent_id, d20_result, loot_item)
+        
+        # Step 6: Update dashboard with final narrative
+        if self.use_dashboard:
+            self.dashboard.update_dashboard(
+                narrative_content=final_narrative,
+                d20_result=d20_result,
+                context=self.state.get_context_str(),
+                active_goals=self.state.goal_stack,
+                completed_goals=d20_result.goals_completed,
+                success=d20_result.success
+            )
+        
+        # Step 7: Auto-save
         self.state.save_to_file(self.save_path)
         
-        # Step 7: Check win/loss conditions
+        # Step 8: Check win/loss conditions
         return self._check_game_over()
     
     def _detect_target_npc(self, player_input: str, room) -> Optional[str]:
