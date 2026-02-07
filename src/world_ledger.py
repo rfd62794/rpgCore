@@ -108,6 +108,26 @@ class WorldLedger:
                 )
             """)
             
+            conn.execute("""
+                CREATE TABLE IF NOT EXISTS entities (
+                    id TEXT PRIMARY KEY,
+                    data TEXT NOT NULL,
+                    last_updated INTEGER DEFAULT 0
+                )
+            """)
+            
+            conn.execute("""
+                CREATE TABLE IF NOT EXISTS entity_events (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    turn INTEGER NOT NULL,
+                    entity_id TEXT NOT NULL,
+                    event_type TEXT NOT NULL,
+                    from_coord TEXT NOT NULL,
+                    to_coord TEXT NOT NULL,
+                    event_data TEXT NOT NULL
+                )
+            """)
+            
             conn.commit()
     
     def _load_blueprints(self):

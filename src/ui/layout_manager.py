@@ -16,6 +16,7 @@ from rich.live import Live
 from typing import Optional
 
 from d20_core import D20Result
+from logic.perception import PerceptionSystem
 
 
 class DirectorMonitor:
@@ -33,7 +34,7 @@ class DirectorMonitor:
         self._setup_layout()
     
     def _setup_layout(self):
-        """Configure the dual-pane layout."""
+        """Configure the dual-pane layout with radar."""
         self.layout.split_column(
             Layout(name="narrative", ratio=7),  # 70% for story
             Layout(name="monitor", ratio=3)      # 30% for debug
@@ -47,9 +48,10 @@ class DirectorMonitor:
         
         # Monitor pane (right) - vertical stack
         self.layout["monitor"].split_column(
-            Layout(name="combat_log", ratio=3),  # Combat math
+            Layout(name="combat_log", ratio=2),  # Combat math
             Layout(name="state_changes", ratio=2), # State/reputation
-            Layout(name="goals", ratio=2)        # Active goals
+            Layout(name="goals", ratio=1),        # Active goals
+            Layout(name="radar", ratio=2)          # Radar panel
         )
     
     def format_combat_log(self, d20_result: D20Result) -> Panel:
@@ -172,11 +174,61 @@ class DirectorMonitor:
             padding=(0, 1)
         )
     
+    def format_radar_panel(self, radar_data: List[Dict[str, Any]]) -> Panel:
+        """
+        Format the radar panel showing detected entities and signatures.
+        
+        Args:
+            radar_data: List of radar blips from perception system
+            
+        Returns:
+            Panel formatted for radar display
+        """
+        table = Table(show_header=False, box=None, padding=0)
+        table.add_column("Type", style="bold cyan", width=8)
+        table.add_column("Name", style="white", width=15)
+        table.add_column("Dist", style="yellow", width=6)
+        table.add_column("Info", style="white", width=20)
+        
+        for blip in radar_data[:8]:  # Show top 8 blips
+            if blip["type"] == "entity":
+                # Entity blip
+                faction_color = {
+                    "law": "blue",
+                    "underworld": "red", 
+                    "clergy": "yellow",
+                    "wild": "green",
+                    "merchant": "cyan"
+                }.get(blip["faction"], "white")
+                
+                table.add_row(
+                    blip["icon"],
+                    f"[{faction_color}]{blip['name'][:12]}[/{faction_color}]",
+                    f"[yellow]{blip['distance']}u[/yellow]",
+                    f"[dim]{blip['state']}[/dim]"
+                )
+            else:
+                # Signature blip
+                table.add_row(
+                    blip["icon"],
+                    f"[cyan]{blip['name']}[/cyan]",
+                    f"[yellow]{blip['distance']}u[/yellow]",
+                    f"[dim]{blip['description'][:18]}[/dim]"
+                )
+        
+        return Panel(
+            table,
+            title="[bold blue]📡 Radar[/bold blue]",
+            border_style="blue",
+            padding=(0, 1)
+        )
+    
     def update_monitor(
         self, 
         d20_result: D20Result, 
         active_goals: list = None, 
-        completed_goals: list = None
+        completed_goals: list = None,
+        radar_data: List[Dict[str, Any]] = None
     ):
         """Update all monitor panels with new data."""
         # Update combat log
@@ -195,6 +247,12 @@ class DirectorMonitor:
         self.layout["monitor"]["goals"].update(
             self.format_goals_monitor(completed_goals, active_goals)
         )
+        
+        # Update radar if data provided
+        if radar_data:
+            self.layout["monitor"]["radar"].update(
+                self.format_radar_panel(radar_data)
+            )
     
     def get_layout(self) -> Layout:
         """Get the current layout for rendering."""
@@ -257,7 +315,9 @@ class GameDashboard:
         context: str,
         active_goals: list = None,
         completed_goals: list = None,
-        success: bool = True
+        success: bool = True,
+        radar_data: List[Dict[str, Any]] = None,
+        perception_system: Optional[PerceptionSystem] = None
     ):
         """Update the entire dashboard with new game state."""
         # Update narrative panel
@@ -275,13 +335,18 @@ class GameDashboard:
         )
         
         # Update monitor panels
-        self.monitor.update_monitor(d20_result, active_goals, completed_goals)
+        self.monitor.update_monitor(
+            d20_result, 
+            active_goals, 
+            completed_goals,
+            radar_data
+        )
         
         # Refresh the live display
         if self.live:
             self.live.update(self.monitor.get_layout())
     
-    def display_welcome(self):
+    def display_welcome(self, perception_system: Optional[PerceptionSystem] = None):
         """Display welcome message in dashboard format."""
         welcome_content = (
             "[bold cyan]Welcome to the Semantic RPG - Director's Monitor Edition[/bold cyan]\n\n"
@@ -308,7 +373,19 @@ class GameDashboard:
             narrative_context="Waiting for action..."
         )
         
-        self.monitor.update_monitor(empty_result)
+        # Get initial radar data if perception system available
+        radar_data = []
+        if perception_system:
+            # Create dummy player data for initial radar
+            from world_ledger import Coordinate
+            dummy_stats = {"wisdom": 10, "intelligence": 10}
+            radar_data = perception_system.get_radar_data(
+                Coordinate(0, 0, 0), 
+                dummy_stats, 
+                0
+            )
+        
+        self.monitor.update_monitor(empty_result, [], [], radar_data)
         
         if self.live:
             self.live.update(self.monitor.get_layout())
