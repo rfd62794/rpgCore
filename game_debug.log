@@ -677,3 +677,20 @@
 21:21:18 | DEBUG | Added intent: improvise with 5 exemplars
 21:21:18 | INFO | Loading embedding model: all-MiniLM-L6-v2
 21:21:22 | INFO | Precomputed embeddings for 10 intents (50 total exemplars)
+21:24:15 | DEBUG | Added intent: distract with 5 exemplars
+21:24:15 | DEBUG | Added intent: force with 5 exemplars
+21:24:15 | DEBUG | Added intent: finesse with 5 exemplars
+21:24:15 | DEBUG | Added intent: charm with 5 exemplars
+21:24:15 | DEBUG | Added intent: intimidate with 5 exemplars
+21:24:15 | DEBUG | Added intent: deceive with 5 exemplars
+21:24:15 | DEBUG | Added intent: investigate with 5 exemplars
+21:24:15 | DEBUG | Added intent: use_item with 5 exemplars
+21:24:15 | DEBUG | Added intent: defend with 5 exemplars
+21:24:15 | DEBUG | Added intent: improvise with 5 exemplars
+21:24:15 | INFO | Loading embedding model: all-MiniLM-L6-v2
+21:24:20 | INFO | Precomputed embeddings for 10 intents (50 total exemplars)
+21:24:20 | INFO | Initializing Arbiter with ollama:llama3.2:1b
+21:24:20 | INFO | Initializing Chronicler with ollama:qwen2.5:0.5b
+21:24:20 | INFO | Voyager initialized with 'aggressive' personality
+21:24:20 | INFO | Game initialized with Council of Three architecture
+21:24:20 | DEBUG | Voyager deciding from menu...

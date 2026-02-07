@@ -81,9 +81,9 @@ class GameREPL:
         self.console.print("[cyan]Loading Arbiter (logic engine - 1B)...[/cyan]")
         self.arbiter = ArbiterEngine(model_name='ollama:llama3.2:1b')
         
-        self.console.print("[cyan]Loading Chronicler (narrative engine - 0.5B)...[/cyan]")
-        # Downgrade to 0.5B for ultra-light narrative
-        self.chronicler = ChroniclerEngine(model_name='ollama:qwen2.5:0.5b', tone='humorous')
+        self.console.print("[cyan]Loading Chronicler (narrative engine - 1B)...[/cyan]")
+        # Unified 1B model (High Temp for creativity)
+        self.chronicler = ChroniclerEngine(model_name='ollama:llama3.2:1b', tone='humorous')
         
         # Initialize Quartermaster (loot system)
         from loot_system import LootSystem
