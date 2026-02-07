@@ -228,14 +228,14 @@ class DDEngine:
                 execution_time_ms=(time.time() - start_time) * 1000
             )
     
-    def _validate_command(self, command: Command) -> IntentValidation:
+    async def _validate_command(self, command: Command) -> IntentValidation:
         """Validate command intent"""
         intent = command.intent
         
         if intent.intent_type == "movement":
             return self._validate_movement_intent(intent)
         elif intent.intent_type == "interaction":
-            return self._validate_interaction_intent(intent)
+            return await self._validate_interaction_intent(intent)
         elif intent.intent_type == "ponder":
             return self._validate_ponder_intent(intent)
         else:
@@ -368,10 +368,10 @@ class DDEngine:
             message="Movement validated"
         )
     
-    def _validate_interaction_intent(self, intent: InteractionIntent) -> IntentValidation:
+    async def _validate_interaction_intent(self, intent: InteractionIntent) -> IntentValidation:
         """Validate interaction intent"""
         # Check if there are interactable entities at current position
-        triggers = self._get_triggers_at_position(self.state.player_position)
+        triggers = await self._get_triggers_at_position(self.state.player_position)
         
         if not triggers:
             return IntentValidation(
@@ -452,13 +452,13 @@ class DDEngine:
         
         return elapsed_ms >= INTENT_COOLDOWN_MS
     
-    def _get_triggers_at_position(self, position: Tuple[int, int]) -> List[Trigger]:
+    async def _get_triggers_at_position(self, position: Tuple[int, int]) -> List[Trigger]:
         """Get interaction triggers at position"""
         triggers = []
         
         # Check for interest point triggers
         if self.world_engine:
-            interest_points = self.world_engine.get_nearby_interest_points(position, 1)
+            interest_points = await self.world_engine.get_nearby_interest_points(position, 1)
             for ip in interest_points:
                 if ip.discovered and not ip.manifestation:
                     trigger = Trigger(
