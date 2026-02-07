@@ -12,8 +12,8 @@ from enum import Enum
 import tkinter as tk
 from loguru import logger
 
-from src.tools.asset_models import AssetType, MaterialType
-from ..graphics.ppu_tk_native_enhanced import DitherPresets
+from tools.asset_models import AssetType, MaterialType
+from graphics.ppu_tk_native_enhanced import DitherPresets
 
 
 class TinyFarmAssetCategory(Enum):
