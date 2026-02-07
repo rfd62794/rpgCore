@@ -34,6 +34,7 @@ class BiomeType(Enum):
     MOUNTAIN = "mountain"
     DESERT = "desert"
     TUNDRA = "tundra"
+    WATER = "water"
 
 class InterestType(Enum):
     """Types of interest points for LLM manifestation"""
