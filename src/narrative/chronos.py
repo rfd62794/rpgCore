@@ -26,6 +26,7 @@ from loguru import logger
 from core.state import (
     GameState, InterestPoint, validate_position
 )
+from narrative.persona import PersonaEngine, FactionType
 
 
 class QuestType(Enum):
@@ -264,6 +265,9 @@ class ChronosEngine:
         self.quest_stack = QuestStack()
         self.character_stats = CharacterStats()
         self.fact_engine = FactEngine()
+        
+        # Persona Engine reference for NPC interactions
+        self.persona_engine: Optional[PersonaEngine] = None
         
         # Task generation settings
         self.task_spawn_chance = 0.05  # 5% chance per chunk
