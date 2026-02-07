@@ -336,13 +336,16 @@ class HeartbeatController:
         
         while self.running:
             try:
-                if not self.paused:
+                if not self.paused and self.world_engine:
                     # Get current player position
                     state = self.dd_engine.get_current_state()
                     player_pos = state.player_position
                     
                     # Pre-generate adjacent chunks
-                    await self.world_engine.pre_generate_chunks(player_pos)
+                    try:
+                        await self.world_engine.pre_generate_chunks(player_pos)
+                    except Exception as e:
+                        logger.warning(f"⚠️ Chunk generation issue: {e}")
                 
                 # Run every 5 seconds
                 await asyncio.sleep(5.0)
