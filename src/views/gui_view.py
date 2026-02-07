@@ -342,16 +342,27 @@ class GUIView(Observer):
     
     def _add_text_entry(self, text: str) -> None:
         """Add plain text entry to the narrative log."""
-        if not self.narrative_text:
+        if not self.narrative_text or not self.running:
             return
         
-        # Add entry with timestamp
-        timestamp = f"[EVENT]"
-        entry = f"{timestamp} {text}\n"
-        
-        # Insert at the end
-        self.narrative_text.insert(tk.END, entry)
-        self.narrative_text.see(tk.END)
+        try:
+            # Add entry with timestamp
+            timestamp = f"[EVENT]"
+            entry = f"{timestamp} {text}\n"
+            
+            # Use after_idle to ensure thread safety
+            self.root.after_idle(lambda: self._safe_insert_text(entry))
+        except Exception as e:
+            logger.error(f"❌ Failed to add text entry: {e}")
+    
+    def _safe_insert_text(self, entry: str) -> None:
+        """Safely insert text in the main thread."""
+        try:
+            if self.narrative_text and self.running:
+                self.narrative_text.insert(tk.END, entry)
+                self.narrative_text.see(tk.END)
+        except Exception as e:
+            logger.error(f"❌ Failed to insert text: {e}")
 
     def _add_narrative_entry(self, result: ActionResult) -> None:
         """Add narrative entry to the log."""
