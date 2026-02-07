@@ -134,7 +134,7 @@ class DriftCodeAnalyzer:
         
         # High severity - immediate prune
         if high_severity:
-            report.append("## 🚨 HIGH SEVERITY - Immediate Prune Required")
+            report.append("## HIGH SEVERITY - Immediate Prune Required")
             report.append("")
             for violation in high_severity:
                 report.append(f"### {violation['file']}")
@@ -144,7 +144,7 @@ class DriftCodeAnalyzer:
         
         # Medium severity
         if medium_severity:
-            report.append("## ⚠️ MEDIUM SEVERITY - Review Required")
+            report.append("## MEDIUM SEVERITY - Review Required")
             report.append("")
             for violation in medium_severity:
                 report.append(f"### {violation['file']}")
@@ -155,12 +155,12 @@ class DriftCodeAnalyzer:
         
         # Low severity
         if low_severity:
-            report.append("## ℹ️ LOW SEVERITY - Minor Issues")
+            report.append("## LOW SEVERITY - Minor Issues")
             report.append("")
             for violation in low_severity:
                 report.append(f"### {violation['file']}")
                 report.append(f"**Violations**: {len(violation['drift_violations'])}")
-                for v in violation['driction_violations']:
+                for v in violation['drift_violations']:
                     report.append(f"- Line {v['line']}: {v['category']}")
                 report.append("")
         
