@@ -46,7 +46,7 @@ class Quartermaster:
         room_tags: List[str],
         base_difficulty: int = 10,
         arbiter_mod: int = 0,
-        arbiter_mod: int = 0,
+
         player_stats: Dict[str, int] | None = None,
         inventory_items: List[Item] | None = None
     ) -> QuartermasterOutcome:
