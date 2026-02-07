@@ -1,8 +1,6 @@
-"""
-DGT Harvest Rust Core - High-Performance Image Processing
-Rust-powered semantic scanning for instant asset analysis
-Python 3.12 Compatible
-"""
+// DGT Harvest Rust Core - High-Performance Image Processing
+// Rust-powered semantic scanning for instant asset analysis
+// Python 3.12 Compatible
 
 use pyo3::prelude::*;
 use pyo3::types::PyBytes;
@@ -113,7 +111,7 @@ impl HarvestScanner {
         let mut min_x = width;
         let mut min_y = height;
         let mut max_x = 0;
-        let max_y = 0;
+        let mut max_y = 0;
         
         // Color diversity tracking
         let mut colors = std::collections::HashSet::new();
