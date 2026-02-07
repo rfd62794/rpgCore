@@ -97,7 +97,7 @@ class GameREPL:
         logger.info("Game initialized with Council of Three architecture")
         
         self.console.print("[dim]🔥 Warming up engines...[/dim]")
-        # self.warm_up()
+        self.warm_up()
 
     def warm_up(self):
         """Pre-load models to avoid cold start latency."""
