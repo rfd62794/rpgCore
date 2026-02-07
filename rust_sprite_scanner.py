@@ -14,7 +14,7 @@ import sys
 try:
     # Try to load the compiled Rust module
     if sys.platform.startswith('win'):
-        lib_path = Path(__file__).parent / "release" / "dgt_harvest_rust.dll"
+        lib_path = Path(__file__).parent / "maturin" / "dgt_harvest_rust.dll"
     else:
         lib_path = Path(__file__).parent / "libdgt_harvest_rust.so"
     

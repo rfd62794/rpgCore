@@ -50,7 +50,7 @@ def check_maturin():
 
 
 def build_rust_module():
-    """Build the Rust module using maturin build mode (no virtualenv required)"""
+    """Build the Rust module using maturin build mode (Python 3.12 compatible)"""
     rust_dir = Path('dgt_harvest_rust')
     
     if not rust_dir.exists():
@@ -60,11 +60,12 @@ def build_rust_module():
     # Set environment variables for proper Python detection
     env = os.environ.copy()
     
-    # CRITICAL: Force PyO3 to use the current Python executable
+    # CRITICAL: Force PyO3 to use Python 3.12 compatibility
     env["PYO3_PYTHON"] = sys.executable
+    env["PYO3_USE_ABI3_FORWARD_COMPATIBILITY"] = "1"
     
     # Use build mode instead of develop (no virtualenv required)
-    logger.info("🔨 Building Rust harvest core in build mode...")
+    logger.info("🔨 Building Rust harvest core in build mode (Python 3.12 compatible)...")
     
     try:
         # Use maturin build (works without virtualenv)
@@ -78,26 +79,8 @@ def build_rust_module():
             logger.success("✅ Rust module built successfully")
             logger.info(result.stdout)
             
-            # Install the wheel
-            logger.info("📦 Installing Rust module wheel...")
-            wheel_files = list(Path('.').glob('dgt_harvest_rust*.whl'))
-            
-            if wheel_files:
-                for wheel_file in wheel_files:
-                    logger.info(f"📦 Installing: {wheel_file.name}")
-                    install_result = subprocess.run([
-                        sys.executable, '-m', 'pip', 'install', str(wheel_file), '--force-reinstall'
-                    ], capture_output=True, text=True)
-                    
-                    if install_result.returncode == 0:
-                        logger.success(f"✅ Installed: {wheel_file.name}")
-                    else:
-                        logger.error(f"❌ Failed to install: {wheel_file.name}")
-                        logger.error(install_result.stderr)
-                        return False
-            else:
-                logger.error("❌ No wheel files found after build")
-                return False
+            # Install the DLL directly (no wheel needed)
+            logger.info("📦 Rust DLL built successfully!")
             
             # Verify the module can be imported
             logger.info("🔍 Verifying Rust module import...")

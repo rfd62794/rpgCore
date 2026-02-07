@@ -274,20 +274,9 @@ fn dgt_harvest_rust(_py: Python, m: &PyModule) -> PyResult<()> {
     m.add_class::<HarvestScanner>()?;
     m.add_class::<SpriteAnalysis>()?;
     
-    // Convenience function for quick chest detection
-    #[pyfn(m)]
-    fn scan_sprite_for_chest(pixels: &PyBytes, width: u32, height: u32) -> PyResult<f64> {
-        let scanner = HarvestScanner::new(None, None, None, None);
-        let analysis = scanner.analyze_sprite_internal(pixels.as_bytes(), width, height);
-        Ok(analysis.chest_probability)
-    }
-    
-    // Convenience function for edge cleaning
-    #[pyfn(m)]
-    fn clean_sprite_edges(pixels: &PyBytes, width: u32, height: u32, threshold: u32) -> PyResult<Vec<u8>> {
-        let scanner = HarvestScanner::new(None, None, None, None);
-        Ok(scanner.auto_clean_edges_internal(pixels.as_bytes(), width, height, threshold))
-    }
+    // Export the classes directly
+    m.add("HarvestScanner", _py.get_type::<HarvestScanner>())?;
+    m.add("SpriteAnalysis", _py.get_type::<SpriteAnalysis>())?;
     
     Ok(())
 }
