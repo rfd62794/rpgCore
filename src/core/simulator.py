@@ -341,13 +341,19 @@ class SimulatorHost:
             new_room = None
             
             if llm_response.intent == "leave_area":
-                # Handle room transitions
+                # Handle room transitions AND coordinate mutation
                 if room and room.exits:
                     next_room_id = list(room.exits.values())[0]
                     self.state.current_room = next_room_id
                     room_changed = True
                     new_room = next_room_id
                     logger.info(f"🚙️ Transitioned to {next_room_id}")
+                else:
+                    # If no room exits, treat as movement and update coordinates
+                    direction = self._extract_direction_from_input(player_input)
+                    if direction != "here":
+                        self._update_voyager_position(direction)
+                        logger.info(f"🚶️ Voyager moved {direction} (leave_area intent)")
             elif llm_response.intent in ["move", "travel", "go", "walk"]:
                 # Extract direction from action input for position update
                 direction = self._extract_direction_from_input(player_input)
