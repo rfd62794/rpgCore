@@ -10,6 +10,7 @@ import os
 from loguru import logger
 from pydantic import BaseModel, Field
 from pydantic_ai import Agent
+from pydantic_ai.models.openai import OpenAIModel
 
 
 class ChroniclerProse(BaseModel):
@@ -45,6 +46,12 @@ class ChroniclerEngine:
         # Set Ollama base URL
         if 'OLLAMA_BASE_URL' not in os.environ:
             os.environ['OLLAMA_BASE_URL'] = 'http://localhost:11434'
+            
+        # Configure OpenAI compatible env vars for PydanticAI
+        os.environ["OPENAI_BASE_URL"] = f"{os.environ['OLLAMA_BASE_URL']}/v1"
+        os.environ["OPENAI_API_KEY"] = "ollama"
+        
+        model = OpenAIModel(model_name)
         
         self.tone = tone
         system_prompt = self._build_chronicler_prompt(tone)
@@ -52,7 +59,7 @@ class ChroniclerEngine:
         logger.info(f"Initializing Chronicler with {model_name}")
         
         self.agent = Agent(
-            model_name,
+            model=model,
             output_type=ChroniclerProse,
             system_prompt=system_prompt
         )

@@ -95,6 +95,40 @@ class GameREPL:
         self.turn_history: list[str] = []
         
         logger.info("Game initialized with Council of Three architecture")
+        
+        self.console.print("[dim]🔥 Warming up engines...[/dim]")
+        self.warm_up()
+
+    def warm_up(self):
+        """Pre-load models to avoid cold start latency."""
+        import urllib.request
+        import json
+        
+        models = [
+            'llama3.2:1b',      # Arbiter
+            'llama3.2:3b',      # Chronicler / Voyager
+            'qwen2.5-coder:3b'  # Voyager fallback
+        ]
+        
+        base_url = "http://localhost:11434/api/generate"
+        
+        for model in models:
+            try:
+                data = {
+                    "model": model,
+                    "prompt": "",
+                    "keep_alive": -1 # Keep loaded indefinitely
+                }
+                req = urllib.request.Request(
+                    base_url,
+                    data=json.dumps(data).encode('utf-8'),
+                    headers={'Content-Type': 'application/json'}
+                )
+                with urllib.request.urlopen(req) as response:
+                    pass # Just fire and forget
+                # self.console.print(f"[dim]  - {model} warmed up[/dim]")
+            except Exception as e:
+                logger.warning(f"Failed to warm up {model}: {e}")
     
     def display_context(self) -> None:
         """Display current game context using Rich panels."""
