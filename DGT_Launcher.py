@@ -37,7 +37,7 @@ class DGTLauncher:
     
     def __init__(self):
         """Initialize the DGT launcher."""
-        self.root_dir = Path(__file__).parent.parent
+        self.root_dir = Path(__file__).parent.resolve()  # Current directory where launcher is
         self.assets_dir = self.root_dir / "assets"
         self.src_dir = self.root_dir / "src"
         
@@ -254,12 +254,18 @@ class DGTLauncher:
             size = self.binary_assets.stat().st_size
             print(f"Binary Assets: ✅ {size:,} bytes")
         else:
-            print(f"Binary Assets: ❌ Not found")
+            print(f"Binary Assets: ❌ Not found at {self.binary_assets}")
         
         if self.asset_manifest.exists():
             print(f"Asset Manifest: ✅ {self.asset_manifest}")
         else:
-            print(f"Asset Manifest: ❌ Not found")
+            print(f"Asset Manifest: ❌ Not found at {self.asset_manifest}")
+        
+        # Debug info
+        print(f"Debug: root_dir = {self.root_dir}")
+        print(f"Debug: assets_dir = {self.assets_dir}")
+        print(f"Debug: binary_assets = {self.binary_assets}")
+        print(f"Debug: asset_manifest = {self.asset_manifest}")
     
     def run(self) -> None:
         """
