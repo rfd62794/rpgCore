@@ -38,6 +38,7 @@ class D20Result:
     narrative_context: str  # Technical explanation for Chronicler
     advantage_type: Optional[str] = None  # "advantage", "disadvantage", or None
     raw_rolls: Optional[Tuple[int, int]] = None  # For advantage/disadvantage transparency
+    deterministic_seed: Optional[int] = None  # Seed used for deterministic rolls
     
     def string_summary(self) -> str:
         """
