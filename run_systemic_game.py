@@ -46,6 +46,9 @@ class SystemicGameSession:
         self.dd_engine.world_engine = self.world_engine
         self.voyager.dd_engine = self.dd_engine
         
+        # Disable quest mode for Object-Aware demo
+        self.voyager.quest_mode = False
+        
         # Asset system
         self.asset_loader = AssetLoader()
         from utils.asset_loader import ObjectRegistry
