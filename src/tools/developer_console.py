@@ -20,8 +20,11 @@ Examples:
 import asyncio
 import threading
 import time
+import readline
+import atexit
 from typing import Dict, List, Tuple, Optional, Any
 from dataclasses import dataclass
+from pathlib import Path
 
 from loguru import logger
 
@@ -45,13 +48,20 @@ class ConsoleCommand:
 
 
 class DeveloperConsole:
-    """Live developer console for pillar manipulation"""
+    """Live developer console for pillar manipulation with history and auto-completion"""
     
     def __init__(self, dgt_system):
         self.dgt_system = dgt_system
         self.running = False
         self.command_history: List[str] = []
         self.output_buffer: List[str] = []
+        
+        # Command history file
+        self.history_file = Path("logs/console_history.txt")
+        self.max_history = 1000
+        
+        # Auto-completion setup
+        self.setup_readline()
         
         # Command handlers
         self.handlers = {
@@ -63,12 +73,153 @@ class DeveloperConsole:
             "state": self._handle_state_command,
             "help": self._handle_help_command,
             "status": self._handle_status_command,
-            "clear": self._handle_clear_command
+            "clear": self._handle_clear_command,
+            "history": self._handle_history_command,
+            "performance": self._handle_performance_command,
+            "circuits": self._handle_circuits_command
         }
         
-        logger.info("🖥️ Developer Console initialized")
+        # Load command history
+        self.load_history()
+        
+        logger.info("🖥️ Developer Console initialized with enhanced features")
     
-    async def start(self) -> None:
+    def setup_readline(self) -> None:
+        """Setup readline for history and auto-completion"""
+        try:
+            # Setup history file
+            self.history_file.parent.mkdir(parents=True, exist_ok=True)
+            
+            # Configure readline
+            readline.parse_and_bind("tab: complete")
+            readline.parse_and_bind("set editing-mode emacs")
+            readline.set_completer(self._completer)
+            
+            # Register history save on exit
+            atexit.register(self.save_history)
+            
+        except ImportError:
+            logger.warning("⚠️ readline not available, console features limited")
+    
+    def _completer(self, text: str, state: int) -> Optional[str]:
+        """Auto-completion function for readline"""
+        try:
+            # Split command to get context
+            parts = text.split()
+            if not parts:
+                return None
+            
+            if state == 0:
+                self._completion_matches = []
+                
+                if len(parts) == 1:
+                    # Complete pillar names
+                    pillar = parts[0].lower()
+                    self._completion_matches = [
+                        f"/{p}" for p in self.handlers.keys() 
+                        if p.startswith(pillar)
+                    ]
+                elif len(parts) == 2:
+                    # Complete actions for pillar
+                    pillar = parts[0].lower()
+                    action = parts[1].lower()
+                    
+                    if pillar in self.handlers:
+                        actions = self._get_pillar_actions(pillar)
+                        self._completion_matches = [
+                            f"/{pillar} {a}" for a in actions 
+                            if a.startswith(action)
+                        ]
+                elif len(parts) >= 3:
+                    # Complete arguments based on context
+                    pillar = parts[0].lower()
+                    action = parts[1].lower()
+                    self._completion_matches = self._get_argument_completions(
+                        pillar, action, parts[2:], text
+                    )
+            
+            if state < len(self._completion_matches):
+                return self._completion_matches[state]
+            else:
+                return None
+                
+        except Exception as e:
+            logger.debug(f"Auto-completion error: {e}")
+            return None
+    
+    def _get_pillar_actions(self, pillar: str) -> List[str]:
+        """Get available actions for a pillar"""
+        action_map = {
+            "world": ["set_tile", "apply_surface", "preview_chunk", "get_tile"],
+            "mind": ["validate_movement", "get_rule_stack", "get_state"],
+            "body": ["render_frame", "get_viewport"],
+            "persona": ["create_npc", "get_npc", "list_npcs", "faction_standing"],
+            "chronos": ["inject_task", "get_quests", "accept_quest", "complete_quest", "get_stats"],
+            "state": ["add_tag", "remove_tag", "get_tags", "set_position"],
+            "help": [],
+            "status": [],
+            "clear": [],
+            "history": [],
+            "performance": ["stats", "export", "reset"],
+            "circuits": ["status", "reset", "stats"]
+        }
+        return action_map.get(pillar, [])
+    
+    def _get_argument_completions(self, pillar: str, action: str, args: List[str], full_text: str) -> List[str]:
+        """Get argument completions based on context"""
+        completions = []
+        
+        if pillar == "world":
+            if action in ["set_tile", "apply_surface", "preview_chunk", "get_tile"]:
+                # Complete coordinates (simple example)
+                if len(args) == 1:
+                    for x in range(0, 50, 5):
+                        completions.append(f"{full_text}{x}")
+            elif action == "set_tile":
+                # Complete tile types
+                if len(args) == 3:
+                    tile_types = ["GRASS", "STONE", "WATER", "FOREST", "MOUNTAIN"]
+                    partial = args[2].upper()
+                    completions = [
+                        f"/{pillar} {action} {args[0]} {args[1]} {t}"
+                        for t in tile_types if t.startswith(partial)
+                    ]
+        
+        return completions
+    
+    def load_history(self) -> None:
+        """Load command history from file"""
+        try:
+            if self.history_file.exists():
+                with open(self.history_file, 'r', encoding='utf-8') as f:
+                    lines = f.read().splitlines()
+                    
+                # Add to readline history
+                for line in lines[-self.max_history:]:
+                    if line.strip():
+                        readline.add_history(line)
+                        self.command_history.append(line)
+                
+                logger.info(f"📝 Loaded {len(lines)} commands from history")
+        except Exception as e:
+            logger.warning(f"⚠️ Failed to load console history: {e}")
+    
+    def save_history(self) -> None:
+        """Save command history to file"""
+        try:
+            # Get current readline history
+            history_length = readline.get_current_history_length()
+            history = [readline.get_history_item(i) for i in range(1, history_length + 1)]
+            
+            # Save to file
+            with open(self.history_file, 'w', encoding='utf-8') as f:
+                for cmd in history[-self.max_history:]:
+                    if cmd.strip():
+                        f.write(cmd + '\n')
+            
+            logger.info(f"💾 Saved {len(history)} commands to history")
+        except Exception as e:
+            logger.warning(f"⚠️ Failed to save console history: {e}")
         """Start the console command loop"""
         self.running = True
         logger.info("🖥️ Developer Console started - Type '/help' for commands")
@@ -81,6 +232,15 @@ class DeveloperConsole:
         """Stop the console"""
         self.running = False
         logger.info("🖥️ Developer Console stopped")
+    
+    async def start(self) -> None:
+        """Start the console command loop"""
+        self.running = True
+        logger.info("🖥️ Developer Console started - Type '/help' for commands")
+        
+        # Run console in background thread
+        console_thread = threading.Thread(target=self._console_loop, daemon=True)
+        console_thread.start()
     
     def _console_loop(self) -> None:
         """Main console input loop"""
@@ -448,6 +608,112 @@ class DeveloperConsole:
             self._output(f"❌ Unknown state action: {cmd.action}")
             self._output("Available actions: add_tag, remove_tag, get_tags, set_position")
     
+    async def _handle_history_command(self, cmd: ConsoleCommand) -> None:
+        """Handle command history"""
+        if cmd.args and cmd.args[0] == "clear":
+            # Clear history
+            try:
+                readline.clear_history()
+                self.command_history.clear()
+                self._output("📝 Command history cleared")
+            except:
+                self._output("📝 Command history cleared (readline not available)")
+        else:
+            # Show recent history
+            recent_commands = self.command_history[-20:]  # Last 20 commands
+            self._output("📝 Recent Command History:")
+            for i, command in enumerate(recent_commands, 1):
+                self._output(f"   {i:2d}. {command}")
+        
+        self._output(f"📝 Total commands in history: {len(self.command_history)}")
+    
+    async def _handle_performance_command(self, cmd: ConsoleCommand) -> None:
+        """Handle performance monitoring commands"""
+        if not self.dgt_system.performance_monitor:
+            self._output("❌ Performance monitor not available")
+            return
+        
+        if cmd.action == "stats":
+            stats = self.dgt_system.performance_monitor.get_current_stats()
+            self._output("📊 Performance Statistics:")
+            self._output(f"   Average FPS: {stats.avg_fps:.1f}")
+            self._output(f"   Min/Max FPS: {stats.min_fps:.1f}/{stats.max_fps:.1f}")
+            self._output(f"   Average Frame Time: {stats.avg_frame_time*1000:.1f}ms")
+            self._output(f"   Total Frames: {stats.total_frames}")
+            self._output(f"   Uptime: {stats.uptime_seconds:.1f}s")
+            
+            if stats.pillar_averages:
+                self._output("   Pillar Performance:")
+                for pillar, avg_time in stats.pillar_averages.items():
+                    self._output(f"     {pillar}: {avg_time*1000:.2f}ms avg")
+        
+        elif cmd.action == "export":
+            from pathlib import Path
+            export_path = Path("logs/performance_export.json")
+            self.dgt_system.performance_monitor.export_metrics(export_path)
+            self._output(f"📊 Performance metrics exported to {export_path}")
+        
+        elif cmd.action == "reset":
+            self.dgt_system.performance_monitor.reset()
+            self._output("📊 Performance metrics reset")
+        
+        else:
+            self._output("❌ Unknown performance action")
+            self._output("Available actions: stats, export, reset")
+    
+    async def _handle_circuits_command(self, cmd: ConsoleCommand) -> None:
+        """Handle circuit breaker commands"""
+        if not self.dgt_system.circuit_manager:
+            self._output("❌ Circuit breaker manager not available")
+            return
+        
+        if cmd.action == "status":
+            stats = self.dgt_system.circuit_manager.get_all_statistics()
+            open_circuits = self.dgt_system.circuit_manager.get_open_circuits()
+            degraded = self.dgt_system.circuit_manager.get_degraded_pillars()
+            
+            self._output("🔌 Circuit Breaker Status:")
+            self._output(f"   Total Pillars: {len(stats)}")
+            self._output(f"   Open Circuits: {len(open_circuits)}")
+            self._output(f"   Degraded Pillars: {len(degraded)}")
+            
+            if open_circuits:
+                self._output("   ⚠️ Open Circuits:")
+                for pillar in open_circuits:
+                    self._output(f"     - {pillar}")
+            
+            if degraded:
+                self._output("   ⚠️ Degraded Pillars:")
+                for pillar in degraded:
+                    self._output(f"     - {pillar}")
+            
+            if stats:
+                self._output("   Pillar Details:")
+                for pillar, pillar_stats in stats.items():
+                    state_icon = "✅" if pillar_stats["state"] == "closed" else "🔴" if pillar_stats["state"] == "open" else "🟡"
+                    self._output(f"     {state_icon} {pillar}: {pillar_stats['state']} "
+                               f"({pillar_stats['failure_rate']:.1%} failure rate)")
+        
+        elif cmd.action == "reset":
+            self.dgt_system.circuit_manager.reset_all()
+            self._output("🔌 All circuit breakers reset")
+        
+        elif cmd.action == "stats":
+            stats = self.dgt_system.circuit_manager.get_all_statistics()
+            self._output("🔌 Detailed Circuit Statistics:")
+            for pillar, pillar_stats in stats.items():
+                self._output(f"   {pillar}:")
+                self._output(f"     State: {pillar_stats['state']}")
+                self._output(f"     Failures: {pillar_stats['failure_count']}")
+                self._output(f"     Successes: {pillar_stats['success_count']}")
+                self._output(f"     Total Calls: {pillar_stats['total_calls']}")
+                self._output(f"     Failure Rate: {pillar_stats['failure_rate']:.1%}")
+                self._output(f"     Avg Call Time: {pillar_stats['average_call_time']*1000:.2f}ms")
+        
+        else:
+            self._output("❌ Unknown circuits action")
+            self._output("Available actions: status, reset, stats")
+    
     async def _handle_help_command(self, cmd: ConsoleCommand) -> None:
         """Show help information"""
         self._output("🖥️ Developer Console Help")
@@ -481,9 +747,19 @@ class DeveloperConsole:
         self._output("  /body render_frame")
         self._output("  /body get_viewport")
         self._output("")
+        self._output("System Commands:")
         self._output("  /status")
         self._output("  /clear")
+        self._output("  /history [clear]")
+        self._output("  /performance stats|export|reset")
+        self._output("  /circuits status|reset|stats")
         self._output("  /help")
+        self._output("")
+        self._output("Features:")
+        self._output("  • Tab completion for commands and arguments")
+        self._output("  • Command history (arrow keys)")
+        self._output("  • Real-time performance monitoring")
+        self._output("  • Circuit breaker status tracking")
     
     async def _handle_status_command(self, cmd: ConsoleCommand) -> None:
         """Show system status"""

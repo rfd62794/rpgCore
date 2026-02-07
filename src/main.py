@@ -18,7 +18,7 @@ import signal
 import sys
 import time
 from pathlib import Path
-from typing import Dict, Any, Optional
+from typing import Dict, Any, Optional, TypedDict, Union, Callable, Awaitable, NotRequired
 
 from loguru import logger
 
@@ -74,6 +74,45 @@ except ImportError:
     # Fallback for development
     from utils.logger import initialize_logging, get_logger_manager
 
+# Import configuration management
+try:
+    from utils.config_manager import (
+        setup_configuration_management, load_system_config,
+        SystemConfigModel, ConfigurationManager
+    )
+except ImportError:
+    # Fallback for development
+    from utils.config_manager import (
+        setup_configuration_management, load_system_config,
+        SystemConfigModel, ConfigurationManager
+    )
+
+# Import circuit breaker
+try:
+    from utils.circuit_breaker import (
+        get_circuit_manager, circuit_breaker, CircuitBreakerConfig,
+        CircuitBreakerManager
+    )
+except ImportError:
+    # Fallback for development
+    from utils.circuit_breaker import (
+        get_circuit_manager, circuit_breaker, CircuitBreakerConfig,
+        CircuitBreakerManager
+    )
+
+# Import performance monitoring
+try:
+    from utils.performance_monitor import (
+        initialize_performance_monitor, get_performance_monitor,
+        PerformanceMonitor
+    )
+except ImportError:
+    # Fallback for development
+    from utils.performance_monitor import (
+        initialize_performance_monitor, get_performance_monitor,
+        PerformanceMonitor
+    )
+
 # Import developer console
 try:
     from tools import DeveloperConsole
@@ -82,10 +121,31 @@ except ImportError:
     from tools.developer_console import DeveloperConsole
 
 
+class SystemConfig(TypedDict):
+    """Type-safe system configuration"""
+    mode: str
+    scene: str
+    seed: str
+    target_fps: int
+    enable_graphics: bool
+    enable_persistence: bool
+    enable_logging: bool
+    enable_console: bool
+
+
+class SystemStatus(TypedDict):
+    """Type-safe system status"""
+    running: bool
+    heartbeat_active: bool
+    pillars: Dict[str, bool]
+    config: SystemConfig
+    performance: NotRequired[Dict[str, Union[float, int]]]
+
+
 class DGTSystem:
     """Main DGT Autonomous Movie System"""
     
-    def __init__(self):
+    def __init__(self) -> None:
         self.heartbeat: Optional[HeartbeatController] = None
         self.running = False
         
@@ -102,6 +162,15 @@ class DGTSystem:
         # Developer tools
         self.dev_console: Optional[DeveloperConsole] = None
         
+        # Configuration management
+        self.config_manager: Optional[ConfigurationManager] = None
+        
+        # Circuit breaker for fault tolerance
+        self.circuit_manager: Optional[CircuitBreakerManager] = None
+        
+        # Performance monitoring
+        self.performance_monitor: Optional[PerformanceMonitor] = None
+        
         # Configuration
         self.config = self._load_config()
         
@@ -110,17 +179,39 @@ class DGTSystem:
         
         logger.info("🏰 DGT System initialized - Production SOA Architecture")
     
-    def _load_config(self) -> Dict[str, Any]:
-        """Load system configuration"""
-        return {
-            "mode": "autonomous",
-            "scene": "tavern",
-            "seed": "TAVERN_SEED",
-            "target_fps": 60,
-            "enable_graphics": True,
-            "enable_persistence": True,
-            "enable_logging": True
-        }
+    def _load_config(self) -> SystemConfig:
+        """Load system configuration using configuration manager"""
+        try:
+            # Setup configuration management
+            self.config_manager = setup_configuration_management()
+            
+            # Load configuration
+            config_model = load_system_config()
+            
+            # Convert to legacy SystemConfig format for compatibility
+            return {
+                "mode": config_model.mode,
+                "scene": config_model.scene,
+                "seed": config_model.seed,
+                "target_fps": config_model.target_fps,
+                "enable_graphics": config_model.enable_graphics,
+                "enable_persistence": config_model.enable_persistence,
+                "enable_logging": config_model.enable_logging,
+                "enable_console": config_model.enable_console
+            }
+        except Exception as e:
+            logger.warning(f"⚠️ Failed to load external config, using defaults: {e}")
+            # Fallback to hardcoded defaults
+            return {
+                "mode": "autonomous",
+                "scene": "tavern",
+                "seed": "TAVERN_SEED",
+                "target_fps": 60,
+                "enable_graphics": True,
+                "enable_persistence": True,
+                "enable_logging": True,
+                "enable_console": True
+            }
     
     def _setup_signal_handlers(self) -> None:
         """Setup signal handlers for graceful shutdown"""
@@ -132,7 +223,7 @@ class DGTSystem:
         signal.signal(signal.SIGINT, signal_handler)
         signal.signal(signal.SIGTERM, signal_handler)
     
-    async def initialize(self, config: Dict[str, Any]) -> bool:
+    async def initialize(self, config: SystemConfig) -> bool:
         """Initialize all system components"""
         try:
             logger.info("🚀 Initializing DGT System components...")
@@ -180,6 +271,16 @@ class DGTSystem:
             self.world_engine.set_chronos_engine(self.chronos_engine)
             self.chronos_engine.set_persona_engine(self.persona_engine)
             logger.info("🔗 Pillar dependencies connected")
+            
+            # Initialize Circuit Breaker Manager
+            self.circuit_manager = get_circuit_manager()
+            logger.info("🔌 Circuit Breaker Manager initialized")
+            
+            # Initialize Performance Monitor
+            self.performance_monitor = initialize_performance_monitor(
+                target_fps=config.get("target_fps", 60)
+            )
+            logger.info("📊 Performance Monitor initialized")
             
             # Initialize Developer Console
             if config.get("enable_console", True):
@@ -230,10 +331,14 @@ class DGTSystem:
     
     async def _configure_scene(self, scene: str) -> None:
         """Configure scene-specific settings"""
-        if scene == "tavern":
-            await self._configure_tavern_scene()
-        elif scene == "forest":
-            await self._configure_forest_scene()
+        scene_handlers: Dict[str, Callable[[], Awaitable[None]]] = {
+            "tavern": self._configure_tavern_scene,
+            "forest": self._configure_forest_scene
+        }
+        
+        handler = scene_handlers.get(scene)
+        if handler:
+            await handler()
         else:
             logger.warning(f"Unknown scene: {scene}")
     
@@ -306,25 +411,68 @@ class DGTSystem:
             logger.info("🎬 Autonomous mode ended")
     
     async def _run_simple_autonomous_loop(self) -> None:
-        """Simple autonomous loop fallback"""
+        """Simple autonomous loop fallback with performance monitoring"""
         logger.info("🔄 Running simple autonomous loop")
         
         while self.running:
+            frame_start = time.time()
+            
+            # Start frame monitoring
+            if self.performance_monitor:
+                self.performance_monitor.start_frame()
+            
             try:
                 # Get current state
                 if self.dd_engine:
-                    state = self.dd_engine.get_current_state()
-                    logger.info(f"📍 Position: {state.player_position}, Turn: {state.turn_count}")
+                    if self.performance_monitor:
+                        self.performance_monitor.start_pillar("dd_engine")
+                    
+                    try:
+                        state = await self.circuit_manager.call_pillar(
+                            "dd_engine", self.dd_engine.get_current_state
+                        )
+                        logger.info(f"📍 Position: {state.player_position}, Turn: {state.turn_count}")
+                    except Exception as e:
+                        logger.error(f"💥 DD Engine failed: {e}")
+                        continue  # Skip frame but continue loop
+                    
+                    if self.performance_monitor:
+                        self.performance_monitor.end_pillar("dd_engine")
                 
                 # Generate next intent
                 if self.voyager:
-                    intent = await self.voyager.generate_next_intent(state)
-                    if intent:
-                        success = await self.voyager.submit_intent(intent)
-                        logger.info(f"🎯 Intent: {intent.intent_type}, Success: {success}")
+                    if self.performance_monitor:
+                        self.performance_monitor.start_pillar("voyager")
+                    
+                    try:
+                        intent = await self.circuit_manager.call_pillar(
+                            "voyager", self.voyager.generate_next_intent, state
+                        )
+                        if intent:
+                            success = await self.circuit_manager.call_pillar(
+                                "voyager", self.voyager.submit_intent, intent
+                            )
+                            logger.info(f"🎯 Intent: {intent.intent_type}, Success: {success}")
+                    except Exception as e:
+                        logger.error(f"💥 Voyager failed: {e}")
+                    
+                    if self.performance_monitor:
+                        self.performance_monitor.end_pillar("voyager")
                 
-                # Wait for next frame
-                await asyncio.sleep(1/60)  # 60 FPS
+                # End frame monitoring
+                if self.performance_monitor:
+                    self.performance_monitor.end_frame()
+                
+                # Calculate sleep time to maintain target FPS
+                frame_time = time.time() - frame_start
+                target_frame_time = 1.0 / self.config.get("target_fps", 60)
+                sleep_time = max(0, target_frame_time - frame_time)
+                
+                if sleep_time > 0:
+                    await asyncio.sleep(sleep_time)
+                else:
+                    # Frame took too long
+                    logger.warning(f"⚠️ Frame overrun: {frame_time*1000:.1f}ms")
                 
             except Exception as e:
                 logger.error(f"💥 Loop error: {e}")
@@ -440,9 +588,9 @@ class DGTSystem:
         
         logger.info("✅ DGT System shutdown complete")
     
-    def get_status(self) -> Dict[str, Any]:
+    def get_status(self) -> SystemStatus:
         """Get system status"""
-        return {
+        status = {
             "running": self.running,
             "heartbeat_active": self.heartbeat.is_running() if self.heartbeat else False,
             "pillars": {
@@ -455,11 +603,35 @@ class DGTSystem:
             },
             "config": self.config
         }
+        
+        # Add performance stats if available
+        if self.performance_monitor:
+            stats = self.performance_monitor.get_current_stats()
+            status["performance"] = {
+                "avg_fps": round(stats.avg_fps, 1),
+                "min_fps": round(stats.min_fps, 1),
+                "max_fps": round(stats.max_fps, 1),
+                "avg_frame_time_ms": round(stats.avg_frame_time * 1000, 1),
+                "total_frames": stats.total_frames,
+                "uptime_seconds": round(stats.uptime_seconds, 1)
+            }
+        
+        # Add circuit breaker stats if available
+        if self.circuit_manager:
+            circuit_stats = self.circuit_manager.get_all_statistics()
+            status["circuit_breakers"] = {
+                "total_pillars": len(circuit_stats),
+                "open_circuits": self.circuit_manager.get_open_circuits(),
+                "degraded_pillars": self.circuit_manager.get_degraded_pillars(),
+                "statistics": circuit_stats
+            }
+        
+        return status
 
 
 # === MAIN ENTRY POINTS ===
 
-async def run_tavern_autopilot():
+async def run_tavern_autopilot() -> int:
     """Run autonomous tavern movie mode"""
     logger.info("🍺 Starting Tavern Autopilot Mode...")
     
@@ -467,14 +639,15 @@ async def run_tavern_autopilot():
     system = DGTSystem()
     
     # Configure for tavern
-    config = {
+    config: SystemConfig = {
         "mode": "autonomous",
         "scene": "tavern",
         "seed": "TAVERN_SEED",
         "target_fps": 60,
         "enable_graphics": False,
         "enable_persistence": True,
-        "enable_logging": True
+        "enable_logging": True,
+        "enable_console": True
     }
     
     # Initialize and run
@@ -487,7 +660,7 @@ async def run_tavern_autopilot():
     return 0
 
 
-async def run_forest_autopilot():
+async def run_forest_autopilot() -> int:
     """Run autonomous forest exploration mode"""
     logger.info("🌲 Starting Forest Autopilot Mode...")
     
@@ -495,14 +668,15 @@ async def run_forest_autopilot():
     system = DGTSystem()
     
     # Configure for forest
-    config = {
+    config: SystemConfig = {
         "mode": "autonomous",
         "scene": "forest",
         "seed": "FOREST_SEED",
         "target_fps": 60,
         "enable_graphics": True,
         "enable_persistence": True,
-        "enable_logging": True
+        "enable_logging": True,
+        "enable_console": True
     }
     
     # Initialize and run
@@ -515,7 +689,7 @@ async def run_forest_autopilot():
     return 0
 
 
-async def run_demo():
+async def run_demo() -> int:
     """Run demo mode with all scenarios"""
     logger.info("🎭 Starting Demo Mode...")
     
@@ -523,14 +697,15 @@ async def run_demo():
     system = DGTSystem()
     
     # Configure for demo
-    config = {
+    config: SystemConfig = {
         "mode": "demo",
         "scene": "demo",
         "seed": "DEMO_SEED",
         "target_fps": 60,
         "enable_graphics": True,
         "enable_persistence": False,
-        "enable_logging": True
+        "enable_logging": True,
+        "enable_console": True
     }
     
     # Initialize and run
@@ -543,7 +718,7 @@ async def run_demo():
     return 0
 
 
-async def run_interactive():
+async def run_interactive() -> int:
     """Run interactive mode for development"""
     logger.info("🎮 Starting Interactive Mode...")
     
@@ -551,14 +726,15 @@ async def run_interactive():
     system = DGTSystem()
     
     # Configure for interactive
-    config = {
+    config: SystemConfig = {
         "mode": "interactive",
         "scene": "tavern",
         "seed": "INTERACTIVE_SEED",
         "target_fps": 60,
         "enable_graphics": True,
         "enable_persistence": True,
-        "enable_logging": True
+        "enable_logging": True,
+        "enable_console": True
     }
     
     # Initialize and run
