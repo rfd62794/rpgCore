@@ -78,7 +78,7 @@ def test_dynamic_entities():
     print(f"\n   Perceived world summary:")
     print(f"   Near range (0-5 units): {len(perceived_world['near_range'])} coords")
     print(f"   Mid range (5-15 units): {len(perceived_world['mid_range'])} coords")
-    print(f"   Far range (15+ units): {len(perceived['far_range'])} coords")
+    print(f"   Far range (15+ units): {len(perceived_world['far_range'])} coords")
     print(f"   Total perceived: {perceived_world['total_coords']} coords")
     
     # Show near-range details
