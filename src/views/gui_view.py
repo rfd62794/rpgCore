@@ -321,25 +321,38 @@ class GUIView(Observer):
         if event_type == "scene_transition":
             # Display cinematic transition in narrative
             message = data.get("message", "--- SCENE TRANSITION ---")
-            self._add_narrative_entry(f"[CINEMATIC] {message}")
+            self._add_text_entry(f"[CINEMATIC] {message}")
             
         elif event_type == "scene_lock_released":
             # Display location context when scene lock releases
             location = data.get("location", "Unknown Location")
-            self._add_narrative_entry(f"[LOCATION] Now in: {location}")
+            self._add_text_entry(f"[LOCATION] Now in: {location}")
             
         elif event_type == "portal_transition":
             # Display portal transition
             environment = data.get("environment", "Unknown")
             location = data.get("location", "Unknown")
-            self._add_narrative_entry(f"[PORTAL] Transition to {location}")
+            self._add_text_entry(f"[PORTAL] Transition to {location}")
             
         elif event_type == "landmark_interaction":
             # Display landmark interaction
             landmark = data.get("landmark", "Unknown")
             interaction_type = data.get("type", "Unknown")
-            self._add_narrative_entry(f"[INTERACTION] {landmark} ({interaction_type})")
+            self._add_text_entry(f"[INTERACTION] {landmark} ({interaction_type})")
     
+    def _add_text_entry(self, text: str) -> None:
+        """Add plain text entry to the narrative log."""
+        if not self.narrative_text:
+            return
+        
+        # Add entry with timestamp
+        timestamp = f"[EVENT]"
+        entry = f"{timestamp} {text}\n"
+        
+        # Insert at the end
+        self.narrative_text.insert(tk.END, entry)
+        self.narrative_text.see(tk.END)
+
     def _add_narrative_entry(self, result: ActionResult) -> None:
         """Add narrative entry to the log."""
         if not self.narrative_text:
