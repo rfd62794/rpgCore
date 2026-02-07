@@ -20,6 +20,7 @@ from game_state import GameState, PlayerStats, Goal
 from logic.faction_system import FactionSystem
 from logic.orientation import OrientationManager
 from ui.dashboard import UnifiedDashboard, DashboardLayout
+from ui.layout_manager_new import DirectorConsole
 from chronos import ChronosEngine
 from utils.historian import Historian, WorldSeed
 from ui.renderer_3d import ASCIIDoomRenderer
@@ -49,7 +50,8 @@ class SyntheticRealityDirector:
         self.d20_resolver = D20Resolver(self.faction_system)
         
         # Presentation systems
-        self.dashboard = UnifiedDashboard(self.world_ledger, self.faction_system)
+        self.console = Console()
+        self.director_console = DirectorConsole(self.console, self.world_ledger, self.faction_system)
         
         # Initialize renderer based on view mode
         if view_mode == "iso":
@@ -205,16 +207,16 @@ class SyntheticRealityDirector:
         
         try:
             # Initialize dashboard
-            self.dashboard.update_layout(DashboardLayout.RAYCAST_DOMINANT)
+            self.director_console.display_welcome()
             
             # Calculate initial perception range
             wisdom = self.game_state.player.attributes.get("wisdom", 10)
             intelligence = self.game_state.player.attributes.get("intelligence", 10)
             perception_range = max(5, (wisdom + intelligence) // 2)
             
-            print(f"   ✅ Dashboard initialized with raycast-dominant layout")
+            print(f"   ✅ Director's Console initialized")
             print(f"   ✅ Perception range: {perception_range} (WIS: {wisdom}, INT: {intelligence})")
-            print(f"   ✅ 3D renderer ready: {self.renderer.width}x{self.renderer.height} viewport")
+            print(f"   ✅ Viewport ready: {self.renderer.width}x{self.renderer.height} viewport")
             
             print("🎬 DIRECTOR: Rendering loop ready!")
             return True
