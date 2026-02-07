@@ -73,7 +73,7 @@ class SemanticResolver:
     Maps player input to intents using cosine similarity.
     
     Performance:
-    - Model load: ~200ms (one-time)
+    - Model load: ~200ms (one-time) OR instant with pre-baked embeddings
     - Inference: <50ms per query on CPU
     """
     
@@ -81,24 +81,75 @@ class SemanticResolver:
         self,
         intent_library: IntentLibrary,
         model_name: str = 'all-MiniLM-L6-v2',
-        confidence_threshold: float = 0.5
+        confidence_threshold: float = 0.5,
+        embeddings_path: Optional[Path] = None
     ):
         """
-        Initialize semantic resolver.
+        Initialize semantic resolver with instant boot support.
         
         Args:
             intent_library: Library of intents to match against
             model_name: SentenceTransformer model (default: MiniLM, 80MB)
             confidence_threshold: Minimum similarity score (0-1) to accept match
+            embeddings_path: Path to pre-baked embeddings file
         """
         self.intent_library = intent_library
         self.confidence_threshold = confidence_threshold
+        self.model_name = model_name
+        self.embeddings_path = embeddings_path or Path("data/embeddings.safetensors")
         
-        logger.info(f"Loading embedding model: {model_name}")
-        self.model = SentenceTransformer(model_name)
+        # Try to load pre-baked embeddings for instant boot
+        if self._load_prebaked_embeddings():
+            logger.info("✅ Instant boot: Loaded pre-baked embeddings")
+            self.model = None  # Don't load model unless needed
+        else:
+            logger.info(f"⚡ Loading embedding model: {model_name}")
+            self.model = SentenceTransformer(model_name)
+            self._update_intent_embeddings()
+    
+    def _load_prebaked_embeddings(self) -> bool:
+        """
+        Attempt to load pre-baked embeddings for instant boot.
         
-        # Pre-compute intent embeddings
-        self._update_intent_embeddings()
+        Returns:
+            True if embeddings were loaded successfully
+        """
+        if not self.embeddings_path.exists():
+            logger.debug(f"No pre-baked embeddings found at {self.embeddings_path}")
+            return False
+        
+        try:
+            # Load pre-baked embeddings
+            baker = SemanticBaker(model_name=self.model_name)
+            all_embeddings = baker.load_embeddings(self.embeddings_path)
+            
+            # Extract intent embeddings from the full embedding map
+            intent_embeddings = {}
+            intents = self.intent_library.get_intents()
+            
+            for intent_id in intents:
+                intent_key = f"intent_{intent_id}"
+                if intent_key in all_embeddings:
+                    # Reshape to match expected format (2D array for multiple exemplars)
+                    intent_embeddings[intent_id] = all_embeddings[intent_key].reshape(1, -1)
+                else:
+                    logger.warning(f"Missing pre-baked embedding for intent: {intent_id}")
+                    return False
+            
+            # Cache the embeddings
+            self.intent_library.mark_embeddings_computed(intent_embeddings)
+            logger.info(f"Loaded {len(intent_embeddings)} pre-baked intent embeddings")
+            return True
+            
+        except Exception as e:
+            logger.warning(f"Failed to load pre-baked embeddings: {e}")
+            return False
+    
+    def _ensure_model_loaded(self):
+        """Ensure the sentence transformer model is loaded (lazy loading)."""
+        if self.model is None:
+            logger.info(f"Loading embedding model on-demand: {self.model_name}")
+            self.model = SentenceTransformer(self.model_name)
     
     def _update_intent_embeddings(self) -> None:
         """
@@ -107,6 +158,8 @@ class SemanticResolver:
         For each intent, we compute embeddings for ALL exemplars, allowing
         max-similarity matching during resolution.
         """
+        self._ensure_model_loaded()
+        
         intents = self.intent_library.get_intents()
         
         if not intents:
@@ -161,6 +214,7 @@ class SemanticResolver:
             self._update_intent_embeddings()
         
         # Encode player input once
+        self._ensure_model_loaded()
         input_embedding = self.model.encode(player_input, convert_to_numpy=True)
         
         # Find best intent via max-similarity matching

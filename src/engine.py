@@ -23,6 +23,7 @@ from narrator import Narrator
 from world_factory import WorldFactory
 from character_factory import CharacterFactory
 from loot_system import LootSystem
+from utils.context_manager import ContextManager
 
 
 class GameEngine:
@@ -61,6 +62,7 @@ class GameEngine:
         self.narrator = Narrator()
         self.world_factory = WorldFactory()
         self.loot_system = LootSystem()
+        self.context_manager = ContextManager()
         
         # Sync world data to state
         self._sync_world_to_state()
