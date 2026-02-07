@@ -17,6 +17,7 @@ from typing import Optional
 
 from d20_core import D20Result
 from logic.perception import PerceptionSystem
+from logic.legacy import LegacyHandler
 
 
 class DirectorMonitor:
@@ -34,7 +35,7 @@ class DirectorMonitor:
         self._setup_layout()
     
     def _setup_layout(self):
-        """Configure the dual-pane layout with radar."""
+        """Configure the dual-pane layout with radar and legacy."""
         self.layout.split_column(
             Layout(name="narrative", ratio=7),  # 70% for story
             Layout(name="monitor", ratio=3)      # 30% for debug
@@ -51,7 +52,8 @@ class DirectorMonitor:
             Layout(name="combat_log", ratio=2),  # Combat math
             Layout(name="state_changes", ratio=2), # State/reputation
             Layout(name="goals", ratio=1),        # Active goals
-            Layout(name="radar", ratio=2)          # Radar panel
+            Layout(name="radar", ratio=1),          # Radar panel
+            Layout(name="legacy", ratio=1)          # Legacy panel
         )
     
     def format_combat_log(self, d20_result: D20Result) -> Panel:
