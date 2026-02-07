@@ -626,6 +626,43 @@ class D20Resolver:
                             break
         
         return completed
+    
+    def _calculate_faction_modifier(self, intent_id: str, game_state: GameState) -> int:
+        """
+        Calculate faction-based modifiers for actions.
+        
+        Args:
+            intent_id: Type of action being performed
+            game_state: Current game state
+            
+        Returns:
+            Faction modifier (negative for disadvantages)
+        """
+        if not self.faction_system:
+            return 0
+        
+        # Get faction at current location
+        current_faction = self.faction_system.get_faction_at_coordinate(game_state.position)
+        
+        if not current_faction:
+            return 0
+        
+        # Check if this is a social action
+        social_intents = ["talk", "persuade", "intimidate", "deceive", "bargain", "flirt"]
+        
+        if intent_id in social_intents:
+            # Check player's reputation with this faction
+            player_reputation = game_state.reputation.get(current_faction.id, 0)
+            
+            # Apply disadvantage for hostile factions
+            if player_reputation < -20:
+                logger.info(f"Applying faction disadvantage: {current_faction.name} is hostile (reputation: {player_reputation})")
+                return -5  # Disadvantage equivalent
+            elif player_reputation < -10:
+                logger.info(f"Applying faction penalty: {current_faction.name} is unfriendly (reputation: {player_reputation})")
+                return -2  # Minor penalty
+        
+        return 0
 
 
 # Export for use by the engine
