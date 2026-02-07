@@ -147,7 +147,13 @@ class DDEngine:
     
     async def update_voyager_state(self, new_state) -> None:
         """Update Voyager state (Facade method)"""
-        self.state.voyager_state = new_state
+        # Handle both enum and string values
+        if hasattr(new_state, 'value'):
+            state_value = new_state.value
+        else:
+            state_value = str(new_state)
+        
+        self.state.voyager_state = state_value
         self.state.timestamp = time.time()
     
     async def update_effects(self) -> None:
