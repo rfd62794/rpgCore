@@ -655,6 +655,36 @@ fountain:
     heal_amount: 20
     curse_removal: true
 
+animated_flower:
+  characteristics:
+    material: "organic_flora"
+    state: "swaying"
+    rarity: 0.8
+    integrity: 20
+    triggers:
+      on_touch: "pollen_release"
+      on_wind: "sway_animation"
+    tags: ["animated", "flora", "wind_sensitive", "decorative"]
+    interaction_hooks: ["examine", "touch", "collect"]
+    d20_checks:
+      examine: {"difficulty": 5, "skill": "nature", "success": "observe_pollen"}
+      collect: {"difficulty": 8, "skill": "dexterity", "success": "gather_flower"}
+      touch: {"difficulty": 3, "skill": "nature", "success": "feel_petals"}
+    animation_frames:
+      wind_sway: ["flower_frame_1", "flower_frame_2", "flower_frame_3"]
+      frame_duration: 500  # milliseconds per frame
+    visual_effects:
+      pollen_particles: true
+      color_shift: ["pink", "light_pink", "white"]
+  collision: false
+  friction: 0.1
+  sprite_id: "animated_flower"
+  metadata:
+    flower_type: "wind_sway"
+    pollen_count: 5
+    sway_amplitude: 2
+    aesthetic_style: "sonic_field": true
+
 magic_portal:
   characteristics:
     material: "energy"
