@@ -236,7 +236,7 @@ class MMapAssetBaker:
             baker_path: Path to existing baker output (.safetensors or .pickle)
             output_path: Output path for memory-mapped file
         """
-        from src.utils.baker import SemanticBaker
+        from utils.baker import SemanticBaker
         
         logger.info(f"Converting {baker_path} to memory-mapped format...")
         
