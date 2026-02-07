@@ -8,8 +8,9 @@ It can connect to local or remote simulation servers.
 
 import time
 import threading
-from typing import Dict, Any, Optional, Callable
+from typing import Dict, Any, Optional, Callable, Union
 from queue import Queue, Empty
+from enum import Enum
 import json
 import socket
 from pathlib import Path
