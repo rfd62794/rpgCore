@@ -6476,3 +6476,6 @@ expected alphabetic or numeric character, but found '.'
 2026-02-07 15:53:09 | ERROR | body.ppu:_setup:94 | ❌ Failed to create PPU: name 'PhotoImage' is not defined
 2026-02-07 15:53:09 | ERROR | __main__:main:315 | ⚠️ Some validations failed - review before deployment
 2026-02-07 15:53:13 | ERROR | src.body.ppu:_setup:94 | ❌ Failed to create PPU: name 'PhotoImage' is not defined
+2026-02-07 15:53:23 | ERROR | src.body.ppu:_setup:94 | ❌ Failed to create PPU: name 'PhotoImage' is not defined
+2026-02-07 15:53:33 | ERROR | src.body.dispatcher:initialize:75 | ❌ Failed to initialize PPU: too many values to unpack (expected 2)
+2026-02-07 15:53:33 | ERROR | src.body.dispatcher:set_mode:172 | ❌ Failed to initialize ppu body

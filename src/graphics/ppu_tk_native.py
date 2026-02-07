@@ -8,6 +8,7 @@ Supports OVERWORLD (top-down) and COMBAT (side-view) rendering modes.
 
 import tkinter as tk
 import time
+from tkinter import PhotoImage
 from typing import List, Tuple, Optional, Dict, Any
 from enum import Enum
 from dataclasses import dataclass
