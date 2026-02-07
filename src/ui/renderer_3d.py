@@ -1,8 +1,11 @@
 """
-3D Rendering System
+ASCII Doom Renderer
 
-Phase 8: Dual-Mode Rendering Implementation
-Supports both ASCII-Doom raycasting and Isometric 2.5D projection.
+Phase 1: Raycasting Engine Implementation
+Phase 12: Sprite Billboarding Integration
+Renders 3D ASCII world using raycasting with entity billboarding.
+
+ADR 029: Isometric "Ghosting" & Threat Depth
 """
 
 import math
@@ -10,8 +13,10 @@ from typing import Dict, List, Tuple, Optional, Any
 from dataclasses import dataclass
 
 from loguru import logger
+
 from world_ledger import WorldLedger, Coordinate, WorldChunk
 from game_state import GameState
+from .sprite_billboard import SpriteBillboardSystem, BillboardType
 
 
 @dataclass
@@ -47,20 +52,35 @@ class ASCIIDoomRenderer:
     and visual threat indicators for hostile NPCs.
     """
     
-    def __init__(self, world_ledger: WorldLedger, width: int = 80, height: int = 24):
-        """Initialize the 3D renderer."""
+    def __init__(self, world_ledger: WorldLedger, width: int = 80, height: int = 24, faction_system=None):
+        """Initialize the ASCII Doom renderer."""
         self.world_ledger = world_ledger
+        self.faction_system = faction_system
         self.width = width
         self.height = height
-        self.fov = 60  # Field of view in degrees
+        
+        # Initialize sprite billboard system
+        self.sprite_billboard = SpriteBillboardSystem(world_ledger, faction_system)
         
         # Raycasting parameters
-        self.half_width = width // 2
-        self.half_height = height // 2
-        self.max_distance = 20  # Maximum ray distance
+        self.fov = math.radians(60)  # Field of view
+        self.max_distance = 20
+        self.wall_height = 10
         
-        # Rendering buffer
-        self.buffer = [[' ' for _ in range(width)] for _ in range(height)]
+        # Rendering buffers
+        self.buffer = [[" " " for _ in range(width)] for _ in range(height)]
+        self.depth_buffer = [[self.max_distance for _ in range(width)] for _ in range(height)]
+        
+        # Color scheme
+        self.colors = {
+            "wall": "#",
+            "floor": ".",
+            "entity": "!",
+            "player": "@",
+            "empty": " "
+        }
+        
+        logger.info(f"ASCII-Doom Renderer initialized: {width}x{height} viewport, {math.degrees(self.fov):.0f} FoV")
         
         # Visual elements mapping
         self.wall_chars = ['#', '#', '=', '=', '+', '-', '|', '/', '\\']
@@ -71,7 +91,6 @@ class ASCIIDoomRenderer:
         # Threat indicator characters
         self.threat_chars = ['!', '?', 'X', '@', '#']
         self.threat_mode = False  # Whether to show threat indicators
-        
         logger.info(f"ASCII-Doom Renderer initialized: {width}x{height} viewport, {self.fov}° FoV")
     
     def set_threat_mode(self, enabled: bool):
