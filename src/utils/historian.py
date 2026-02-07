@@ -9,6 +9,7 @@ ADR 020: The Historian Utility & Sedimentary World-Gen Implementation
 
 import sqlite3
 import random
+import math
 from typing import Dict, List, Optional, Tuple, Any
 from dataclasses import dataclass
 from enum import Enum
