@@ -81,12 +81,22 @@ class VirtualPPU:
         self.tile_bank = TileBank()
         self.pixel_renderer = PixelRenderer(width, height)
         
+        # Initialize kinetic systems
+        self.kinetic_controller = KineticSpriteController()
+        self.palette_manager = PaletteManager()
+        
         # Game Boy VRAM limitations
         self.max_sprites = 40  # Game Boy object limit
         self.max_tiles = 256  # Game Boy tile limit
         self.current_tile_bank = "default"
         
+        # Animation timing
+        self.last_animation_update = time.time()
+        self.animation_update_interval = 0.1  # 10 FPS for animations
+        
         logger.info(f"VirtualPPU initialized: {width}x{height} pixels ({width // 8}x{height // 8} tiles)")
+        logger.info(f"Kinetic systems: {self.kinetic_controller.get_sprite_info()}")
+        logger.info(f"Palette manager: {self.palette_manager.get_palette_info()}")
     
     def set_tile(self, x: int, y: int, tile_key: str, animation_frame: int = 0) -> None:
         """
