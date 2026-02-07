@@ -228,7 +228,7 @@ class PixelViewportPass(BaseRenderPass):
     
     def render(self, context: RenderContext) -> RenderResult:
         """
-        Render the pixel viewport.
+        Render the pixel viewport using Virtual PPU.
         
         Args:
             context: Shared rendering context
@@ -243,7 +243,7 @@ class PixelViewportPass(BaseRenderPass):
         # Update viewport with game state
         self._viewport.update_game_state(context.game_state)
         
-        # Render frame
+        # Render frame with Virtual PPU
         content = self._viewport.render_frame(context.game_state)
         
         return RenderResult(
@@ -254,7 +254,10 @@ class PixelViewportPass(BaseRenderPass):
                 "pixel_width": self.pixel_width,
                 "pixel_height": self.pixel_height,
                 "pixel_ratio": f"1:{self.config.pixel_scale}",
-                "sprite_count": len(self._viewport.entity_sprites) + len(self._viewport.item_sprites)
+                "rendering_mode": "game_boy_virtual_ppu",
+                "ppu_info": self._viewport.get_ppu_info(),
+                "entity_count": len(self._viewport.entity_sprites),
+                "tile_bank": self._viewport.virtual_ppu.current_tile_bank
             }
         )
     
