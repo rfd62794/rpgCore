@@ -1,0 +1,114 @@
+---
+# Animation Definitions
+# ADR 086: The Fault-Tolerant Asset Pipeline
+# Frame-loops for swaying flowers and neck-pivots - The "Sonic" Juice
+
+# Voyager Animations
+voyager_idle:
+  frames: ["voyager_idle_01", "voyager_idle_02"]
+  duration: 1000
+  loop: true
+  trigger: "idle_timer >= 5"
+
+voyager_idle_look:
+  frames: ["voyager_idle_look_left", "voyager_idle_look_center", "voyager_idle_look_right"]
+  duration: 800
+  loop: true
+  trigger: "idle_timer >= 5"
+  description: "Neck-pivot animation when Voyager is idle"
+
+voyager_walk:
+  frames: ["voyager_walk_01", "voyager_walk_02", "voyager_walk_03", "voyager_walk_04"]
+  duration: 200
+  loop: true
+  trigger: "state == MOVING"
+
+voyager_combat:
+  frames: ["voyager_combat_idle", "voyager_combat_attack", "voyager_combat_defend"]
+  duration: 400
+  loop: true
+  trigger: "state == COMBAT"
+
+# Flower Animations
+flower_sway:
+  frames: ["flower_frame_1", "flower_frame_2", "flower_frame_3"]
+  duration: 500
+  loop: true
+  trigger: "tag == animated"
+  description: "Wind-sway animation for flowers"
+
+sonic_flower_sway:
+  frames: ["sonic_flower_01", "sonic_flower_02", "sonic_flower_03", "sonic_flower_04"]
+  duration: 400
+  loop: true
+  trigger: "tag == sonic"
+  description: "Enhanced wind-sway for Sonic Field flowers"
+
+# Environmental Animations
+water_ripple:
+  frames: ["water_01", "water_02", "water_03"]
+  duration: 600
+  loop: true
+  trigger: "material == liquid"
+
+fire_flicker:
+  frames: ["fire_01", "fire_02", "fire_03"]
+  duration: 150
+  loop: true
+  trigger: "state == burning"
+
+# Object Animations
+door_open:
+  frames: ["door_closed", "door_opening_01", "door_opening_02", "door_open"]
+  duration: 300
+  loop: false
+  trigger: "interaction == open"
+
+chest_open:
+  frames: ["chest_closed", "chest_opening_01", "chest_opening_02", "chest_open"]
+  duration: 400
+  loop: false
+  trigger: "interaction == open"
+
+# Particle Effects
+pollen_release:
+  frames: ["pollen_01", "pollen_02", "pollen_03"]
+  duration: 200
+  loop: false
+  trigger: "interaction == touch"
+  description: "Pollen particles when touching flowers"
+
+wood_fragmentation:
+  frames: ["wood_intact", "wood_crack_01", "wood_crack_02", "wood_broken"]
+  duration: 250
+  loop: false
+  trigger: "integrity <= 0"
+  description: "Wood breaking animation"
+
+# UI Animations
+ui_hover:
+  frames: ["ui_normal", "ui_hover"]
+  duration: 100
+  loop: true
+  trigger: "mouse_hover"
+
+ui_click:
+  frames: ["ui_normal", "ui_click_01", "ui_click_02", "ui_normal"]
+  duration: 150
+  loop: false
+  trigger: "mouse_click"
+
+# Special Effects
+magical_glow:
+  frames: ["glow_01", "glow_02", "glow_03", "glow_04"]
+  duration: 300
+  loop: true
+  trigger: "tag == magical"
+  description: "Magical aura effect"
+
+ancient_rune_activate:
+  frames: ["rune_dormant", "rune_glow_01", "rune_glow_02", "rune_active"]
+  duration: 800
+  loop: false
+  trigger: "interaction == activate"
+  description: "Ancient rune activation sequence"

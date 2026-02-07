@@ -1,0 +1,233 @@
+---
+# Entity Definitions
+# ADR 086: The Fault-Tolerant Asset Pipeline
+# Stats for Voyager and Guardians - The Soul Layer
+
+# Player Entity
+voyager:
+  type: "player"
+  material: "organic"
+  base_stats:
+    hp: 100
+    mp: 50
+    str: 10
+    dex: 12
+    con: 10
+    int: 8
+    wis: 10
+    cha: 10
+  combat_stats:
+    initiative: 10
+    armor_class: 12
+    speed: 30
+  skills:
+    perception: 8
+    stealth: 6
+    athletics: 7
+    acrobatics: 6
+    survival: 7
+    nature: 5
+  inventory:
+    max_slots: 20
+    max_weight: 100
+  special:
+    idle_timer: 0
+    idle_threshold: 5
+    neck_pivot_enabled: true
+    exploration_mode: true
+
+# Combat Entities
+forest_guardian:
+  type: "guardian"
+  material: "ancient_stone"
+  base_stats:
+    hp: 150
+    mp: 0
+    str: 16
+    dex: 8
+    con: 18
+    int: 4
+    wis: 6
+    cha: 4
+  combat_stats:
+    initiative: 6
+    armor_class: 18
+    speed: 20
+  skills:
+    perception: 12
+    intimidation: 10
+    athletics: 8
+  special:
+    guardian_type: "stone"
+    alignment: "neutral"
+    patrol_radius: 10
+    attack_pattern: "melee"
+
+shadow_beast:
+  type: "hostile"
+  material: "shadow"
+  base_stats:
+    hp: 80
+    mp: 30
+    str: 12
+    dex: 16
+    con: 8
+    int: 6
+    wis: 4
+    cha: 2
+  combat_stats:
+    initiative: 18
+    armor_class: 14
+    speed: 40
+  skills:
+    stealth: 14
+    perception: 10
+    acrobatics: 12
+  special:
+    shadow_step: true
+    night_vision: true
+    weakness: "light"
+
+# NPC Entities
+village_elder:
+  type: "npc"
+  material: "organic"
+  base_stats:
+    hp: 60
+    mp: 40
+    str: 6
+    dex: 8
+    con: 8
+    int: 14
+    wis: 16
+    cha: 12
+  skills:
+    persuasion: 12
+    insight: 10
+    medicine: 8
+    history: 14
+  special:
+    dialogue_tree: true
+    quest_giver: true
+    knowledge_areas: ["local_history", "ancient_lore"]
+
+merchant:
+  type: "npc"
+  material: "organic"
+  base_stats:
+    hp: 50
+    mp: 20
+    str: 8
+    dex: 10
+    con: 8
+    int: 12
+    wis: 10
+    cha: 14
+  skills:
+    persuasion: 14
+    deception: 8
+    appraisal: 12
+    barter: 10
+  special:
+    inventory_slots: 30
+    shopkeeper: true
+    restock_timer: 86400
+
+# Animal Entities
+forest_wolf:
+  type: "animal"
+  material: "organic"
+  base_stats:
+    hp: 40
+    mp: 0
+    str: 12
+    dex: 14
+    con: 10
+    int: 4
+    wis: 8
+    cha: 4
+  combat_stats:
+    initiative: 14
+    armor_class: 13
+    speed: 50
+  skills:
+    perception: 12
+    stealth: 8
+    survival: 10
+    athletics: 10
+  special:
+    pack_hunter: true
+    keen_scent: true
+    territory_radius: 15
+
+forest_bird:
+  type: "animal"
+  material: "organic"
+  base_stats:
+    hp: 15
+    mp: 0
+    str: 4
+    dex: 16
+    con: 6
+    int: 4
+    wis: 8
+    cha: 6
+  combat_stats:
+    initiative: 16
+    armor_class: 12
+    speed: 60
+  skills:
+    perception: 10
+    acrobatics: 12
+  special:
+    flight: true
+    song: true
+    nest_height: "high"
+
+# Magical Entities
+crystal_golem:
+  type: "construct"
+  material: "crystal"
+  base_stats:
+    hp: 200
+    mp: 100
+    str: 18
+    dex: 6
+    con: 20
+    int: 2
+    wis: 4
+    cha: 2
+  combat_stats:
+    initiative: 4
+    armor_class: 20
+    speed: 25
+  skills:
+    perception: 8
+    intimidation: 6
+  special:
+    magical_resonance: 0.9
+    crystal_armor: true
+    weakness: "sonic_damage"
+
+nature_spirit:
+  type: "spirit"
+  material: "ethereal"
+  base_stats:
+    hp: 60
+    mp: 80
+    str: 8
+    dex: 12
+    con: 8
+    int: 14
+    wis: 16
+    cha: 12
+  skills:
+    perception: 12
+    insight: 14
+    nature: 16
+    persuasion: 10
+  special:
+    ethereal: true
+    nature_magic: true
+    plant_communication: true
+    weakness: "iron"

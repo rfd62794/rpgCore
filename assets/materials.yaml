@@ -1,0 +1,152 @@
+---
+# Materials Archetype Definitions
+# ADR 086: The Fault-Tolerant Asset Pipeline
+# Defines "Woodness", "Stone-ness", etc. - The Physics Layer
+
+# Wood Materials
+wood_base:
+  material: "wood"
+  tags: ["flammable", "organic", "wooden"]
+  resistances: ["blunt"]
+  weaknesses: ["fire", "sharp", "rot"]
+  physics:
+    weight: 0.7
+    hardness: 0.4
+    burn_temperature: 300
+    decay_rate: 0.1
+
+oak_wood:
+  inherits: "wood_base"
+  tags: ["flammable", "organic", "wooden", "hardwood"]
+  physics:
+    weight: 0.8
+    hardness: 0.6
+    burn_temperature: 350
+
+pine_wood:
+  inherits: "wood_base"
+  tags: ["flammable", "organic", "wooden", "softwood"]
+  physics:
+    weight: 0.5
+    hardness: 0.3
+    burn_temperature: 250
+
+# Stone Materials
+stone_base:
+  material: "stone"
+  tags: ["heavy", "durable", "mineral"]
+  resistances: ["blunt", "sharp", "fire", "magic"]
+  weaknesses: ["acid", "earthquake"]
+  physics:
+    weight: 2.5
+    hardness: 0.9
+    erosion_resistance: 0.9
+    structural_integrity: 1.0
+
+granite:
+  inherits: "stone_base"
+  tags: ["heavy", "durable", "mineral", "igneous"]
+  physics:
+    weight: 2.8
+    hardness: 0.95
+
+marble:
+  inherits: "stone_base"
+  tags: ["heavy", "durable", "mineral", "metamorphic"]
+  physics:
+    weight: 2.6
+    hardness: 0.85
+
+# Metal Materials
+metal_base:
+  material: "metal"
+  tags: ["conductive", "durable", "refined"]
+  resistances: ["blunt", "sharp"]
+  weaknesses: ["acid", "rust", "magic", "electricity"]
+  physics:
+    weight: 1.8
+    hardness: 0.8
+    conductivity: 1.0
+    rust_rate: 0.05
+
+iron:
+  inherits: "metal_base"
+  tags: ["conductive", "durable", "refined", "ferrous"]
+  physics:
+    weight: 2.0
+    hardness: 0.7
+    rust_rate: 0.1
+
+steel:
+  inherits: "metal_base"
+  tags: ["conductive", "durable", "refined", "alloy"]
+  physics:
+    weight: 2.2
+    hardness: 0.9
+    rust_rate: 0.02
+
+# Organic Materials
+organic_base:
+  material: "organic"
+  tags: ["flammable", "decomposable", "natural"]
+  resistances: []
+  weaknesses: ["fire", "disease", "rot", "poison"]
+  physics:
+    weight: 0.3
+    hardness: 0.1
+    decay_rate: 0.2
+    growth_potential: 0.1
+
+flower_petals:
+  inherits: "organic_base"
+  tags: ["flammable", "decomposable", "natural", "plant"]
+  physics:
+    weight: 0.1
+    hardness: 0.05
+    decay_rate: 0.3
+    pollen_count: 5
+
+plant_matter:
+  inherits: "organic_base"
+  tags: ["flammable", "decomposable", "natural", "vegetation"]
+  physics:
+    weight: 0.2
+    hardness: 0.1
+    decay_rate: 0.25
+
+# Liquid Materials
+water_base:
+  material: "liquid"
+  tags: ["fluid", "wet", "passable", "clean"]
+  resistances: []
+  weaknesses: ["evaporation", "absorption", "freezing"]
+  physics:
+    weight: 1.0
+    hardness: 0.0
+    viscosity: 1.0
+    evaporation_rate: 0.01
+    freezing_point: 0
+
+# Special Materials
+crystal:
+  material: "crystal"
+  tags: ["magical", "resonant", "fragile", "mineral"]
+  resistances: ["blunt"]
+  weaknesses: ["sharp", "magic", "sonic"]
+  physics:
+    weight: 1.2
+    hardness: 0.4
+    magical_resonance: 0.8
+    fragility: "high"
+
+ancient_stone:
+  material: "ancient_stone"
+  tags: ["ancient", "mysterious", "structural", "magical"]
+  resistances: ["blunt", "sharp", "fire", "magic", "time"]
+  weaknesses: ["divine_power"]
+  physics:
+    weight: 3.0
+    hardness: 1.0
+    erosion_resistance: 1.0
+    age: "ancient"
+    mystery_level: "high"
