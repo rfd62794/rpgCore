@@ -284,42 +284,37 @@ class D20Resolver:
             raw_rolls=raw_rolls,
             deterministic_seed=deterministic_seed
         )
-            f"{attr_name.title()}: {attribute_bonus:+d}" if attribute_bonus != 0 else "",
-            f"Items: {item_bonus:+d}" if item_bonus != 0 else "",
-            f"vs DC {dc}",
-            dc_reasoning
-        ]
+    
+    def _calculate_difficulty_class(self, intent_id: str, room_tags: List[str]) -> Tuple[int, str]:
+        """
+        Calculate difficulty class for an intent based on context.
         
-        # Add fatigue info if applicable
-        if fatigue_penalty != 0:
-            narrative_parts.append(f"Fatigue: {fatigue_penalty}")
+        Args:
+            intent_id: The action intent
+            room_tags: Tags describing the current room/environment
+            
+        Returns:
+            Tuple of (difficulty_class, reasoning)
+        """
+        # Base DC from quartermaster
+        base_dc = DC_TABLE.get(intent_id, 15)
         
-        # Add advantage/disadvantage info
-        if advantage_type:
-            narrative_parts.insert(0, f"{advantage_type.title()}: {raw_rolls[0]} & {raw_rolls[1]} → {d20_roll}")
+        # Environmental modifiers
+        dc_modifier = 0
+        reasoning = f"Base DC: {base_dc}"
         
-        narrative_context = " | ".join(filter(None, narrative_parts))
+        # Room-specific adjustments
+        if "tavern" in room_tags:
+            if intent_id in ["talk", "trade"]:
+                dc_modifier -= 2  # Easier to talk/trade in tavern
+                reasoning += " | Tavern bonus: -2"
+        elif "dungeon" in room_tags:
+            if intent_id in ["attack", "force"]:
+                dc_modifier += 1  # Harder to fight in dungeon
+                reasoning += " | Dungeon penalty: +1"
         
-        logger.info(
-            f"D20 Resolution: {intent_id} -> {total_score} vs DC {dc} "
-            f"({'SUCCESS' if success else 'FAILURE'})"
-            + (f" ({advantage_type})" if advantage_type else "")
-        )
-        
-        return D20Result(
-            success=success,
-            roll=d20_roll,
-            total_score=total_score,
-            difficulty_class=dc,
-            hp_delta=hp_delta,
-            reputation_deltas=reputation_deltas,
-            relationship_changes=relationship_changes,
-            npc_state_changes=npc_state_changes,
-            goals_completed=goals_completed,
-            narrative_context=narrative_context,
-            advantage_type=advantage_type,
-            raw_rolls=raw_rolls
-        )
+        final_dc = max(1, base_dc + dc_modifier)
+        return final_dc, reasoning
     
     def _calculate_travel_fatigue(self, game_state: GameState) -> int:
         """
