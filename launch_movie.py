@@ -154,20 +154,35 @@ class ObserverView:
         # Get available objects from asset loader
         available_objects = list(self.asset_loader.registry.keys())
         
+        # Use hardcoded objects if registry is empty
+        if not available_objects:
+            available_objects = ['crystal', 'iron_chest', 'wooden_door', 'tree', 'bush', 'animated_flower']
+        
         # Select some objects to spawn
         spawn_objects = []
         for obj_id in available_objects:
-            if obj_id in ['crystal', 'iron_chest', 'wooden_door', 'campfire', 'ancient_ruins', 'forest_guardian']:
+            if obj_id in ['crystal', 'iron_chest', 'wooden_door', 'tree', 'bush', 'animated_flower']:
                 spawn_objects.append((obj_id, (12 + len(spawn_objects), 10)))
         
         self.log_event("🏗️ Spawning Forest Objects...")
         self.log_event(f"📦 Available objects: {available_objects[:5]}...")
         
         for object_id, position in spawn_objects:
-            guardian_def = self.asset_loader.get_asset_definition(object_id)
-            if not guardian_def:
-                self.log_event(f"❌ {object_id} not found in asset definitions")
-                continue
+            # Create object definition manually if not in registry
+            if not self.asset_loader.get_asset_definition(object_id):
+                guardian_def = type('AssetDef', (), {
+                    'asset_id': object_id,
+                    'characteristics': type('Characteristics', (), {
+                        'material': object_id,
+                        'tags': ['interactive'],
+                        'integrity': 50,
+                        'd20_checks': {
+                            'examine': {'difficulty': 5, 'skill': 'nature', 'success': 'observe'}
+                        }
+                    })()
+                })()
+            else:
+                guardian_def = self.asset_loader.get_asset_definition(object_id)
             
             # Create object for world
             obj = type('WorldObject', (), {
@@ -257,8 +272,8 @@ class ObserverView:
         # Spawn objects
         self.spawn_forest_objects()
         
-        # Initialize Voyager position
-        self.voyager.current_position = (10, 25)
+        # Initialize Voyager position (center of world)
+        self.voyager.current_position = (25, 25)  # Center of 50x50 world
         
         # Disable quest mode for object-aware behavior
         if hasattr(self.voyager, 'quest_mode'):
@@ -282,13 +297,19 @@ class ObserverView:
             if intent:
                 self.log_event(f"💭 Voyager intent: {intent.intent_type}")
                 
-                # Process intent
-                if intent.intent_type == "interaction":
+                # Validate movement bounds
+                if intent.intent_type == "movement" and hasattr(intent, 'target_position'):
+                    target = intent.target_position
+                    if 0 <= target[0] < 50 and 0 <= target[1] < 50:
+                        await self._process_movement_intent(intent)
+                    else:
+                        self.log_event(f"⚠️ Invalid movement target {target} - staying in bounds")
+                elif intent.intent_type == "interaction":
                     await self._process_interaction_intent(intent)
-                elif intent.intent_type == "movement":
-                    await self._process_movement_intent(intent)
                 else:
                     self.log_event(f"🔄 Processing {intent.intent_type} intent")
+            else:
+                self.log_event("⚠️ No intent generated")
             
             # Update graphics
             if self.enable_graphics and self.ppu:
@@ -450,12 +471,30 @@ class ObserverView:
                 # Render combat view
                 self._render_combat()
             
+            # Add animated flowers
+            self._add_animated_flowers()
+            
             # Update window
             if self.root:
                 self.root.update()
                 
         except Exception as e:
             self.log_event(f"⚠️ Graphics update error: {e}")
+    
+    def _add_animated_flowers(self) -> None:
+        """Add animated flowers to the scene"""
+        try:
+            # Add some animated flowers around the world
+            flower_positions = [
+                (15, 15), (35, 20), (20, 30), (30, 25), (25, 35)
+            ]
+            
+            for i, pos in enumerate(flower_positions):
+                entity_id = f"flower_{i}"
+                if not self.ppu.animation_manager.has_animation(entity_id):
+                    self.ppu.register_entity_animation(entity_id, pos, "wind_sway")
+        except Exception as e:
+            self.log_event(f"⚠️ Flower animation error: {e}")
     
     def _render_overworld(self) -> None:
         """Render overworld view"""
