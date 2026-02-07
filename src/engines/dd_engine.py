@@ -68,6 +68,9 @@ class GameState:
     active_effects: List[Effect] = field(default_factory=list)
     interaction_triggers: List[Trigger] = field(default_factory=list)
     
+    # World Deltas (Persistence)
+    world_deltas: Dict[Tuple[int, int], Dict[str, Any]] = field(default_factory=dict)
+    
     # Session State
     turn_count: int = 0
     performance_metrics: Dict[str, float] = field(default_factory=dict)
@@ -84,6 +87,7 @@ class GameState:
             active_effects=self.active_effects.copy(),
             interaction_triggers=[Trigger(t.position, t.trigger_type, t.parameters.copy(), t.active) 
                                  for t in self.interaction_triggers],
+            world_deltas={pos: delta.copy() for pos, delta in self.world_deltas.items()},
             turn_count=self.turn_count,
             performance_metrics=self.performance_metrics.copy()
         )
@@ -178,9 +182,10 @@ class BinaryROM:
 class DD_Engine:
     """Deterministic D20 logic and state management"""
     
-    def __init__(self, assets_path: str):
+    def __init__(self, assets_path: str, world_engine: Optional['WorldEngine'] = None):
         self.state = GameState()
         self.assets = BinaryROM(assets_path)
+        self.world_engine = world_engine
         self.validation_rules = self._initialize_validation_rules()
         
         logger.info("🧠 D&D Engine initialized - Single Source of Truth ready")
@@ -221,9 +226,13 @@ class DD_Engine:
     
     def _validate_movement(self, intent: MovementIntent) -> IntentValidation:
         """Validate movement intent against D&D rules"""
-        # Check if target position is valid
-        collision_map = self.assets.get_collision_map(self.state.current_environment)
+        # Get collision data from World Engine if available
+        if self.world_engine:
+            collision_map = self.world_engine.get_collision_map()
+        else:
+            collision_map = self.assets.get_collision_map(self.state.current_environment)
         
+        # Check if target position is valid
         if not self._is_valid_position(intent.target_position, collision_map):
             return IntentValidation(False, ValidationResult.INVALID_POSITION, 
                                    f"Invalid position: {intent.target_position}")
