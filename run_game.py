@@ -290,6 +290,11 @@ class SyntheticRealityDirector:
                 print(f"💬 [bold yellow]DIALOGUE ACTIVATED[/bold yellow]")
                 print("   NPCs are nearby. Use 'talk' to interact.")
             
+            # Show player shape description
+            player_shape_desc = self.renderer.get_player_shape_description(self.game_state)
+            print(f"\n🎨 [bold magenta]PLAYER SHAPE PROFILE:[/bold magenta]")
+            print(player_shape_desc)
+            
         else:
             # Doom-style raycasting rendering
             frame = self.renderer.render_frame(
