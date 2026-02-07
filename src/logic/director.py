@@ -42,7 +42,7 @@ class NarrativeBeacon:
         self.beacon_id = beacon_id
         self.target_coords = target_coords
         self.description = description
-        self.priority = priority 1  # 1=highest, 10=lowest
+        self.priority = priority  # 1=highest, 10=lowest
         self.intent_type = intent_type  # "explore", "interact", "travel", "investigate"
         self.created_at = time.time()
         self.achieved = False
