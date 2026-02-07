@@ -170,8 +170,10 @@ class GameREPL:
             intent_id=intent_match.intent_id,
             room_tags=room_tags,
             arbiter_mod=arbiter_result.difficulty_mod,
+            room_tags=room_tags,
             arbiter_mod=arbiter_result.difficulty_mod,
-            player_stats=self.state.player.attributes
+            player_stats=self.state.player.attributes,
+            inventory_items=self.state.player.inventory
         )
         
         logger.info(
@@ -188,7 +190,7 @@ class GameREPL:
                 intent=intent_match.intent_id
             )
             if loot_item:
-                self.state.player.inventory.append(loot_item.name)
+                self.state.player.inventory.append(loot_item)
                 logger.info(f"Loot added to inventory: {loot_item.name}")
         
         # Step 3: Update game state BEFORE narration
@@ -315,7 +317,8 @@ class GameREPL:
                     'hp': self.state.player.hp,
                     'max_hp': self.state.player.max_hp,
                     'gold': self.state.player.gold,
-                    'inventory': self.state.player.inventory
+                    'inventory': self.state.player.inventory,
+                    'attributes': self.state.player.attributes
                 }
                 
                 self.console.print("\n[bold blue]⚙️ Voyager thinking...[/bold blue]")
@@ -333,8 +336,9 @@ class GameREPL:
                     player_input = "I look around the room carefully"
                 
                 # QA Trace
-                self.console.print(f"\n[bold green]🗣️  VOYAGER[/bold green]: \"{player_input}\"")
-                self.console.print(f"[dim]💭 Reasoning: {decision.reasoning}[/dim]")
+                self.console.print(f"\n[bold green]🗣️  VOYAGER ({decision.selected_intent})[/bold green]: \"{player_input}\"")
+                self.console.print(f"[dim]💭 Thought: {decision.internal_monologue}[/dim]")
+                self.console.print(f"[dim]🧠 Strategy: {decision.strategic_reasoning}[/dim]")
                 
                 # Add to history
                 self.turn_history.append(player_input)
