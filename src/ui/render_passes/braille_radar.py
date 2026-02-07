@@ -208,13 +208,14 @@ class BrailleRadarPass(BaseRenderPass):
         for entity_x, entity_y, entity_type in guards:
             self._render_entity(buffer, entity_x, entity_y, entity_type, scale_x, scale_y)
     
-    def _render_entity(self, buffer: List[List[int]], x: float, y: float, 
+    def _render_entity(self, buffer: List[List[int]], context: RenderContext, x: float, y: float, 
                       entity_type: str, scale_x: float, scale_y: float) -> None:
         """
         Render a single entity on the radar.
         
         Args:
             buffer: Radar buffer to modify
+            context: Rendering context
             x, y: Entity world coordinates
             entity_type: Type of entity
             scale_x, scale_y: Scale factors
