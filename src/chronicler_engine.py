@@ -172,9 +172,23 @@ class ChroniclerEngine:
                     
         except Exception as e:
             logger.error(f"Chronicler stream failed: {e}")
+            
+            # Safe narrative fallback with location information
             yield f"You attempt {player_input}."
             if arbiter_result.get('success'):
                 yield " It succeeds."
+                
+                # Add location context if available
+                if "📍 Location:" in context:
+                    # Extract location from context
+                    location_line = [line for line in context.split('\n') if '📍 Location:' in line]
+                    if location_line:
+                        location_name = location_line[0].replace('📍 Location:', '').strip()
+                        yield f" 📍 {location_name}"
+                    else:
+                        yield " 📍 Unknown Location"
+                else:
+                    yield " 📍 Unknown Location"
             else:
                 yield " It fails."
     
