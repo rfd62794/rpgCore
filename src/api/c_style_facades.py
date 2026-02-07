@@ -21,6 +21,7 @@ from engines.mind import DDEngine, DDEngineFactory
 from engines.body import GraphicsEngine, GraphicsEngineFactory
 from actors.voyager import Voyager, VoyagerFactory
 from narrative.chronos import ChronosEngine, ChronosEngineFactory
+from narrative.persona import PersonaEngine, PersonaEngineFactory
 
 
 # === WORLD PILLAR API (Map Editor) ===
