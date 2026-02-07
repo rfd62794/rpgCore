@@ -212,9 +212,14 @@ class WorldEngine:
         # Create chunk
         chunk = Chunk(
             position=chunk_pos,
-            tiles=tiles,
-            generated_time=time.time()
+            size=CHUNK_SIZE,
+            seed=f"{self.seed}_chunk_{chunk_pos[0]}_{chunk_pos[1]}"
         )
+        
+        # Add tiles to chunk
+        for y, tile_row in enumerate(tiles):
+            for x, tile_data in enumerate(tile_row):
+                chunk.set_tile(x, y, tile_data.tile)
         
         # Store chunk
         self.chunks[chunk_pos] = chunk
@@ -260,9 +265,14 @@ class WorldEngine:
             "generated_at": time.time()
         }
         
-        return TileData(
+        # Create Tile object first
+        tile = Tile(
             tile_type=tile_type,
-            walkable=walkable,
+            walkable=walkable
+        )
+        
+        return TileData(
+            tile=tile,
             biome=biome,
             metadata=metadata
         )
@@ -395,12 +405,11 @@ class WorldEngine:
         for i in range(num_points):
             position = await self._generate_interest_point_position(chunk_pos, i)
             interest_type = await self._generate_interest_point_type(position, i)
-            seed_value = int(chunk_hash[8+i*2:10+i*2], 16) if 8+i*2 < len(chunk_hash) else i
             
             interest_point = InterestPoint(
                 position=position,
                 interest_type=interest_type,
-                seed_value=seed_value,
+                seed_value=hash(f"{chunk_seed}_{i}") % 1000000,
                 discovered=False
             )
             
