@@ -193,6 +193,147 @@ class AssetLoader:
             logger.warning("⚠️ Registry too small - generating emergency sprites")
             self._generate_minimal_assets()
     
+    def _load_asset_file(self, yaml_file: Path) -> None:
+        """Load a single YAML asset file"""
+        if not yaml_file.exists():
+            raise FileNotFoundError(f"Asset file not found: {yaml_file}")
+        
+        with open(yaml_file, 'r') as f:
+            data = yaml.safe_load(f)
+        
+        if not data:
+            logger.warning(f"⚠️ Empty asset file: {yaml_file.name}")
+            return
+        
+        file_type = yaml_file.stem
+        logger.info(f"📁 Loading {file_type} from {yaml_file.name}")
+        
+        if file_type == "materials":
+            self._load_materials(data)
+        elif file_type == "objects":
+            self._load_objects(data)
+        elif file_type == "animations":
+            self._load_animations(data)
+        elif file_type == "entities":
+            self._load_entities(data)
+        elif file_type == "prefabs":
+            self._load_prefabs(data)
+        else:
+            logger.warning(f"⚠️ Unknown asset file type: {file_type}")
+    
+    def _load_materials(self, data: Dict) -> None:
+        """Load material definitions"""
+        for material_id, material_data in data.items():
+            if isinstance(material_data, dict):
+                material_def = type('MaterialDefinition', (), material_data)()
+                self.registry[f"material_{material_id}"] = material_def
+                logger.debug(f"📦 Loaded material: {material_id}")
+    
+    def _load_objects(self, data: Dict) -> None:
+        """Load object definitions with material linking"""
+        for object_id, object_data in data.items():
+            if isinstance(object_data, dict):
+                # Link material properties
+                material_id = object_data.get('material')
+                if material_id:
+                    material_def = self.registry.get(f"material_{material_id}")
+                    if material_def:
+                        # Merge material properties into object
+                        self._merge_material_properties(object_data, material_def)
+                
+                # Create asset definition
+                asset_def = type('AssetDefinition', (), {
+                    'asset_id': object_id,
+                    'material': material_id,
+                    'sprite_id': object_data.get('sprite_id', object_id),
+                    'collision': object_data.get('collision', False),
+                    'friction': object_data.get('friction', 1.0),
+                    'integrity': object_data.get('integrity', 100),
+                    'state': object_data.get('state', 'normal'),
+                    'tags': object_data.get('tags', []),
+                    'interaction_hooks': object_data.get('interaction_hooks', ['examine']),
+                    'd20_checks': object_data.get('d20_checks', {}),
+                    'triggers': object_data.get('triggers', {}),
+                    'metadata': object_data.get('metadata', {})
+                })()
+                
+                self.registry[object_id] = asset_def
+                logger.debug(f"📦 Loaded object: {object_id}")
+    
+    def _load_animations(self, data: Dict) -> None:
+        """Load animation definitions"""
+        for animation_id, animation_data in data.items():
+            if isinstance(animation_data, dict):
+                animation_def = type('AnimationDefinition', (), animation_data)()
+                self.registry[f"animation_{animation_id}"] = animation_def
+                logger.debug(f"📦 Loaded animation: {animation_id}")
+    
+    def _load_entities(self, data: Dict) -> None:
+        """Load entity definitions"""
+        for entity_id, entity_data in data.items():
+            if isinstance(entity_data, dict):
+                entity_def = type('EntityDefinition', (), entity_data)()
+                self.registry[f"entity_{entity_id}"] = entity_def
+                logger.debug(f"📦 Loaded entity: {entity_id}")
+    
+    def _merge_material_properties(self, object_data: Dict, material_def) -> None:
+        """Merge material properties into object data"""
+        # Merge tags
+        material_tags = getattr(material_def, 'tags', [])
+        object_tags = object_data.get('tags', [])
+        object_data['tags'] = list(set(material_tags + object_tags))
+        
+        # Merge resistances and weaknesses
+        material_resistances = getattr(material_def, 'resistances', [])
+        material_weaknesses = getattr(material_def, 'weaknesses', [])
+        
+        # Add material properties to metadata for reference
+        metadata = object_data.get('metadata', {})
+        metadata['material_resistances'] = material_resistances
+        metadata['material_weaknesses'] = material_weaknesses
+        object_data['metadata'] = metadata
+    
+    def _generate_all_sprites(self) -> None:
+        """Generate all sprites for loaded assets"""
+        try:
+            # Generate tile sprites
+            self._generate_tile_sprites()
+            
+            # Generate object sprites
+            self._generate_object_sprites()
+            
+            # Generate actor sprites
+            self._generate_actor_sprites()
+            
+            # Generate effect sprites
+            self._generate_effect_sprites()
+            
+            logger.info(f"🎨 Generated all sprites for {len(self.registry)} assets")
+            
+        except Exception as e:
+            logger.error(f"💥 Sprite generation failed: {e}")
+            self._generate_minimal_assets()
+    
+    def _validate_registry(self) -> None:
+        """Validate loaded registry (ADR 086: Registry Safety Lock)"""
+        try:
+            total_assets = len(self.registry)
+            object_count = len([k for k in self.registry.keys() if not k.startswith(('material_', 'animation_', 'entity_'))])
+            
+            logger.info(f"🔍 Registry validation: {total_assets} total assets, {object_count} objects")
+            
+            # Check for critical assets
+            critical_objects = ['wooden_door', 'crystal', 'sonic_flower', 'animated_flower']
+            missing_objects = [obj for obj in critical_objects if obj not in self.registry]
+            
+            if missing_objects:
+                logger.warning(f"⚠️ Missing critical objects: {missing_objects}")
+            else:
+                logger.info("✅ All critical objects loaded")
+                
+        except Exception as e:
+            logger.error(f"💥 Registry validation failed: {e}")
+    
     def _load_object_definitions(self) -> None:
         """Load object definitions from YAML"""
         objects_file = self.assets_path / "objects.yaml"

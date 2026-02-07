@@ -8800,3 +8800,31 @@ expected alphabetic or numeric character, but found '.'
 2026-02-07 13:49:11 | INFO | utils.asset_loader:_load_assets:129 | 🎨 Asset Loader initialized - 0 assets loaded
 2026-02-07 13:49:11 | INFO | utils.asset_loader:__init__:110 | 🎨 Asset Loader initialized - 0 assets loaded
 2026-02-07 13:49:11 | INFO | graphics.ppu_tk_native:__init__:428 | 🎨 Native Tkinter PPU initialized with multi-mode support
+2026-02-07 13:52:55 | INFO | utils.logger:initialize:59 | 📝 Logging system initialized
+2026-02-07 13:52:55 | INFO | utils.asset_loader:_load_assets:119 | 📁 Found 7 asset files: ['animations.yaml', 'ASSET_MANIFEST.yaml', 'entities.yaml', 'materials.yaml', 'objects.yaml', 'objects_obese.yaml', 'prefabs.yaml']
+2026-02-07 13:52:55 | ERROR | utils.asset_loader:_load_assets:129 | 💥 Failed to load animations.yaml: 'AssetLoader' object has no attribute '_load_asset_file'
+2026-02-07 13:52:55 | ERROR | utils.asset_loader:_load_assets:129 | 💥 Failed to load ASSET_MANIFEST.yaml: 'AssetLoader' object has no attribute '_load_asset_file'
+2026-02-07 13:52:55 | ERROR | utils.asset_loader:_load_assets:129 | 💥 Failed to load entities.yaml: 'AssetLoader' object has no attribute '_load_asset_file'
+2026-02-07 13:52:55 | ERROR | utils.asset_loader:_load_assets:129 | 💥 Failed to load materials.yaml: 'AssetLoader' object has no attribute '_load_asset_file'
+2026-02-07 13:52:55 | ERROR | utils.asset_loader:_load_assets:129 | 💥 Failed to load objects.yaml: 'AssetLoader' object has no attribute '_load_asset_file'
+2026-02-07 13:52:55 | ERROR | utils.asset_loader:_load_assets:129 | 💥 Failed to load objects_obese.yaml: 'AssetLoader' object has no attribute '_load_asset_file'
+2026-02-07 13:52:55 | ERROR | utils.asset_loader:_load_assets:129 | 💥 Failed to load prefabs.yaml: 'AssetLoader' object has no attribute '_load_asset_file'
+2026-02-07 13:52:55 | INFO | utils.asset_loader:_load_assets:132 | 📁 Successfully loaded 0/7 asset files
+2026-02-07 13:52:55 | ERROR | utils.asset_loader:_load_assets:141 | 💥 Asset loading failed: 'AssetLoader' object has no attribute '_generate_all_sprites'
+2026-02-07 13:52:55 | WARNING | utils.asset_loader:_generate_minimal_assets:149 | ⚠️ Generating minimal fallback assets
+2026-02-07 13:52:55 | ERROR | utils.asset_loader:_generate_minimal_assets:178 | 💥 Failed to create sprite voyager_idle: Size must be a sequence of length 2
+2026-02-07 13:52:55 | ERROR | utils.asset_loader:_generate_minimal_assets:178 | 💥 Failed to create sprite voyager_combat: Size must be a sequence of length 2
+2026-02-07 13:52:55 | ERROR | utils.asset_loader:_generate_minimal_assets:178 | 💥 Failed to create sprite guardian: Size must be a sequence of length 2
+2026-02-07 13:52:55 | ERROR | utils.asset_loader:_generate_minimal_assets:178 | 💥 Failed to create sprite forest_imp: Size must be a sequence of length 2
+2026-02-07 13:52:55 | ERROR | utils.asset_loader:_generate_minimal_assets:178 | 💥 Failed to create sprite shadow_beast: Size must be a sequence of length 2
+2026-02-07 13:52:55 | ERROR | utils.asset_loader:_generate_minimal_assets:178 | 💥 Failed to create sprite crystal: Size must be a sequence of length 2
+2026-02-07 13:52:55 | ERROR | utils.asset_loader:_generate_minimal_assets:178 | 💥 Failed to create sprite iron_chest: Size must be a sequence of length 2
+2026-02-07 13:52:55 | ERROR | utils.asset_loader:_generate_minimal_assets:178 | 💥 Failed to create sprite wooden_door: Size must be a sequence of length 2
+2026-02-07 13:52:55 | ERROR | utils.asset_loader:_generate_minimal_assets:178 | 💥 Failed to create sprite tree: Size must be a sequence of length 2
+2026-02-07 13:52:55 | ERROR | utils.asset_loader:_generate_minimal_assets:178 | 💥 Failed to create sprite bush: Size must be a sequence of length 2
+2026-02-07 13:52:55 | ERROR | utils.asset_loader:_generate_minimal_assets:178 | 💥 Failed to create sprite animated_flower: Size must be a sequence of length 2
+2026-02-07 13:52:55 | ERROR | utils.asset_loader:_generate_minimal_assets:178 | 💥 Failed to create sprite water: Size must be a sequence of length 2
+2026-02-07 13:52:55 | ERROR | utils.asset_loader:_generate_minimal_assets:178 | 💥 Failed to create sprite ancient_ruins: Size must be a sequence of length 2
+2026-02-07 13:52:55 | INFO | utils.asset_loader:_generate_minimal_assets:180 | 🎨 Generated minimal fallback assets
+2026-02-07 13:52:55 | INFO | utils.asset_loader:__init__:110 | 🎨 Asset Loader initialized - 0 assets loaded
+2026-02-07 13:52:55 | INFO | graphics.ppu_tk_native:__init__:428 | 🎨 Native Tkinter PPU initialized with multi-mode support
