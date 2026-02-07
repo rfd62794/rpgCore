@@ -329,6 +329,51 @@ class ChronosEngine:
         
         return None
     
+    async def generate_npc_quest(self, npc_position: Tuple[int, int], quest_giver_type: str = "innkeeper") -> Optional[Quest]:
+        """Generate quest from NPC interaction (Persona Bridge)"""
+        if not self.persona_engine:
+            return None
+        
+        # Get NPC at position
+        npc = self.persona_engine.npc_registry.get_npc_at_position(npc_position)
+        if not npc:
+            return None
+        
+        # Get social response
+        social_response = await self.persona_engine.get_social_response(npc.npc_id)
+        willingness = social_response.get("will_help", 0.0)
+        
+        # Generate quest based on willingness and personality
+        if willingness > 0.3:  # Willing to give quest
+            quest_id = f"npc_quest_{npc.npc_id}_{int(time.time())}"
+            
+            # Select quest template based on NPC type
+            templates = self.quest_templates.get("npc_quests", [])
+            if templates:
+                template = random.choice(templates)
+                
+                quest = Quest(
+                    quest_id=quest_id,
+                    title=f"{npc.personality.name}'s {template['title']}",
+                    description=template['description'].format(name=npc.personality.name),
+                    quest_type=QuestType.SIDE_TASK,
+                    priority=TaskPriority.MEDIUM,
+                    target_position=npc_position,
+                    required_level=1,
+                    rewards={
+                        "experience": template.get("experience", 25),
+                        "faction_standing": {
+                            npc.personality.primary_faction.value: 5.0
+                        }
+                    }
+                )
+                
+                if self.quest_stack.add_quest(quest):
+                    logger.info(f"📜 NPC quest generated: {quest.title} from {npc.personality.name}")
+                    return quest
+        
+        return None
+    
     async def update_character_position(self, position: Tuple[int, int]) -> None:
         """Update character position and check for quest progress (Facade method)"""
         # Check if current quest objective reached
