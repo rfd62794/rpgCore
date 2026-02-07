@@ -201,8 +201,12 @@ class TagBasedParser(SovereignParser):
         tags = data.get('tags', [])
         components = data.get('components', {})
         
+        # Preserve the original object_type from data
+        obj_type = data.get('object_type', 'tag')
+        
         obj = TagObject(
             object_id=object_id,
+            object_type=obj_type,  # Use the type from data
             version=data.get('version', '2.0'),
             name=data.get('name'),
             description=data.get('description'),
@@ -211,7 +215,7 @@ class TagBasedParser(SovereignParser):
         )
         
         # Absorb any remaining fields
-        known_fields = {'id', 'version', 'name', 'description', 'tags', 'components'}
+        known_fields = {'id', 'version', 'name', 'description', 'tags', 'components', 'object_type'}
         for key, value in data.items():
             if key not in known_fields:
                 obj.absorb_field(key, value)
