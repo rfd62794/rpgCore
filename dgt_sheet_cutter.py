@@ -555,23 +555,24 @@ class DGTSheetCutter:
         # Chests are typically rectangular with brown/gold colors
         aspect_ratio = width / height
         
-        # Check for reasonable chest proportions
-        if not (0.5 <= aspect_ratio <= 2.0):
+        # Check for reasonable chest proportions (more lenient)
+        if not (0.3 <= aspect_ratio <= 3.0):
             return False
         
-        # Look for brown/gold color dominance
+        # Look for brown/gold color dominance (more lenient ranges)
         brown_gold_pixels = 0
         total_pixels = len(colors)
         
         for color, count in colors.items():
             r, g, b = color
-            # Brown range
-            if (100 <= r <= 150 and 50 <= g <= 100 and 0 <= b <= 50) or \
-               (180 <= r <= 220 and 150 <= g <= 180 and 0 <= b <= 50):  # Gold range
+            # Extended brown range
+            if (80 <= r <= 180 and 40 <= g <= 140 and 0 <= b <= 80) or \
+               (160 <= r <= 255 and 100 <= g <= 200 and 0 <= b <= 100) or \
+               (200 <= r <= 255 and 180 <= g <= 220 and 0 <= b <= 100):  # Gold range
                 brown_gold_pixels += count
         
-        # If brown/gold pixels dominate (>40%), likely a chest
-        return (brown_gold_pixels / total_pixels) > 0.4
+        # Lower threshold for chest detection (30% instead of 40%)
+        return (brown_gold_pixels / total_pixels) > 0.3
     
     def _is_decoration(self, sprite: Image.Image, colors: Dict, width: int, height: int) -> bool:
         """Detect if sprite is a decoration (plants, rocks, etc.)"""
@@ -579,17 +580,18 @@ class DGTSheetCutter:
         unique_colors = len(colors)
         total_pixels = sum(colors.values())
         
-        # High color variety suggests decoration
+        # High color variety suggests decoration (lower threshold)
         color_diversity = unique_colors / max(total_pixels, 1)
         
-        # Plants are typically green-heavy
+        # Plants are typically green-heavy (lower threshold)
         green_pixels = sum(count for (r, g, b), count in colors.items() if g > r and g > b)
         
-        # Rocks are typically gray-heavy
+        # Rocks are typically gray-heavy (lower threshold)
         gray_pixels = sum(count for (r, g, b), count in colors.items() 
-                        if abs(r - g) < 30 and abs(g - b) < 30)
+                        if abs(r - g) < 40 and abs(g - b) < 40)
         
-        return (color_diversity > 0.1) or (green_pixels / total_pixels > 0.3) or (gray_pixels / total_pixels > 0.4)
+        # More lenient detection - if any of these conditions are met
+        return (color_diversity > 0.05) or (green_pixels / total_pixels > 0.2) or (gray_pixels / total_pixels > 0.3)
     
     def _is_material(self, sprite: Image.Image, colors: Dict, width: int, height: int) -> bool:
         """Detect if sprite is a material (tiles, bricks, etc.)"""
