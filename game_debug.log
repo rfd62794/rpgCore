@@ -910,3 +910,77 @@
 21:38:02 | DEBUG | Chronicler streaming: charm
 21:38:02 | ERROR | Chronicler stream failed: AbstractAgent.run_stream() got an unexpected keyword argument 'result_type'
 21:38:02 | INFO | Game saved to savegame.json
+21:40:49 | INFO | Game loaded from savegame.json
+21:40:49 | DEBUG | Added intent: distract with 5 exemplars
+21:40:49 | DEBUG | Added intent: force with 5 exemplars
+21:40:49 | DEBUG | Added intent: finesse with 5 exemplars
+21:40:49 | DEBUG | Added intent: charm with 5 exemplars
+21:40:49 | DEBUG | Added intent: intimidate with 5 exemplars
+21:40:49 | DEBUG | Added intent: deceive with 5 exemplars
+21:40:49 | DEBUG | Added intent: investigate with 5 exemplars
+21:40:49 | DEBUG | Added intent: use_item with 5 exemplars
+21:40:49 | DEBUG | Added intent: defend with 5 exemplars
+21:40:49 | DEBUG | Added intent: improvise with 5 exemplars
+21:40:49 | INFO | Loading embedding model: all-MiniLM-L6-v2
+21:40:52 | INFO | Precomputed embeddings for 10 intents (50 total exemplars)
+21:40:52 | INFO | Deterministic Arbiter (Iron Frame) initialized.
+21:40:52 | INFO | Initializing Chronicler with ollama:llama3.2:1b
+21:40:52 | INFO | Voyager initialized (Deterministic) with 'aggressive' personality
+21:40:52 | INFO | Game initialized with Council of Three architecture
+21:40:52 | INFO | Voyager Heuristic: Selected force with score -8
+21:40:52 | INFO | Intent resolution: 'I intimidate the guard.' → charm (confidence: 0.621, matched exemplar: 'Convince the guard to let me pass with words')
+21:40:52 | DEBUG | Action: charm | Tags: ['Sticky Floors', 'Rowdy Crowd', 'Dimly Lit', 'Path Clear'] | Roll: 9 + Attr: 0 + Item: 0 + Tag: 0 = 9 vs DC: 10 (10 + -2) -> FAILURE
+21:40:52 | INFO | Quartermaster: success=False, roll=9 vs DC 10
+21:40:52 | DEBUG | Chronicler streaming: charm
+21:40:52 | ERROR | Chronicler stream failed: AbstractAgent.run_stream() got an unexpected keyword argument 'result_type'
+21:40:52 | INFO | Game saved to savegame.json
+21:40:54 | INFO | Voyager Heuristic: Selected leave_area with score 88
+21:40:54 | INFO | Intent resolution: 'I leave this place.' → investigate (confidence: 0.226, matched exemplar: 'Search the room carefully for hidden clues')
+21:40:54 | WARNING | Confidence 0.226 below threshold 0.35
+21:40:56 | INFO | Voyager Heuristic: Selected leave_area with score 73
+21:40:56 | INFO | Intent resolution: 'I look around the room carefully' → investigate (confidence: 0.668, matched exemplar: 'Search the room carefully for hidden clues')
+21:40:56 | DEBUG | Action: investigate | Tags: ['Sticky Floors', 'Rowdy Crowd', 'Dimly Lit', 'Path Clear'] | Roll: 5 + Attr: 0 + Item: 0 + Tag: 0 = 5 vs DC: 25 (10 + 10) -> FAILURE
+21:40:56 | INFO | Quartermaster: success=False, roll=5 vs DC 25
+21:40:56 | DEBUG | Chronicler streaming: investigate
+21:40:56 | ERROR | Chronicler stream failed: AbstractAgent.run_stream() got an unexpected keyword argument 'result_type'
+21:40:56 | INFO | Game saved to savegame.json
+21:40:58 | INFO | Voyager Heuristic: Selected leave_area with score 58
+21:40:58 | INFO | Intent resolution: 'I leave this place.' → investigate (confidence: 0.226, matched exemplar: 'Search the room carefully for hidden clues')
+21:40:58 | WARNING | Confidence 0.226 below threshold 0.35
+21:41:00 | INFO | Voyager Heuristic: Selected leave_area with score 43
+21:41:00 | INFO | Intent resolution: 'I look around the room carefully' → investigate (confidence: 0.668, matched exemplar: 'Search the room carefully for hidden clues')
+21:41:00 | DEBUG | Action: investigate | Tags: ['Sticky Floors', 'Rowdy Crowd', 'Dimly Lit', 'Path Clear'] | Roll: 5 + Attr: 0 + Item: 0 + Tag: 0 = 5 vs DC: 25 (10 + 10) -> FAILURE
+21:41:00 | INFO | Quartermaster: success=False, roll=5 vs DC 25
+21:41:00 | DEBUG | Chronicler streaming: investigate
+21:41:00 | ERROR | Chronicler stream failed: AbstractAgent.run_stream() got an unexpected keyword argument 'result_type'
+21:41:00 | INFO | Game saved to savegame.json
+21:41:02 | INFO | Voyager Heuristic: Selected leave_area with score 43
+21:41:02 | INFO | Intent resolution: 'I leave this place.' → investigate (confidence: 0.226, matched exemplar: 'Search the room carefully for hidden clues')
+21:41:02 | WARNING | Confidence 0.226 below threshold 0.35
+21:41:04 | INFO | Voyager Heuristic: Selected leave_area with score 43
+21:41:04 | INFO | Intent resolution: 'I look around the room carefully' → investigate (confidence: 0.668, matched exemplar: 'Search the room carefully for hidden clues')
+21:41:04 | DEBUG | Action: investigate | Tags: ['Sticky Floors', 'Rowdy Crowd', 'Dimly Lit', 'Path Clear'] | Roll: 15 + Attr: 0 + Item: 0 + Tag: 0 = 15 vs DC: 25 (10 + 10) -> FAILURE
+21:41:04 | INFO | Quartermaster: success=False, roll=15 vs DC 25
+21:41:04 | DEBUG | Chronicler streaming: investigate
+21:41:04 | ERROR | Chronicler stream failed: AbstractAgent.run_stream() got an unexpected keyword argument 'result_type'
+21:41:04 | INFO | Game saved to savegame.json
+21:41:06 | INFO | Voyager Heuristic: Selected leave_area with score 43
+21:41:06 | INFO | Intent resolution: 'I leave this place.' → investigate (confidence: 0.226, matched exemplar: 'Search the room carefully for hidden clues')
+21:41:06 | WARNING | Confidence 0.226 below threshold 0.35
+21:41:08 | INFO | Voyager Heuristic: Selected leave_area with score 43
+21:41:08 | INFO | Intent resolution: 'I look around the room carefully' → investigate (confidence: 0.668, matched exemplar: 'Search the room carefully for hidden clues')
+21:41:08 | DEBUG | Action: investigate | Tags: ['Sticky Floors', 'Rowdy Crowd', 'Dimly Lit', 'Path Clear'] | Roll: 19 + Attr: 0 + Item: 0 + Tag: 0 = 19 vs DC: 25 (10 + 10) -> FAILURE
+21:41:08 | INFO | Quartermaster: success=False, roll=19 vs DC 25
+21:41:08 | DEBUG | Chronicler streaming: investigate
+21:41:08 | ERROR | Chronicler stream failed: AbstractAgent.run_stream() got an unexpected keyword argument 'result_type'
+21:41:08 | INFO | Game saved to savegame.json
+21:41:10 | INFO | Voyager Heuristic: Selected leave_area with score 43
+21:41:10 | INFO | Intent resolution: 'I leave this place.' → investigate (confidence: 0.226, matched exemplar: 'Search the room carefully for hidden clues')
+21:41:10 | WARNING | Confidence 0.226 below threshold 0.35
+21:41:12 | INFO | Voyager Heuristic: Selected leave_area with score 43
+21:41:12 | INFO | Intent resolution: 'I look around the room carefully' → investigate (confidence: 0.668, matched exemplar: 'Search the room carefully for hidden clues')
+21:41:12 | DEBUG | Action: investigate | Tags: ['Sticky Floors', 'Rowdy Crowd', 'Dimly Lit', 'Path Clear'] | Roll: 3 + Attr: 0 + Item: 0 + Tag: 0 = 3 vs DC: 25 (10 + 10) -> FAILURE
+21:41:12 | INFO | Quartermaster: success=False, roll=3 vs DC 25
+21:41:12 | DEBUG | Chronicler streaming: investigate
+21:41:12 | ERROR | Chronicler stream failed: AbstractAgent.run_stream() got an unexpected keyword argument 'result_type'
+21:41:12 | INFO | Game saved to savegame.json

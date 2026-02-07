@@ -128,7 +128,7 @@ class VoyagerAgent:
             # E. Room Exit Priority
             # If "Path Clear" is present, heavily prioritize 'leave_area'
             if room_tags and "Path Clear" in room_tags and action_id == "leave_area":
-                score += 100
+                score += 500
 
             scored_actions.append({
                 "action": action,
@@ -137,7 +137,6 @@ class VoyagerAgent:
             })
             
         # 3. Pick Best Action
-        # Sort by score descending
         scored_actions.sort(key=lambda x: x['score'], reverse=True)
         
         best = scored_actions[0]
@@ -149,8 +148,8 @@ class VoyagerAgent:
             self.used_actions.pop(0)
         
         # 4. Generate Output
-        # Flair can be a template for now, or use the label
-        flair = f"I {selected_action['label'].lower()}."
+        # Use EXPLICIT label to ensure Semantic Match
+        flair = selected_action['label']
         
         logging_reason = f"Score {best['score']} ({best['reason']})."
         

@@ -356,6 +356,20 @@ def create_default_intent_library() -> IntentLibrary:
     )
     
     # ============================================================
+    # LEAVE_AREA: Transitioning between locations
+    # ============================================================
+    library.add_intent(
+        "leave_area",
+        [
+            "Leave this place",
+            "Exit the area",
+            "Walk out of the room",
+            "Go to the next location",
+            "Head out"
+        ]
+    )
+    
+    # ============================================================
     # IMPROVISE: Fallback for creative/unusual actions
     # ============================================================
     library.add_intent(

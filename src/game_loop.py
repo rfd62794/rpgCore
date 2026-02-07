@@ -249,6 +249,16 @@ class GameREPL:
                     npc.state = arbiter_result.new_npc_state
                     break
         
+        # TRANSITION: Handle leave_area
+        if outcome.success and intent_match.intent_id == "leave_area":
+            if room and room.exits:
+                # Pick the first exit (usually north)
+                next_room_id = list(room.exits.values())[0]
+                self.state.current_room = next_room_id
+                self.console.print(f"\n[bold yellow]🚙 Transitioning to {next_room_id.replace('_', ' ').title()}...[/bold yellow]")
+                # Clear stutter history on room change
+                self.turn_history = []
+        
         # Step 4: Chronicler generates narrative (Streamed)
         self.console.print("[dim]📖 Chronicler narrating...[/dim]")
         

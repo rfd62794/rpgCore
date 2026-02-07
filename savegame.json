@@ -1,7 +1,7 @@
 {
   "player": {
     "name": "Adventurer",
-    "hp": 64,
+    "hp": 26,
     "max_hp": 100,
     "gold": 50,
     "inventory": [],
@@ -43,7 +43,8 @@
       "tags": [
         "Sticky Floors",
         "Rowdy Crowd",
-        "Dimly Lit"
+        "Dimly Lit",
+        "Path Clear"
       ]
     },
     "emerald_city": {
