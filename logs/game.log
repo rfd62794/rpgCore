@@ -8597,3 +8597,4 @@ expected alphabetic or numeric character, but found '.'
 2026-02-07 13:44:51 | INFO | utils.asset_loader:__init__:110 | 🎨 Asset Loader initialized - 0 assets loaded
 2026-02-07 13:44:51 | INFO | utils.asset_loader:__init__:726 | 🏗️ Object Registry initialized
 2026-02-07 13:44:51 | INFO | engines.world.world_engine:__init__:122 | 🌍 World Engine initialized with seed: TEST_MODULAR
+2026-02-07 13:46:01 | INFO | utils.logger:initialize:59 | 📝 Logging system initialized

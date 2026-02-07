@@ -9,6 +9,7 @@ Usage:
     python launch_movie.py --seed FOREST_GATE_001 --graphics
 """
 
+import os
 import sys
 # Import modular components (ADR 084)
 from actors.navigator import PathfindingNavigator
