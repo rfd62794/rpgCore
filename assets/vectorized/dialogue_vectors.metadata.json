@@ -1,0 +1,19 @@
+{
+  "total_vectors": 100,
+  "model_name": "all-MiniLM-L6-v2",
+  "moods": [
+    "hostile",
+    "unfriendly",
+    "neutral",
+    "friendly",
+    "helpful"
+  ],
+  "categories": {
+    "hostile": 5,
+    "unfriendly": 5,
+    "neutral": 5,
+    "friendly": 5,
+    "helpful": 5
+  },
+  "description": "NPC dialogue templates for different moods and situations"
+}

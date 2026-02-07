@@ -2,11 +2,11 @@
   "total_vectors": 66,
   "model_name": "all-MiniLM-L6-v2",
   "categories": {
-    "profession": 11,
     "social": 11,
+    "physical": 11,
     "motivation": 11,
     "behavior": 11,
-    "physical": 11,
+    "profession": 11,
     "personality": 11
   }
 }
