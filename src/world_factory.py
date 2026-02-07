@@ -348,7 +348,8 @@ class WorldFactory:
         Returns:
             Room object or None if not found
         """
-        template = {
+        # Define location templates inline for now
+        templates = {
             "tavern": LocationTemplate(
                 name="The Rusty Flagon",
                 description="A dimly lit tavern filled with the smell of ale and roasted meat. Rowdy patrons fill the wooden tables.",
@@ -357,7 +358,6 @@ class WorldFactory:
                 props=["wooden table", "beer mug", "chair"],
                 connections={"north": "town_square", "east": "alley"}
             ),
-            
             "town_square": LocationTemplate(
                 name="Town Square",
                 description="A bustling town square with a fountain in the center. Merchants hawk their wares from colorful stalls.",
@@ -366,7 +366,6 @@ class WorldFactory:
                 props=["fountain", "market stall", "notice board"],
                 connections={"south": "tavern", "west": "temple", "east": "market"}
             ),
-            
             "alley": LocationTemplate(
                 name="Dark Alley",
                 description="A narrow, shadowy alley between buildings. The air smells of refuse and damp stone.",
@@ -375,7 +374,6 @@ class WorldFactory:
                 props=["dumpster", "broken crate", "graffiti"],
                 connections={"west": "tavern", "north": "rooftop"}
             ),
-            
             "temple": LocationTemplate(
                 name="Temple of Wisdom",
                 description="A serene temple with high vaulted ceilings. Sunlight streams through stained glass windows.",
@@ -384,8 +382,6 @@ class WorldFactory:
                 props=["altar", "candles", "holy book"],
                 connections={"east": "town_square", "north": "crypt"}
             ),
-            
-            # Dungeon Templates
             "dungeon_entrance": LocationTemplate(
                 name="Dungeon Entrance",
                 description="A heavy stone doorway leads into darkness below. Ancient runes are carved into the archway.",
@@ -394,7 +390,6 @@ class WorldFactory:
                 props=["iron door", "torch sconce", "runic inscription"],
                 connections={"up": "surface", "down": "dungeon_hall"}
             ),
-            
             "dungeon_hall": LocationTemplate(
                 name="Dungeon Hall",
                 description="A long stone hallway with dripping water echoing in the distance. Cobwebs hang from the ceiling.",
@@ -403,8 +398,6 @@ class WorldFactory:
                 props=["stone pillar", "rusty chains", "bones"],
                 connections={"up": "dungeon_entrance", "east": "treasure_room", "west": "cell_block"}
             ),
-            
-            # Wilderness Templates
             "forest_path": LocationTemplate(
                 name="Forest Path",
                 description="A winding path through dense forest. Sunlight filters through the canopy above.",
@@ -413,7 +406,6 @@ class WorldFactory:
                 props=["ancient tree", "mossy rock", "bird nest"],
                 connections={"north": "clearing", "south": "cave_entrance"}
             ),
-            
             "clearing": LocationTemplate(
                 name="Forest Clearing",
                 description="An open clearing in the forest surrounded by tall trees. A small stream bubbles nearby.",
@@ -423,6 +415,28 @@ class WorldFactory:
                 connections={"south": "forest_path", "east": "ruins"}
             )
         }
+        
+        template = templates.get(location_id)
+        if not template:
+            logger.warning(f"Location template not found: {location_id}")
+            return None
+        
+        # Create NPCs
+        npcs = []
+        for npc_name in template.initial_npcs:
+            npcs.append(NPC(name=npc_name))
+        
+        # Create Room
+        room = Room(
+            name=template.name,
+            description=template.description,
+            npcs=npcs,
+            items=template.props,
+            exits=template.connections,
+            tags=template.environment_tags
+        )
+        
+        return room
     
     def _load_scenarios(self) -> Dict[str, Dict]:
         """Load pre-configured scenario blueprints."""

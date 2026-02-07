@@ -363,7 +363,8 @@ class Historian:
                 faction=dominant_faction,
                 description=self._generate_tag_description(tag, dominant_event, dominant_faction),
                 intensity=random.uniform(*template["intensity_range"]),
-                decay_rate=template["decay_rate"]
+                decay_rate=template["decay_rate"],
+                world_state=world_state.copy()
             )
             
             tags_created.append(historical_tag)
