@@ -249,7 +249,7 @@ class CharacterFactory:
             return False
         
         # Check stat ranges (assuming 1-20 scale)
-        for stat_value in stats.values():
+        for stat_name, stat_value in stats.items():
             if not (1 <= stat_value <= 20):
                 return False
         
