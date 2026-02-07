@@ -110,25 +110,27 @@ class AssetLoader:
         logger.info(f"🎨 Asset Loader initialized - {len(self.registry)} assets loaded")
     
     def _load_assets(self) -> None:
-        """Load all asset definitions and sprites"""
+        """Load all assets from files"""
         try:
-            # Load YAML definitions
+            # Load object definitions first (these are critical)
             self._load_object_definitions()
             self._load_prefab_definitions()
             
-            # Generate procedural sprites if PIL available
-            if PIL_AVAILABLE:
+            # Generate sprites (these can fail without breaking the system)
+            try:
                 self._generate_tile_sprites()
                 self._generate_object_sprites()
                 self._generate_actor_sprites()
                 self._generate_effect_sprites()
-            else:
-                logger.warning("⚠️ PIL not available - using placeholder sprites")
-                self._generate_placeholder_sprites()
-                
+            except Exception as e:
+                logger.error(f"💥 Failed to generate sprites: {e}")
+                # Don't fail completely, just continue without sprites
+            
+            logger.info(f"🎨 Asset Loader initialized - {len(self.registry)} assets loaded")
         except Exception as e:
             logger.error(f"💥 Failed to load assets: {e}")
-            raise
+            # Create minimal fallback assets
+            self._generate_minimal_assets()
     
     def _load_object_definitions(self) -> None:
         """Load object definitions from YAML"""

@@ -7563,3 +7563,65 @@
 2026-02-07 13:26:39 | ERROR | utils.asset_loader:_generate_fallback_sprites:525 | 💥 Failed to generate fallback sprites: Size must be a sequence of length 2
 2026-02-07 13:26:39 | ERROR | utils.asset_loader:_generate_effect_sprites:260 | 💥 Failed to generate effect sprites: Size must be a sequence of length 2
 2026-02-07 13:26:39 | INFO | utils.asset_loader:__init__:110 | 🎨 Asset Loader initialized - 0 assets loaded
+2026-02-07 13:26:51 | INFO | utils.logger:initialize:59 | 📝 Logging system initialized
+2026-02-07 13:26:51 | INFO | utils.asset_loader:_load_object_definitions:177 | 📦 Loaded 30 object definitions
+2026-02-07 13:26:51 | INFO | utils.asset_loader:_load_prefab_definitions:206 | 🏗️ Loaded 10 prefab definitions
+2026-02-07 13:26:51 | INFO | utils.asset_loader:_generate_tile_sprites:217 | 🎨 Generated 11 tile sprites
+2026-02-07 13:26:51 | INFO | utils.asset_loader:_generate_object_sprites:226 | 🎨 Generated 38 object sprites
+2026-02-07 13:26:51 | ERROR | utils.asset_loader:_generate_actor_sprites:497 | 💥 Failed to generate actor sprites: Size must be a sequence of length 2
+2026-02-07 13:26:51 | ERROR | utils.asset_loader:_generate_fallback_sprites:525 | 💥 Failed to generate fallback sprites: Size must be a sequence of length 2
+2026-02-07 13:26:51 | ERROR | utils.asset_loader:_generate_effect_sprites:260 | 💥 Failed to generate effect sprites: Size must be a sequence of length 2
+2026-02-07 13:26:51 | INFO | utils.asset_loader:__init__:110 | 🎨 Asset Loader initialized - 0 assets loaded
+2026-02-07 13:26:51 | INFO | utils.asset_loader:__init__:585 | 🏗️ Object Registry initialized
+2026-02-07 13:26:51 | INFO | engines.world.world_engine:__init__:122 | 🌍 World Engine initialized with seed: FOREST_GATE_BATTLE
+2026-02-07 13:26:51 | INFO | utils.asset_loader:_load_object_definitions:177 | 📦 Loaded 30 object definitions
+2026-02-07 13:26:51 | INFO | utils.asset_loader:_load_prefab_definitions:206 | 🏗️ Loaded 10 prefab definitions
+2026-02-07 13:26:51 | INFO | utils.asset_loader:_generate_tile_sprites:217 | 🎨 Generated 11 tile sprites
+2026-02-07 13:26:51 | INFO | utils.asset_loader:_generate_object_sprites:226 | 🎨 Generated 38 object sprites
+2026-02-07 13:26:51 | ERROR | utils.asset_loader:_generate_actor_sprites:497 | 💥 Failed to generate actor sprites: Size must be a sequence of length 2
+2026-02-07 13:26:51 | ERROR | utils.asset_loader:_generate_fallback_sprites:525 | 💥 Failed to generate fallback sprites: Size must be a sequence of length 2
+2026-02-07 13:26:51 | ERROR | utils.asset_loader:_generate_effect_sprites:260 | 💥 Failed to generate effect sprites: Size must be a sequence of length 2
+2026-02-07 13:26:51 | INFO | utils.asset_loader:__init__:110 | 🎨 Asset Loader initialized - 0 assets loaded
+2026-02-07 13:26:51 | INFO | utils.asset_loader:__init__:585 | 🏗️ Object Registry initialized
+2026-02-07 13:26:51 | INFO | engines.mind.combat_resolver:__init__:128 | ⚔️ Combat Resolver initialized
+2026-02-07 13:26:51 | INFO | engines.mind.dd_engine:__init__:104 | 🧠 D&D Engine initialized with seed: FOREST_GATE_BATTLE
+2026-02-07 13:26:51 | INFO | engines.mind.dd_engine:__init__:109 | 🧠 D&D Engine initialized - Command Pattern ready
+2026-02-07 13:26:51 | INFO | actors.voyager:__init__:70 | 🧭 Pathfinding Navigator initialized: 50x50
+2026-02-07 13:26:51 | INFO | actors.voyager:__init__:186 | 🎯 Intent Generator initialized
+2026-02-07 13:26:51 | INFO | actors.voyager:__init__:334 | 🚶 Voyager initialized - STATE_PONDERING support ready
+2026-02-07 13:26:51 | INFO | utils.asset_loader:_load_object_definitions:177 | 📦 Loaded 30 object definitions
+2026-02-07 13:26:51 | INFO | utils.asset_loader:_load_prefab_definitions:206 | 🏗️ Loaded 10 prefab definitions
+2026-02-07 13:26:51 | INFO | utils.asset_loader:_generate_tile_sprites:217 | 🎨 Generated 11 tile sprites
+2026-02-07 13:26:51 | INFO | utils.asset_loader:_generate_object_sprites:226 | 🎨 Generated 38 object sprites
+2026-02-07 13:26:51 | ERROR | utils.asset_loader:_generate_actor_sprites:497 | 💥 Failed to generate actor sprites: Size must be a sequence of length 2
+2026-02-07 13:26:51 | ERROR | utils.asset_loader:_generate_fallback_sprites:525 | 💥 Failed to generate fallback sprites: Size must be a sequence of length 2
+2026-02-07 13:26:51 | ERROR | utils.asset_loader:_generate_effect_sprites:260 | 💥 Failed to generate effect sprites: Size must be a sequence of length 2
+2026-02-07 13:26:51 | INFO | utils.asset_loader:__init__:110 | 🎨 Asset Loader initialized - 0 assets loaded
+2026-02-07 13:26:51 | INFO | engines.mind.combat_resolver:__init__:128 | ⚔️ Combat Resolver initialized
+2026-02-07 13:26:58 | INFO | utils.logger:initialize:59 | 📝 Logging system initialized
+2026-02-07 13:26:59 | INFO | utils.asset_loader:_load_object_definitions:177 | 📦 Loaded 30 object definitions
+2026-02-07 13:26:59 | INFO | utils.asset_loader:_load_prefab_definitions:206 | 🏗️ Loaded 10 prefab definitions
+2026-02-07 13:26:59 | INFO | utils.asset_loader:_generate_tile_sprites:217 | 🎨 Generated 11 tile sprites
+2026-02-07 13:26:59 | INFO | utils.asset_loader:_generate_object_sprites:226 | 🎨 Generated 38 object sprites
+2026-02-07 13:26:59 | ERROR | utils.asset_loader:_generate_actor_sprites:497 | 💥 Failed to generate actor sprites: Size must be a sequence of length 2
+2026-02-07 13:26:59 | ERROR | utils.asset_loader:_generate_fallback_sprites:525 | 💥 Failed to generate fallback sprites: Size must be a sequence of length 2
+2026-02-07 13:26:59 | ERROR | utils.asset_loader:_generate_effect_sprites:260 | 💥 Failed to generate effect sprites: Size must be a sequence of length 2
+2026-02-07 13:26:59 | INFO | utils.asset_loader:__init__:110 | 🎨 Asset Loader initialized - 0 assets loaded
+2026-02-07 13:27:04 | INFO | utils.logger:initialize:59 | 📝 Logging system initialized
+2026-02-07 13:27:04 | INFO | utils.asset_loader:_load_object_definitions:177 | 📦 Loaded 30 object definitions
+2026-02-07 13:27:04 | INFO | utils.asset_loader:_load_prefab_definitions:206 | 🏗️ Loaded 10 prefab definitions
+2026-02-07 13:27:04 | INFO | utils.asset_loader:_generate_tile_sprites:217 | 🎨 Generated 11 tile sprites
+2026-02-07 13:27:04 | INFO | utils.asset_loader:_generate_object_sprites:226 | 🎨 Generated 38 object sprites
+2026-02-07 13:27:04 | ERROR | utils.asset_loader:_generate_actor_sprites:497 | 💥 Failed to generate actor sprites: Size must be a sequence of length 2
+2026-02-07 13:27:04 | ERROR | utils.asset_loader:_generate_fallback_sprites:525 | 💥 Failed to generate fallback sprites: Size must be a sequence of length 2
+2026-02-07 13:27:04 | ERROR | utils.asset_loader:_generate_effect_sprites:260 | 💥 Failed to generate effect sprites: Size must be a sequence of length 2
+2026-02-07 13:27:04 | INFO | utils.asset_loader:__init__:110 | 🎨 Asset Loader initialized - 0 assets loaded
+2026-02-07 13:27:13 | INFO | utils.logger:initialize:59 | 📝 Logging system initialized
+2026-02-07 13:27:13 | INFO | utils.asset_loader:_load_object_definitions:177 | 📦 Loaded 30 object definitions
+2026-02-07 13:27:13 | INFO | utils.asset_loader:_load_prefab_definitions:206 | 🏗️ Loaded 10 prefab definitions
+2026-02-07 13:27:13 | INFO | utils.asset_loader:_generate_tile_sprites:217 | 🎨 Generated 11 tile sprites
+2026-02-07 13:27:13 | INFO | utils.asset_loader:_generate_object_sprites:226 | 🎨 Generated 38 object sprites
+2026-02-07 13:27:13 | ERROR | utils.asset_loader:_generate_actor_sprites:497 | 💥 Failed to generate actor sprites: Size must be a sequence of length 2
+2026-02-07 13:27:13 | ERROR | utils.asset_loader:_generate_fallback_sprites:525 | 💥 Failed to generate fallback sprites: Size must be a sequence of length 2
+2026-02-07 13:27:13 | ERROR | utils.asset_loader:_generate_effect_sprites:260 | 💥 Failed to generate effect sprites: Size must be a sequence of length 2
+2026-02-07 13:27:13 | INFO | utils.asset_loader:__init__:110 | 🎨 Asset Loader initialized - 0 assets loaded
