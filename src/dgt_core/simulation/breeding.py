@@ -13,8 +13,10 @@ from typing import Dict, List, Optional, Tuple, Any
 from dataclasses import dataclass, asdict
 from enum import Enum
 import math
+import hashlib
 
 from loguru import logger
+from ..registry.evolution_log import EvolutionLog, GeneticSignature
 
 
 class ShellPattern(Enum):
@@ -150,6 +152,11 @@ class GeneticBreedingService:
         self.generation_counter = 0
         self.last_breeding_time = 0.0
         self.breeding_interval = 5.0  # 5 seconds between generations
+        self.last_culling_time = 0.0
+        self.culling_interval = 10.0  # 10 seconds between culling
+        
+        # Evolution logging (ADR 125)
+        self.evolution_log = EvolutionLog()
         
         # Initialize founder population
         self._create_founder_population()
