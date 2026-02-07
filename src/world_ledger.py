@@ -491,7 +491,7 @@ class WorldLedger:
         with sqlite3.connect(self.save_path) as conn:
             cursor = conn.execute("""
                 SELECT tag, epoch, event_type, faction, description, intensity, decay_rate
-                FROM world_history
+                FROM historical_tags
                 WHERE coordinate = ?
                 ORDER BY intensity DESC
             """, (f"{coord.x},{coord.y}",))

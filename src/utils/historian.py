@@ -452,24 +452,28 @@ class Historian:
     
     def _save_historical_tag(self, tag: HistoricalTag):
         """Save a historical tag to the database."""
-        with sqlite3.connect(self.db_path) as conn:
-            conn.execute("""
-                INSERT INTO world_history (
-                    epoch_number, year, coordinate, event_type, faction,
-                    description, intensity, decay_rate, world_state
-                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
-            """, (
-                tag.epoch,
-                tag.epoch * 100 + random.randint(0, 99),  # Year within epoch
-                f"{tag.coordinate[0]},{tag.coordinate[1]}",
-                tag.event_type.value,
-                tag.faction.value if tag.faction else None,
-                tag.description,
-                tag.intensity,
-                tag.decay_rate,
-                json.dumps(tag.world_state)
-            ))
-            conn.commit()
+        try:
+            # Save to world_ledger database for consistency
+            with sqlite3.connect(self.world_ledger.save_path) as conn:
+                conn.execute("""
+                    INSERT OR REPLACE INTO historical_tags (
+                        coordinate, tag, epoch, event_type, faction,
+                        description, intensity, decay_rate, world_state
+                    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+                """, (
+                    f"{tag.coordinate[0]},{tag.coordinate[1]}",
+                    tag.tag,
+                    tag.epoch,
+                    tag.event_type.value,
+                    tag.faction.value if tag.faction else None,
+                    tag.description,
+                    tag.intensity,
+                    tag.decay_rate,
+                    json.dumps(tag.world_state)
+                ))
+                conn.commit()
+        except sqlite3.Error as e:
+            logger.error(f"Failed to save historical tag: {e}")
     
     def _save_epoch_summary(self, epoch: Epoch):
         """Save epoch summary to database."""
