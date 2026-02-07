@@ -103,18 +103,86 @@ class D20Resolver:
     def __init__(self, faction_system: Optional[FactionSystem] = None):
         """Initialize the D20 resolver with optional faction system."""
         self.faction_system = faction_system
+        self._deterministic_mode = False  # Can be enabled for testing
+        self._seed_counter = 0  # For generating unique seeds
         logger.info("D20 Core initialized - deterministic rules engine ready with faction system support")
     
-    def _roll_dice(self, advantage_type: Optional[str] = None) -> Tuple[int, Optional[Tuple[int, int]]]:
+    def enable_deterministic_mode(self, enabled: bool = True) -> None:
+        """
+        Enable or disable deterministic mode.
+        
+        When enabled, all dice rolls will be deterministic based on
+        game state, preventing save-scumming via turning.
+        
+        Args:
+            enabled: Whether to enable deterministic mode
+        """
+        self._deterministic_mode = enabled
+        logger.info(f"Deterministic mode {'enabled' if enabled else 'disabled'}")
+    
+    def _generate_deterministic_seed(self, intent_id: str, game_state: GameState, 
+                                   target_npc: Optional[str] = None) -> int:
+        """
+        Generate deterministic seed based on game state.
+        
+        This ensures that the same action in the same game state
+        always produces the same dice roll, preventing save-scumming.
+        
+        Args:
+            intent_id: The action intent
+            game_state: Current game state
+            target_npc: Target NPC if applicable
+            
+        Returns:
+            Deterministic seed value
+        """
+        # Create seed string from game state
+        seed_components = [
+            intent_id,
+            str(game_state.turn_count),
+            str(game_state.player.position.x),
+            str(game_state.player.position.y),
+            str(getattr(game_state, 'player_heading', 0)),
+            str(game_state.player.hp),
+            str(game_state.player.gold),
+            target_npc or "none"
+        ]
+        
+        seed_string = "|".join(seed_components)
+        
+        # Generate hash and convert to integer
+        hash_object = hashlib.sha256(seed_string.encode())
+        hash_hex = hash_object.hexdigest()
+        
+        # Use first 8 characters of hash as seed
+        seed = int(hash_hex[:8], 16)
+        
+        # Add counter to prevent collisions in same turn
+        seed = (seed + self._seed_counter) % (2**32)
+        self._seed_counter += 1
+        
+        return seed
+    
+    def _roll_dice(self, advantage_type: Optional[str] = None, 
+                   deterministic_seed: Optional[int] = None) -> Tuple[int, Optional[Tuple[int, int]]]:
         """
         Roll dice with advantage/disadvantage logic.
         
         Args:
             advantage_type: "advantage", "disadvantage", or None
+            deterministic_seed: Optional seed for deterministic rolls
             
         Returns:
             Tuple of (final_roll, raw_rolls_for_transparency)
         """
+        # Use deterministic seed if provided or in deterministic mode
+        if deterministic_seed is not None:
+            random.seed(deterministic_seed)
+            logger.debug(f"Using deterministic seed: {deterministic_seed}")
+        elif self._deterministic_mode:
+            # This should be handled by the caller with a proper seed
+            logger.warning("Deterministic mode enabled but no seed provided")
+        
         if advantage_type == "advantage":
             roll1 = random.randint(1, 20)
             roll2 = random.randint(1, 20)
@@ -141,7 +209,11 @@ class D20Resolver:
         Core resolution: Roll(d20) + Modifiers vs DC.
         
         Enhanced with travel mechanics and fatigue for Phase 3.
+        Now includes deterministic seeding to prevent save-scumming.
         """
+        # Generate deterministic seed for this action
+        deterministic_seed = self._generate_deterministic_seed(intent_id, game_state, target_npc)
+        
         # 1. Calculate Difficulty Class
         dc, dc_reasoning = self._calculate_difficulty_class(intent_id, room_tags)
         
@@ -159,9 +231,9 @@ class D20Resolver:
             if fatigue_penalty != 0:
                 dc_reasoning += f" | Travel Fatigue: {fatigue_penalty}"
         
-        # 5. Roll the dice with advantage/disadvantage
+        # 5. Roll the dice with advantage/disadvantage (deterministic)
         advantage_type = None  # Default to no advantage/disadvantage
-        d20_roll, raw_rolls = self._roll_dice(advantage_type)
+        d20_roll, raw_rolls = self._roll_dice(advantage_type, deterministic_seed)
         
         # 6. Calculate total
         total_score = d20_roll + attribute_bonus + item_bonus + faction_modifier - fatigue_penalty
@@ -179,6 +251,39 @@ class D20Resolver:
         # 9. Build narrative context (technical, not creative)
         narrative_parts = [
             f"Roll: {d20_roll}",
+            f"DC: {dc}",
+            f"Total: {total_score}",
+            f"Success: {success}",
+            f"Seed: {deterministic_seed}"
+        ]
+        
+        if attribute_bonus != 0:
+            narrative_parts.append(f"{attr_name}: {attribute_bonus:+d}")
+        if item_bonus != 0:
+            narrative_parts.append(f"Item: {item_bonus:+d}")
+        if faction_modifier != 0:
+            narrative_parts.append(f"Faction: {faction_modifier:+d}")
+        if fatigue_penalty != 0:
+            narrative_parts.append(f"Fatigue: -{fatigue_penalty}")
+        
+        narrative_context = " | ".join(narrative_parts)
+        
+        # 10. Return result with deterministic seed
+        return D20Result(
+            success=success,
+            roll=d20_roll,
+            total_score=total_score,
+            difficulty_class=dc,
+            hp_delta=hp_delta,
+            reputation_deltas=reputation_deltas,
+            relationship_changes=relationship_changes,
+            npc_state_changes=npc_state_changes,
+            goals_completed=goals_completed,
+            narrative_context=narrative_context,
+            advantage_type=advantage_type,
+            raw_rolls=raw_rolls,
+            deterministic_seed=deterministic_seed
+        )
             f"{attr_name.title()}: {attribute_bonus:+d}" if attribute_bonus != 0 else "",
             f"Items: {item_bonus:+d}" if item_bonus != 0 else "",
             f"vs DC {dc}",
