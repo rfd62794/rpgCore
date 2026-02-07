@@ -17,11 +17,13 @@ class ArbiterLogic(BaseModel):
     
     difficulty_mod: int = Field(default=0)
     internal_logic: str = Field(description="Step-by-step reasoning (Hardcoded)")
-    target_npc_id: Optional[str] = None
+    target_npc: Optional[str] = None
     new_npc_state: Literal["neutral", "hostile", "distracted", "charmed", "dead"] = "neutral"
     reasoning: str = Field(description="Brief tactical reason")
     narrative_seed: str = Field(default="")
     reputation_deltas: dict[str, int] = Field(default_factory=dict)
+    rep_delta: int = Field(default=0) # Change in disposition for target_npc
+    rep_tags: List[str] = Field(default_factory=list) # New tags for target_npc relationship
 
 ArbiterLogic.model_rebuild()
 
@@ -79,6 +81,15 @@ class DeterministicArbiter:
         # 2. State & Reputation Rules
         new_npc_state = "neutral"
         reputation_deltas = {}
+        rep_delta = 0
+        rep_tags = []
+        target_npc = None
+        
+        # Detect target NPC from input (naive check)
+        if "guard" in player_input.lower():
+            target_npc = "Guard"
+        elif "bartender" in player_input.lower():
+            target_npc = "Bartender"
         
         if reputation.get("law", 0) <= -10:
             if "Wanted" not in room_tags:
@@ -92,10 +103,18 @@ class DeterministicArbiter:
         # (e.g. Guard is already charmed/dead from previous turns)
         is_path_clear = "charmed" in context.lower() or "dead" in context.lower()
 
+        # INTENT REFINING: If resolver chose "charm" but input is violent, override to "force"
+        violent_words = ["kick", "kill", "smash", "scare", "threat", "intimidate"]
+        if intent == "charm" and any(w in player_input.lower() for w in violent_words):
+            intent = "force"
+            difficulty_mod += 2
+
         if intent == "combat":
             new_npc_state = "hostile"
             difficulty_mod += 2 # Combat is inherently tense
             reputation_deltas["law"] = -5
+            rep_delta = -20
+            rep_tags = ["hurt"]
         elif intent == "distract":
             new_npc_state = "distracted"
         elif intent == "charm":
@@ -105,16 +124,23 @@ class DeterministicArbiter:
             new_npc_state = "charmed"
             is_path_clear = True # Immediate clearing
             reputation_deltas["law"] = 2
+            rep_delta = 10
+            rep_tags = ["charmed"]
         elif intent == "finesse":
              # Finesse or social actions usually help reputation with law if positive
              reputation_deltas["law"] = 1
-        elif intent == "force" and "guard" in player_input.lower():
+             rep_delta = 5
+        elif intent == "force":
              # If we tried to force a guard, we assume it's combat-like
-             new_npc_state = "hostile"
-             reputation_deltas["law"] = -3
+             if "guard" in player_input.lower():
+                new_npc_state = "hostile"
+                reputation_deltas["law"] = -3
+                rep_delta = -10
+             else:
+                rep_delta = -5
              
         # 3. Build Logic Trace
-        internal_logic = f"Deterministic Logic: Intent '{intent}' evaluated against tags {room_tags}. "
+        internal_logic = f"Deterministic Logic: Intent '{intent}' (refined from '{intent_id}') evaluated against tags {room_tags}. "
         if reasons:
             internal_logic += " | ".join(reasons)
         else:
@@ -143,10 +169,13 @@ class DeterministicArbiter:
         return ArbiterLogic(
             difficulty_mod=difficulty_mod,
             internal_logic=internal_logic,
+            target_npc=target_npc,
             new_npc_state=new_npc_state, # type: ignore
             reasoning=reasoning,
             narrative_seed=seed,
-            reputation_deltas=reputation_deltas
+            reputation_deltas=reputation_deltas,
+            rep_delta=rep_delta,
+            rep_tags=rep_tags
         )
 
     def resolve_action_sync(self, *args, **kwargs) -> ArbiterLogic:

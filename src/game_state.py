@@ -19,7 +19,10 @@ class Goal(BaseModel):
     description: str
     target_tags: List[str] = Field(default_factory=list) # Tags to look for to complete
     method_tags: List[str] = Field(default_factory=list) # Intents that align with this goal
-    is_completed: bool = False
+    is_completed: bool = False # Legacy, kept for compat
+    status: Literal["active", "success", "failed"] = "active"
+    required_intent: Optional[str] = None # Intent that triggers completion
+    target_npc_state: Optional[str] = None # NPC state that triggers completion
     reward_gold: int = 0
     type: Literal["short", "medium", "long"] = "short"
 
