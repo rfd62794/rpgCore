@@ -431,6 +431,10 @@ class DGTSystem:
         
         self.running = False
         
+        # Stop Developer Console
+        if self.dev_console:
+            self.dev_console.stop()
+        
         if self.heartbeat:
             await self.heartbeat.stop()
         
