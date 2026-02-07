@@ -465,6 +465,32 @@ class AssetLoader:
             # Generate minimal fallback sprites
             self._generate_fallback_sprites()
     
+    def _generate_fallback_sprites(self) -> None:
+        """Generate minimal fallback sprites"""
+        try:
+            # Generate simple colored squares as fallbacks
+            basic_sprites = {
+                "voyager_idle": (0, 100, 255),
+                "voyager_combat": (0, 150, 255),
+                "guardian": (128, 128, 128),
+                "forest_imp": (0, 128, 0),
+                "shadow_beast": (128, 0, 128)
+            }
+            
+            for sprite_id, color in basic_sprites.items():
+                img = Image.new((16, 16), (255, 255, 255, 0))
+                draw = ImageDraw.Draw(img)
+                draw.rectangle([2, 2, 14, 14], fill=color + (255,))
+                
+                photo = ImageTk.PhotoImage(img)
+                self.registry[sprite_id] = photo
+                self._sprite_refs.append(photo)
+            
+            logger.info("🎨 Generated fallback sprites")
+        
+        except Exception as e:
+            logger.error(f"💥 Failed to generate fallback sprites: {e}")
+    
     def _create_sprite_variant(self, image: Image.Image, sprite_id: str) -> None:
         """Create a sprite variant and store it"""
         # Convert to PhotoImage

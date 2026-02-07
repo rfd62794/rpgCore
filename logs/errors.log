@@ -6034,3 +6034,6 @@
 2026-02-07 13:20:31 | ERROR | utils.asset_loader:_load_object_definitions:168 | 💥 Failed to load objects.yaml: mapping values are not allowed here
   in "assets\objects.yaml", line 638, column 35
 2026-02-07 13:25:06 | ERROR | utils.asset_loader:_load_assets:130 | 💥 Failed to load assets: Size must be a sequence of length 2
+2026-02-07 13:25:33 | ERROR | utils.asset_loader:_generate_actor_sprites:464 | 💥 Failed to generate actor sprites: Size must be a sequence of length 2
+2026-02-07 13:25:33 | ERROR | utils.asset_loader:_generate_fallback_sprites:492 | 💥 Failed to generate fallback sprites: Size must be a sequence of length 2
+2026-02-07 13:25:33 | ERROR | utils.asset_loader:_load_assets:130 | 💥 Failed to load assets: 'AssetLoader' object has no attribute '_create_effect_sprite'
