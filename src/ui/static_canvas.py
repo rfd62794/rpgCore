@@ -316,7 +316,7 @@ class StaticCanvas:
         
         # Add viewport
         try:
-            viewport_panel = self.dashboard.viewport.render_frame(self.state.game_state)
+            viewport_panel = self.dashboard._render_component(self.dashboard.viewport, ZoneType.VIEWPORT)
             layout["viewport"].update(viewport_panel)
         except Exception as e:
             logger.error(f"Error rendering viewport: {e}")
