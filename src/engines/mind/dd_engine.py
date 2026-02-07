@@ -11,7 +11,7 @@ The D&D Engine serves as the Single Source of Truth for all game state.
 import time
 import asyncio
 from typing import Dict, List, Tuple, Optional, Union, Any
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from enum import Enum
 from collections import deque
 
