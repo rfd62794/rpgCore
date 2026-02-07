@@ -64,7 +64,12 @@ def validate_starter_kit():
     
     print("\n=== Scene Rendering Data ===")
     
-    scene_data = loader.get_scene_rendering_data()
+    scene_data = {}
+    for obj_id in loader.get_scene_objects().keys():
+        render_data = loader.get_rendering_data(obj_id)
+        if render_data:
+            scene_data[obj_id] = render_data
+    
     print(f"✅ Generated rendering data for {len(scene_data)} objects:")
     
     for obj_id, render_data in scene_data.items():
