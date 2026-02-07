@@ -53,7 +53,7 @@ class SyntheticRealityDirector:
         
         # Initialize renderer based on view mode
         if view_mode == "iso":
-            self.renderer = IsometricRenderer(self.world_ledger)
+            self.renderer = IsometricRenderer(self.world_ledger, faction_system=self.faction_system)
         else:
             self.renderer = ASCIIDoomRenderer(self.world_ledger)
         

@@ -36,9 +36,10 @@ class IsometricRenderer:
     Projects WorldLedger coordinates onto a staggered diamond grid.
     """
     
-    def __init__(self, world_ledger: WorldLedger, width: int = 40, height: int = 20):
+    def __init__(self, world_ledger: WorldLedger, width: int = 40, height: int = 20, faction_system=None):
         """Initialize the isometric renderer."""
         self.world_ledger = world_ledger
+        self.faction_system = faction_system
         self.width = width
         self.height = height
         
@@ -214,7 +215,9 @@ class IsometricRenderer:
             return self.entity_chars["player"], self.entity_colors["player"], "player"
         
         # Check for NPCs based on faction control
-        faction = self.world_ledger.get_faction_at_coordinate(coordinate)
+        faction = None
+        if self.faction_system:
+            faction = self.faction_system.get_faction_at_coordinate(coordinate)
         if faction:
             if faction.id == "legion":
                 return self.entity_chars["guard"], self.entity_colors["guard"], "guard"
