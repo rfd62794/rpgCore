@@ -86,26 +86,61 @@ class ConversationEngine:
         # Calculate mood components
         mood_score = 0.0
         
-        # Reputation component
         if faction:
+            # Reputation component (40% weight)
             rep_score = player_reputation.get(faction.id, 0)
             mood_score += (rep_score / 100.0) * self.reputation_weight
-        
-        # Faction tension component
-        if faction:
-            # Check faction relations
+            
+            # Faction tension component (30% weight)
+            # Check faction relations to determine baseline tension
             relations = self.faction_system.get_faction_relations(faction.id)
+            
+            # Calculate tension from faction relationships
+            tension_score = 0.0
             for other_faction, relation in relations.items():
                 if relation.value == "hostile":
-                    mood_score -= 0.3 * self.faction_tension_weight
+                    tension_score -= 0.5
                 elif relation.value == "war":
-                    mood_score -= 0.5 * self.faction_tension_weight
+                    tension_score -= 0.7
                 elif relation.value == "allied":
-                    mood_score += 0.2 * self.faction_tension_weight
-        
-        # Situational component (based on location tags)
-        # This would integrate with world ledger tags
-        situational_modifier = 0.0  # Placeholder
+                    tension_score += 0.3
+                elif relation.value == "friendly":
+                    tension_score += 0.2
+            
+            # Normalize tension score and apply weight
+            tension_score = max(-1.0, min(1.0, tension_score / len(relations) if relations else 0))
+            mood_score += tension_score * self.faction_tension_weight
+            
+            # Faction type modifier (30% weight)
+            # Different faction types have different baseline dispositions
+            faction_type_modifiers = {
+                "military": -0.1,  # Military factions are more suspicious
+                "religious": 0.0,   # Religious factions are neutral
+                "economic": 0.2,   # Economic factions are more welcoming
+                "political": -0.05, # Political factions are slightly suspicious
+                "mystical": 0.1     # Mystical factions are slightly welcoming
+            }
+            
+            faction_modifier = faction_type_modifiers.get(faction.type.value, 0.0)
+            mood_score += faction_modifier * self.situational_weight
+            
+            # Apply faction-specific reputation scaling
+            # Military factions care more about law reputation
+            # Economic factions care more about underworld reputation
+            # Religious factions care more about clergy reputation
+            reputation_scaling = 1.0
+            
+            if faction.type.value == "military":
+                law_rep = player_reputation.get("law", 0)
+                reputation_scaling = 1.0 + (law_rep / 100.0) * 0.5
+            elif faction.type.value == "economic":
+                underworld_rep = player_reputation.get("underworld", 0)
+                reputation_scaling = 1.0 + (underworld_rep / 100.0) * 0.3
+            elif faction.type.value == "religious":
+                clergy_rep = player_reputation.get("clergy", 0)
+                reputation_scaling = 1.0 + (clergy_rep / 100.0) * 0.4
+            
+            mood_score *= reputation_scaling
         
         # Convert score to mood
         if mood_score <= -0.6:
