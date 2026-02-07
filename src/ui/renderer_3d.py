@@ -71,6 +71,9 @@ class ASCIIDoomRenderer:
         self.buffer = [[" " " for _ in range(width)] for _ in range(height)]
         self.depth_buffer = [[self.max_distance for _ in range(width)] for _ in range(height)]
         
+        # Viewport calculations
+        self.half_height = height // 2
+        
         # Color scheme
         self.colors = {
             "wall": "#",
