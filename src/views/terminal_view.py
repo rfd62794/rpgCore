@@ -6,7 +6,7 @@ When the Voyager moves in the 2D Engine, the Terminal prints the Action Result.
 """
 
 import asyncio
-from typing import Optional
+from typing import Optional, Dict, Any
 from pathlib import Path
 
 from loguru import logger
@@ -54,9 +54,37 @@ class TerminalView(Observer):
         self._display_action_result(result)
     
     def on_narrative_generated(self, prose: str) -> None:
-        """Called when narrative is generated."""
-        self.current_narrative = prose
-        self._display_narrative(prose, result.success if 'result' in locals() else True)
+        """Handle generated narrative."""
+        if self.console:
+            self.console.print(f"[italic]{prose}[/italic]")
+    
+    def on_simulator_event(self, event_type: str, data: Dict[str, Any]) -> None:
+        """Handle simulator events (scene transitions, etc.)."""
+        if event_type == "scene_transition":
+            # Display cinematic transition header
+            message = data.get("message", "--- SCENE TRANSITION ---")
+            if self.console:
+                self.console.print(f"\n[bold cyan]{message}[/bold cyan]\n")
+                
+        elif event_type == "scene_lock_released":
+            # Display location context when scene lock releases
+            location = data.get("location", "Unknown Location")
+            if self.console:
+                self.console.print(f"[dim]📍 Now in: {location}[/dim]\n")
+                
+        elif event_type == "portal_transition":
+            # Display portal transition
+            environment = data.get("environment", "Unknown")
+            location = data.get("location", "Unknown")
+            if self.console:
+                self.console.print(f"[bold yellow]🚪 Portal Transition: {location}[/bold yellow]")
+                
+        elif event_type == "landmark_interaction":
+            # Display landmark interaction
+            landmark = data.get("landmark", "Unknown")
+            interaction_type = data.get("type", "Unknown")
+            if self.console:
+                self.console.print(f"[bold green]🎯 Interaction: {landmark} ({interaction_type})[/bold green]")
     
     def _display_context(self, state: GameState) -> None:
         """Display current game context."""

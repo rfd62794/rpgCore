@@ -316,6 +316,30 @@ class GUIView(Observer):
         # This is handled by on_action_result
         pass
     
+    def on_simulator_event(self, event_type: str, data: Dict[str, Any]) -> None:
+        """Handle simulator events (scene transitions, etc.)."""
+        if event_type == "scene_transition":
+            # Display cinematic transition in narrative
+            message = data.get("message", "--- SCENE TRANSITION ---")
+            self._add_narrative_entry(f"[CINEMATIC] {message}")
+            
+        elif event_type == "scene_lock_released":
+            # Display location context when scene lock releases
+            location = data.get("location", "Unknown Location")
+            self._add_narrative_entry(f"[LOCATION] Now in: {location}")
+            
+        elif event_type == "portal_transition":
+            # Display portal transition
+            environment = data.get("environment", "Unknown")
+            location = data.get("location", "Unknown")
+            self._add_narrative_entry(f"[PORTAL] Transition to {location}")
+            
+        elif event_type == "landmark_interaction":
+            # Display landmark interaction
+            landmark = data.get("landmark", "Unknown")
+            interaction_type = data.get("type", "Unknown")
+            self._add_narrative_entry(f"[INTERACTION] {landmark} ({interaction_type})")
+    
     def _add_narrative_entry(self, result: ActionResult) -> None:
         """Add narrative entry to the log."""
         if not self.narrative_text:
