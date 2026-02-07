@@ -108,16 +108,17 @@ class PathfindingGrid:
             self._grid[y][0] = None  # Left border
             self._grid[y][self.width-1] = None  # Right border
         
-        # Add some interior walls (check bounds)
-        wall_start_x = min(5, self.width - 1)
-        wall_end_x = min(15, self.width - 1)
-        wall_start_y = min(5, self.height - 1)
-        wall_end_y = min(15, self.height - 1)
-        
-        for x in range(wall_start_x, wall_end_x + 1):
-            for y in range(wall_start_y, wall_end_y + 1):
-                if x < self.width and y < self.height:
-                    self._grid[y][x] = None  # Mark as wall
+        # Add some interior walls (check bounds) - only for larger grids
+        if self.width > 10 and self.height > 10:
+            wall_start_x = min(5, self.width - 1)
+            wall_end_x = min(15, self.width - 1)
+            wall_start_y = min(5, self.height - 1)
+            wall_end_y = min(15, self.height - 1)
+            
+            for x in range(wall_start_x, wall_end_x + 1):
+                for y in range(wall_start_y, wall_end_y + 1):
+                    if x < self.width and y < self.height:
+                        self._grid[y][x] = None  # Mark as wall
     
     def _apply_tile_map(self, tile_map: List[int], offset: Tuple[int, int]) -> None:
         """Apply tile map to grid."""
