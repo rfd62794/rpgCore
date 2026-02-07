@@ -278,6 +278,125 @@ class ChronosAPI:
         self.engine.initialize_main_quest(positions)
 
 
+# === PERSONA PILLAR API (Social Simulator) ===
+
+class PersonaAPI:
+    """C-style API for Persona Engine - Social Simulator Interface"""
+    
+    def __init__(self, world_seed: str = "WORLD_SEED"):
+        self.engine = PersonaEngineFactory.create_engine(world_seed)
+    
+    def create_npc(self, x: int, y: int, npc_type: str = "random") -> Dict:
+        """Create NPC at position"""
+        npc = self.engine.generate_npc_at_position((x, y), npc_type)
+        if npc:
+            return {
+                "npc_id": npc.npc_id,
+                "name": npc.personality.name,
+                "position": npc.position,
+                "faction": npc.personality.primary_faction.value,
+                "sprite_type": npc.sprite_type,
+                "sprite_color": npc.sprite_color,
+                "special_features": npc.special_features,
+                "traits": [trait.value for trait in npc.personality.base_traits],
+                "confidence": npc.personality.confidence,
+                "talkativeness": npc.personality.talkativeness,
+                "generosity": npc.personality.generosity,
+                "courage": npc.personality.courage
+            }
+        return {}
+    
+    def get_npc_at_position(self, x: int, y: int) -> Optional[Dict]:
+        """Get NPC at specific position"""
+        npc = self.engine.npc_registry.get_npc_at_position((x, y))
+        if npc:
+            return {
+                "npc_id": npc.npc_id,
+                "name": npc.personality.name,
+                "current_mood": npc.social_state.current_mood.value,
+                "mood_intensity": npc.social_state.mood_intensity,
+                "trust_level": npc.social_state.trust_level,
+                "interaction_count": npc.social_state.interaction_count,
+                "current_activity": npc.daily_routine.current_activity
+            }
+        return None
+    
+    def get_npcs_in_area(self, center_x: int, center_y: int, radius: int) -> List[Dict]:
+        """Get all NPCs within radius"""
+        npcs = self.engine.get_npcs_in_area((center_x, center_y), radius)
+        return npcs
+    
+    def interact_with_npc(self, npc_id: str, interaction_type: str = "talk") -> Dict:
+        """Get social response from NPC"""
+        response = self.engine.get_social_response(npc_id)
+        if response:
+            # Update social state based on interaction
+            impact = 0.0
+            if interaction_type == "friendly":
+                impact = 5.0
+            elif interaction_type == "hostile":
+                impact = -10.0
+            elif interaction_type == "trade":
+                impact = 2.0
+            
+            self.engine.update_social_state(npc_id, interaction_type, impact)
+            
+            return response
+        return {}
+    
+    def get_faction_standing(self, faction1: str, faction2: str) -> Dict:
+        """Get relationship between factions"""
+        from narrative.persona import FactionType
+        
+        try:
+            f1 = FactionType(faction1)
+            f2 = FactionType(faction2)
+            
+            standing = self.engine.faction_system.get_standing(f1, f2)
+            relation = self.engine.faction_system.get_relation_type(f1, f2)
+            
+            return {
+                "standing": standing,
+                "relation": relation.value,
+                "description": f"{faction1} ↔ {faction2}: {relation.value} ({standing:+.1f})"
+            }
+        except ValueError:
+            return {"error": "Invalid faction name"}
+    
+    def modify_faction_standing(self, faction1: str, faction2: str, change: float, reason: str = "") -> bool:
+        """Modify standing between factions"""
+        try:
+            from narrative.persona import FactionType
+            
+            f1 = FactionType(faction1)
+            f2 = FactionType(faction2)
+            
+            self.engine.faction_system.modify_standing(f1, f2, change, reason)
+            return True
+        except ValueError:
+            return False
+    
+    def seed_location_personas(self, location_type: str, positions: List[Tuple[int, int]]) -> int:
+        """Seed NPCs at specific locations"""
+        seeded_count = 0
+        
+        npc_type_map = {
+            "tavern": "innkeeper",
+            "guard_post": "guard",
+            "market": "merchant",
+            "temple": "mystic"
+        }
+        
+        base_type = npc_type_map.get(location_type, "patron")
+        
+        for position in positions:
+            npc = self.engine.generate_npc_at_position(position, base_type)
+            if npc:
+                seeded_count += 1
+        
+        return seeded_count
+
+
 # === UNIFIED RPG CORE API ===
 
 class RPGCoreAPI:
@@ -288,6 +407,7 @@ class RPGCoreAPI:
         self.mind = MindAPI()
         self.body = BodyAPI()
         self.chronos = ChronosAPI()
+        self.persona = PersonaAPI(seed)
         
         # Connect pillars
         self.mind.engine.set_world_engine(self.world.engine)
@@ -345,6 +465,10 @@ def create_quest_manager() -> ChronosAPI:
     """Create Quest Manager API instance"""
     return ChronosAPI()
 
+def create_social_simulator(world_seed: str = "WORLD_SEED") -> PersonaAPI:
+    """Create Social Simulator API instance"""
+    return PersonaAPI(world_seed)
+
 def create_rpg_core(seed: str = "RPG_SEED") -> RPGCoreAPI:
     """Create complete RPG Core API instance"""
     return RPGCoreAPI(seed)
@@ -375,10 +499,25 @@ quests = create_quest_manager()
 current_quest = quests.get_current_quest()
 character_stats = quests.get_character_stats()
 
-# 5. Complete RPG Core
+# 5. Social simulation
+persona = create_social_simulator("TAVERN_SEED")
+innkeeper = persona.create_npc(25, 30, "innkeeper")
+social_response = persona.interact_with_npc(innkeeper["npc_id"], "friendly")
+faction_standing = persona.get_faction_standing("player", "merchant")
+
+# 6. Complete RPG Core
 rpg = create_rpg_core("TAVERN_SEED")
 map_region = rpg.create_map_region(0, 0, 50, 50)
 action_check = rpg.validate_action("movement", 10, 10, 15, 15)
 game_snapshot = rpg.get_game_snapshot()
 current_view = rpg.render_current_view()
+
+# 7. Tavern quest workflow
+tavern_npc = persona.create_npc(25, 30, "innkeeper")
+if tavern_npc:
+    response = persona.interact_with_npc(tavern_npc["npc_id"], "talk")
+    if response.get("will_help", 0) > 0.3:
+        # NPC gives quest
+        new_quest = quests.get_available_quests()[0]
+        quests.accept_quest(new_quest["id"])
 """
