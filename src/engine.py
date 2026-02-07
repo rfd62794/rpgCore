@@ -361,20 +361,27 @@ class GameEngine:
     
     def display_context(self) -> None:
         """Display current game context."""
-        room_context = self.state.get_context_str()
-        self.console.print(
-            Panel(room_context, title="[bold blue]Current Scene[/bold blue]", border_style="blue")
-        )
-        
-        # Player stats table
-        from rich.table import Table
-        stats_table = Table(show_header=False, box=None)
-        stats_table.add_row("❤️  HP:", f"{self.state.player.hp}/{self.state.player.max_hp}")
-        stats_table.add_row("💰 Gold:", str(self.state.player.gold))
-        
-        self.console.print(
-            Panel(stats_table, title="[bold green]Player Stats[/bold green]", border_style="green")
-        )
+        if not self.use_dashboard:
+            # Only display context if dashboard is not enabled
+            room_context = self.state.get_context_str()
+            self.console.print(
+                Panel(room_context, title="[bold blue]Current Scene[/bold blue]", border_style="blue")
+            )
+            
+            # Player stats table
+            from rich.table import Table
+            stats_table = Table(show_header=False, box=None)
+            stats_table.add_row("❤️  HP:", f"{self.state.player.hp}/{self.state.player.max_hp}")
+            stats_table.add_row("💰 Gold:", str(self.state.player.gold))
+            
+            self.console.print(
+                Panel(stats_table, title="[bold green]Player Stats[/bold green]", border_style="green")
+            )
+    
+    def cleanup(self):
+        """Clean up resources when shutting down."""
+        if self.use_dashboard and hasattr(self, 'dashboard'):
+            self.dashboard.stop_dashboard()
 
 
 # Export for use by main game loop

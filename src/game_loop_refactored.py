@@ -187,10 +187,14 @@ class RefactoredGameLoop:
     
     async def run(self):
         """Main game loop entry point."""
-        if self.auto_mode:
-            await self.run_auto_mode()
-        else:
-            await self.run_interactive_mode()
+        try:
+            if self.auto_mode:
+                await self.run_auto_mode()
+            else:
+                await self.run_interactive_mode()
+        finally:
+            # Clean up dashboard resources
+            self.engine.cleanup()
 
 
 def main():
