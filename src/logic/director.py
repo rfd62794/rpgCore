@@ -371,7 +371,7 @@ class AutonomousDirector:
     
     async def _generate_narrative_beacons(self, context: str, num_beacons: int = 3) -> List[Dict[str, Any]]:
         """
-        Generate narrative beacons using LLM.
+        Generate narrative beacons using physical landmarks from the world map.
         
         Args:
             context: Current game context
@@ -380,72 +380,144 @@ class AutonomousDirector:
         Returns:
             List of beacon data dictionaries
         """
-        # This would integrate with the LLM to generate narrative beacons
-        # For now, return hardcoded beacons based on context
-        
         beacons = []
         
-        # Generate beacons based on context analysis
-        if "tavern" in context.lower():
-            beacons.extend([
-                {
-                    'beacon_id': 'tavern_mystery',
-                    'target_coords': (25, 25),
-                    'description': 'Investigate the mysterious noise in the tavern corner',
-                    'priority': 1,
-                    'intent_type': 'investigate'
-                },
-                {
-                    'beacon_id': 'town_square_encounter',
-                    'target_coords': (15, 15),
-                    'description': 'Meet the mysterious figure in the town square',
-                    'priority': 2,
-                    'intent_type': 'interact'
-                },
-                {
-                    'beacon_id': 'forest_ruins',
-                    'target_coords': (35, 35),
-                    'description': 'Explore the ancient forest ruins',
-                    'priority': 3,
-                    'intent_type': 'explore'
-                }
-            ])
-        elif "town" in context.lower():
-            beacons.extend([
-                {
-                    'beacon_id': 'market_discovery',
-                    'target_coords': (20, 20),
-                    'description': 'Discover rare goods at the market',
-                    'priority': 2,
-                    'intent_type': 'trade'
-                },
-                {
-                    'beacon_id': 'guard_intelligence',
-                    'target_coords': (10, 10),
-                    'description': 'Gather information from the town guard',
-                    'priority': 1,
-                    'intent_type': 'talk'
-                },
-                {
-                    'beacon_id': 'training_grounds',
-                    'target_coords': (30, 30),
-                    'description': 'Practice combat skills at the training grounds',
-                    'priority': 3,
-                    'intent_type': 'train'
-                }
-            ])
+        try:
+            # Get current position and environment
+            current_pos = self.get_voyager_position()
+            current_env = self.world_map.get_current_environment(current_pos[0], current_pos[1])
+            
+            # Get available landmarks in current environment
+            if current_env:
+                landmarks = self.world_map.get_landmarks_in_zone(current_env)
+                director_landmarks = [lm for lm in landmarks if lm.interaction_type in ["portal", "chest", "npc"]]
+                
+                # Generate beacons for each landmark
+                for landmark in director_landmarks[:num_beacons]:
+                    beacon_data = {
+                        'beacon_id': f"landmark_{landmark.name.lower().replace(' ', '_')}",
+                        'target_coords': landmark.coords,
+                        'description': f"Visit {landmark.name}",
+                        'priority': 1,
+                        'intent_type': 'explore',
+                        'reasoning': landmark.description
+                    }
+                    beacons.append(beacon_data)
+                    logger.info(f"🎯 Generated landmark beacon: {landmark.name} at {landmark.coords}")
+            
+            # If no landmarks in current zone, generate travel beacons
+            if len(beacons) < num_beacons:
+                for env_type in [EnvironmentType.TOWN_SQUARE, EnvironmentType.TAVERN_INTERIOR, EnvironmentType.FOREST_PATH]:
+                    if env_type != current_env and len(beacons) < num_beacons:
+                        entry_point = self.world_map.get_zone_entry_point(env_type)
+                        if entry_point:
+                            zone = self.world_map.zones.get(env_type)
+                            beacon_data = {
+                                'beacon_id': f"travel_{env_type.value}",
+                                'target_coords': entry_point,
+                                'description': f"Travel to {zone.name}",
+                                'priority': 1,
+                                'intent_type': 'travel',
+                                'reasoning': f"Entry point to {zone.name}"
+                            }
+                            beacons.append(beacon_data)
+                            logger.info(f"🎯 Generated travel beacon: {zone.name} at {entry_point}")
+            
+        except Exception as e:
+            logger.error(f"❌ Failed to generate narrative beacons: {e}")
+            # Fallback: generate simple exploration beacon
+            current_pos = self.get_voyager_position()
+            fallback_beacon = {
+                'beacon_id': 'explore_fallback',
+                'target_coords': (current_pos[0] + 5, current_pos[1] + 5),
+                'description': "Explore the area",
+                'priority': 1,
+                'intent_type': 'explore',
+                'reasoning': "Basic exploration directive"
+            }
+            beacons.append(fallback_beacon)
+        
+        return beacons
+    
+    def _select_beacon(self, beacons: List[Dict[str, Any]]) -> Optional[Dict[str, Any]]:
+        """
+        Select the most appropriate beacon from the generated list.
+        
+        Args:
+            beacons: List of beacon data dictionaries
+            
+        Returns:
+            Selected beacon data or None
+        """
+        if not beacons:
+            return None
+        
+        # For now, select the highest priority (lowest number) beacon
+        # In a full implementation, this would consider distance, context, etc.
+        return min(beacons, key=lambda b: b['priority'])
+    
+    def _calculate_path_to_beacon(self, start: Tuple[int, int], target: Tuple[int, int]) -> List[Tuple[int, int]]:
+        """
+        Calculate a path from start to target coordinates.
+        
+        Args:
+            start: Starting coordinates
+            target: Target coordinates
+            
+        Returns:
+            List of coordinates representing the path
+        """
+        # Simple straight-line path for now
+        # In a full implementation, this would use A* pathfinding
+        path = []
+        current = start
+        
+        while current != target:
+            # Move one step toward target
+            dx = 1 if target[0] > current[0] else -1 if target[0] < current[0] else 0
+            dy = 1 if target[1] > current[1] else -1 if target[1] < current[1] else 0
+            
+            current = (current[0] + dx, current[1] + dy)
+            path.append(current)
+            
+            # Prevent infinite loops
+            if len(path) > 100:
+                break
+        
+        return path
+    
+    def _get_direction_from_movement(self, from_pos: Tuple[int, int], to_pos: Tuple[int, int]) -> str:
+        """
+        Get direction string from movement vector.
+        
+        Args:
+            from_pos: Starting position
+            to_pos: Target position
+            
+        Returns:
+            Direction string (north, south, east, west, etc.)
+        """
+        dx = to_pos[0] - from_pos[0]
+        dy = to_pos[1] - from_pos[1]
+        
+        if dx > 0 and dy == 0:
+            return "east"
+        elif dx < 0 and dy == 0:
+            return "west"
+        elif dx == 0 and dy > 0:
+            return "south"
+        elif dx == 0 and dy < 0:
+            return "north"
+        elif dx > 0 and dy > 0:
+            return "southeast"
+        elif dx > 0 and dy < 0:
+            return "northeast"
+        elif dx < 0 and dy > 0:
+            return "southwest"
+        elif dx < 0 and dy < 0:
+            return "northwest"
         else:
-            # Default beacons
-            beacons.extend([
-                {
-                    'beacon_id': 'exploration',
-                    'target_coords': (10, 10),
-                    'description': 'Explore the surrounding area',
-                    'priority': 5,
-                    'intent_type': 'explore'
-                },
-                {
-                    'beacon_id': 'investigation',
+            return "here"
                     'target_coords': (5, 5),
                     'description': 'Investigate nearby points of interest',
                     'priority': 4,
@@ -487,7 +559,7 @@ class AutonomousDirector:
         # 3. Validate beacon coordinates and priorities
         
         # For now, use the context-based generation
-        return await self._generate_narrative_beacons(context, num_beacons)
+        return await self._generate_narrative_beacons(context)
 
 
 class NarrativeConsultation:
