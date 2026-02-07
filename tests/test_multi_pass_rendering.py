@@ -490,10 +490,15 @@ class TestIntegration:
         
         # Create comprehensive mock context
         mock_game_state = Mock(spec=GameState)
-        mock_game_state.position.x = 25.0
-        mock_game_state.position.y = 30.0
-        mock_game_state.player.hp = 85
-        mock_game_state.player.max_hp = 100
+        mock_position = Mock()
+        mock_position.x = 25.0
+        mock_position.y = 30.0
+        mock_game_state.position = mock_position
+        
+        mock_player = Mock()
+        mock_player.hp = 85
+        mock_player.max_hp = 100
+        mock_game_state.player = mock_player
         
         mock_ledger = Mock(spec=WorldLedger)
         
