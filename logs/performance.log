@@ -38,3 +38,15 @@
 2026-02-07 09:39:09 | INFO | core.heartbeat:_background_performance_monitor:363 | 📊 Background performance monitoring started
 2026-02-07 09:39:09 | INFO | core.heartbeat:_heartbeat_loop:123 | 🫀 Starting 60 FPS heartbeat loop
 2026-02-07 09:39:18 | INFO | core.heartbeat:_background_performance_monitor:386 | 📊 Background performance monitoring stopped
+2026-02-07 09:39:30 | INFO | core.heartbeat:start:84 | 🫀 Heartbeat started - 60 FPS target
+2026-02-07 09:39:30 | INFO | core.heartbeat:_background_performance_monitor:363 | 📊 Background performance monitoring started
+2026-02-07 09:39:30 | INFO | core.heartbeat:_heartbeat_loop:123 | 🫀 Starting 60 FPS heartbeat loop
+2026-02-07 09:41:40 | INFO | core.heartbeat:_background_performance_monitor:386 | 📊 Background performance monitoring stopped
+2026-02-07 09:43:03 | INFO | core.heartbeat:start:84 | 🫀 Heartbeat started - 60 FPS target
+2026-02-07 09:43:03 | INFO | core.heartbeat:_background_performance_monitor:363 | 📊 Background performance monitoring started
+2026-02-07 09:43:03 | INFO | core.heartbeat:_heartbeat_loop:123 | 🫀 Starting 60 FPS heartbeat loop
+2026-02-07 09:45:44 | INFO | core.heartbeat:_background_performance_monitor:386 | 📊 Background performance monitoring stopped
+2026-02-07 09:45:52 | INFO | core.heartbeat:start:84 | 🫀 Heartbeat started - 60 FPS target
+2026-02-07 09:45:52 | INFO | core.heartbeat:_background_performance_monitor:363 | 📊 Background performance monitoring started
+2026-02-07 09:45:52 | INFO | core.heartbeat:_heartbeat_loop:123 | 🫀 Starting 60 FPS heartbeat loop
+2026-02-07 09:46:30 | INFO | core.heartbeat:_background_performance_monitor:386 | 📊 Background performance monitoring stopped

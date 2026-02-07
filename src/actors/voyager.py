@@ -302,6 +302,7 @@ class Voyager:
             (10, 10),  # Town square
             (20, 10),  # Tavern entrance
             (25, 30),  # Tavern interior
+            (32, 32),  # Iron Chest (final target)
         ]
         self.current_script_index = 0
         
@@ -493,10 +494,11 @@ class Voyager:
     # === MOVIE SCRIPT NAVIGATION ===
     
     async def _follow_movie_script(self, game_state: GameState) -> Optional[MovementIntent]:
-        """Follow autonomous movie script"""
+        """Follow autonomous movie script with Interest Point Discovery fallback"""
+        # Check if script is complete, then switch to discovery mode
         if self.current_script_index >= len(self.movie_script):
-            logger.info("🚶 Movie script complete")
-            return None
+            logger.info("🚶 Movie script complete - switching to Interest Point Discovery")
+            return await self._discover_next_interest_point()
         
         target_position = self.movie_script[self.current_script_index]
         
@@ -517,6 +519,70 @@ class Voyager:
         
         # Generate movement intent toward target
         return await self.generate_movement_intent(target_position)
+    
+    async def _discover_next_interest_point(self) -> Optional[MovementIntent]:
+        """Discover next Interest Point when script is complete"""
+        try:
+            # Query World Engine for nearby undiscovered Interest Points
+            if hasattr(self, 'dd_engine') and self.dd_engine.world_engine:
+                world_engine = self.dd_engine.world_engine
+                interest_points = await world_engine.get_nearby_interest_points(
+                    self.current_position, 
+                    radius=10  # Search within 10 tiles
+                )
+                
+                # Filter for undiscovered points
+                undiscovered = [
+                    ip for ip in interest_points 
+                    if not ip.discovered and ip.position not in [p for p in self.movie_script]
+                ]
+                
+                if undiscovered:
+                    # Choose nearest undiscovered Interest Point
+                    nearest = min(undiscovered, key=lambda ip: 
+                        abs(ip.position[0] - self.current_position[0]) + 
+                        abs(ip.position[1] - self.current_position[1])
+                    )
+                    
+                    logger.info(f"🎯 Discovered new Interest Point: {nearest.interest_type.value} at {nearest.position}")
+                    
+                    # Add to movie script dynamically
+                    self.movie_script.append(nearest.position)
+                    
+                    # Generate movement intent toward new Interest Point
+                    return await self.generate_movement_intent(nearest.position)
+                else:
+                    # No nearby Interest Points, expand search radius
+                    logger.info("🔍 No nearby Interest Points - expanding search")
+                    return await self._explore_further()
+            else:
+                logger.warning("⚠️ World Engine not available for Interest Point discovery")
+                return None
+                
+        except Exception as e:
+            logger.error(f"💥 Interest Point discovery failed: {e}")
+            return None
+    
+    async def _explore_further(self) -> Optional[MovementIntent]:
+        """Explore further when no nearby Interest Points found"""
+        # Generate a random exploration point within reasonable distance
+        import random
+        
+        # Random walk within 20 tiles
+        dx = random.randint(-20, 20)
+        dy = random.randint(-20, 20)
+        
+        new_x = max(0, min(49, self.current_position[0] + dx))
+        new_y = max(0, min(49, self.current_position[1] + dy))
+        
+        exploration_point = (new_x, new_y)
+        
+        logger.info(f"🗺️ Exploring new area: {exploration_point}")
+        
+        # Add exploration point to script
+        self.movie_script.append(exploration_point)
+        
+        return await self.generate_movement_intent(exploration_point)
     
     async def _generate_script_interaction(self, position: Tuple[int, int]) -> Optional[InteractionIntent]:
         """Generate interaction for special movie locations"""
