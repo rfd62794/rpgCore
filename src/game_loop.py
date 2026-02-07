@@ -162,7 +162,11 @@ class GameREPL:
                 existing.name = loc.name
                 existing.description = loc.description
                 existing.exits = loc.connections
-                existing.tags = loc.environment_tags
+                # Combine static tags with dynamic reputation tags
+                from world_map import get_dynamic_tags
+                dynamic = get_dynamic_tags(self.state.reputation)
+                existing.tags = list(set(loc.environment_tags + dynamic))
+                
                 # Items could be dynamic, let's refresh them from props
                 existing.items = [p.name for p in loc.props]
 

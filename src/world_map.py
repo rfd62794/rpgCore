@@ -31,6 +31,21 @@ class Location(BaseModel):
     initial_npcs: List[str] = Field(default_factory=list) # IDs or names to spawn
 
 
+def get_dynamic_tags(reputation: dict) -> list[str]:
+    """Generates environmental tags based on global reputation."""
+    tags = []
+    law_rep = reputation.get("law", 0)
+    
+    if law_rep <= -10:
+        tags.append("Wanted Posters")
+    if law_rep <= -20:
+        tags.append("Heavy Guard Presence")
+    elif law_rep >= 10:
+        tags.append("Friendly Guards")
+        
+    return tags
+
+
 def create_starter_campaign() -> Dict[str, Location]:
     """
     Creates the 'Starter Campaign' sequence:
