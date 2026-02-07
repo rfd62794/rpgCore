@@ -258,7 +258,8 @@ class DirectorMonitor:
         d20_result: D20Result, 
         active_goals: list = None, 
         completed_goals: list = None,
-        radar_data: List[Dict[str, Any]] = None
+        radar_data: List[Dict[str, Any]] = None,
+        legacy_context: List[str] = None
     ):
         """Update all monitor panels with new data."""
         # Update combat log
@@ -282,6 +283,12 @@ class DirectorMonitor:
         if radar_data:
             self.layout["monitor"]["radar"].update(
                 self.format_radar_panel(radar_data)
+            )
+        
+        # Update legacy if data provided
+        if legacy_context:
+            self.layout["monitor"]["legacy"].update(
+                self.format_legacy_panel(legacy_context)
             )
     
     def get_layout(self) -> Layout:
