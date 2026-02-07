@@ -368,31 +368,60 @@ class DGTSheetCutter:
             messagebox.showwarning("Warning", "Selected tile appears to be empty!")
             return
         
+        # Apply smart detection and cleaning
+        processed_sprite = sprite
+        
+        # Auto-clean edges if enabled
+        if self.auto_clean_var.get():
+            processed_sprite = self._auto_clean_edges(processed_sprite)
+            logger.debug(f"✨ Auto-cleaned edges for sprite")
+        
+        # Auto-detect object type if enabled
+        detected_type = self.type_var.get()
+        if self.auto_detect_var.get():
+            detected_type = self._detect_object_type(processed_sprite)
+            # Update UI to show detected type
+            self.type_var.set(detected_type)
+            logger.debug(f"🧠 Detected object type: {detected_type}")
+        
+        # Auto-set collision for chests
+        if self.detect_chests_var.get() and detected_type == "entity":
+            # Check if this is actually a chest and set collision
+            if self._is_chest(processed_sprite, {}, self.grid_size, self.grid_size):
+                self.collision_var.set(True)
+                logger.debug(f"📦 Auto-set collision for detected chest")
+        
         # Generate asset ID
         prefix = self.prefix_entry.get().strip()
         grid_x = (x - self.offset_x) // self.grid_size
         grid_y = (y - self.offset_y) // self.grid_size
         asset_id = f"{prefix}{grid_x}_{grid_y}"
         
+        # Add detection info to asset ID if detected
+        if self.auto_detect_var.get() and detected_type != self.type_var.get():
+            asset_id = f"{prefix}{detected_type}_{grid_x}_{grid_y}"
+        
         # Save sprite and metadata
-        self._save_sprite_with_metadata(sprite, asset_id, (x, y))
+        self._save_sprite_with_metadata(processed_sprite, asset_id, (x, y), detected_type)
         
         # Add to cut sprites list
         self.cut_sprites.append({
             'id': asset_id,
             'coords': (x, y),
             'grid_pos': (grid_x, grid_y),
-            'size': (self.grid_size, self.grid_size)
+            'size': (self.grid_size, self.grid_size),
+            'detected_type': detected_type,
+            'auto_cleaned': self.auto_clean_var.get()
         })
         
         # Update UI
         self.cut_count_label.config(text=f"Sprites cut: {len(self.cut_sprites)}")
-        self.root.title(f"DGT Sheet-Cutter - Saved: {asset_id}")
+        self.root.title(f"DGT Sheet-Cutter - Saved: {asset_id} ({detected_type})")
         
         # Move to next tile (optional)
         self._select_next_tile(grid_x, grid_y)
         
-        logger.success(f"🔪 Baked {asset_id} to disk.")
+        logger.success(f"🔪 Baked {asset_id} ({detected_type}) to disk.")
     
     def batch_cut_all(self) -> None:
         """Cut all non-empty tiles in the sprite sheet"""
