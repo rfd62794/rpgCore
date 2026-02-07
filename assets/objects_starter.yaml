@@ -1,0 +1,37 @@
+---
+# DGT Starter Kit - ADR 091: The Semantic Starter Protocol
+# Token & Tint Method - Lean 30-line object definitions
+
+# Material Archetypes
+materials:
+  organic: { color: "#2d5a27", tags: ["animated"] }
+  wood: { color: "#5d4037", tags: ["flammable", "barrier"] }
+  stone: { color: "#757575", tags: ["heavy"] }
+  metal: { color: "#9e9e9e", tags: ["valuable", "secure"] }
+
+# The Basic 5 Objects
+grass_tuft:
+  material_id: "organic"
+  sprite_id: "grass"
+  
+oak_tree:
+  material_id: "wood"
+  sprite_id: "tree"
+  collision: true
+
+gray_boulder:
+  material_id: "stone"
+  sprite_id: "boulder"
+  collision: true
+
+wooden_gate:
+  material_id: "wood"
+  sprite_id: "gate"
+  collision: true
+  interaction_hooks: ["open"]
+
+iron_lockbox:
+  material_id: "metal"
+  sprite_id: "chest"
+  collision: true
+  d20_checks: { lockpick: { DC: 15 } }
