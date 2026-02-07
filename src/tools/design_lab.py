@@ -207,8 +207,8 @@ class AssetDesignController:
     def export_designs(self, export_path: Path) -> bool:
         """Export all designs to file"""
         export_data = {
-            'material_designs': [design.dict() for design in self.material_designs.values()],
-            'template_designs': [design.dict() for design in self.template_designs.values()],
+            'material_designs': [design.model_dump() for design in self.material_designs.values()],
+            'template_designs': [design.model_dump() for design in self.template_designs.values()],
             'export_metadata': {
                 'total_materials': len(self.material_designs),
                 'total_templates': len(self.template_designs),

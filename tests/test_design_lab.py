@@ -107,8 +107,8 @@ class TestAssetTemplateModel:
         template = AssetTemplate(
             name="test_template",
             description="Test template",
-            base_color=color,
-            pattern=pattern,
+            base_color=color.model_dump(),
+            pattern=pattern.model_dump(),
             animation_frames=2,
             frame_duration=100,
             use_case=["test"],
