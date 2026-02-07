@@ -126,17 +126,23 @@ class SemanticResolver:
             intents = self.intent_library.get_intents()
             
             for intent_id in intents:
-                intent_key = f"intent_{intent_id}"
-                if intent_key in all_embeddings:
-                    # Reshape to match expected format (2D array for multiple exemplars)
-                    intent_embeddings[intent_id] = all_embeddings[intent_key].reshape(1, -1)
-                else:
-                    logger.warning(f"Missing pre-baked embedding for intent: {intent_id}")
+                # Collect all example embeddings for this intent
+                example_keys = [k for k in all_embeddings.keys() if k.startswith(f"example_{intent_id}_")]
+                if not example_keys:
+                    logger.warning(f"No example embeddings found for intent: {intent_id}")
                     return False
+                
+                # Stack all example embeddings for this intent
+                example_embeddings = []
+                for key in sorted(example_keys):  # Sort for consistent ordering
+                    example_embeddings.append(all_embeddings[key])
+                
+                intent_embeddings[intent_id] = np.stack(example_embeddings)
             
             # Cache the embeddings
             self.intent_library.mark_embeddings_computed(intent_embeddings)
-            logger.info(f"Loaded {len(intent_embeddings)} pre-baked intent embeddings")
+            total_examples = sum(len(exemplars) for exemplars in intent_embeddings.values())
+            logger.info(f"Loaded {len(intent_embeddings)} pre-baked intent embeddings ({total_examples} total examples)")
             return True
             
         except Exception as e:

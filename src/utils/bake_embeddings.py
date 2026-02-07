@@ -70,24 +70,21 @@ class SemanticBaker:
         embedding_keys = []
         
         # Add intent definitions
-        for intent_name, intent_data in intent_library.intents.items():
-            # Embed the intent definition
-            definition_text = intent_data.get("definition", "")
-            if definition_text:
-                texts_to_embed.append(definition_text)
-                embedding_keys.append(f"intent_{intent_name}")
-            
-            # Embed example phrases
-            for example in intent_data.get("examples", []):
+        for intent_name, exemplars in intent_library.get_intents().items():
+            # Embed each exemplar for this intent
+            for i, example in enumerate(exemplars):
                 texts_to_embed.append(example)
-                embedding_keys.append(f"example_{intent_name}_{len([k for k in embedding_keys if k.startswith(f'example_{intent_name}')])}")
+                embedding_keys.append(f"example_{intent_name}_{i}")
         
         # Add standard actions
-        from semantic_engine import STANDARD_ACTIONS
-        for action_category, actions in STANDARD_ACTIONS.items():
-            for action_text in actions:
-                texts_to_embed.append(action_text)
-                embedding_keys.append(f"action_{action_category}_{len([k for k in embedding_keys if k.startswith(f'action_{action_category}')])}")
+        try:
+            from semantic_engine import STANDARD_ACTIONS
+            for action_category, actions in STANDARD_ACTIONS.items():
+                for action_text in actions:
+                    texts_to_embed.append(action_text)
+                    embedding_keys.append(f"action_{action_category}_{len([k for k in embedding_keys if k.startswith(f'action_{action_category}')])}")
+        except ImportError:
+            logger.warning("STANDARD_ACTIONS not available, skipping")
         
         logger.info(f"Baking {len(texts_to_embed)} embeddings...")
         
@@ -192,12 +189,13 @@ class SemanticBaker:
             
             # Check for required keys
             intent_library = create_default_intent_library()
-            required_intents = list(intent_library.intents.keys())
+            required_intents = list(intent_library.get_intents().keys())
             
             for intent in required_intents:
-                intent_key = f"intent_{intent}"
-                if intent_key not in embeddings:
-                    logger.error(f"Missing intent embedding: {intent_key}")
+                # Check for at least one example embedding
+                example_keys = [k for k in embeddings.keys() if k.startswith(f"example_{intent}_")]
+                if not example_keys:
+                    logger.error(f"Missing example embeddings for intent: {intent}")
                     return False
             
             logger.info(f"Verified {len(embeddings)} embeddings - all valid")
