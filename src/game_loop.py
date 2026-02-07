@@ -6,6 +6,7 @@ Main game loop (REPL) for the Semantic RPG Core.
 """
 
 import argparse
+import os
 from pathlib import Path
 
 from loguru import logger
