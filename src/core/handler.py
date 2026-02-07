@@ -201,6 +201,7 @@ class DGTWindowHandler:
     """
     Dedicated Tkinter Handler - ADR 108 Implementation
     Thread-safe raster pipeline with 60Hz pulse loop
+    ADR 109: Static-Dynamic Decoupling with Background Baking
     """
     
     def __init__(self, root: tk.Tk, width: int = 800, height: int = 600):
@@ -233,13 +234,19 @@ class DGTWindowHandler:
         # Caching system
         self.raster_cache = RasterCache()
         
+        # ADR 109: Background Baking System
+        self.background_buffer: Optional[tk.PhotoImage] = None
+        self.background_dirty = True
+        self.static_tiles: Dict[tuple, str] = {}  # (x, y) -> sprite_id
+        self.dynamic_entities: List[Dict] = []  # Dynamic entity data
+        
+        # Dirty rectangle system for dynamic updates
+        self.dirty_rects: List[tuple] = []  # List of (x, y, width, height)
+        self.full_redraw = True
+        
         # Input handling
         self.input_interceptor = InputInterceptor(self)
         self.input_interceptor.register_keys(root)
-        
-        # Dirty rectangle system
-        self.dirty_rects: List[tuple] = []  # List of (x, y, width, height)
-        self.full_redraw = True
         
         # Game state callback
         self.game_update_callback: Optional[Callable] = None
@@ -249,6 +256,7 @@ class DGTWindowHandler:
         self.running = False
         
         logger.info(f"🎮 DGT Window Handler initialized: {width}x{height} @ {self.fps_limit}Hz")
+        logger.info("🎨 ADR 109: Background Baking System enabled")
     
     def queue_command(self, command: RenderCommand) -> None:
         """Queue a render command (thread-safe)"""
@@ -418,17 +426,29 @@ class DGTWindowHandler:
         self.dirty_rects.append((x, y, width, height))
     
     def _render_frame(self) -> None:
-        """Render the current frame"""
+        """Render the current frame with ADR 109 background baking"""
+        # Draw baked background if dirty or first time
+        if self.background_dirty or self.background_buffer is None:
+            self._draw_baked_background()
+            self.background_dirty = False
+        
         if self.full_redraw:
-            # Full redraw needed
+            # Full redraw - draw background then clear dynamic layer
             self.canvas.delete("all")
+            if self.background_buffer:
+                self.canvas.create_image(0, 0, image=self.background_buffer, anchor='nw', tags="background")
             self.full_redraw = False
         else:
-            # Partial redraw of dirty rectangles
+            # Smart redraw - only update dirty rectangles
             for rect in self.dirty_rects:
                 x, y, w, h = rect
-                # Clear dirty area (implementation would be more sophisticated)
-                self.canvas.create_rectangle(x, y, x + w, y + h, fill='#0a0a0a', outline="")
+                # Clear dirty area and redraw background portion
+                self.canvas.create_rectangle(x, y, x + w, y + h, fill='#0a0a0a', outline="", tags="dirty")
+                
+                # Redraw background portion if available
+                if self.background_buffer:
+                    # Create temporary clipped view of background
+                    self.canvas.create_image(x, y, image=self.background_buffer, anchor='nw', tags="background_patch")
         
         self.dirty_rects.clear()
     
@@ -466,6 +486,78 @@ class DGTWindowHandler:
         self.running = False
         logger.info("🛑 DGT Window Handler stopped")
     
+    def set_static_tile(self, x: int, y: int, sprite_id: str) -> None:
+        """Set a static tile for background baking"""
+        self.static_tiles[(x, y)] = sprite_id
+        self.background_dirty = True
+        logger.debug(f"🏠 Static tile set at ({x}, {y}): {sprite_id}")
+    
+    def add_dynamic_entity(self, entity_data: Dict) -> None:
+        """Add a dynamic entity (drawn every frame)"""
+        self.dynamic_entities.append(entity_data)
+    
+    def clear_dynamic_entities(self) -> None:
+        """Clear all dynamic entities"""
+        self.dynamic_entities.clear()
+    
+    def bake_background(self) -> None:
+        """ADR 109: Pre-render static tiles into single background buffer"""
+        logger.info("🍞 Baking background buffer...")
+        
+        # Create background buffer
+        self.background_buffer = tk.PhotoImage(width=self.width, height=self.height)
+        
+        # Fill with base color
+        for y in range(self.height):
+            for x in range(self.width):
+                self.background_buffer.put('#0a0a0a', (x, y))
+        
+        # Draw static tiles
+        tiles_drawn = 0
+        for (tile_x, tile_y), sprite_id in self.static_tiles.items():
+            sprite = self.raster_cache.get_sprite(sprite_id)
+            if sprite:
+                self._blit_sprite_to_buffer(self.background_buffer, sprite, tile_x, tile_y)
+                tiles_drawn += 1
+        
+        logger.info(f"✅ Background baked: {tiles_drawn} tiles rendered")
+        self.background_dirty = False
+    
+    def _blit_sprite_to_buffer(self, buffer: tk.PhotoImage, sprite: tk.PhotoImage, x: int, y: int) -> None:
+        """Blit a sprite to the background buffer"""
+        sprite_width = sprite.width()
+        sprite_height = sprite.height()
+        
+        for sy in range(sprite_height):
+            for sx in range(sprite_width):
+                if x + sx < self.width and y + sy < self.height:
+                    # Get pixel color from sprite
+                    color = sprite.get(sx, sy)
+                    if color and color != '' and color != 'None':
+                        buffer.put(color, (x + sx, y + sy))
+    
+    def _draw_baked_background(self) -> None:
+        """Draw the baked background to canvas"""
+        if self.background_buffer:
+            self.canvas.create_image(0, 0, image=self.background_buffer, anchor='nw', tags="background")
+        
+        # Draw dynamic entities
+        for entity in self.dynamic_entities:
+            if entity.get('position') and entity.get('sprite_id'):
+                sprite = self.raster_cache.get_sprite(entity['sprite_id'])
+                if sprite:
+                    x, y = entity['position']
+                    self.canvas.create_image(
+                        x, y, image=sprite, anchor='nw',
+                        tags=f"dynamic_{entity.get('entity_id', 'unknown')}"
+                    )
+                    self._mark_dirty(x, y, sprite.width(), sprite.height())
+    
+    def invalidate_background(self) -> None:
+        """Mark background as dirty (call when static tiles change)"""
+        self.background_dirty = True
+        logger.debug("🔄 Background invalidated")
+    
     def get_performance_stats(self) -> Dict[str, Any]:
         """Get current performance statistics"""
         avg_pulse = sum(self.pulse_times) / len(self.pulse_times) if self.pulse_times else 0
@@ -477,7 +569,11 @@ class DGTWindowHandler:
             "command_queue_size": self.command_queue.qsize(),
             "cached_patterns": len(self.raster_cache.pattern_cache),
             "cached_sprites": len(self.raster_cache.sprite_cache),
-            "dirty_rects": len(self.dirty_rects)
+            "dirty_rects": len(self.dirty_rects),
+            "static_tiles": len(self.static_tiles),
+            "dynamic_entities": len(self.dynamic_entities),
+            "background_baked": self.background_buffer is not None,
+            "background_dirty": self.background_dirty
         }
 
 
