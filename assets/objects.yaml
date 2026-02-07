@@ -95,7 +95,11 @@ flora_base: &flora_base
 wooden_door:
   <<: *wood_base
   characteristics:
-    <<: *wood_base.characteristics
+    material: "wood"
+    tags: ["flammable", "organic", "wooden"]
+    resistances: ["blunt"]
+    weaknesses: ["fire", "sharp"]
+    interaction_hooks: ["examine"]
     state: "closed"
     integrity: 75
     triggers:
@@ -105,8 +109,11 @@ wooden_door:
       lockpick: {"difficulty": 15, "skill": "thievery", "success": "unlock_door"}
       force: {"difficulty": 12, "skill": "strength", "success": "break_door"}
   sprite_id: "door_wood"
+  collision: true
+  friction: 0.4
   metadata:
-    <<: *wood_base.metadata
+    burn_temperature: 300
+    decay_rate: 0.1
     lock_complexity: "medium"
 
 wooden_chest:
