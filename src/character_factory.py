@@ -200,20 +200,23 @@ class CharacterFactory:
     
     def create(self, personality: str) -> PlayerStats:
         """
-        Create a character based on personality archetype.
+        Create a character based on personality archetype with vector traits.
         
         Args:
             personality: Archetype identifier
             
         Returns:
-            PlayerStats object with archetype-appropriate attributes
+            PlayerStats object with archetype-appropriate attributes and vector traits
         """
         archetype = self.archetypes.get(personality.lower())
         if not archetype:
             logger.warning(f"Unknown archetype: {personality}. Using default.")
             archetype = self.archetypes["curious"]
         
-        logger.info(f"Creating {archetype.name} archetype")
+        logger.info(f"Creating {archetype.name} archetype with vector traits")
+        
+        # Generate procedural traits based on archetype
+        vector_traits = self._generate_vector_traits(archetype)
         
         # Create inventory items
         inventory = []
@@ -247,9 +250,62 @@ class CharacterFactory:
         player.personality_traits = archetype.personality_traits
         player.skill_proficiencies = archetype.skill_proficiencies
         
-        logger.info(f"Created {archetype.name} with stats: {archetype.stat_array}")
+        # Store vector traits for procedural generation
+        player.vector_traits = vector_traits
+        player.trait_description = self.trait_library.generate_trait_description(vector_traits)
+        
+        logger.info(f"Created {archetype.name} with {len(vector_traits)} vector traits")
+        logger.info(f"Trait description: {player.trait_description}")
         
         return player
+    
+    def _generate_vector_traits(self, archetype: Archetype) -> List:
+        """
+        Generate procedural traits based on archetype vector tags and categories.
+        
+        Args:
+            archetype: Archetype definition
+            
+        Returns:
+            List of Trait objects
+        """
+        traits = []
+        
+        # Convert trait categories to TraitCategory enum
+        category_map = {
+            "personality": TraitCategory.PERSONALITY,
+            "behavior": TraitCategory.BEHAVIOR,
+            "social": TraitCategory.SOCIAL,
+            "profession": TraitCategory.PROFESSION,
+            "physical": TraitCategory.PHYSICAL,
+            "motivation": TraitCategory.MOTIVATION
+        }
+        
+        # Get categories for this archetype
+        categories = [category_map.get(cat, TraitCategory.PERSONALITY) for cat in archetype.trait_categories]
+        
+        # Get random traits from specified categories
+        base_traits = self.trait_library.get_random_traits(
+            count=3,  # Base number of traits
+            categories=categories
+        )
+        
+        # Add specific vector tags if available
+        for tag in archetype.vector_tags:
+            trait = self.trait_library.get_trait(tag)
+            if trait and trait not in base_traits:
+                base_traits.append(trait)
+        
+        # Ensure we have at least 2 traits
+        if len(base_traits) < 2:
+            # Add random personality traits to fill gaps
+            additional = self.trait_library.get_random_traits(
+                count=2 - len(base_traits),
+                categories=[TraitCategory.PERSONALITY]
+            )
+            base_traits.extend(additional)
+        
+        return base_traits[:4]  # Limit to 4 traits total
     
     def get_archetype_info(self, personality: str) -> Archetype:
         """Get archetype information without creating character."""
