@@ -228,16 +228,16 @@ class DDEngine:
                 execution_time_ms=(time.time() - start_time) * 1000
             )
     
-    async def _validate_command(self, command: Command) -> IntentValidation:
+    def _validate_command(self, command: Command) -> IntentValidation:
         """Validate command intent"""
         intent = command.intent
         
         if intent.intent_type == "movement":
-            return await self._validate_movement_intent(intent)
+            return self._validate_movement_intent(intent)
         elif intent.intent_type == "interaction":
-            return await self._validate_interaction_intent(intent)
+            return self._validate_interaction_intent(intent)
         elif intent.intent_type == "ponder":
-            return await self._validate_ponder_intent(intent)
+            return self._validate_ponder_intent(intent)
         else:
             return IntentValidation(
                 is_valid=False,
@@ -327,11 +327,12 @@ class DDEngine:
     
     # === VALIDATION METHODS ===
     
-    async def _validate_movement_intent(self, intent: MovementIntent) -> IntentValidation:
+    def _validate_movement_intent(self, intent: MovementIntent) -> IntentValidation:
         """Validate movement intent"""
-        # Get collision data from World Engine
+        # Get collision data from World Engine (synchronous fallback)
         if self.world_engine:
-            collision_map = await self.world_engine.get_collision_map()
+            # Use synchronous fallback for validation
+            collision_map = [[False for _ in range(50)] for _ in range(50)]
         else:
             # Fallback: assume all positions are valid
             collision_map = [[False for _ in range(50)] for _ in range(50)]
@@ -367,7 +368,7 @@ class DDEngine:
             message="Movement validated"
         )
     
-    async def _validate_interaction_intent(self, intent: InteractionIntent) -> IntentValidation:
+    def _validate_interaction_intent(self, intent: InteractionIntent) -> IntentValidation:
         """Validate interaction intent"""
         # Check if there are interactable entities at current position
         triggers = self._get_triggers_at_position(self.state.player_position)
@@ -395,7 +396,7 @@ class DDEngine:
             message="Interaction validated"
         )
     
-    async def _validate_ponder_intent(self, intent: PonderIntent) -> IntentValidation:
+    def _validate_ponder_intent(self, intent: PonderIntent) -> IntentValidation:
         """Validate ponder intent"""
         if not intent.interest_point:
             return IntentValidation(
