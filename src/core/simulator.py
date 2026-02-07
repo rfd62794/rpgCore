@@ -537,6 +537,8 @@ class SimulatorHost:
         self.state.position.y = new_y
         
         logger.debug(f"📍 Voyager position updated to ({new_x}, {new_y})")
+    
+    def stop(self) -> None:
         """Stop the simulator."""
         self.running = False
         self.executor.shutdown(wait=True)
