@@ -21,8 +21,8 @@ PARSER_VERSIONS = {
 @dataclass
 class SovereignObject:
     """Base object that absorbs any YAML key without breaking"""
-    object_type: str
     object_id: str
+    object_type: str = "unknown"
     version: str = "1.0"
     metadata: Dict[str, Any] = field(default_factory=dict)
     
@@ -183,7 +183,11 @@ class SovereignParserV1(SovereignParser):
     def _get_known_fields(self, obj_class: Type) -> List[str]:
         """Get list of known fields for object class"""
         if hasattr(obj_class, '__dataclass_fields__'):
-            return list(obj_class.__dataclass_fields__.keys())
+            known_fields = list(obj_class.__dataclass_fields__.keys())
+            # Remove 'inherits' from known fields to force absorption
+            if 'inherits' in known_fields:
+                known_fields.remove('inherits')
+            return known_fields
         return ['object_type', 'object_id', 'version', 'name', 'description']
 
 class TagBasedParser(SovereignParser):
@@ -361,6 +365,8 @@ def export_to_raw_file(objects: List[SovereignObject], file_path: Path) -> None:
     for obj in objects:
         # Get all data including unknown fields
         data = obj.get_all_data()
+        # Ensure 'id' field is set from object_id for compatibility
+        data['id'] = obj.object_id
         export_data.append(data)
     
     with open(file_path, 'w', encoding='utf-8') as f:
