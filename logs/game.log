@@ -8786,3 +8786,17 @@ expected alphabetic or numeric character, but found '.'
 2026-02-07 13:48:30 | INFO | actors.voyager:_discover_next_interest_point:801 | 🔍 No nearby Interest Points - expanding search
 2026-02-07 13:48:30 | INFO | actors.voyager:_explore_further:825 | 🗺️ Exploring new area: (8, 40)
 2026-02-07 13:48:30 | INFO | actors.voyager:_follow_legacy_script:756 | 🚶 Script position reached: (8, 40)
+2026-02-07 13:49:11 | INFO | utils.logger:initialize:59 | 📝 Logging system initialized
+2026-02-07 13:49:11 | ERROR | utils.asset_loader:_load_object_definitions:233 | 💥 Failed to load objects.yaml: while scanning an alias
+  in "assets\objects.yaml", line 98, column 9
+expected alphabetic or numeric character, but found '.'
+  in "assets\objects.yaml", line 98, column 19
+2026-02-07 13:49:11 | INFO | utils.asset_loader:_load_prefab_definitions:259 | 🏗️ Loaded 10 prefab definitions
+2026-02-07 13:49:11 | INFO | utils.asset_loader:_generate_tile_sprites:331 | 🎨 Generated 11 tile sprites
+2026-02-07 13:49:11 | ERROR | utils.asset_loader:_generate_object_sprites:287 | 💥 Failed to generate object sprites: AssetLoader._create_object_sprite() takes 2 positional arguments but 4 were given
+2026-02-07 13:49:11 | ERROR | utils.asset_loader:_generate_actor_sprites:620 | 💥 Failed to generate actor sprites: Size must be a sequence of length 2
+2026-02-07 13:49:11 | ERROR | utils.asset_loader:_generate_fallback_sprites:648 | 💥 Failed to generate fallback sprites: Size must be a sequence of length 2
+2026-02-07 13:49:11 | ERROR | utils.asset_loader:_generate_effect_sprites:365 | 💥 Failed to generate effect sprites: Size must be a sequence of length 2
+2026-02-07 13:49:11 | INFO | utils.asset_loader:_load_assets:129 | 🎨 Asset Loader initialized - 0 assets loaded
+2026-02-07 13:49:11 | INFO | utils.asset_loader:__init__:110 | 🎨 Asset Loader initialized - 0 assets loaded
+2026-02-07 13:49:11 | INFO | graphics.ppu_tk_native:__init__:428 | 🎨 Native Tkinter PPU initialized with multi-mode support
