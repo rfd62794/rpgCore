@@ -17,7 +17,7 @@ from typing import Dict, List, Optional, Protocol
 from dataclasses import dataclass
 from abc import ABC, abstractmethod
 from loguru import logger
-from pydantic import BaseModel, Field, validator
+from pydantic import BaseModel, Field, field_validator
 
 # Add src to path
 sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
@@ -28,7 +28,8 @@ class Color(BaseModel):
     """Color representation with validation"""
     hex_value: str = Field(pattern=r'^#[0-9A-Fa-f]{6}$')
     
-    @validator('hex_value')
+    @field_validator('hex_value')
+    @classmethod
     def validate_hex(cls, v):
         if not v.startswith('#') or len(v) != 7:
             raise ValueError('Color must be in hex format #RRGGBB')

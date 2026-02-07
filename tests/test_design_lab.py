@@ -4,8 +4,7 @@ Tests for DGT Design Lab - SOLID Architecture Validation
 
 import pytest
 from unittest.mock import Mock, patch, MagicMock
-from pathlib import Path
-import tempfile
+from pydantic import BaseModel, Field, field_validator
 import yaml
 
 # Import the refactored components
@@ -39,8 +38,23 @@ class MockDitheringEngine(DitheringEngine):
 class MockTemplateGenerator(TemplateGenerator):
     """Mock template generator for testing"""
     
+    def __init__(self, dithering_engine: DitheringEngine = None):
+        self.dithering_engine = dithering_engine
+    
     def generate_template(self, template_type: str, color: str) -> list:
         return [[color] * 8 for _ in range(8)]
+
+
+class Color(BaseModel):
+    """Color representation with validation"""
+    hex_value: str = Field(pattern=r'^#[0-9A-Fa-f]{6}$')
+    
+    @field_validator('hex_value')
+    @classmethod
+    def validate_hex(cls, v):
+        if not v.startswith('#') or len(v) != 7:
+            raise ValueError('Color must be in hex format #RRGGBB')
+        return v
 
 
 class TestColorModel:
