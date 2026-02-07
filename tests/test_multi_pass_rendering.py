@@ -331,7 +331,7 @@ class TestANSIVitalsPass:
 
     def test_progress_bar_creation(self):
         """Test progress bar creation."""
-        pass_obj = ANSitalsPass()
+        pass_obj = ANSIVitalsPass()
         
         # Test different percentages
         bar_0 = pass_obj._create_progress_bar("HP", 0, 20)
@@ -611,10 +611,15 @@ class TestIntegration:
         
         # Create mock context
         mock_game_state = Mock(spec=GameState)
-        mock_game_state.position.x = 50.0
-        mock_game_state.position.y = 50.0
-        mock_game_state.player.hp = 100
-        mock_game_state.player.max_hp = 100
+        mock_position = Mock()
+        mock_position.x = 50.0
+        mock_position.y = 50.0
+        mock_game_state.position = mock_position
+        
+        mock_player = Mock()
+        mock_player.hp = 100
+        mock_player.max_hp = 100
+        mock_game_state.player = mock_player
         
         mock_ledger = Mock(spec=WorldLedger)
         mock_ledger.get_chunk.return_value = None
