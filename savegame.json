@@ -1,10 +1,19 @@
 {
   "player": {
     "name": "Adventurer",
-    "hp": 86,
+    "hp": 0,
     "max_hp": 100,
     "gold": 50,
-    "inventory": [],
+    "inventory": [
+      {
+        "name": "Iron Key",
+        "description": "Rusty but functional",
+        "stat_bonus": "+1 Dex (Lockpicking)",
+        "target_stat": "dexterity",
+        "modifier_value": 1,
+        "value": 5
+      }
+    ],
     "attributes": {
       "strength": 0,
       "dexterity": 0,
@@ -15,8 +24,8 @@
   "current_room": "tavern",
   "rooms": {
     "tavern": {
-      "name": "The Rusty Flagon",
-      "description": "A dimly lit tavern filled with the smell of ale and roasted meat. Rowdy patrons fill the wooden tables.",
+      "name": "The Silver Tankard",
+      "description": "A typical tavern known as The Silver Tankard. Sticky Floors permeates the area.",
       "npcs": [
         {
           "name": "Guard",
@@ -32,22 +41,22 @@
         }
       ],
       "items": [
-        "Beer Mug",
+        "Hearth",
         "Wooden Table"
       ],
       "exits": {
         "north": "plaza"
       },
       "tags": [
-        "Sticky Floors",
-        "Rowdy Crowd",
         "Dimly Lit",
+        "Sticky Floors",
+        "Smoky",
         "Path Clear"
       ]
     },
     "plaza": {
-      "name": "Emerald City Plaza",
-      "description": "A gleaming plaza paved with green marble. Fountains sparkle in the sunlight, and well-dressed citizens hurry past.",
+      "name": "Grand Plaza",
+      "description": "A typical plaza known as Grand Plaza. Bustling permeates the area.",
       "npcs": [
         {
           "name": "Street Urchin",
@@ -63,21 +72,27 @@
         }
       ],
       "items": [
-        "Great Fountain",
-        "Hero Statue"
+        "Fruit Stand",
+        "Fountain",
+        "Statue"
       ],
       "exits": {
         "south": "tavern",
-        "north": "dungeon_gate"
+        "north": "dungeon"
       },
       "tags": [
-        "Rainy",
+        "Open Space",
+        "Bustling",
         "Crowded",
-        "Marble Floors",
         "Path Clear"
       ]
     }
   },
   "turn_count": 0,
+  "reputation": {
+    "city_watch": 0,
+    "underworld": 0,
+    "clergy": 0
+  },
   "social_graph": {}
 }

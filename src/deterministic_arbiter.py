@@ -21,7 +21,9 @@ class ArbiterLogic(BaseModel):
     new_npc_state: Literal["neutral", "hostile", "distracted", "charmed", "dead"] = "neutral"
     reasoning: str = Field(description="Brief tactical reason")
     narrative_seed: str = Field(default="")
-    reputation_deltas: Dict[str, int] = Field(default_factory=dict)
+    reputation_deltas: dict[str, int] = Field(default_factory=dict)
+
+ArbiterLogic.model_rebuild()
 
 class DeterministicArbiter:
     """

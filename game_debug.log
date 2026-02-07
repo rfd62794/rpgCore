@@ -1214,3 +1214,475 @@
 21:51:46 | INFO | Game initialized with Council of Three architecture
 21:51:46 | INFO | Voyager Heuristic: Selected force with score -8
 21:51:46 | INFO | Intent resolution: 'Intimidate the guard' → charm (confidence: 0.653, matched exemplar: 'Convince the guard to let me pass with words')
+21:52:08 | INFO | Game loaded from savegame.json
+21:52:08 | DEBUG | Added intent: distract with 5 exemplars
+21:52:08 | DEBUG | Added intent: force with 5 exemplars
+21:52:08 | DEBUG | Added intent: finesse with 5 exemplars
+21:52:08 | DEBUG | Added intent: charm with 5 exemplars
+21:52:08 | DEBUG | Added intent: intimidate with 5 exemplars
+21:52:08 | DEBUG | Added intent: deceive with 5 exemplars
+21:52:08 | DEBUG | Added intent: investigate with 5 exemplars
+21:52:08 | DEBUG | Added intent: use_item with 5 exemplars
+21:52:08 | DEBUG | Added intent: defend with 5 exemplars
+21:52:08 | DEBUG | Added intent: leave_area with 5 exemplars
+21:52:08 | DEBUG | Added intent: improvise with 5 exemplars
+21:52:08 | INFO | Loading embedding model: all-MiniLM-L6-v2
+21:52:12 | INFO | Precomputed embeddings for 11 intents (55 total exemplars)
+21:52:12 | INFO | Deterministic Arbiter (Iron Frame) initialized.
+21:52:12 | INFO | Initializing Chronicler with ollama:llama3.2:1b
+21:52:12 | INFO | Voyager initialized (Deterministic) with 'aggressive' personality
+21:52:12 | INFO | Game initialized with Council of Three architecture
+21:52:12 | INFO | Voyager Heuristic: Selected force with score -8
+21:52:12 | INFO | Intent resolution: 'Intimidate the guard' → charm (confidence: 0.653, matched exemplar: 'Convince the guard to let me pass with words')
+21:52:12 | DEBUG | Action: charm | Tags: ['Dimly Lit', 'Sticky Floors', 'Smoky', 'Path Clear'] | Roll: 14 + Attr: 0 + Item: 0 + Tag: 0 = 14 vs DC: 12 (10 + 0) -> SUCCESS
+21:52:12 | INFO | Quartermaster: success=True, roll=14 vs DC 12
+21:52:12 | DEBUG | Chronicler streaming: charm
+21:52:12 | ERROR | Chronicler stream failed: AbstractAgent.run_stream() got an unexpected keyword argument 'result_type'
+21:52:12 | INFO | Game saved to savegame.json
+21:52:14 | INFO | Voyager Heuristic: Selected combat with score -10
+21:52:14 | INFO | Intent resolution: 'Start a brawl' → force (confidence: 0.543, matched exemplar: 'Punch someone in the face aggressively')
+21:52:14 | DEBUG | Action: force | Tags: ['Dimly Lit', 'Sticky Floors', 'Smoky', 'Path Clear'] | Roll: 12 + Attr: 0 + Item: 0 + Tag: 0 = 12 vs DC: 8 (10 + -2) -> SUCCESS
+21:52:14 | INFO | Quartermaster: success=True, roll=12 vs DC 8
+21:52:14 | DEBUG | No loot found
+21:52:14 | DEBUG | Chronicler streaming: force
+21:52:14 | ERROR | Chronicler stream failed: AbstractAgent.run_stream() got an unexpected keyword argument 'result_type'
+21:52:14 | INFO | Game saved to savegame.json
+21:52:16 | INFO | Voyager Heuristic: Selected investigate with score -20
+21:52:16 | INFO | Intent resolution: 'Search for weapons' → use_item (confidence: 0.398, matched exemplar: 'Equip my sword and shield for combat')
+21:52:16 | DEBUG | Action: use_item | Tags: ['Dimly Lit', 'Sticky Floors', 'Smoky', 'Path Clear'] | Roll: 16 + Attr: 0 + Item: 0 + Tag: 0 = 16 vs DC: 12 (10 + 0) -> SUCCESS
+21:52:16 | INFO | Quartermaster: success=True, roll=16 vs DC 12
+21:52:16 | DEBUG | Chronicler streaming: use_item
+21:52:16 | ERROR | Chronicler stream failed: AbstractAgent.run_stream() got an unexpected keyword argument 'result_type'
+21:52:16 | INFO | Game saved to savegame.json
+21:52:18 | INFO | Voyager Heuristic: Selected force with score -23
+21:52:18 | INFO | Intent resolution: 'Intimidate the guard' → charm (confidence: 0.653, matched exemplar: 'Convince the guard to let me pass with words')
+21:52:18 | DEBUG | Action: charm | Tags: ['Dimly Lit', 'Sticky Floors', 'Smoky', 'Path Clear'] | Roll: 7 + Attr: 0 + Item: 0 + Tag: 0 = 7 vs DC: 12 (10 + 0) -> FAILURE
+21:52:18 | INFO | Quartermaster: success=False, roll=7 vs DC 12
+21:52:18 | INFO | Player took 7 damage. HP: 79/100
+21:52:18 | DEBUG | Chronicler streaming: charm
+21:52:18 | ERROR | Chronicler stream failed: AbstractAgent.run_stream() got an unexpected keyword argument 'result_type'
+21:52:18 | INFO | Game saved to savegame.json
+21:52:20 | INFO | Voyager Heuristic: Selected force with score -23
+21:52:20 | INFO | Intent resolution: 'I look around the room carefully' → investigate (confidence: 0.668, matched exemplar: 'Search the room carefully for hidden clues')
+21:52:20 | DEBUG | Action: investigate | Tags: ['Dimly Lit', 'Sticky Floors', 'Smoky', 'Path Clear'] | Roll: 14 + Attr: 0 + Item: 0 + Tag: 0 = 14 vs DC: 20 (10 + 5) -> FAILURE
+21:52:20 | INFO | Quartermaster: success=False, roll=14 vs DC 20
+21:52:20 | INFO | Player took 9 damage. HP: 70/100
+21:52:20 | DEBUG | Chronicler streaming: investigate
+21:52:20 | ERROR | Chronicler stream failed: AbstractAgent.run_stream() got an unexpected keyword argument 'result_type'
+21:52:20 | INFO | Game saved to savegame.json
+21:52:22 | INFO | Voyager Heuristic: Selected leave_area with score 505
+21:52:22 | INFO | Intent resolution: 'Leave this place' → leave_area (confidence: 1.000, matched exemplar: 'Leave this place')
+21:52:22 | DEBUG | Action: leave_area | Tags: ['Dimly Lit', 'Sticky Floors', 'Smoky', 'Path Clear'] | Roll: 1 + Attr: 0 + Item: 0 + Tag: 0 = 1 vs DC: -5 (10 + -15) -> SUCCESS
+21:52:22 | INFO | Quartermaster: success=True, roll=1 vs DC -5
+21:52:22 | DEBUG | Chronicler streaming: leave_area
+21:52:22 | ERROR | Chronicler stream failed: AbstractAgent.run_stream() got an unexpected keyword argument 'result_type'
+21:52:22 | INFO | Game saved to savegame.json
+21:52:24 | INFO | Voyager Heuristic: Selected combat with score -10
+21:52:24 | INFO | Intent resolution: 'Start a brawl' → force (confidence: 0.543, matched exemplar: 'Punch someone in the face aggressively')
+21:52:24 | DEBUG | Action: force | Tags: ['Open Space', 'Bustling', 'Crowded'] | Roll: 8 + Attr: 0 + Item: 0 + Tag: 0 = 8 vs DC: 10 (10 + 0) -> FAILURE
+21:52:24 | INFO | Quartermaster: success=False, roll=8 vs DC 10
+21:52:24 | INFO | Player took 1 damage. HP: 69/100
+21:52:24 | DEBUG | Chronicler streaming: force
+21:52:24 | ERROR | Chronicler stream failed: AbstractAgent.run_stream() got an unexpected keyword argument 'result_type'
+21:52:24 | INFO | Game saved to savegame.json
+21:52:26 | INFO | Voyager Heuristic: Selected investigate with score -15
+21:52:27 | INFO | Intent resolution: 'Search for weapons' → use_item (confidence: 0.398, matched exemplar: 'Equip my sword and shield for combat')
+21:52:27 | DEBUG | Action: use_item | Tags: ['Open Space', 'Bustling', 'Crowded'] | Roll: 17 + Attr: 0 + Item: 0 + Tag: 0 = 17 vs DC: 12 (10 + 0) -> SUCCESS
+21:52:27 | INFO | Quartermaster: success=True, roll=17 vs DC 12
+21:52:27 | DEBUG | Chronicler streaming: use_item
+21:52:27 | ERROR | Chronicler stream failed: AbstractAgent.run_stream() got an unexpected keyword argument 'result_type'
+21:52:27 | INFO | Game saved to savegame.json
+21:52:29 | INFO | Voyager Heuristic: Selected force with score -10
+21:52:29 | INFO | Intent resolution: 'Intimidate the guard' → charm (confidence: 0.653, matched exemplar: 'Convince the guard to let me pass with words')
+21:52:29 | DEBUG | Action: charm | Tags: ['Open Space', 'Bustling', 'Crowded', 'Path Clear'] | Roll: 2 + Attr: 0 + Item: 0 + Tag: 0 = 2 vs DC: 12 (10 + 0) -> FAILURE
+21:52:29 | INFO | Quartermaster: success=False, roll=2 vs DC 12
+21:52:29 | INFO | Player took 8 damage. HP: 61/100
+21:52:29 | DEBUG | Chronicler streaming: charm
+21:52:29 | ERROR | Chronicler stream failed: AbstractAgent.run_stream() got an unexpected keyword argument 'result_type'
+21:52:29 | INFO | Game saved to savegame.json
+21:52:31 | INFO | Voyager Heuristic: Selected force with score -25
+21:52:31 | INFO | Intent resolution: 'I look around the room carefully' → investigate (confidence: 0.668, matched exemplar: 'Search the room carefully for hidden clues')
+21:52:31 | DEBUG | Action: investigate | Tags: ['Open Space', 'Bustling', 'Crowded', 'Path Clear'] | Roll: 14 + Attr: 0 + Item: 0 + Tag: 0 = 14 vs DC: 15 (10 + 0) -> FAILURE
+21:52:31 | INFO | Quartermaster: success=False, roll=14 vs DC 15
+21:52:31 | INFO | Player took 3 damage. HP: 58/100
+21:52:31 | DEBUG | Chronicler streaming: investigate
+21:52:31 | ERROR | Chronicler stream failed: AbstractAgent.run_stream() got an unexpected keyword argument 'result_type'
+21:52:31 | INFO | Game saved to savegame.json
+21:52:33 | INFO | Voyager Heuristic: Selected combat with score -10
+21:52:33 | INFO | Intent resolution: 'Start a brawl' → force (confidence: 0.543, matched exemplar: 'Punch someone in the face aggressively')
+21:52:33 | DEBUG | Action: force | Tags: ['Open Space', 'Bustling', 'Crowded', 'Path Clear'] | Roll: 10 + Attr: 0 + Item: 0 + Tag: 0 = 10 vs DC: 10 (10 + 0) -> SUCCESS
+21:52:33 | INFO | Quartermaster: success=True, roll=10 vs DC 10
+21:52:33 | INFO | Loot generated: Iron Key
+21:52:33 | INFO | Loot added to inventory: Iron Key
+21:52:33 | DEBUG | Chronicler streaming: force
+21:52:33 | ERROR | Chronicler stream failed: AbstractAgent.run_stream() got an unexpected keyword argument 'result_type'
+21:52:33 | INFO | Game saved to savegame.json
+21:52:35 | INFO | Voyager Heuristic: Selected leave_area with score 506
+21:52:35 | INFO | Intent resolution: 'Leave this place' → leave_area (confidence: 1.000, matched exemplar: 'Leave this place')
+21:52:35 | DEBUG | Action: leave_area | Tags: ['Open Space', 'Bustling', 'Crowded', 'Path Clear'] | Roll: 13 + Attr: 0 + Item: 1 + Tag: 0 = 14 vs DC: -5 (10 + -15) -> SUCCESS
+21:52:35 | INFO | Quartermaster: success=True, roll=14 vs DC -5
+21:52:35 | DEBUG | Chronicler streaming: leave_area
+21:52:35 | ERROR | Chronicler stream failed: AbstractAgent.run_stream() got an unexpected keyword argument 'result_type'
+21:52:35 | INFO | Game saved to savegame.json
+21:52:37 | INFO | Voyager Heuristic: Selected investigate with score -20
+21:52:37 | INFO | Intent resolution: 'Search for weapons' → use_item (confidence: 0.398, matched exemplar: 'Equip my sword and shield for combat')
+21:52:37 | DEBUG | Action: use_item | Tags: ['Dimly Lit', 'Sticky Floors', 'Smoky', 'Path Clear'] | Roll: 4 + Attr: 0 + Item: 0 + Tag: 0 = 4 vs DC: 12 (10 + 0) -> FAILURE
+21:52:37 | INFO | Quartermaster: success=False, roll=4 vs DC 12
+21:52:37 | INFO | Player took 10 damage. HP: 48/100
+21:52:37 | DEBUG | Chronicler streaming: use_item
+21:52:37 | ERROR | Chronicler stream failed: AbstractAgent.run_stream() got an unexpected keyword argument 'result_type'
+21:52:37 | INFO | Game saved to savegame.json
+21:52:39 | INFO | Voyager Heuristic: Selected force with score -8
+21:52:39 | INFO | Intent resolution: 'Intimidate the guard' → charm (confidence: 0.653, matched exemplar: 'Convince the guard to let me pass with words')
+21:52:39 | DEBUG | Action: charm | Tags: ['Dimly Lit', 'Sticky Floors', 'Smoky', 'Path Clear'] | Roll: 14 + Attr: 0 + Item: 0 + Tag: 0 = 14 vs DC: 12 (10 + 0) -> SUCCESS
+21:52:39 | INFO | Quartermaster: success=True, roll=14 vs DC 12
+21:52:39 | DEBUG | Chronicler streaming: charm
+21:52:39 | ERROR | Chronicler stream failed: AbstractAgent.run_stream() got an unexpected keyword argument 'result_type'
+21:52:39 | INFO | Game saved to savegame.json
+21:52:40 | INFO | Game loaded from savegame.json
+21:52:40 | DEBUG | Added intent: distract with 5 exemplars
+21:52:40 | DEBUG | Added intent: force with 5 exemplars
+21:52:40 | DEBUG | Added intent: finesse with 5 exemplars
+21:52:40 | DEBUG | Added intent: charm with 5 exemplars
+21:52:40 | DEBUG | Added intent: intimidate with 5 exemplars
+21:52:40 | DEBUG | Added intent: deceive with 5 exemplars
+21:52:40 | DEBUG | Added intent: investigate with 5 exemplars
+21:52:40 | DEBUG | Added intent: use_item with 5 exemplars
+21:52:40 | DEBUG | Added intent: defend with 5 exemplars
+21:52:40 | DEBUG | Added intent: leave_area with 5 exemplars
+21:52:40 | DEBUG | Added intent: improvise with 5 exemplars
+21:52:40 | INFO | Loading embedding model: all-MiniLM-L6-v2
+21:52:41 | INFO | Voyager Heuristic: Selected combat with score -10
+21:52:41 | INFO | Intent resolution: 'Start a brawl' → force (confidence: 0.543, matched exemplar: 'Punch someone in the face aggressively')
+21:52:41 | DEBUG | Action: force | Tags: ['Dimly Lit', 'Sticky Floors', 'Smoky', 'Path Clear'] | Roll: 4 + Attr: 0 + Item: 0 + Tag: 0 = 4 vs DC: 8 (10 + -2) -> FAILURE
+21:52:41 | INFO | Quartermaster: success=False, roll=4 vs DC 8
+21:52:41 | INFO | Player took 1 damage. HP: 47/100
+21:52:41 | DEBUG | Chronicler streaming: force
+21:52:41 | ERROR | Chronicler stream failed: AbstractAgent.run_stream() got an unexpected keyword argument 'result_type'
+21:52:41 | INFO | Game saved to savegame.json
+21:52:43 | INFO | Voyager Heuristic: Selected force with score -23
+21:52:43 | INFO | Intent resolution: 'Intimidate the guard' → charm (confidence: 0.653, matched exemplar: 'Convince the guard to let me pass with words')
+21:52:43 | DEBUG | Action: charm | Tags: ['Dimly Lit', 'Sticky Floors', 'Smoky', 'Path Clear'] | Roll: 3 + Attr: 0 + Item: 0 + Tag: 0 = 3 vs DC: 12 (10 + 0) -> FAILURE
+21:52:43 | INFO | Quartermaster: success=False, roll=3 vs DC 12
+21:52:43 | INFO | Player took 5 damage. HP: 42/100
+21:52:43 | DEBUG | Chronicler streaming: charm
+21:52:43 | ERROR | Chronicler stream failed: AbstractAgent.run_stream() got an unexpected keyword argument 'result_type'
+21:52:43 | INFO | Game saved to savegame.json
+21:52:44 | INFO | Precomputed embeddings for 11 intents (55 total exemplars)
+21:52:44 | INFO | Deterministic Arbiter (Iron Frame) initialized.
+21:52:44 | INFO | Initializing Chronicler with ollama:llama3.2:1b
+21:52:44 | INFO | Voyager initialized (Deterministic) with 'aggressive' personality
+21:52:44 | INFO | Game initialized with Council of Three architecture
+21:52:44 | INFO | Voyager Heuristic: Selected force with score -8
+21:52:44 | INFO | Intent resolution: 'Intimidate the guard' → charm (confidence: 0.653, matched exemplar: 'Convince the guard to let me pass with words')
+21:52:44 | DEBUG | Action: charm | Tags: ['Sticky Floors', 'Loud', 'Smoky', 'Path Clear'] | Roll: 13 + Attr: 0 + Item: 0 + Tag: 0 = 13 vs DC: 14 (10 + 2) -> FAILURE
+21:52:44 | INFO | Quartermaster: success=False, roll=13 vs DC 14
+21:52:44 | INFO | Player took 1 damage. HP: 47/100
+21:52:44 | DEBUG | Chronicler streaming: charm
+21:52:44 | ERROR | Chronicler stream failed: AbstractAgent.run_stream() got an unexpected keyword argument 'result_type'
+21:52:44 | INFO | Game saved to savegame.json
+21:52:45 | INFO | Voyager Heuristic: Selected investigate with score -20
+21:52:45 | INFO | Intent resolution: 'Search for weapons' → use_item (confidence: 0.398, matched exemplar: 'Equip my sword and shield for combat')
+21:52:45 | DEBUG | Action: use_item | Tags: ['Dimly Lit', 'Sticky Floors', 'Smoky', 'Path Clear'] | Roll: 4 + Attr: 0 + Item: 0 + Tag: 0 = 4 vs DC: 12 (10 + 0) -> FAILURE
+21:52:45 | INFO | Quartermaster: success=False, roll=4 vs DC 12
+21:52:45 | INFO | Player took 6 damage. HP: 36/100
+21:52:45 | DEBUG | Chronicler streaming: use_item
+21:52:45 | ERROR | Chronicler stream failed: AbstractAgent.run_stream() got an unexpected keyword argument 'result_type'
+21:52:45 | INFO | Game saved to savegame.json
+21:52:46 | INFO | Voyager Heuristic: Selected combat with score -10
+21:52:46 | INFO | Intent resolution: 'Start a brawl' → force (confidence: 0.543, matched exemplar: 'Punch someone in the face aggressively')
+21:52:46 | DEBUG | Action: force | Tags: ['Sticky Floors', 'Loud', 'Smoky', 'Path Clear'] | Roll: 11 + Attr: 0 + Item: 0 + Tag: 0 = 11 vs DC: 8 (10 + -2) -> SUCCESS
+21:52:46 | INFO | Quartermaster: success=True, roll=11 vs DC 8
+21:52:46 | INFO | Loot generated: Iron Key
+21:52:46 | INFO | Loot added to inventory: Iron Key
+21:52:46 | DEBUG | Chronicler streaming: force
+21:52:46 | ERROR | Chronicler stream failed: AbstractAgent.run_stream() got an unexpected keyword argument 'result_type'
+21:52:46 | INFO | Game saved to savegame.json
+21:52:47 | INFO | Voyager Heuristic: Selected leave_area with score 506
+21:52:47 | INFO | Intent resolution: 'Leave this place' → leave_area (confidence: 1.000, matched exemplar: 'Leave this place')
+21:52:47 | DEBUG | Action: leave_area | Tags: ['Dimly Lit', 'Sticky Floors', 'Smoky', 'Path Clear'] | Roll: 10 + Attr: 0 + Item: 1 + Tag: 0 = 11 vs DC: -5 (10 + -15) -> SUCCESS
+21:52:47 | INFO | Quartermaster: success=True, roll=11 vs DC -5
+21:52:47 | DEBUG | Chronicler streaming: leave_area
+21:52:47 | ERROR | Chronicler stream failed: AbstractAgent.run_stream() got an unexpected keyword argument 'result_type'
+21:52:47 | INFO | Game saved to savegame.json
+21:52:48 | INFO | Voyager Heuristic: Selected investigate with score -15
+21:52:48 | INFO | Intent resolution: 'Search for weapons' → use_item (confidence: 0.398, matched exemplar: 'Equip my sword and shield for combat')
+21:52:48 | DEBUG | Action: use_item | Tags: ['Sticky Floors', 'Loud', 'Smoky', 'Path Clear'] | Roll: 3 + Attr: 0 + Item: 0 + Tag: 0 = 3 vs DC: 12 (10 + 0) -> FAILURE
+21:52:48 | INFO | Quartermaster: success=False, roll=3 vs DC 12
+21:52:48 | INFO | Player took 7 damage. HP: 40/100
+21:52:48 | DEBUG | Chronicler streaming: use_item
+21:52:48 | ERROR | Chronicler stream failed: AbstractAgent.run_stream() got an unexpected keyword argument 'result_type'
+21:52:48 | INFO | Game saved to savegame.json
+21:52:49 | INFO | Voyager Heuristic: Selected combat with score -10
+21:52:49 | INFO | Intent resolution: 'Start a brawl' → force (confidence: 0.543, matched exemplar: 'Punch someone in the face aggressively')
+21:52:49 | DEBUG | Action: force | Tags: ['Open Space', 'Bustling', 'Crowded', 'Path Clear'] | Roll: 12 + Attr: 0 + Item: 0 + Tag: 0 = 12 vs DC: 10 (10 + 0) -> SUCCESS
+21:52:49 | INFO | Quartermaster: success=True, roll=12 vs DC 10
+21:52:49 | DEBUG | No loot found
+21:52:49 | DEBUG | Chronicler streaming: force
+21:52:49 | ERROR | Chronicler stream failed: AbstractAgent.run_stream() got an unexpected keyword argument 'result_type'
+21:52:49 | INFO | Game saved to savegame.json
+21:52:50 | INFO | Voyager Heuristic: Selected force with score -23
+21:52:50 | INFO | Intent resolution: 'Intimidate the guard' → charm (confidence: 0.653, matched exemplar: 'Convince the guard to let me pass with words')
+21:52:50 | DEBUG | Action: charm | Tags: ['Sticky Floors', 'Loud', 'Smoky', 'Path Clear'] | Roll: 1 + Attr: 0 + Item: 0 + Tag: 0 = 1 vs DC: 14 (10 + 2) -> FAILURE
+21:52:50 | INFO | Quartermaster: success=False, roll=1 vs DC 14
+21:52:50 | INFO | Player took 8 damage. HP: 32/100
+21:52:50 | DEBUG | Chronicler streaming: charm
+21:52:50 | ERROR | Chronicler stream failed: AbstractAgent.run_stream() got an unexpected keyword argument 'result_type'
+21:52:50 | INFO | Game saved to savegame.json
+21:52:51 | INFO | Voyager Heuristic: Selected force with score -10
+21:52:51 | INFO | Intent resolution: 'Intimidate the guard' → charm (confidence: 0.653, matched exemplar: 'Convince the guard to let me pass with words')
+21:52:51 | DEBUG | Action: charm | Tags: ['Open Space', 'Bustling', 'Crowded', 'Path Clear'] | Roll: 13 + Attr: 0 + Item: 0 + Tag: 0 = 13 vs DC: 12 (10 + 0) -> SUCCESS
+21:52:51 | INFO | Quartermaster: success=True, roll=13 vs DC 12
+21:52:51 | DEBUG | Chronicler streaming: charm
+21:52:51 | ERROR | Chronicler stream failed: AbstractAgent.run_stream() got an unexpected keyword argument 'result_type'
+21:52:51 | INFO | Game saved to savegame.json
+21:52:52 | INFO | Voyager Heuristic: Selected force with score -23
+21:52:52 | INFO | Intent resolution: 'I look around the room carefully' → investigate (confidence: 0.668, matched exemplar: 'Search the room carefully for hidden clues')
+21:52:52 | DEBUG | Action: investigate | Tags: ['Sticky Floors', 'Loud', 'Smoky', 'Path Clear'] | Roll: 4 + Attr: 0 + Item: 0 + Tag: 0 = 4 vs DC: 15 (10 + 0) -> FAILURE
+21:52:52 | INFO | Quartermaster: success=False, roll=4 vs DC 15
+21:52:52 | INFO | Player took 5 damage. HP: 27/100
+21:52:52 | DEBUG | Chronicler streaming: investigate
+21:52:52 | ERROR | Chronicler stream failed: AbstractAgent.run_stream() got an unexpected keyword argument 'result_type'
+21:52:52 | INFO | Game saved to savegame.json
+21:52:53 | INFO | Voyager Heuristic: Selected investigate with score -15
+21:52:53 | INFO | Intent resolution: 'Search for weapons' → use_item (confidence: 0.398, matched exemplar: 'Equip my sword and shield for combat')
+21:52:53 | DEBUG | Action: use_item | Tags: ['Open Space', 'Bustling', 'Crowded', 'Path Clear'] | Roll: 12 + Attr: 0 + Item: 0 + Tag: 0 = 12 vs DC: 12 (10 + 0) -> SUCCESS
+21:52:53 | INFO | Quartermaster: success=True, roll=12 vs DC 12
+21:52:53 | DEBUG | Chronicler streaming: use_item
+21:52:53 | ERROR | Chronicler stream failed: AbstractAgent.run_stream() got an unexpected keyword argument 'result_type'
+21:52:53 | INFO | Game saved to savegame.json
+21:52:54 | INFO | Voyager Heuristic: Selected leave_area with score 507
+21:52:54 | INFO | Intent resolution: 'Leave this place' → leave_area (confidence: 1.000, matched exemplar: 'Leave this place')
+21:52:54 | DEBUG | Action: leave_area | Tags: ['Sticky Floors', 'Loud', 'Smoky', 'Path Clear'] | Roll: 16 + Attr: 0 + Item: 2 + Tag: 0 = 18 vs DC: -5 (10 + -15) -> SUCCESS
+21:52:54 | INFO | Quartermaster: success=True, roll=18 vs DC -5
+21:52:54 | DEBUG | Chronicler streaming: leave_area
+21:52:54 | ERROR | Chronicler stream failed: AbstractAgent.run_stream() got an unexpected keyword argument 'result_type'
+21:52:54 | INFO | Game saved to savegame.json
+21:52:55 | INFO | Voyager Heuristic: Selected force with score -25
+21:52:55 | INFO | Intent resolution: 'Intimidate the guard' → charm (confidence: 0.653, matched exemplar: 'Convince the guard to let me pass with words')
+21:52:55 | DEBUG | Action: charm | Tags: ['Open Space', 'Bustling', 'Crowded', 'Path Clear'] | Roll: 14 + Attr: 0 + Item: 0 + Tag: 0 = 14 vs DC: 12 (10 + 0) -> SUCCESS
+21:52:55 | INFO | Quartermaster: success=True, roll=14 vs DC 12
+21:52:55 | DEBUG | Chronicler streaming: charm
+21:52:55 | ERROR | Chronicler stream failed: AbstractAgent.run_stream() got an unexpected keyword argument 'result_type'
+21:52:55 | INFO | Game saved to savegame.json
+21:52:56 | INFO | Voyager Heuristic: Selected combat with score -10
+21:52:56 | INFO | Intent resolution: 'Start a brawl' → force (confidence: 0.543, matched exemplar: 'Punch someone in the face aggressively')
+21:52:56 | DEBUG | Action: force | Tags: ['Bustling', 'Open Space'] | Roll: 14 + Attr: 0 + Item: 0 + Tag: 0 = 14 vs DC: 10 (10 + 0) -> SUCCESS
+21:52:56 | INFO | Quartermaster: success=True, roll=14 vs DC 10
+21:52:56 | DEBUG | No loot found
+21:52:56 | DEBUG | Chronicler streaming: force
+21:52:56 | ERROR | Chronicler stream failed: AbstractAgent.run_stream() got an unexpected keyword argument 'result_type'
+21:52:56 | INFO | Game saved to savegame.json
+21:52:57 | INFO | Voyager Heuristic: Selected combat with score -10
+21:52:57 | INFO | Intent resolution: 'Start a brawl' → force (confidence: 0.543, matched exemplar: 'Punch someone in the face aggressively')
+21:52:57 | DEBUG | Action: force | Tags: ['Open Space', 'Bustling', 'Crowded', 'Path Clear'] | Roll: 5 + Attr: 0 + Item: 0 + Tag: 0 = 5 vs DC: 10 (10 + 0) -> FAILURE
+21:52:57 | INFO | Quartermaster: success=False, roll=5 vs DC 10
+21:52:57 | INFO | Player took 7 damage. HP: 29/100
+21:52:57 | DEBUG | Chronicler streaming: force
+21:52:57 | ERROR | Chronicler stream failed: AbstractAgent.run_stream() got an unexpected keyword argument 'result_type'
+21:52:57 | INFO | Game saved to savegame.json
+21:52:58 | INFO | Voyager Heuristic: Selected investigate with score -15
+21:52:58 | INFO | Intent resolution: 'Search for weapons' → use_item (confidence: 0.398, matched exemplar: 'Equip my sword and shield for combat')
+21:52:58 | DEBUG | Action: use_item | Tags: ['Bustling', 'Open Space'] | Roll: 5 + Attr: 0 + Item: 0 + Tag: 0 = 5 vs DC: 12 (10 + 0) -> FAILURE
+21:52:58 | INFO | Quartermaster: success=False, roll=5 vs DC 12
+21:52:58 | INFO | Player took 8 damage. HP: 19/100
+21:52:58 | DEBUG | Chronicler streaming: use_item
+21:52:58 | ERROR | Chronicler stream failed: AbstractAgent.run_stream() got an unexpected keyword argument 'result_type'
+21:52:58 | INFO | Game saved to savegame.json
+21:52:59 | INFO | Voyager Heuristic: Selected leave_area with score 506
+21:52:59 | INFO | Intent resolution: 'Leave this place' → leave_area (confidence: 1.000, matched exemplar: 'Leave this place')
+21:52:59 | DEBUG | Action: leave_area | Tags: ['Open Space', 'Bustling', 'Crowded', 'Path Clear'] | Roll: 1 + Attr: 0 + Item: 1 + Tag: 0 = 2 vs DC: -5 (10 + -15) -> SUCCESS
+21:52:59 | INFO | Quartermaster: success=True, roll=2 vs DC -5
+21:52:59 | DEBUG | Chronicler streaming: leave_area
+21:52:59 | ERROR | Chronicler stream failed: AbstractAgent.run_stream() got an unexpected keyword argument 'result_type'
+21:52:59 | INFO | Game saved to savegame.json
+21:53:00 | INFO | Voyager Heuristic: Selected force with score -10
+21:53:00 | INFO | Intent resolution: 'Intimidate the guard' → charm (confidence: 0.653, matched exemplar: 'Convince the guard to let me pass with words')
+21:53:00 | DEBUG | Action: charm | Tags: ['Bustling', 'Open Space', 'Path Clear'] | Roll: 10 + Attr: 0 + Item: 0 + Tag: 0 = 10 vs DC: 12 (10 + 0) -> FAILURE
+21:53:00 | INFO | Quartermaster: success=False, roll=10 vs DC 12
+21:53:00 | INFO | Player took 4 damage. HP: 15/100
+21:53:00 | DEBUG | Chronicler streaming: charm
+21:53:00 | ERROR | Chronicler stream failed: AbstractAgent.run_stream() got an unexpected keyword argument 'result_type'
+21:53:00 | INFO | Game saved to savegame.json
+21:53:01 | INFO | Voyager Heuristic: Selected investigate with score -20
+21:53:01 | INFO | Intent resolution: 'Search for weapons' → use_item (confidence: 0.398, matched exemplar: 'Equip my sword and shield for combat')
+21:53:01 | DEBUG | Action: use_item | Tags: ['Dimly Lit', 'Sticky Floors', 'Smoky', 'Path Clear'] | Roll: 17 + Attr: 0 + Item: 0 + Tag: 0 = 17 vs DC: 12 (10 + 0) -> SUCCESS
+21:53:01 | INFO | Quartermaster: success=True, roll=17 vs DC 12
+21:53:01 | DEBUG | Chronicler streaming: use_item
+21:53:01 | ERROR | Chronicler stream failed: AbstractAgent.run_stream() got an unexpected keyword argument 'result_type'
+21:53:01 | INFO | Game saved to savegame.json
+21:53:02 | INFO | Voyager Heuristic: Selected force with score -25
+21:53:02 | INFO | Intent resolution: 'I look around the room carefully' → investigate (confidence: 0.668, matched exemplar: 'Search the room carefully for hidden clues')
+21:53:02 | DEBUG | Action: investigate | Tags: ['Bustling', 'Open Space', 'Path Clear'] | Roll: 16 + Attr: 0 + Item: 0 + Tag: 0 = 16 vs DC: 15 (10 + 0) -> SUCCESS
+21:53:02 | INFO | Quartermaster: success=True, roll=16 vs DC 15
+21:53:02 | INFO | Loot generated: Iron Key
+21:53:02 | INFO | Loot added to inventory: Iron Key
+21:53:02 | DEBUG | Chronicler streaming: investigate
+21:53:02 | ERROR | Chronicler stream failed: AbstractAgent.run_stream() got an unexpected keyword argument 'result_type'
+21:53:02 | INFO | Game saved to savegame.json
+21:53:03 | INFO | Voyager Heuristic: Selected force with score -8
+21:53:03 | INFO | Intent resolution: 'Intimidate the guard' → charm (confidence: 0.653, matched exemplar: 'Convince the guard to let me pass with words')
+21:53:03 | DEBUG | Action: charm | Tags: ['Dimly Lit', 'Sticky Floors', 'Smoky', 'Path Clear'] | Roll: 7 + Attr: 0 + Item: 0 + Tag: 0 = 7 vs DC: 12 (10 + 0) -> FAILURE
+21:53:03 | INFO | Quartermaster: success=False, roll=7 vs DC 12
+21:53:03 | INFO | Player took 9 damage. HP: 20/100
+21:53:03 | DEBUG | Chronicler streaming: charm
+21:53:03 | ERROR | Chronicler stream failed: AbstractAgent.run_stream() got an unexpected keyword argument 'result_type'
+21:53:03 | INFO | Game saved to savegame.json
+21:53:04 | INFO | Voyager Heuristic: Selected combat with score -10
+21:53:04 | INFO | Intent resolution: 'Start a brawl' → force (confidence: 0.543, matched exemplar: 'Punch someone in the face aggressively')
+21:53:04 | DEBUG | Action: force | Tags: ['Bustling', 'Open Space', 'Path Clear'] | Roll: 13 + Attr: 0 + Item: 0 + Tag: 0 = 13 vs DC: 10 (10 + 0) -> SUCCESS
+21:53:04 | INFO | Quartermaster: success=True, roll=13 vs DC 10
+21:53:04 | DEBUG | No loot found
+21:53:04 | DEBUG | Chronicler streaming: force
+21:53:04 | ERROR | Chronicler stream failed: AbstractAgent.run_stream() got an unexpected keyword argument 'result_type'
+21:53:04 | INFO | Game saved to savegame.json
+21:53:05 | INFO | Voyager Heuristic: Selected combat with score -10
+21:53:05 | INFO | Intent resolution: 'Start a brawl' → force (confidence: 0.543, matched exemplar: 'Punch someone in the face aggressively')
+21:53:05 | DEBUG | Action: force | Tags: ['Dimly Lit', 'Sticky Floors', 'Smoky', 'Path Clear'] | Roll: 7 + Attr: 0 + Item: 0 + Tag: 0 = 7 vs DC: 8 (10 + -2) -> FAILURE
+21:53:05 | INFO | Quartermaster: success=False, roll=7 vs DC 8
+21:53:05 | INFO | Player took 2 damage. HP: 18/100
+21:53:05 | DEBUG | Chronicler streaming: force
+21:53:05 | ERROR | Chronicler stream failed: AbstractAgent.run_stream() got an unexpected keyword argument 'result_type'
+21:53:05 | INFO | Game saved to savegame.json
+21:53:06 | INFO | Voyager Heuristic: Selected leave_area with score 508
+21:53:06 | INFO | Intent resolution: 'Leave this place' → leave_area (confidence: 1.000, matched exemplar: 'Leave this place')
+21:53:06 | DEBUG | Action: leave_area | Tags: ['Bustling', 'Open Space', 'Path Clear'] | Roll: 13 + Attr: 0 + Item: 3 + Tag: 0 = 16 vs DC: -5 (10 + -15) -> SUCCESS
+21:53:06 | INFO | Quartermaster: success=True, roll=16 vs DC -5
+21:53:06 | DEBUG | Chronicler streaming: leave_area
+21:53:06 | ERROR | Chronicler stream failed: AbstractAgent.run_stream() got an unexpected keyword argument 'result_type'
+21:53:06 | INFO | Game saved to savegame.json
+21:53:07 | INFO | Voyager Heuristic: Selected force with score -23
+21:53:07 | INFO | Intent resolution: 'Intimidate the guard' → charm (confidence: 0.653, matched exemplar: 'Convince the guard to let me pass with words')
+21:53:07 | DEBUG | Action: charm | Tags: ['Dimly Lit', 'Sticky Floors', 'Smoky', 'Path Clear'] | Roll: 15 + Attr: 0 + Item: 0 + Tag: 0 = 15 vs DC: 12 (10 + 0) -> SUCCESS
+21:53:07 | INFO | Quartermaster: success=True, roll=15 vs DC 12
+21:53:07 | DEBUG | Chronicler streaming: charm
+21:53:07 | ERROR | Chronicler stream failed: AbstractAgent.run_stream() got an unexpected keyword argument 'result_type'
+21:53:07 | INFO | Game saved to savegame.json
+21:53:08 | INFO | Voyager Heuristic: Selected investigate with score -15
+21:53:08 | INFO | Intent resolution: 'Search for weapons' → use_item (confidence: 0.398, matched exemplar: 'Equip my sword and shield for combat')
+21:53:08 | DEBUG | Action: use_item | Tags: ['Sticky Floors', 'Loud', 'Smoky', 'Path Clear'] | Roll: 3 + Attr: 0 + Item: 0 + Tag: 0 = 3 vs DC: 12 (10 + 0) -> FAILURE
+21:53:08 | INFO | Quartermaster: success=False, roll=3 vs DC 12
+21:53:08 | INFO | Player took 7 damage. HP: 8/100
+21:53:08 | DEBUG | Chronicler streaming: use_item
+21:53:08 | ERROR | Chronicler stream failed: AbstractAgent.run_stream() got an unexpected keyword argument 'result_type'
+21:53:08 | INFO | Game saved to savegame.json
+21:53:09 | INFO | Voyager Heuristic: Selected investigate with score -20
+21:53:09 | INFO | Intent resolution: 'Search for weapons' → use_item (confidence: 0.398, matched exemplar: 'Equip my sword and shield for combat')
+21:53:09 | DEBUG | Action: use_item | Tags: ['Dimly Lit', 'Sticky Floors', 'Smoky', 'Path Clear'] | Roll: 20 + Attr: 0 + Item: 0 + Tag: 0 = 20 vs DC: 12 (10 + 0) -> SUCCESS
+21:53:09 | INFO | Quartermaster: success=True, roll=20 vs DC 12
+21:53:09 | DEBUG | Chronicler streaming: use_item
+21:53:09 | ERROR | Chronicler stream failed: AbstractAgent.run_stream() got an unexpected keyword argument 'result_type'
+21:53:09 | INFO | Game saved to savegame.json
+21:53:11 | INFO | Voyager Heuristic: Selected force with score -8
+21:53:11 | INFO | Intent resolution: 'Intimidate the guard' → charm (confidence: 0.653, matched exemplar: 'Convince the guard to let me pass with words')
+21:53:11 | DEBUG | Action: charm | Tags: ['Sticky Floors', 'Loud', 'Smoky', 'Path Clear'] | Roll: 11 + Attr: 0 + Item: 0 + Tag: 0 = 11 vs DC: 14 (10 + 2) -> FAILURE
+21:53:11 | INFO | Quartermaster: success=False, roll=11 vs DC 14
+21:53:11 | INFO | Player took 2 damage. HP: 6/100
+21:53:11 | DEBUG | Chronicler streaming: charm
+21:53:11 | ERROR | Chronicler stream failed: AbstractAgent.run_stream() got an unexpected keyword argument 'result_type'
+21:53:11 | INFO | Game saved to savegame.json
+21:53:11 | INFO | Voyager Heuristic: Selected leave_area with score 506
+21:53:11 | INFO | Intent resolution: 'Leave this place' → leave_area (confidence: 1.000, matched exemplar: 'Leave this place')
+21:53:11 | DEBUG | Action: leave_area | Tags: ['Dimly Lit', 'Sticky Floors', 'Smoky', 'Path Clear'] | Roll: 17 + Attr: 0 + Item: 1 + Tag: 0 = 18 vs DC: -5 (10 + -15) -> SUCCESS
+21:53:11 | INFO | Quartermaster: success=True, roll=18 vs DC -5
+21:53:11 | DEBUG | Chronicler streaming: leave_area
+21:53:11 | ERROR | Chronicler stream failed: AbstractAgent.run_stream() got an unexpected keyword argument 'result_type'
+21:53:11 | INFO | Game saved to savegame.json
+21:53:13 | INFO | Voyager Heuristic: Selected combat with score -10
+21:53:13 | INFO | Intent resolution: 'Start a brawl' → force (confidence: 0.543, matched exemplar: 'Punch someone in the face aggressively')
+21:53:13 | DEBUG | Action: force | Tags: ['Sticky Floors', 'Loud', 'Smoky', 'Path Clear'] | Roll: 7 + Attr: 0 + Item: 0 + Tag: 0 = 7 vs DC: 8 (10 + -2) -> FAILURE
+21:53:13 | INFO | Quartermaster: success=False, roll=7 vs DC 8
+21:53:13 | INFO | Player took 4 damage. HP: 2/100
+21:53:13 | DEBUG | Chronicler streaming: force
+21:53:13 | ERROR | Chronicler stream failed: AbstractAgent.run_stream() got an unexpected keyword argument 'result_type'
+21:53:13 | INFO | Game saved to savegame.json
+21:53:13 | INFO | Voyager Heuristic: Selected combat with score -10
+21:53:13 | INFO | Intent resolution: 'Start a brawl' → force (confidence: 0.543, matched exemplar: 'Punch someone in the face aggressively')
+21:53:13 | DEBUG | Action: force | Tags: ['Open Space', 'Bustling', 'Crowded', 'Path Clear'] | Roll: 14 + Attr: 0 + Item: 0 + Tag: 0 = 14 vs DC: 10 (10 + 0) -> SUCCESS
+21:53:13 | INFO | Quartermaster: success=True, roll=14 vs DC 10
+21:53:13 | DEBUG | No loot found
+21:53:13 | DEBUG | Chronicler streaming: force
+21:53:13 | ERROR | Chronicler stream failed: AbstractAgent.run_stream() got an unexpected keyword argument 'result_type'
+21:53:13 | INFO | Game saved to savegame.json
+21:53:15 | INFO | Voyager Heuristic: Selected force with score -23
+21:53:15 | INFO | Intent resolution: 'Intimidate the guard' → charm (confidence: 0.653, matched exemplar: 'Convince the guard to let me pass with words')
+21:53:15 | DEBUG | Action: charm | Tags: ['Sticky Floors', 'Loud', 'Smoky', 'Path Clear'] | Roll: 8 + Attr: 0 + Item: 0 + Tag: 0 = 8 vs DC: 14 (10 + 2) -> FAILURE
+21:53:15 | INFO | Quartermaster: success=False, roll=8 vs DC 14
+21:53:15 | INFO | Player took 5 damage. HP: 0/100
+21:53:15 | DEBUG | Chronicler streaming: charm
+21:53:15 | ERROR | Chronicler stream failed: AbstractAgent.run_stream() got an unexpected keyword argument 'result_type'
+21:53:15 | INFO | Game saved to savegame.json
+21:53:15 | INFO | Voyager Heuristic: Selected force with score -10
+21:53:15 | INFO | Intent resolution: 'Intimidate the guard' → charm (confidence: 0.653, matched exemplar: 'Convince the guard to let me pass with words')
+21:53:15 | DEBUG | Action: charm | Tags: ['Open Space', 'Bustling', 'Crowded', 'Path Clear'] | Roll: 12 + Attr: 0 + Item: 0 + Tag: 0 = 12 vs DC: 12 (10 + 0) -> SUCCESS
+21:53:15 | INFO | Quartermaster: success=True, roll=12 vs DC 12
+21:53:15 | DEBUG | Chronicler streaming: charm
+21:53:15 | ERROR | Chronicler stream failed: AbstractAgent.run_stream() got an unexpected keyword argument 'result_type'
+21:53:15 | INFO | Game saved to savegame.json
+21:53:17 | INFO | Voyager Heuristic: Selected investigate with score -15
+21:53:17 | INFO | Intent resolution: 'Search for weapons' → use_item (confidence: 0.398, matched exemplar: 'Equip my sword and shield for combat')
+21:53:17 | DEBUG | Action: use_item | Tags: ['Open Space', 'Bustling', 'Crowded', 'Path Clear'] | Roll: 17 + Attr: 0 + Item: 0 + Tag: 0 = 17 vs DC: 12 (10 + 0) -> SUCCESS
+21:53:17 | INFO | Quartermaster: success=True, roll=17 vs DC 12
+21:53:17 | DEBUG | Chronicler streaming: use_item
+21:53:17 | ERROR | Chronicler stream failed: AbstractAgent.run_stream() got an unexpected keyword argument 'result_type'
+21:53:17 | INFO | Game saved to savegame.json
+21:53:19 | INFO | Voyager Heuristic: Selected force with score -25
+21:53:19 | INFO | Intent resolution: 'Intimidate the guard' → charm (confidence: 0.653, matched exemplar: 'Convince the guard to let me pass with words')
+21:53:19 | DEBUG | Action: charm | Tags: ['Open Space', 'Bustling', 'Crowded', 'Path Clear'] | Roll: 16 + Attr: 0 + Item: 0 + Tag: 0 = 16 vs DC: 12 (10 + 0) -> SUCCESS
+21:53:19 | INFO | Quartermaster: success=True, roll=16 vs DC 12
+21:53:19 | DEBUG | Chronicler streaming: charm
+21:53:19 | ERROR | Chronicler stream failed: AbstractAgent.run_stream() got an unexpected keyword argument 'result_type'
+21:53:19 | INFO | Game saved to savegame.json
+21:53:21 | INFO | Voyager Heuristic: Selected combat with score -10
+21:53:22 | INFO | Intent resolution: 'Start a brawl' → force (confidence: 0.543, matched exemplar: 'Punch someone in the face aggressively')
+21:53:22 | DEBUG | Action: force | Tags: ['Open Space', 'Bustling', 'Crowded', 'Path Clear'] | Roll: 6 + Attr: 0 + Item: 0 + Tag: 0 = 6 vs DC: 10 (10 + 0) -> FAILURE
+21:53:22 | INFO | Quartermaster: success=False, roll=6 vs DC 10
+21:53:22 | INFO | Player took 1 damage. HP: 17/100
+21:53:22 | DEBUG | Chronicler streaming: force
+21:53:22 | ERROR | Chronicler stream failed: AbstractAgent.run_stream() got an unexpected keyword argument 'result_type'
+21:53:22 | INFO | Game saved to savegame.json
+21:53:24 | INFO | Voyager Heuristic: Selected leave_area with score 506
+21:53:24 | INFO | Intent resolution: 'Leave this place' → leave_area (confidence: 1.000, matched exemplar: 'Leave this place')
+21:53:24 | DEBUG | Action: leave_area | Tags: ['Open Space', 'Bustling', 'Crowded', 'Path Clear'] | Roll: 9 + Attr: 0 + Item: 1 + Tag: 0 = 10 vs DC: -5 (10 + -15) -> SUCCESS
+21:53:24 | INFO | Quartermaster: success=True, roll=10 vs DC -5
+21:53:24 | DEBUG | Chronicler streaming: leave_area
+21:53:24 | ERROR | Chronicler stream failed: AbstractAgent.run_stream() got an unexpected keyword argument 'result_type'
+21:53:24 | INFO | Game saved to savegame.json
+21:53:26 | INFO | Voyager Heuristic: Selected investigate with score -20
+21:53:26 | INFO | Intent resolution: 'Search for weapons' → use_item (confidence: 0.398, matched exemplar: 'Equip my sword and shield for combat')
+21:53:26 | DEBUG | Action: use_item | Tags: ['Dimly Lit', 'Sticky Floors', 'Smoky', 'Path Clear'] | Roll: 1 + Attr: 0 + Item: 0 + Tag: 0 = 1 vs DC: 12 (10 + 0) -> FAILURE
+21:53:26 | INFO | Quartermaster: success=False, roll=1 vs DC 12
+21:53:26 | INFO | Player took 7 damage. HP: 10/100
+21:53:26 | DEBUG | Chronicler streaming: use_item
+21:53:26 | ERROR | Chronicler stream failed: AbstractAgent.run_stream() got an unexpected keyword argument 'result_type'
+21:53:26 | INFO | Game saved to savegame.json
+21:53:28 | INFO | Voyager Heuristic: Selected force with score -8
+21:53:28 | INFO | Intent resolution: 'Intimidate the guard' → charm (confidence: 0.653, matched exemplar: 'Convince the guard to let me pass with words')
+21:53:28 | DEBUG | Action: charm | Tags: ['Dimly Lit', 'Sticky Floors', 'Smoky', 'Path Clear'] | Roll: 17 + Attr: 0 + Item: 0 + Tag: 0 = 17 vs DC: 12 (10 + 0) -> SUCCESS
+21:53:28 | INFO | Quartermaster: success=True, roll=17 vs DC 12
+21:53:28 | DEBUG | Chronicler streaming: charm
+21:53:28 | ERROR | Chronicler stream failed: AbstractAgent.run_stream() got an unexpected keyword argument 'result_type'
+21:53:28 | INFO | Game saved to savegame.json
+21:53:30 | INFO | Voyager Heuristic: Selected combat with score -10
+21:53:30 | INFO | Intent resolution: 'Start a brawl' → force (confidence: 0.543, matched exemplar: 'Punch someone in the face aggressively')
+21:53:30 | DEBUG | Action: force | Tags: ['Dimly Lit', 'Sticky Floors', 'Smoky', 'Path Clear'] | Roll: 3 + Attr: 0 + Item: 0 + Tag: 0 = 3 vs DC: 8 (10 + -2) -> FAILURE
+21:53:30 | INFO | Quartermaster: success=False, roll=3 vs DC 8
+21:53:30 | INFO | Player took 9 damage. HP: 1/100
+21:53:30 | DEBUG | Chronicler streaming: force
+21:53:30 | ERROR | Chronicler stream failed: AbstractAgent.run_stream() got an unexpected keyword argument 'result_type'
+21:53:30 | INFO | Game saved to savegame.json
+21:53:32 | INFO | Voyager Heuristic: Selected force with score -23
+21:53:32 | INFO | Intent resolution: 'Intimidate the guard' → charm (confidence: 0.653, matched exemplar: 'Convince the guard to let me pass with words')
+21:53:32 | DEBUG | Action: charm | Tags: ['Dimly Lit', 'Sticky Floors', 'Smoky', 'Path Clear'] | Roll: 13 + Attr: 0 + Item: 0 + Tag: 0 = 13 vs DC: 12 (10 + 0) -> SUCCESS
+21:53:32 | INFO | Quartermaster: success=True, roll=13 vs DC 12
+21:53:32 | DEBUG | Chronicler streaming: charm
+21:53:32 | ERROR | Chronicler stream failed: AbstractAgent.run_stream() got an unexpected keyword argument 'result_type'
+21:53:32 | INFO | Game saved to savegame.json
+21:53:34 | INFO | Voyager Heuristic: Selected investigate with score -20
+21:53:34 | INFO | Intent resolution: 'Search for weapons' → use_item (confidence: 0.398, matched exemplar: 'Equip my sword and shield for combat')
+21:53:34 | DEBUG | Action: use_item | Tags: ['Dimly Lit', 'Sticky Floors', 'Smoky', 'Path Clear'] | Roll: 1 + Attr: 0 + Item: 0 + Tag: 0 = 1 vs DC: 12 (10 + 0) -> FAILURE
+21:53:34 | INFO | Quartermaster: success=False, roll=1 vs DC 12
+21:53:34 | INFO | Player took 8 damage. HP: 0/100
+21:53:34 | DEBUG | Chronicler streaming: use_item
+21:53:34 | ERROR | Chronicler stream failed: AbstractAgent.run_stream() got an unexpected keyword argument 'result_type'
+21:53:34 | INFO | Game saved to savegame.json
