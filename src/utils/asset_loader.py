@@ -41,7 +41,7 @@ class AssetType(Enum):
 
 @dataclass
 class ObjectCharacteristics:
-    """Systemic characteristics for objects"""
+    """Systemic characteristics for world objects"""
     material: str
     state: str
     rarity: float
@@ -49,6 +49,7 @@ class ObjectCharacteristics:
     triggers: Dict[str, str] = field(default_factory=dict)
     tags: List[str] = field(default_factory=list)
     interaction_hooks: List[str] = field(default_factory=list)
+    d20_checks: Dict[str, Dict[str, Any]] = field(default_factory=dict)
     
     def has_tag(self, tag: str) -> bool:
         """Check if object has specific tag"""
