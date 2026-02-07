@@ -98,8 +98,10 @@ class D20Resolver:
     All other modules just orchestrate or narrate.
     """
     
-    def __init__(self):
-        logger.info("D20 Core initialized - deterministic rules engine ready")
+    def __init__(self, faction_system: Optional[FactionSystem] = None):
+        """Initialize the D20 resolver with optional faction system."""
+        self.faction_system = faction_system
+        logger.info("D20 Core initialized - deterministic rules engine ready with faction system support")
     
     def _roll_dice(self, advantage_type: Optional[str] = None) -> Tuple[int, Optional[Tuple[int, int]]]:
         """
