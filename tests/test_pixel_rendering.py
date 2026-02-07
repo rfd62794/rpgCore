@@ -466,19 +466,19 @@ class TestPixelRenderer:
         # Draw outline
         renderer.draw_rectangle(2, 2, 5, 3, pixel, fill=False)
         
-        # Check corners
-        assert not renderer.pixels[2][2].is_empty()
-        assert not renderer.pixels[6][2].is_empty()
-        assert not renderer.pixels[2][4].is_empty()
-        assert not renderer.pixels[6][4].is_empty()
+        # Check corners - rectangle from (2,2) to (6,4)
+        assert not renderer.pixels[2][2].is_empty()      # Top-left
+        assert not renderer.pixels[6][2].is_empty()      # Top-right (2+5-1, 2)
+        assert not renderer.pixels[2][4].is_empty()      # Bottom-left (2, 2+3-1)
+        assert not renderer.pixels[6][4].is_empty()      # Bottom-right (2+5-1, 2+3-1)
         
         # Clear and draw filled
         renderer.clear()
         renderer.draw_rectangle(2, 2, 3, 3, pixel, fill=True)
         
-        # Check fill
-        for y in range(2, 5):
-            for x in range(2, 5):
+        # Check fill - rectangle from (2,2) to (4,4)
+        for y in range(2, 5):  # 2 to 4 inclusive
+            for x in range(2, 5):  # 2 to 4 inclusive
                 assert not renderer.pixels[y][x].is_empty()
 
     def test_render_to_string(self):
