@@ -102,6 +102,12 @@ class AutonomousDirector:
         self.is_paused: bool = False
         self.beacon_generation_interval: float = 10.0  # Generate new beacons every 10 turns
         
+        # Golden Path Beacon Queue for Linear Narrative
+        self.golden_path_enabled: bool = True  # Enable for Volume 1
+        self.golden_path_queue: List[Dict[str, Any]] = []
+        self.golden_path_index: int = 0
+        self._initialize_golden_path()
+        
         # Callbacks for external coordination
         self.on_beacon_generated: Optional[Callable[[NarrativeBeacon], None]] = None
         self.on_beacon_achieved: Optional[Callable[[NarrativeBeacon], None]] = None
