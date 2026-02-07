@@ -1,21 +1,18 @@
 """
-Pure Tkinter PPU Framework - Native Raster Pipeline
-ADR 075: Eliminate PIL dependencies, use native tk.PhotoImage and Canvas layering
+Pure Tkinter PPU - Native Implementation with Multi-Mode Support
+ADR 075: Pure Tkinter Implementation + ADR 078: Multi-Mode Viewport Protocol
 
-This implementation treats the Canvas as VRAM and uses native PhotoImage objects
-as hardware sprites for maximum compatibility and performance.
+High-performance pixel rendering using native Tkinter PhotoImage.
+Supports OVERWORLD (top-down) and COMBAT (side-view) rendering modes.
 """
 
 import tkinter as tk
-from tkinter import PhotoImage
-from typing import Dict, List, Tuple, Optional, Any
-import time
-import math
-from dataclasses import dataclass
-from enum import Enum
-import logging
+from typing import List, Tuple, Optional, Dict, Any
+from loguru import logger
 
-logger = logging.getLogger(__name__)
+from core.constants import DISPLAY_SCALE, TARGET_FPS
+from utils.asset_loader import AssetLoader
+from .ppu_modes import PPUMode, PPULayouts, CombatPositions, AnimationFrames, PPUTransitionEffects
 
 # Viewport Constants (Game Boy Parity)
 TILE_SIZE_PIXELS = 8
