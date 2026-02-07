@@ -71,6 +71,7 @@ class Epoch:
     world_state: Dict[str, Any]
 
 
+@dataclass
 class WorldSeed:
     """Seed configuration for world generation."""
     founding_vector: Dict[str, str]  # e.g., {"resource": "gold", "climate": "cold"}

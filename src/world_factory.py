@@ -8,11 +8,10 @@ ADR 020: The Historian Utility & Sedimentary World-Gen Implementation
 """
 
 import random
-from typing import Dict, List, Optional, Any, Tuple
-from pathlib import Path
+from typing import Dict, List, Optional, Any
+from pydantic import BaseModel
 
 from loguru import logger
-from pydantic import BaseModel
 from world_ledger import WorldLedger, Coordinate, WorldChunk
 from utils.historian import Historian, WorldSeed, Faction
 
@@ -234,11 +233,11 @@ class WorldFactory:
                 
                 # Add world seed influence to blueprint selection
                 blueprint_name = self._select_blueprint_with_influence(chunk, world_seed)
-                if blueprint_name:
-                    blueprint = self.blueprints[blueprint_name]
-                    chunk.name = blueprint["name"]
-                    chunk.description = blueprint["description"]
-                    chunk.tags.extend(blueprint["base_tags"])
+                if blueprint_name and blueprint_name in self.location_templates:
+                    template = self.location_templates[blueprint_name]
+                    chunk.name = template["name"]
+                    chunk.description = template["description"]
+                    chunk.tags.extend(template["base_tags"])
                 
                 settlement_chunks[(coord.x, coord.y)] = chunk
         
