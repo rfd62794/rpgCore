@@ -10,7 +10,7 @@ import tkinter as tk
 from typing import List, Tuple, Optional, Dict, Any
 from loguru import logger
 
-from core.constants import DISPLAY_SCALE, TARGET_FPS
+from core.constants import TARGET_FPS
 from utils.asset_loader import AssetLoader
 from .ppu_modes import PPUMode, PPULayouts, CombatPositions, AnimationFrames, PPUTransitionEffects
 

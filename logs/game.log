@@ -7502,3 +7502,4 @@
 2026-02-07 13:20:57 | INFO | engines.mind.combat_resolver:start_combat:142 | ⚔️ Combat started: Voyager (HP: 30) vs Guardian (HP: 50)
 2026-02-07 13:20:57 | INFO | engines.mind.combat_resolver:resolve_combat:161 | ⚔️ Initiative: Voyager (22) vs Guardian (22)
 2026-02-07 13:20:57 | INFO | engines.mind.combat_resolver:resolve_combat:182 | ⚔️ Voyager wins the combat!
+2026-02-07 13:24:45 | INFO | utils.logger:initialize:59 | 📝 Logging system initialized
