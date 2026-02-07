@@ -483,8 +483,6 @@ class AssetLoader:
             return combat_sprite
         
         return self.get_actor_sprite(entity_id, "idle", orientation)
-            return self.actor_sprites[actor_type].get(state, self.actor_sprites[actor_type].get("idle"))
-        return None
     
     def get_effect_sprite(self, effect_type: str) -> Optional[Image.Image]:
         """Get effect sprite"""
