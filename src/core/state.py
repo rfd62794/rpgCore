@@ -182,6 +182,10 @@ class GameState:
     frame_count: int = 0
     performance_metrics: Dict[str, float] = field(default_factory=dict)
     
+    # Effects and Triggers
+    active_effects: List['Effect'] = field(default_factory=list)
+    active_triggers: List['Trigger'] = field(default_factory=list)
+    
     def copy(self) -> 'GameState':
         """Create an immutable deep copy"""
         return GameState(
@@ -209,7 +213,9 @@ class GameState:
             ) for pos, delta in self.world_deltas.items()},
             turn_count=self.turn_count,
             frame_count=self.frame_count,
-            performance_metrics=self.performance_metrics.copy()
+            performance_metrics=self.performance_metrics.copy(),
+            active_effects=self.active_effects.copy(),
+            active_triggers=self.active_triggers.copy()
         )
 
 # === INTENT DATA STRUCTURES ===
@@ -426,6 +432,4 @@ __all__ = [
     "PersistenceError", "LLMError",
     
     # Utilities
-    "validate_position", "validate_tile_type", "validate_intent",
-    "create_initial_game_state", "DIRECTION_VECTORS"
-]
+    "vali
