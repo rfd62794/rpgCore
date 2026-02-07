@@ -34,10 +34,15 @@ class SemanticBaker:
     """
     
     def __init__(self, model_name: str = "all-MiniLM-L6-v2"):
-        """Initialize the baker with sentence transformer model."""
+        """Initialize the baker (model loaded only when baking)."""
         self.model_name = model_name
-        self.model = SentenceTransformer(model_name)
+        self.model = None  # Lazy load only when baking
         logger.info(f"Semantic Baker initialized with model: {model_name}")
+    
+    def _ensure_model_loaded(self):
+        """Ensure the sentence transformer model is loaded."""
+        if self.model is None:
+            self.model = SentenceTransformer(self.model_name)
     
     def bake_embeddings(self, output_path: Path) -> Dict[str, np.ndarray]:
         """
@@ -49,6 +54,9 @@ class SemanticBaker:
         Returns:
             Dictionary mapping intent names to embedding vectors
         """
+        # Load model only when baking
+        self._ensure_model_loaded()
+        
         # Load intent library
         intent_library = create_default_intent_library()
         
