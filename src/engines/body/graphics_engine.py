@@ -14,6 +14,11 @@ from typing import Dict, List, Tuple, Optional, Any
 from dataclasses import dataclass, field
 from enum import Enum
 import numpy as np
+try:
+    from PIL import Image, ImageTk
+    PIL_AVAILABLE = True
+except ImportError:
+    PIL_AVAILABLE = False
 
 from loguru import logger
 
@@ -193,6 +198,39 @@ class GraphicsEngine:
     def get_rgb_frame_buffer(self) -> Optional[np.ndarray]:
         """Get RGB frame buffer for display (Facade method)"""
         return self.frame_buffer.copy() if self.frame_buffer is not None else None
+    
+    def get_tkinter_image(self, scale_factor: int = 4) -> Optional[Any]:
+        """Get Tkinter PhotoImage for display in Cartographer tool"""
+        if not PIL_AVAILABLE:
+            logger.warning("⚠️ PIL not available, cannot create Tkinter image")
+            return None
+        
+        if self.frame_buffer is None:
+            return None
+        
+        try:
+            # Convert numpy array to PIL Image
+            # Scale up for better visibility in editor
+            new_width = self.width * scale_factor
+            new_height = self.height * scale_factor
+            
+            # Create PIL Image from numpy array
+            pil_image = Image.fromarray(self.frame_buffer, 'RGB')
+            
+            # Scale up for editor visibility
+            pil_image = pil_image.resize(
+                (new_width, new_height), 
+                Image.Resampling.NEAREST  # Preserve pixel art look
+            )
+            
+            # Convert to PhotoImage
+            photo_image = ImageTk.PhotoImage(pil_image)
+            
+            return photo_image
+            
+        except Exception as e:
+            logger.error(f"❌ Failed to create Tkinter image: {e}")
+            return None
     
     def get_status(self) -> Dict[str, Any]:
         """Get graphics engine status (Facade method)"""
