@@ -11,9 +11,12 @@ import numpy as np
 
 from loguru import logger
 from pydantic import BaseModel, Field
-from loot_system import Item
-from world_ledger import Coordinate, WorldChunk
+from typing import List, Dict, Optional, Any
+from enum import Enum
+import uuid
 
+from world_ledger import Coordinate
+from logic.orientation import Orientation, WorldChunk
 
 class Goal(BaseModel):
     """A narrative objective for the player/agent."""
@@ -150,6 +153,7 @@ class GameState(BaseModel):
     
     player: PlayerStats = Field(default_factory=PlayerStats)
     position: Coordinate = Field(default_factory=lambda: Coordinate(0, 0, 0))  # x, y, time
+    player_angle: float = 0.0  # Facing angle in degrees for 3D rendering
     world_time: int = 0  # Global world clock (turns since epoch)
     rooms: Dict[str, Room] = Field(default_factory=dict)  # Legacy compatibility
     turn_count: int = 0
