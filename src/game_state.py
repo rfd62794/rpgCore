@@ -139,6 +139,8 @@ class Relationship(BaseModel):
 class GameState(BaseModel):
     """Complete state of the game world with vectorized context support."""
     
+    model_config = {"arbitrary_types_allowed": True}
+    
     player: PlayerStats = Field(default_factory=PlayerStats)
     current_room: str = "tavern"
     rooms: Dict[str, Room] = Field(default_factory=dict)
