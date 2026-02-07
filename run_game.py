@@ -284,6 +284,11 @@ class SyntheticRealityDirector:
             # Enable threat mode if NPC is hostile
             self.renderer.set_threat_mode(current_npc_mood in ["hostile", "unfriendly"])
         
+        # Calculate perception range
+        wisdom = self.game_state.player.attributes.get("wisdom", 10)
+        intelligence = self.game_state.player.attributes.get("intelligence", 10)
+        perception_range = max(5, (wisdom + intelligence) // 2)
+        
         # Render 3D viewport
         frame = self.renderer.render_frame(
             self.game_state, 
