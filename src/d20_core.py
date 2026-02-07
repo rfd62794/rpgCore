@@ -11,6 +11,7 @@ Responsibilities:
 """
 
 import random
+import hashlib
 from typing import Dict, List, Optional, Any, Tuple
 from dataclasses import dataclass
 from enum import Enum
