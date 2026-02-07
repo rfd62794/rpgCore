@@ -110,7 +110,7 @@ class StaticCanvas:
         self.render_mode = RenderMode.LIVE
         self.target_fps = 10.0  # Target refresh rate
         self.min_terminal_width = 80  # Reduced for testing
-        self.min_terminal_height = 24  # Reduced for testing
+        self.min_terminal_height = 20  # Reduced for testing
         
         # Live display
         self.live = None
@@ -209,6 +209,10 @@ class StaticCanvas:
         # Update dashboard state as well
         print("STATIC CANVAS: Calling dashboard.update_game_state")
         self.dashboard.update_game_state(game_state)
+        
+        # Force a refresh to update the live display immediately
+        if self.is_active and self.live:
+            self.live.update(self._render_frame())
         
         # Mark as dirty for redraw
         self.state.mark_dirty()
