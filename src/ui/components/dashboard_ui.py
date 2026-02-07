@@ -275,12 +275,6 @@ class DashboardUI:
             border_style="dim"
         ))
         
-        # Add status footer
-        layout["footer"].update(Panel(
-            f"[dim]Turn: {self.state.system_status.get('turn', 0)} | Position: {self.state.system_status.get('position', (0, 0))} | Active: {self.state.is_active}[/dim]",
-            border_style="dim"
-        ))
-        
         # Create main panel
         main_panel = Panel(
             layout,
