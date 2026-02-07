@@ -613,9 +613,14 @@ def main():
     print("Compiling YAML definitions into binary assets...")
     print()
     
-    # Initialize baker
-    manifest_path = Path("assets/ASSET_MANIFEST.yaml")
-    output_path = Path("assets/assets.dgt")
+    # Initialize baker with absolute paths
+    root_dir = Path(__file__).parent.parent.parent
+    manifest_path = root_dir / "assets" / "ASSET_MANIFEST.yaml"
+    output_path = root_dir / "assets" / "assets.dgt"
+    
+    print(f"📁 Root: {root_dir}")
+    print(f"📋 Manifest: {manifest_path}")
+    print(f"💾 Output: {output_path}")
     
     baker = DGTAssetBaker(manifest_path, output_path)
     
