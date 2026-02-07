@@ -280,6 +280,11 @@ class GameState(BaseModel):
         path.write_text(self.model_dump_json(indent=2))
         logger.info(f"Game saved to {path}")
     
+    @classmethod
+    def load_from_file(cls, path: Path) -> "GameState":
+        """Load game state from JSON."""
+        data = path.read_text()
+        logger.info(f"Game loaded from {path}")
         return cls.model_validate_json(data)
 
 
