@@ -6408,3 +6408,43 @@ expected alphabetic or numeric character, but found '.'
 2026-02-07 13:53:33 | ERROR | utils.asset_loader:_generate_effect_sprites:516 | 💥 Failed to generate effect sprites: Size must be a sequence of length 2
 2026-02-07 13:56:27 | ERROR | __main__:_initialize_deconstructed_systems:85 | 💥 System initialization failed: 'SystemConfig' object has no attribute 'assets_path'
 2026-02-07 13:59:08 | ERROR | __main__:_initialize_deconstructed_systems:92 | 💥 System initialization failed: name 'Path' is not defined
+2026-02-07 14:54:52 | ERROR | assets.tiny_farm_ingestor:_apply_palette_locking:365 | ⚠️ Error applying palette locking: could not broadcast input array from shape (3,) into shape (4,)
+2026-02-07 14:54:52 | ERROR | assets.tiny_farm_ingestor:_numpy_to_tkinter:423 | ⚠️ Error converting numpy to tkinter: Too early to create image: no default root window
+2026-02-07 14:54:52 | ERROR | assets.tiny_farm_ingestor:_load_and_process_sprite:244 | ❌ Failed to process asset: voyager_idle
+2026-02-07 14:54:52 | ERROR | assets.tiny_farm_ingestor:_apply_palette_locking:365 | ⚠️ Error applying palette locking: could not broadcast input array from shape (3,) into shape (4,)
+2026-02-07 14:54:52 | ERROR | assets.tiny_farm_ingestor:_numpy_to_tkinter:423 | ⚠️ Error converting numpy to tkinter: Too early to create image: no default root window
+2026-02-07 14:54:52 | ERROR | assets.tiny_farm_ingestor:_load_and_process_sprite:244 | ❌ Failed to process asset: voyager_walk
+2026-02-07 14:54:52 | ERROR | assets.tiny_farm_ingestor:_apply_dither_matching:332 | ⚠️ Error applying dither pattern lush_green: operands could not be broadcast together with shapes (8,8,4) (3,) 
+2026-02-07 14:54:52 | ERROR | assets.tiny_farm_ingestor:_apply_palette_locking:365 | ⚠️ Error applying palette locking: could not broadcast input array from shape (3,) into shape (4,)
+2026-02-07 14:54:52 | ERROR | assets.tiny_farm_ingestor:_numpy_to_tkinter:423 | ⚠️ Error converting numpy to tkinter: Too early to create image: no default root window
+2026-02-07 14:54:52 | ERROR | assets.tiny_farm_ingestor:_load_and_process_sprite:244 | ❌ Failed to process asset: swaying_oak
+2026-02-07 14:54:53 | ERROR | assets.tiny_farm_ingestor:_apply_dither_matching:332 | ⚠️ Error applying dither pattern wood_brown: operands could not be broadcast together with shapes (8,8,4) (3,) 
+2026-02-07 14:54:53 | ERROR | assets.tiny_farm_ingestor:_apply_palette_locking:365 | ⚠️ Error applying palette locking: could not broadcast input array from shape (3,) into shape (4,)
+2026-02-07 14:54:53 | ERROR | assets.tiny_farm_ingestor:_numpy_to_tkinter:423 | ⚠️ Error converting numpy to tkinter: Too early to create image: no default root window
+2026-02-07 14:54:53 | ERROR | assets.tiny_farm_ingestor:_load_and_process_sprite:244 | ❌ Failed to process asset: wood_fence
+2026-02-07 14:54:53 | ERROR | assets.tiny_farm_ingestor:_apply_dither_matching:332 | ⚠️ Error applying dither pattern metal_silver: operands could not be broadcast together with shapes (8,8,4) (3,) 
+2026-02-07 14:54:53 | ERROR | assets.tiny_farm_ingestor:_apply_palette_locking:365 | ⚠️ Error applying palette locking: could not broadcast input array from shape (3,) into shape (4,)
+2026-02-07 14:54:53 | ERROR | assets.tiny_farm_ingestor:_numpy_to_tkinter:423 | ⚠️ Error converting numpy to tkinter: Too early to create image: no default root window
+2026-02-07 14:54:53 | ERROR | assets.tiny_farm_ingestor:_load_and_process_sprite:244 | ❌ Failed to process asset: iron_lockbox
+2026-02-07 14:54:53 | ERROR | assets.tiny_farm_ingestor:_apply_dither_matching:332 | ⚠️ Error applying dither pattern wood_brown: operands could not be broadcast together with shapes (8,8,4) (3,) 
+2026-02-07 14:54:53 | ERROR | assets.tiny_farm_ingestor:_apply_palette_locking:365 | ⚠️ Error applying palette locking: could not broadcast input array from shape (3,) into shape (4,)
+2026-02-07 14:54:53 | ERROR | assets.tiny_farm_ingestor:_numpy_to_tkinter:423 | ⚠️ Error converting numpy to tkinter: Too early to create image: no default root window
+2026-02-07 14:54:53 | ERROR | assets.tiny_farm_ingestor:_load_and_process_sprite:244 | ❌ Failed to process asset: house
+2026-02-07 14:54:53 | ERROR | assets.tiny_farm_ingestor:_apply_dither_matching:332 | ⚠️ Error applying dither pattern lush_green: operands could not be broadcast together with shapes (8,8,4) (3,) 
+2026-02-07 14:54:53 | ERROR | assets.tiny_farm_ingestor:_apply_palette_locking:365 | ⚠️ Error applying palette locking: could not broadcast input array from shape (3,) into shape (4,)
+2026-02-07 14:54:53 | ERROR | assets.tiny_farm_ingestor:_numpy_to_tkinter:423 | ⚠️ Error converting numpy to tkinter: Too early to create image: no default root window
+2026-02-07 14:54:53 | ERROR | assets.tiny_farm_ingestor:_load_and_process_sprite:244 | ❌ Failed to process asset: crops
+2026-02-07 14:54:53 | ERROR | assets.tiny_farm_ingestor:_apply_dither_matching:332 | ⚠️ Error applying dither pattern stone_gray: operands could not be broadcast together with shapes (8,8,4) (3,) 
+2026-02-07 14:54:53 | ERROR | assets.tiny_farm_ingestor:_apply_palette_locking:365 | ⚠️ Error applying palette locking: could not broadcast input array from shape (3,) into shape (4,)
+2026-02-07 14:54:53 | ERROR | assets.tiny_farm_ingestor:_numpy_to_tkinter:423 | ⚠️ Error converting numpy to tkinter: Too early to create image: no default root window
+2026-02-07 14:54:53 | ERROR | assets.tiny_farm_ingestor:_load_and_process_sprite:244 | ❌ Failed to process asset: dirt_path
+2026-02-07 14:54:53 | ERROR | assets.tiny_farm_ingestor:_apply_dither_matching:332 | ⚠️ Error applying dither pattern lush_green: operands could not be broadcast together with shapes (8,8,4) (3,) 
+2026-02-07 14:54:53 | ERROR | assets.tiny_farm_ingestor:_apply_palette_locking:365 | ⚠️ Error applying palette locking: could not broadcast input array from shape (3,) into shape (4,)
+2026-02-07 14:54:53 | ERROR | assets.tiny_farm_ingestor:_numpy_to_tkinter:423 | ⚠️ Error converting numpy to tkinter: Too early to create image: no default root window
+2026-02-07 14:54:53 | ERROR | assets.tiny_farm_ingestor:_load_and_process_sprite:244 | ❌ Failed to process asset: grass_tiles
+2026-02-07 14:54:53 | ERROR | assets.tiny_farm_ingestor:_apply_palette_locking:365 | ⚠️ Error applying palette locking: could not broadcast input array from shape (3,) into shape (4,)
+2026-02-07 14:54:53 | ERROR | assets.tiny_farm_ingestor:_numpy_to_tkinter:423 | ⚠️ Error converting numpy to tkinter: Too early to create image: no default root window
+2026-02-07 14:54:53 | ERROR | assets.tiny_farm_ingestor:_load_and_process_sprite:244 | ❌ Failed to process asset: chicken
+2026-02-07 14:54:53 | ERROR | assets.tiny_farm_ingestor:_apply_palette_locking:365 | ⚠️ Error applying palette locking: could not broadcast input array from shape (3,) into shape (4,)
+2026-02-07 14:54:53 | ERROR | assets.tiny_farm_ingestor:_numpy_to_tkinter:423 | ⚠️ Error converting numpy to tkinter: Too early to create image: no default root window
+2026-02-07 14:54:53 | ERROR | assets.tiny_farm_ingestor:_load_and_process_sprite:244 | ❌ Failed to process asset: cow
