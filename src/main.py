@@ -416,7 +416,7 @@ async def run_tavern_autopilot():
         "scene": "tavern",
         "seed": "TAVERN_SEED",
         "target_fps": 60,
-        "enable_graphics": True,
+        "enable_graphics": False,
         "enable_persistence": True,
         "enable_logging": True
     }

@@ -181,7 +181,7 @@ class DDEngine:
         
         try:
             # Validate command
-            validation = self._validate_command(command)
+            validation = await self._validate_command(command)
             
             if not validation.is_valid:
                 return CommandResult(

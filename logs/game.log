@@ -6182,3 +6182,24 @@
 2026-02-07 09:36:14 | INFO | core.heartbeat:_background_chunk_generation:359 | 🌍 Background chunk generation stopped
 2026-02-07 09:38:14 | INFO | utils.logger:initialize:59 | 📝 Logging system initialized
 2026-02-07 09:38:28 | INFO | utils.logger:initialize:59 | 📝 Logging system initialized
+2026-02-07 09:38:34 | INFO | utils.logger:initialize:59 | 📝 Logging system initialized
+2026-02-07 09:38:53 | INFO | utils.logger:initialize:59 | 📝 Logging system initialized
+2026-02-07 09:38:53 | INFO | main:__init__:86 | 🏰 DGT System initialized - Production SOA Architecture
+2026-02-07 09:38:53 | INFO | main:initialize:113 | 🚀 Initializing DGT System components...
+2026-02-07 09:38:53 | INFO | main:initialize:121 | 📝 Using fallback logging
+2026-02-07 09:38:53 | INFO | engines.world.world_engine:__init__:112 | 🌍 World Engine initialized with seed: TAVERN_SEED
+2026-02-07 09:38:53 | INFO | main:initialize:126 | 🌍 World Engine initialized with seed: TAVERN_SEED
+2026-02-07 09:38:53 | INFO | engines.mind.dd_engine:__init__:90 | 🧠 D&D Engine initialized - Command Pattern ready
+2026-02-07 09:38:53 | INFO | engines.mind.dd_engine:set_world_engine:506 | 🧠 World Engine dependency injected
+2026-02-07 09:38:53 | INFO | main:initialize:131 | 🧠 D&D Engine initialized
+2026-02-07 09:38:53 | INFO | actors.voyager:__init__:69 | 🧭 Pathfinding Navigator initialized: 50x50
+2026-02-07 09:38:53 | INFO | actors.voyager:__init__:185 | 🎯 Intent Generator initialized
+2026-02-07 09:38:53 | INFO | actors.voyager:__init__:320 | 🚶 Voyager initialized - STATE_PONDERING support ready
+2026-02-07 09:38:53 | INFO | main:initialize:140 | 🚶 Voyager initialized
+2026-02-07 09:38:53 | INFO | core.heartbeat:__init__:54 | 🫀 Heartbeat Controller initialized
+2026-02-07 09:38:53 | INFO | core.heartbeat:initialize_heartbeat:444 | 🫀 Heartbeat system initialized
+2026-02-07 09:38:53 | INFO | core.heartbeat:register_services:65 | 🫀 All services registered with Heartbeat
+2026-02-07 09:38:53 | INFO | main:_configure_tavern_scene:212 | 🍺 Tavern scene configured - Iron Chest at (32, 32)
+2026-02-07 09:38:53 | INFO | main:initialize:156 | ✅ DGT System initialization complete
+2026-02-07 09:38:55 | INFO | utils.logger:initialize:59 | 📝 Logging system initialized
+2026-02-07 09:39:01 | INFO | utils.logger:initialize:59 | 📝 Logging system initialized
