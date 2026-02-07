@@ -67,18 +67,12 @@ class LocationResolver:
             environments = manifest.get('environments', {})
             
             for env_id, env_data in environments.items():
-                location_name = env_data.get('name', f"Area_{env_id}")
+                location_name = env_data.get('name', env_id)
                 description = env_data.get('description', f"Unknown area {env_id}")
                 
-                # Extract coordinates from tile map
+                # Decode RLE-encoded tile map to coordinates
                 tile_map = env_data.get('tile_map', [])
-                coordinates = []
-                
-                # Convert 2D tile map to coordinate list
-                for y, row in enumerate(tile_map):
-                    for x, tile_id in enumerate(row):
-                        if tile_id != 0:  # 0 = empty/walkable
-                            coordinates.append((x, y))
+                coordinates = self._decode_rle_tile_map(tile_map, env_data.get('dimensions', [20, 18]))
                 
                 # Extract exits
                 exits = env_data.get('exits', {})
@@ -86,22 +80,32 @@ class LocationResolver:
                 # Extract NPCs
                 npcs = []
                 for npc in env_data.get('npcs', []):
-                    npcs.append(npc.get('name', f"NPC_{len(npcs)}"))
+                    npcs.append(npc.get('type', f"NPC_{len(npcs)}"))
                 
                 # Extract objects
                 objects = []
                 for obj in env_data.get('objects', []):
-                    objects.append(obj.get('name', f"Object_{len(objects)}"))
+                    objects.append(obj.get('type', f"Object_{len(objects)}"))
                 
-                # Determine primary tile type
-                tile_type = self._determine_tile_type(tile_map)
+                # Determine primary tile type from tags
+                tags = env_data.get('tags', [])
+                if 'interior' in tags:
+                    tile_type = "interior"
+                elif 'exterior' in tags:
+                    tile_type = "exterior"
+                elif 'forest' in tags:
+                    tile_type = "forest"
+                elif 'town' in tags:
+                    tile_type = "town"
+                else:
+                    tile_type = "unknown"
                 
                 # Create location data
                 location = LocationData(
                     name=location_name,
                     description=description,
                     coordinates=coordinates,
-                    biome=env_data.get('biome', 'unknown'),
+                    biome=env_data.get('biome', tags[0] if tags else 'unknown'),
                     exits=exits,
                     npcs=npcs,
                     objects=objects,
@@ -120,6 +124,42 @@ class LocationResolver:
             logger.error(f"❌ Failed to load location data: {e}")
             # Create default location
             self._create_default_location()
+    
+    def _decode_rle_tile_map(self, tile_map: List[int], dimensions: List[int]) -> List[Tuple[int, int]]:
+        """
+        Decode RLE-encoded tile map to coordinate list.
+        
+        Args:
+            tile_map: RLE-encoded tile map [tile_id, count, tile_id, count, ...]
+            dimensions: [width, height] of the map
+            
+        Returns:
+            List of (x, y) coordinates where tiles exist
+        """
+        if not tile_map or len(tile_map) < 2:
+            return []
+        
+        width, height = dimensions
+        coordinates = []
+        
+        # Decode RLE
+        decoded_map = []
+        i = 0
+        while i < len(tile_map):
+            tile_id = tile_map[i]
+            count = tile_map[i + 1] if i + 1 < len(tile_map) else 1
+            decoded_map.extend([tile_id] * count)
+            i += 2
+        
+        # Convert to coordinates
+        for y in range(height):
+            for x in range(width):
+                if y * width + x < len(decoded_map):
+                    tile_id = decoded_map[y * width + x]
+                    if tile_id != 0:  # 0 = empty/walkable
+                        coordinates.append((x, y))
+        
+        return coordinates
     
     def _determine_tile_type(self, tile_map: List[List[int]]) -> str:
         """Determine the primary tile type for a location."""

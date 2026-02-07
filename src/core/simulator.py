@@ -339,6 +339,7 @@ class SimulatorHost:
             # Position changes (POSITIONAL AUTHORITY)
             room_changed = False
             new_room = None
+            position_changed = False
             
             if llm_response.intent == "leave_area":
                 # Handle room transitions AND coordinate mutation
@@ -353,12 +354,18 @@ class SimulatorHost:
                     direction = self._extract_direction_from_input(player_input)
                     if direction != "here":
                         self._update_voyager_position(direction)
+                        position_changed = True
                         logger.info(f"🚶️ Voyager moved {direction} (leave_area intent)")
             elif llm_response.intent in ["move", "travel", "go", "walk"]:
                 # Extract direction from action input for position update
                 direction = self._extract_direction_from_input(player_input)
                 self._update_voyager_position(direction)
+                position_changed = True
                 logger.info(f"🚶️ Voyager moved {direction}")
+            
+            # BIOME TRANSITION HOOK: Update location if position changed
+            if position_changed:
+                self._update_location_context()
             
             # Loot generation
             loot_item = None
