@@ -84,6 +84,7 @@ class AutonomousDirector:
         self.current_beacon: Optional[NarrativeBeacon] = None
         self.beacon_history: List[NarrativeBeacon] = []
         self.voyager_position: Tuple[int, int] = (0, 0)
+        self.turn_count: int = 0  # Add turn counter as instance variable
         
         # Cinematic controls
         self.playback_speed = 1.0  # 1.0 = normal, 2.0 = fast, 0.5 = slow
