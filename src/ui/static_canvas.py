@@ -32,6 +32,13 @@ from game_state import GameState
 from world_ledger import WorldLedger
 from logic.faction_system import FactionSystem
 
+# Import multi-pass rendering system
+from .render_passes import RenderPassRegistry, RenderContext, RenderPassType
+from .render_passes.pixel_viewport import PixelViewportPass, PixelViewportConfig
+from .render_passes.braille_radar import BrailleRadarPass, RadarConfig
+from .render_passes.ansi_vitals import ANSIVitalsPass, VitalsConfig
+from .render_passes.geometric_profile import GeometricProfilePass, ProfileConfig, ShapeType
+
 
 class RenderMode(Enum):
     """Rendering modes for the static canvas."""
@@ -76,6 +83,10 @@ class StaticCanvas:
         
         # Initialize dashboard UI
         self.dashboard = DashboardUI(console, world_ledger, faction_system)
+        
+        # Initialize multi-pass rendering system
+        self.render_registry = RenderPassRegistry()
+        self._initialize_render_passes()
         
         # Canvas state
         self.state = CanvasState(
@@ -129,6 +140,56 @@ class StaticCanvas:
         }
         
         logger.info("Static Canvas initialized with fixed-grid protocol")
+    
+    def _initialize_render_passes(self) -> None:
+        """Initialize all render passes for the multi-pass system."""
+        # Zone A: Pixel Viewport (Half-block pixel art)
+        pixel_config = PixelViewportConfig(
+            width=60,
+            height=24,
+            pixel_scale=2,
+            show_sprites=True,
+            animation_speed=1.0
+        )
+        pixel_pass = PixelViewportPass(pixel_config)
+        pixel_pass.set_world_ledger(self.world_ledger)
+        self.render_registry.register_pass(pixel_pass)
+        
+        # Zone B: Braille Radar (Sub-pixel mapping)
+        radar_config = RadarConfig(
+            width=10,
+            height=10,
+            scale=1.0,
+            show_grid=False,
+            player_blink=True,
+            entity_colors=True
+        )
+        radar_pass = BrailleRadarPass(radar_config)
+        self.render_registry.register_pass(radar_pass)
+        
+        # Zone C: ANSI Vitals (Progress bars)
+        vitals_config = VitalsConfig(
+            width=20,
+            height=8,
+            show_bars=True,
+            show_numbers=True,
+            color_gradients=True
+        )
+        vitals_pass = ANSIVitalsPass(vitals_config)
+        self.render_registry.register_pass(vitals_pass)
+        
+        # Zone D: Geometric Profile (ASCII line-art)
+        profile_config = ProfileConfig(
+            width=15,
+            height=10,
+            shape_type=ShapeType.TRIANGLE,
+            show_outline=True,
+            animate_rotation=False
+        )
+        profile_pass = GeometricProfilePass(profile_config)
+        self.render_registry.register_pass(profile_pass)
+        
+        logger.info("Multi-pass rendering system initialized with 4 zones")
     
     def start_live_display(self) -> bool:
         """
@@ -314,68 +375,95 @@ class StaticCanvas:
         return layout
     
     def _populate_layout(self, layout: Layout) -> None:
-        """Populate the layout with component content."""
+        """Populate the layout with multi-pass rendered content."""
         # Add header
         layout["header"].update(Panel(
-            "[bold blue]DIRECTOR'S CONSOLE[/bold blue] - Static Canvas Protocol",
+            "[bold blue]DIRECTOR'S CONSOLE[/bold blue] - Multi-Pass Rendering",
             border_style="blue"
         ))
         
-        # Add viewport
-        try:
-            viewport_panel = self.dashboard._render_component(self.dashboard.viewport, ZoneType.VIEWPORT)
-            layout["viewport"].update(viewport_panel)
-        except Exception as e:
-            logger.error(f"Error rendering viewport: {e}")
-            layout["viewport"].update(Panel(
-                f"[red]Viewport Error[/red]\n{str(e)}",
-                title="[red]VIEWPORT ERROR[/red]",
-                border_style="red"
-            ))
-        
-        # Add vitals
-        try:
-            pulse = self.dashboard.vitals.update_pulse()
-            vitals_panel = self.dashboard.vitals.render_vitals(self.state.vital_status, pulse)
-            layout["vitals"].update(vitals_panel)
-        except Exception as e:
-            logger.error(f"Error rendering vitals: {e}")
-            layout["vitals"].update(Panel(
-                f"[red]Vitals Error[/red]\n{str(e)}",
-                title="[red]VITALS ERROR[/red]",
-                border_style="red"
-            ))
-        
-        # Add inventory
-        try:
-            inventory_panel = self.dashboard.inventory.render_inventory()
-            layout["inventory"].update(inventory_panel)
-        except Exception as e:
-            logger.error(f"Error rendering inventory: {e}")
-            layout["inventory"].update(Panel(
-                f"[red]Inventory Error[/red]\n{str(e)}",
-                title="[red]INVENTORY ERROR[/red]",
-                border_style="red"
-            ))
-        
-        # Add goals
-        try:
-            goals_panel = self.dashboard.goals.render_goals(self.state.goal_state)
-            layout["goals"].update(goals_panel)
-        except Exception as e:
-            logger.error(f"Error rendering goals: {e}")
+        # Create render context
+        if self.state.game_state:
+            context = RenderContext(
+                game_state=self.state.game_state,
+                world_ledger=self.world_ledger,
+                viewport_bounds=(0, 0, 100, 100),  # World bounds
+                current_time=time.time(),
+                frame_count=self.state.frame_count
+            )
+            
+            # Render all passes
+            render_results = self.render_registry.render_all(context)
+            
+            # Add Zone A: Pixel Viewport
+            if RenderPassType.PIXEL_VIEWPORT in render_results:
+                pixel_result = render_results[RenderPassType.PIXEL_VIEWPORT]
+                layout["viewport"].update(Panel(
+                    pixel_result.content,
+                    title="[bold green]PIXEL VIEWPORT[/bold green]",
+                    border_style="green"
+                ))
+            
+            # Add Zone B: Braille Radar (overlay in viewport corner)
+            if RenderPassType.BRAILLE_RADAR in render_results:
+                radar_result = render_results[RenderPassType.BRAILLE_RADAR]
+                radar_panel = Panel(
+                    radar_result.content,
+                    title="[bold cyan]RADAR[/bold cyan]",
+                    border_style="cyan"
+                )
+                # Create overlay layout for viewport with radar
+                viewport_layout = Layout()
+                viewport_layout.split_row(
+                    Layout(name="main_viewport", ratio=4),
+                    Layout(name="radar_overlay", ratio=1)
+                )
+                viewport_layout["main_viewport"].update(Panel(
+                    render_results[RenderPassType.PIXEL_VIEWPORT].content,
+                    title="[bold green]PIXEL VIEWPORT[/bold green]",
+                    border_style="green"
+                ))
+                viewport_layout["radar_overlay"].update(radar_panel)
+                layout["viewport"].update(viewport_layout)
+            
+            # Add Zone C: ANSI Vitals
+            if RenderPassType.ANSI_VITALS in render_results:
+                vitals_result = render_results[RenderPassType.ANSI_VITALS]
+                layout["vitals"].update(Panel(
+                    vitals_result.content,
+                    title="[bold yellow]VITALS[/bold yellow]",
+                    border_style="yellow"
+                ))
+            
+            # Add Zone D: Geometric Profile
+            if RenderPassType.GEOMETRIC_PROFILE in render_results:
+                profile_result = render_results[RenderPassType.GEOMETRIC_PROFILE]
+                layout["inventory"].update(Panel(
+                    profile_result.content,
+                    title="[bold magenta]PROFILE[/bold magenta]",
+                    border_style="magenta"
+                ))
+            
+            # Add goals (traditional)
             layout["goals"].update(Panel(
-                f"[red]Goals Error[/red]\n{str(e)}",
-                title="[red]GOALS ERROR[/red]",
-                border_style="red"
+                "[dim]Goals[/dim]\n[dim]Ready for objectives...[/dim]",
+                title="[dim]GOALS[/dim]",
+                border_style="dim"
             ))
-        
-        # Add conversation
-        layout["conversation"].update(Panel(
-            "[dim]Conversation Feed[/dim]\n[dim]Ready for dialogue...[/dim]",
-            title="[dim]DIALOGUE[/dim]",
-            border_style="dim"
-        ))
+            
+            # Add conversation (traditional)
+            layout["conversation"].update(Panel(
+                "[dim]Conversation Feed[/dim]\n[dim]Ready for dialogue...[/dim]",
+                title="[dim]DIALOGUE[/dim]",
+                border_style="dim"
+            ))
+        else:
+            # No game state - show placeholder
+            layout["viewport"].update(Panel(
+                "[yellow]No game state available[/yellow]",
+                title="[yellow]VIEWPORT[/yellow]",
+                border_style="yellow"
+            ))
     
     def _check_terminal_size(self) -> bool:
         """
