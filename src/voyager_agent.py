@@ -151,11 +151,20 @@ class VoyagerAgent:
                     score -= 1000 # Massive penalty for trying to skip the scene
                     
                 # GOAL MALUS: Penalize leaving if there are still active goals in this room
-                # We assume any current active_goals are for this room
                 if active_goals and len(active_goals) > 0:
                     score -= 500 # Don't leave till the work is done
             
             # F. Goal Alignment (The "Purpose" Fix)
+            goal_bonus = 0
+            if active_goals:
+                for goal in active_goals:
+                    # Check if action ID or its general intent matches goal methods
+                    # Using hasattr for flexibility (Goal objects or dicts)
+                    methods = getattr(goal, 'method_tags', []) if not isinstance(goal, dict) else goal.get('method_tags', [])
+                    if action_id in methods:
+                        goal_bonus += 500
+            
+            score += goal_bonus
 
             scored_actions.append({
                 "action": action,
