@@ -14,7 +14,7 @@ def run_final_validation():
     print("=" * 50)
     
     # Check 1: Memory-mapped assets exist
-    mmap_path = Path("assets/intent_vectors.mmap")
+    mmap_path = Path("src/assets/intent_vectors.mmap")
     if mmap_path.exists():
         print("✅ Memory-mapped assets: READY")
     else:

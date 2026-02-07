@@ -1,0 +1,15 @@
+{
+  "epoch": 10,
+  "year": 1000,
+  "golden_seed": 2068547134,
+  "seed_string": "DGT_EPOCH_10_1770443328",
+  "generation_time": 1770443328.2085106,
+  "validation_status": "PASSED",
+  "deployment_target": "West Palm Beach DGT Hub",
+  "simulator_version": "1.0.0",
+  "performance_targets": {
+    "boot_time_ms": 5.0,
+    "turn_around_ms": 300.0,
+    "deterministic_consistency": 0.95
+  }
+}
