@@ -243,33 +243,76 @@ class AssetLoader:
                 self.registry[prefab_id] = asset_def
                 
             logger.info(f"🏗️ Loaded {len(prefabs_data)} prefab definitions")
-            
+
         except Exception as e:
             logger.error(f"💥 Failed to load prefabs.yaml: {e}")
-    
+
+    def _generate_object_sprites(self) -> None:
+        """Generate procedural object sprites"""
+        try:
+            object_types = {
+                'crystal': {'color': (255, 0, 255, 255), 'shape': 'diamond'},
+                'iron_chest': {'color': (128, 128, 128, 255), 'shape': 'rectangle'},
+                'wooden_door': {'color': (139, 90, 43, 255), 'shape': 'rectangle'},
+                'tree': {'color': (0, 128, 0, 255), 'shape': 'tree'},
+                'bush': {'color': (0, 100, 0, 255), 'shape': 'circle'},
+                'animated_flower': {'color': (255, 182, 193, 255), 'shape': 'flower'}
+            }
+            
+            for object_id, props in object_types.items():
+                sprite = self._create_object_sprite(object_id, props['color'], props['shape'])
+                photo = ImageTk.PhotoImage(sprite)
+                self.registry[object_id] = photo
+                self._sprite_refs.append(photo)
+
+            logger.info(f"🎨 Generated {len(object_types)} object sprites")
+
+        except Exception as e:
+            logger.error(f"💥 Failed to generate object sprites: {e}")
+
+    def _create_object_sprite(self, object_id: str, color: tuple, shape: str) -> Image.Image:
+        """Create a procedural object sprite"""
+        sprite = Image.new((16, 16), (255, 255, 255, 0), "RGBA")
+        draw = ImageDraw.Draw(sprite)
+
+        if shape == 'diamond':
+            # Crystal diamond
+            draw.polygon([(8, 2), (14, 8), (8, 14), (2, 8)], fill=color)
+            draw.polygon([(8, 4), (12, 8), (8, 12), (4, 8)], fill=(255, 255, 255, 128))
+        elif shape == 'rectangle':
+            # Chest/door rectangle
+            draw.rectangle([2, 2, 14, 14], fill=color)
+            draw.rectangle([4, 4, 12, 12], fill=(255, 255, 255, 64))
+        elif shape == 'tree':
+            # Tree shape
+            draw.rectangle([6, 8, 10, 14], fill=(139, 69, 19, 255))  # Trunk
+            draw.ellipse([2, 2, 14, 10], fill=color)  # Leaves
+        elif shape == 'circle':
+            # Bush circle
+            draw.ellipse([2, 2, 14, 14], fill=color)
+            draw.ellipse([4, 4, 12, 12], fill=(255, 255, 255, 64))
+        elif shape == 'flower':
+            # Flower shape
+            draw.ellipse([6, 6, 10, 10], fill=color)
+            draw.ellipse([7, 7, 9, 9], fill=(255, 255, 200, 255))
+            draw.rectangle([7, 10, 9, 12], fill=(0, 128, 0, 255))  # Stem
+
+        return sprite
+
     def _generate_tile_sprites(self) -> None:
         """Generate procedural tile sprites"""
         for tile_type in TileType:
             sprite = self._create_tile_sprite(tile_type)
             self.tile_sprites[tile_type] = sprite
-        
+
         logger.info(f"🎨 Generated {len(self.tile_sprites)} tile sprites")
-    
-    def _generate_object_sprites(self) -> None:
-        """Generate procedural object sprites based on characteristics"""
-        for asset_id, asset_def in self.registry.items():
-            if asset_def.asset_type == AssetType.OBJECT:
-                sprite = self._create_object_sprite(asset_def)
-                self.object_sprites[asset_id] = sprite
-        
-        logger.info(f"🎨 Generated {len(self.object_sprites)} object sprites")
-    
+
     def _generate_actor_sprites(self) -> None:
         """Generate procedural actor sprites with states"""
         # Voyager sprites
         voyager_states = ["idle", "moving", "pondering", "interacting"]
         self.actor_sprites["voyager"] = {}
-        
+
         for state in voyager_states:
             sprite = self._create_actor_sprite("voyager", state)
             self.actor_sprites["voyager"][state] = sprite

@@ -6246,3 +6246,39 @@
 2026-02-07 13:39:45 | ERROR | utils.asset_loader:_generate_actor_sprites:554 | 💥 Failed to generate actor sprites: Size must be a sequence of length 2
 2026-02-07 13:39:45 | ERROR | utils.asset_loader:_generate_fallback_sprites:582 | 💥 Failed to generate fallback sprites: Size must be a sequence of length 2
 2026-02-07 13:39:45 | ERROR | utils.asset_loader:_generate_effect_sprites:299 | 💥 Failed to generate effect sprites: Size must be a sequence of length 2
+2026-02-07 13:40:46 | ERROR | utils.asset_loader:_load_object_definitions:219 | 💥 Failed to load objects.yaml: expected '<document start>', but found '<anchor>'
+  in "assets\objects.yaml", line 22, column 1
+2026-02-07 13:40:46 | ERROR | utils.asset_loader:_generate_object_sprites:271 | 💥 Failed to generate object sprites: AssetLoader._create_object_sprite() takes 2 positional arguments but 4 were given
+2026-02-07 13:40:46 | ERROR | utils.asset_loader:_generate_actor_sprites:597 | 💥 Failed to generate actor sprites: Size must be a sequence of length 2
+2026-02-07 13:40:46 | ERROR | utils.asset_loader:_generate_fallback_sprites:625 | 💥 Failed to generate fallback sprites: Size must be a sequence of length 2
+2026-02-07 13:40:46 | ERROR | utils.asset_loader:_generate_effect_sprites:342 | 💥 Failed to generate effect sprites: Size must be a sequence of length 2
+2026-02-07 13:40:46 | ERROR | utils.asset_loader:_load_object_definitions:219 | 💥 Failed to load objects.yaml: expected '<document start>', but found '<anchor>'
+  in "assets\objects.yaml", line 22, column 1
+2026-02-07 13:40:46 | ERROR | utils.asset_loader:_generate_object_sprites:271 | 💥 Failed to generate object sprites: AssetLoader._create_object_sprite() takes 2 positional arguments but 4 were given
+2026-02-07 13:40:46 | ERROR | utils.asset_loader:_generate_actor_sprites:597 | 💥 Failed to generate actor sprites: Size must be a sequence of length 2
+2026-02-07 13:40:46 | ERROR | utils.asset_loader:_generate_fallback_sprites:625 | 💥 Failed to generate fallback sprites: Size must be a sequence of length 2
+2026-02-07 13:40:46 | ERROR | utils.asset_loader:_generate_effect_sprites:342 | 💥 Failed to generate effect sprites: Size must be a sequence of length 2
+2026-02-07 13:40:46 | ERROR | utils.asset_loader:_load_object_definitions:219 | 💥 Failed to load objects.yaml: expected '<document start>', but found '<anchor>'
+  in "assets\objects.yaml", line 22, column 1
+2026-02-07 13:40:46 | ERROR | utils.asset_loader:_generate_object_sprites:271 | 💥 Failed to generate object sprites: AssetLoader._create_object_sprite() takes 2 positional arguments but 4 were given
+2026-02-07 13:40:46 | ERROR | utils.asset_loader:_generate_actor_sprites:597 | 💥 Failed to generate actor sprites: Size must be a sequence of length 2
+2026-02-07 13:40:46 | ERROR | utils.asset_loader:_generate_fallback_sprites:625 | 💥 Failed to generate fallback sprites: Size must be a sequence of length 2
+2026-02-07 13:40:46 | ERROR | utils.asset_loader:_generate_effect_sprites:342 | 💥 Failed to generate effect sprites: Size must be a sequence of length 2
+2026-02-07 13:41:03 | ERROR | utils.asset_loader:_load_object_definitions:219 | 💥 Failed to load objects.yaml: expected '<document start>', but found '<anchor>'
+  in "assets\objects.yaml", line 22, column 1
+2026-02-07 13:41:03 | ERROR | utils.asset_loader:_generate_object_sprites:271 | 💥 Failed to generate object sprites: AssetLoader._create_object_sprite() takes 2 positional arguments but 4 were given
+2026-02-07 13:41:03 | ERROR | utils.asset_loader:_generate_actor_sprites:597 | 💥 Failed to generate actor sprites: Size must be a sequence of length 2
+2026-02-07 13:41:03 | ERROR | utils.asset_loader:_generate_fallback_sprites:625 | 💥 Failed to generate fallback sprites: Size must be a sequence of length 2
+2026-02-07 13:41:03 | ERROR | utils.asset_loader:_generate_effect_sprites:342 | 💥 Failed to generate effect sprites: Size must be a sequence of length 2
+2026-02-07 13:41:03 | ERROR | utils.asset_loader:_load_object_definitions:219 | 💥 Failed to load objects.yaml: expected '<document start>', but found '<anchor>'
+  in "assets\objects.yaml", line 22, column 1
+2026-02-07 13:41:03 | ERROR | utils.asset_loader:_generate_object_sprites:271 | 💥 Failed to generate object sprites: AssetLoader._create_object_sprite() takes 2 positional arguments but 4 were given
+2026-02-07 13:41:03 | ERROR | utils.asset_loader:_generate_actor_sprites:597 | 💥 Failed to generate actor sprites: Size must be a sequence of length 2
+2026-02-07 13:41:03 | ERROR | utils.asset_loader:_generate_fallback_sprites:625 | 💥 Failed to generate fallback sprites: Size must be a sequence of length 2
+2026-02-07 13:41:03 | ERROR | utils.asset_loader:_generate_effect_sprites:342 | 💥 Failed to generate effect sprites: Size must be a sequence of length 2
+2026-02-07 13:41:03 | ERROR | utils.asset_loader:_load_object_definitions:219 | 💥 Failed to load objects.yaml: expected '<document start>', but found '<anchor>'
+  in "assets\objects.yaml", line 22, column 1
+2026-02-07 13:41:03 | ERROR | utils.asset_loader:_generate_object_sprites:271 | 💥 Failed to generate object sprites: AssetLoader._create_object_sprite() takes 2 positional arguments but 4 were given
+2026-02-07 13:41:03 | ERROR | utils.asset_loader:_generate_actor_sprites:597 | 💥 Failed to generate actor sprites: Size must be a sequence of length 2
+2026-02-07 13:41:03 | ERROR | utils.asset_loader:_generate_fallback_sprites:625 | 💥 Failed to generate fallback sprites: Size must be a sequence of length 2
+2026-02-07 13:41:03 | ERROR | utils.asset_loader:_generate_effect_sprites:342 | 💥 Failed to generate effect sprites: Size must be a sequence of length 2

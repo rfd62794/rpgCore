@@ -279,6 +279,10 @@ class ObserverView:
         if hasattr(self.voyager, 'quest_mode'):
             self.voyager.quest_mode = False
         
+        # Also disable legacy script for true object-aware behavior
+        if hasattr(self.voyager, 'follow_legacy_script'):
+            self.voyager.follow_legacy_script = lambda: None
+        
         self.log_event(f"🚶 Voyager starting at {self.voyager.current_position}")
         self.log_event("🎯 Object-Aware mode: PRIORITIZING interactions over movement")
         
