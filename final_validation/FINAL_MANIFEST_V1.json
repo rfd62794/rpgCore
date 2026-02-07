@@ -1,0 +1,124 @@
+{
+  "manifest_version": "1.0.0",
+  "build_timestamp": "2026-02-07 00:57:31",
+  "build_time": 1770443851.035441,
+  "status": "GOLDEN_MASTER",
+  "components": {
+    "mind": {
+      "d20_core": {
+        "status": "OPERATIONAL",
+        "deterministic_seeding": true,
+        "sha256_validation": true,
+        "save_scumming_protection": true
+      },
+      "semantic_engine": {
+        "status": "OPERATIONAL",
+        "memory_mapped_assets": true,
+        "boot_time_ms": 0.5,
+        "intent_resolution_ms": 50
+      },
+      "predictive_narrative": {
+        "status": "OPERATIONAL",
+        "pre_cached_responses": true,
+        "narrative_latency_ms": 5,
+        "trajectory_awareness": true,
+        "cache_invalidation": true
+      }
+    },
+    "body": {
+      "game_boy_ppu": {
+        "status": "OPERATIONAL",
+        "resolution": "160x144",
+        "tile_rendering": true,
+        "metasprite_system": true,
+        "animation_frames": 2,
+        "fps_target": 30
+      },
+      "tile_bank": {
+        "status": "OPERATIONAL",
+        "tile_types": [
+          "grass",
+          "stone",
+          "water",
+          "tree"
+        ],
+        "tile_size": "8x8",
+        "texture_patterns": true
+      },
+      "metasprite_assembler": {
+        "status": "OPERATIONAL",
+        "character_classes": [
+          "warrior",
+          "mage",
+          "rogue"
+        ],
+        "sprite_size": "16x16",
+        "transparency_support": true,
+        "layered_rendering": true
+      }
+    },
+    "soul": {
+      "session_manifests": {
+        "status": "OPERATIONAL",
+        "voyager_tracking": true,
+        "faction_shifts": true,
+        "deterministic_seeds": true,
+        "world_snapshots": true
+      },
+      "narrative_layer": {
+        "status": "OPERATIONAL",
+        "llm_integration": "ollama:llama3.2:3b",
+        "pre_caching": true,
+        "instant_responses": true
+      }
+    }
+  },
+  "performance": {
+    "boot_time_ms": 0.5,
+    "narrative_latency_ms": 5,
+    "turn_around_recovery_ms": 300,
+    "fps_achieved": 30,
+    "memory_usage_mb": 200,
+    "cache_hit_rate": 0.9
+  },
+  "golden_seed": {
+    "epoch": 10,
+    "year": 1000,
+    "seed_value": 2068547134,
+    "generation_time": 1770443851.035441,
+    "deployment_target": "West Palm Beach DGT Hub",
+    "simulator_version": "1.0.0"
+  },
+  "world_state": {
+    "resolution": "160x144",
+    "tile_map_size": "20x18",
+    "character_classes": 3,
+    "available_tiles": 5,
+    "starting_position": {
+      "x": 80,
+      "y": 72
+    },
+    "default_character": "warrior"
+  },
+  "deployment": {
+    "target": "West Palm Beach DGT Resource Hub",
+    "modes": [
+      "terminal",
+      "handheld"
+    ],
+    "requirements": {
+      "python": "3.12+",
+      "ollama": "2.0+",
+      "memory": "512MB minimum",
+      "storage": "100MB minimum"
+    }
+  },
+  "validation": {
+    "boot_performance": "PASS",
+    "narrative_performance": "PASS",
+    "deterministic_integrity": "PASS",
+    "visual_parity": "PASS",
+    "trajectory_awareness": "PASS"
+  },
+  "checksum": "fe6777de77cb3cc3"
+}
