@@ -441,7 +441,7 @@ class AutonomousDirector:
             
             logger.info(f"🎯 Generated beacon: {beacon.description} at {beacon.target_coords}")
     
-    def _generate_narrative_beacons(self, context: str, num_beacons: int = 3) -> List[Dict[str, Any]]:
+    async def _generate_narrative_beacons(self, context: str, num_beacons: int = 3) -> List[Dict[str, Any]]:
         """
         Generate narrative beacons using physical landmarks from the world map.
         
