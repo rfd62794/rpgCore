@@ -17,87 +17,156 @@ from ...pixel_renderer import PixelRenderer, ColorPalette
 from ...sprite_registry import SpriteRegistry
 from ...tile_bank import TileBank, TileType
 from ...models.metasprite import Metasprite, MetaspriteConfig, CharacterRole
+from ...virtual_ppu import VirtualPPU
 
 
 class _InternalPixelViewport:
-    """Internal PixelViewport implementation for the pass."""
+    """Internal Virtual PPU implementation for Game Boy three-layer rendering."""
     
     def __init__(self, config: 'PixelViewportConfig', world_ledger: Optional[WorldLedger] = None):
         self.config = config
         self.world_ledger = world_ledger
-        self.pixel_width = config.width
-        self.pixel_height = config.height * config.pixel_scale
-        self.pixel_renderer = PixelRenderer(
-            width=self.pixel_width,
-            height=self.pixel_height
+        
+        # Initialize Virtual PPU with Game Boy dimensions
+        self.virtual_ppu = VirtualPPU(
+            width=config.width * 8,  # Convert to pixels
+            height=config.height * 8
         )
+        
+        # Initialize sprite registry for compatibility
         self.sprite_registry = SpriteRegistry()
         self.entity_sprites = {}
         self.item_sprites = {}
+        
+        # Initialize metasprites for entities
+        self.metasprites: Dict[str, Metasprite] = {}
+        self._initialize_metasprites()
+    
+    def _initialize_metasprites(self):
+        """Initialize metasprites for different character types."""
+        # Create metasprites for different roles
+        roles = [
+            CharacterRole.VOYAGER,
+            CharacterRole.WARRIOR,
+            CharacterRole.ROGUE,
+            CharacterRole.MAGE,
+            CharacterRole.VILLAGER,
+            CharacterRole.GUARD,
+            CharacterRole.MERCHANT
+        ]
+        
+        for role in roles:
+            config = MetaspriteConfig(role=role)
+            metasprite = Metasprite(config)
+            self.metasprites[role.value] = metasprite
     
     def update_game_state(self, game_state):
         """Update viewport with game state."""
         # Update entity sprites
         self._update_entity_sprites(game_state)
         self._update_item_sprites(game_state)
+        
+        # Update tile map from world ledger
+        self._update_tile_map(game_state)
     
     def render_frame(self, game_state):
-        """Render pixel art frame."""
-        # Clear pixel buffer
-        self.pixel_renderer.clear()
+        """Render frame using Virtual PPU."""
+        # Update game state first
+        self.update_game_state(game_state)
         
-        # Render world environment
-        self._render_world_environment(game_state)
-        
-        # Render entities
-        self._render_entities(game_state)
-        
-        # Render player
-        self._render_player(game_state)
-        
-        return self.pixel_renderer.render_to_string()
-    
-    def _render_world_environment(self, game_state):
-        """Render world environment."""
-        player_x, player_y = game_state.position.x, game_state.position.y
-        
-        # Simple environment rendering
-        for y in range(self.pixel_height):
-            for x in range(self.pixel_width):
-                # Create simple floor pattern
-                if (x + y) % 4 == 0:
-                    pixel = ColorPalette.get_environment_color("floor", 0.3)
-                else:
-                    pixel = ColorPalette.get_environment_color("wall", 0.5)
-                self.pixel_renderer.set_pixel(x, y, pixel)
-    
-    def _render_entities(self, game_state):
-        """Render entities."""
-        # Render some placeholder entities
-        voyager = self.sprite_registry.get_voyager_sprite("neutral", "3x3")
-        if voyager:
-            self.pixel_renderer.draw_sprite(voyager, 30, 20, time.time())
-        
-        warrior = self.sprite_registry.get_character_sprite("warrior", "legion")
-        if warrior:
-            self.pixel_renderer.draw_sprite(warrior, 50, 20, time.time())
-    
-    def _render_player(self, game_state):
-        """Render the player."""
-        voyager = self.sprite_registry.get_voyager_sprite("neutral", "3x3")
-        if voyager:
-            # Center player
-            center_x = self.pixel_width // 2 - 1
-            center_y = self.pixel_height // 2 - 1
-            self.pixel_renderer.draw_sprite(voyager, center_x, center_y, time.time())
+        # Render frame with Virtual PPU
+        return self.virtual_ppu.render_frame()
     
     def _update_entity_sprites(self, game_state):
-        """Update entity sprite tracking."""
-        pass
+        """Update entity metasprites."""
+        # This would integrate with the EntityAI system
+        # For now, update based on game state position
+        player_x, player_y = game_state.position.x, game_state.y
+        
+        # Update player metasprite
+        if "voyager" in self.metasprites:
+            player_sprite = self.metasprites["voyager"]
+            player_sprite.set_facing_direction("down")  # Default facing
+            self.entity_sprites["player"] = player_sprite
     
     def _update_item_sprites(self, game_state):
-        """Update item sprite tracking."""
+        """Update item metasprites."""
+        # This would integrate with the inventory system
         pass
+    
+    def _update_tile_map(self, game_state):
+        """Update tile map from world ledger."""
+        if not self.world_ledger:
+            return
+        
+        # Sample world around player position
+        player_x, player_y = int(game_state.position.x), int(game_state.position.y)
+        
+        # Create a simple tile map around player
+        for y in range(-5, 6):  # 11x11 tile area around player
+            for x in range(-5, 6):
+                world_x = player_x + x
+                world_y = player_y + y
+                
+                # Determine tile type based on position
+                tile_key = self._determine_tile_type(world_x, world_y)
+                
+                self.virtual_ppu.set_tile(world_x, world_y, tile_key)
+    
+    def _determine_tile_type(self, x: int, y: int) -> str:
+        """Determine tile type based on world coordinates."""
+        # Simple tile determination logic
+        if abs(x) + abs(y) < 3:
+            return "grass_0"  # Near player - grass
+        elif abs(x) + abs(y) < 8:
+            return "path"  # Medium distance - path
+        elif abs(x) + abs(y) < 15:
+            return "tree"  # Far distance - trees
+        else:
+            return "void"  # Very far - void
+    
+    def add_entity(self, entity_id: str, x: int, y: int, role: CharacterRole, priority: int = 0) -> bool:
+        """Add an entity metasprite to the PPU."""
+        if role.value not in self.metasprites:
+            logger.warning(f"Unknown role: {role.value}")
+            return False
+        
+        metasprite = self.metasprites[role.value]
+        success = self.virtual_ppu.add_sprite(x, y, metasprite, priority)
+        
+        if success:
+            self.entity_sprites[entity_id] = metasprite
+        
+        return success
+    
+    def remove_entity(self, entity_id: str) -> bool:
+        """Remove an entity metasprite from the PPU."""
+        if entity_id in self.entity_sprites:
+            metasprite = self.entity_sprites[entity_id]
+            success = self.virtual_ppu.remove_sprite(metasprite)
+            
+            if success:
+                del self.entity_sprites[entity_id]
+            
+            return success
+        
+        return False
+    
+    def add_text_box(self, text: str, x: int, y: int, width: int, height: int) -> None:
+        """Add a text box window."""
+        self.virtual_ppu.add_window(text, x, y, width, height)
+    
+    def clear_windows(self) -> None:
+        """Clear all windows."""
+        self.virtual_ppu.clear_window()
+    
+    def switch_tile_bank(self, bank_name: str) -> bool:
+        """Switch to a different tile bank."""
+        return self.virtual_ppu.switch_tile_bank(bank_name)
+    
+    def get_ppu_info(self) -> Dict[str, Any]:
+        """Get PPU information."""
+        return self.virtual_ppu.get_ppu_info()
 
 
 @dataclass
