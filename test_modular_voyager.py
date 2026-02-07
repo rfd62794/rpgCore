@@ -30,7 +30,7 @@ def test_modular_components():
     # Test Intent Engine
     print("🧠 Testing IntentEngine...")
     config = create_default_config(seed="TEST_MODULAR")
-    world_engine = WorldEngineFactory.create_engine(config)
+    world_engine = WorldEngineFactory.create_world(config.world)
     intent_engine = IntentEngine(world_engine.object_registry)
     print(f"✅ Intent Engine initialized")
     
