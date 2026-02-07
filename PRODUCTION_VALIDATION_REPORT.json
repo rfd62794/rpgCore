@@ -1,5 +1,5 @@
 {
-  "validation_timestamp": "2026-02-07 01:18:19",
+  "validation_timestamp": "2026-02-07 01:19:26",
   "total_checks": 9,
   "passed_checks": 7,
   "failed_checks": 2,
@@ -58,11 +58,11 @@
     {
       "check_name": "Boot Performance",
       "passed": false,
-      "details": "Import: 10445.03ms, Init: 272.31ms",
+      "details": "Import: 9161.19ms, Init: 252.06ms",
       "metrics": {
-        "import_time_ms": 10445.027828216553,
-        "init_time_ms": 272.3093032836914,
-        "total_boot_time_ms": 10717.337131500244,
+        "import_time_ms": 9161.191940307617,
+        "init_time_ms": 252.06375122070312,
+        "total_boot_time_ms": 9413.25569152832,
         "target_import_ms": 100,
         "target_init_ms": 500
       }
@@ -70,20 +70,20 @@
     {
       "check_name": "Memory Footprint",
       "passed": true,
-      "details": "Memory increase: 0.10MB",
+      "details": "Memory increase: 0.23MB",
       "metrics": {
-        "baseline_memory_mb": 476.4296875,
-        "loaded_memory_mb": 476.53125,
-        "memory_increase_mb": 0.1015625,
+        "baseline_memory_mb": 475.31640625,
+        "loaded_memory_mb": 475.54296875,
+        "memory_increase_mb": 0.2265625,
         "target_increase_mb": 500
       }
     },
     {
       "check_name": "Action Latency",
       "passed": false,
-      "details": "Latency: 3791.51ms, Success: True",
+      "details": "Latency: 5025.51ms, Success: True",
       "metrics": {
-        "latency_ms": 3791.5072441101074,
+        "latency_ms": 5025.514125823975,
         "action_processed": true,
         "target_latency_ms": 500
       }

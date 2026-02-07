@@ -357,25 +357,24 @@ class SimulatorHost:
             
             # Step 5: Generate narrative (async)
             logger.debug("📖 Generating narrative...")
-            narrative_task = asyncio.create_task(
-                self.chronicler.narrate_stream(
-                    player_input=player_input,
-                    intent_id=llm_response.intent,
-                    arbiter_result={
-                        'success': outcome.success,
-                        'hp_delta': outcome.hp_delta,
-                        'gold_delta': outcome.gold_delta,
-                        'new_npc_state': arbiter_result.new_npc_state,
-                        'reasoning': f"{arbiter_result.reasoning}. {outcome.narrative_context}",
-                        'narrative_seed': arbiter_result.narrative_seed
-                    },
-                    context=context
-                )
+            
+            # Collect narrative tokens properly
+            narrative_text = ""
+            narrative_stream = self.chronicler.narrate_stream(
+                player_input=player_input,
+                intent_id=llm_response.intent,
+                arbiter_result={
+                    'success': outcome.success,
+                    'hp_delta': outcome.hp_delta,
+                    'gold_delta': outcome.gold_delta,
+                    'new_npc_state': arbiter_result.new_npc_state,
+                    'reasoning': f"{arbiter_result.reasoning}. {outcome.narrative_context}",
+                    'narrative_seed': arbiter_result.narrative_seed
+                },
+                context=context
             )
             
-            # Collect narrative tokens
-            narrative_text = ""
-            async for token in narrative_task:
+            async for token in narrative_stream:
                 narrative_text += token
             
             # Add loot notification to narrative

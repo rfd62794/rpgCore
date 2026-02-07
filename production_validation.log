@@ -58,3 +58,65 @@
 01:18:19 | INFO | 📚 Validating Documentation
 01:18:19 | INFO | 📊 Generating Validation Report
 01:18:19 | INFO | 📄 Validation report saved to PRODUCTION_VALIDATION_REPORT.json
+01:19:12 | INFO | 🔍 Starting Production Validation Suite
+01:19:12 | INFO | 🏛️ Validating Unified Architecture
+01:19:12 | INFO | ⚖️ Validating Intent Registry
+01:19:12 | INFO | 👁️ Validating Observer Pattern
+01:19:12 | INFO | ⚡ Validating Boot Performance
+01:19:21 | INFO | Semantic Baker initialized with model: all-MiniLM-L6-v2
+01:19:21 | INFO | Loaded 11 pre-baked intent embeddings (55 total examples)
+01:19:21 | INFO | ✅ Instant boot: Loaded pre-baked embeddings
+01:19:21 | INFO | 🏛️ SimulatorHost initialized - Single Source of Truth
+01:19:21 | INFO | 🚀 Initializing SimulatorHost...
+01:19:21 | INFO | 🆕 Creating new game state
+01:19:21 | INFO | ⚖️ Loading Arbiter (Deterministic Logic Core)...
+01:19:21 | INFO | Deterministic Arbiter (Iron Frame) initialized.
+01:19:21 | INFO | 📖 Loading Chronicler (Narrative Engine)...
+01:19:21 | INFO | Initializing Chronicler with ollama:llama3.2:1b
+01:19:21 | INFO | 🎲 Loading Quartermaster...
+01:19:21 | INFO | 💎 Loading Loot System...
+01:19:21 | INFO | LootSystem initialized without artifact support
+01:19:21 | INFO | ✅ SimulatorHost initialization complete
+01:19:21 | INFO | 🛑 SimulatorHost stopped
+01:19:21 | INFO | 💾 Validating Memory Footprint
+01:19:21 | INFO | Semantic Baker initialized with model: all-MiniLM-L6-v2
+01:19:21 | INFO | Loaded 11 pre-baked intent embeddings (55 total examples)
+01:19:21 | INFO | ✅ Instant boot: Loaded pre-baked embeddings
+01:19:21 | INFO | 🏛️ SimulatorHost initialized - Single Source of Truth
+01:19:21 | INFO | 🚀 Initializing SimulatorHost...
+01:19:21 | INFO | 🆕 Creating new game state
+01:19:21 | INFO | ⚖️ Loading Arbiter (Deterministic Logic Core)...
+01:19:21 | INFO | Deterministic Arbiter (Iron Frame) initialized.
+01:19:21 | INFO | 📖 Loading Chronicler (Narrative Engine)...
+01:19:21 | INFO | Initializing Chronicler with ollama:llama3.2:1b
+01:19:21 | INFO | 🎲 Loading Quartermaster...
+01:19:21 | INFO | 💎 Loading Loot System...
+01:19:21 | INFO | LootSystem initialized without artifact support
+01:19:21 | INFO | ✅ SimulatorHost initialization complete
+01:19:21 | INFO | 🛑 SimulatorHost stopped
+01:19:21 | INFO | ⏱️ Validating Action Latency
+01:19:21 | INFO | Semantic Baker initialized with model: all-MiniLM-L6-v2
+01:19:21 | INFO | Loaded 11 pre-baked intent embeddings (55 total examples)
+01:19:21 | INFO | ✅ Instant boot: Loaded pre-baked embeddings
+01:19:21 | INFO | 🏛️ SimulatorHost initialized - Single Source of Truth
+01:19:21 | INFO | 🚀 Initializing SimulatorHost...
+01:19:21 | INFO | 🆕 Creating new game state
+01:19:21 | INFO | ⚖️ Loading Arbiter (Deterministic Logic Core)...
+01:19:21 | INFO | Deterministic Arbiter (Iron Frame) initialized.
+01:19:21 | INFO | 📖 Loading Chronicler (Narrative Engine)...
+01:19:21 | INFO | Initializing Chronicler with ollama:llama3.2:1b
+01:19:21 | INFO | 🎲 Loading Quartermaster...
+01:19:21 | INFO | 💎 Loading Loot System...
+01:19:21 | INFO | LootSystem initialized without artifact support
+01:19:21 | INFO | ✅ SimulatorHost initialization complete
+01:19:21 | INFO | Loading embedding model on-demand: all-MiniLM-L6-v2
+01:19:26 | INFO | Intent resolution: 'I look around' → investigate (confidence: 0.490, matched exemplar: 'Look around for anything unusual')
+01:19:26 | INFO | Player took 3 damage. HP: 7/10
+01:19:26 | INFO | Social consequences applied for None (success=False)
+01:19:26 | ERROR | ❌ Action processing failed: a coroutine was expected, got <async_generator object ChroniclerEngine.narrate_stream at 0x000002BFD4DE5BE0>
+01:19:26 | INFO | 🛑 SimulatorHost stopped
+01:19:26 | INFO | 🗂️ Validating Asset Integrity
+01:19:26 | INFO | 📜 Validating Seed Zero Archive
+01:19:26 | INFO | 📚 Validating Documentation
+01:19:26 | INFO | 📊 Generating Validation Report
+01:19:26 | INFO | 📄 Validation report saved to PRODUCTION_VALIDATION_REPORT.json
