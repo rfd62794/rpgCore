@@ -341,11 +341,11 @@ class GameState:
             tags=set(self.tags)
         )
 
-# === INTENT DATA STRUCTURES ===
+# === INTENT TYPES ===
 
 @dataclass
 class MovementIntent:
-    """Movement intent with pathfinding data"""
+    """Movement intent for navigation"""
     intent_type: str = IntentType.MOVEMENT.value
     target_position: Tuple[int, int] = (0, 0)
     path: List[Tuple[int, int]] = field(default_factory=list)
