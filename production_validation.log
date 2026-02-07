@@ -120,3 +120,67 @@
 01:19:26 | INFO | 📚 Validating Documentation
 01:19:26 | INFO | 📊 Generating Validation Report
 01:19:26 | INFO | 📄 Validation report saved to PRODUCTION_VALIDATION_REPORT.json
+01:19:41 | INFO | 🔍 Starting Production Validation Suite
+01:19:41 | INFO | 🏛️ Validating Unified Architecture
+01:19:41 | INFO | ⚖️ Validating Intent Registry
+01:19:41 | INFO | 👁️ Validating Observer Pattern
+01:19:41 | INFO | ⚡ Validating Boot Performance
+01:19:50 | INFO | Semantic Baker initialized with model: all-MiniLM-L6-v2
+01:19:50 | INFO | Loaded 11 pre-baked intent embeddings (55 total examples)
+01:19:50 | INFO | ✅ Instant boot: Loaded pre-baked embeddings
+01:19:50 | INFO | 🏛️ SimulatorHost initialized - Single Source of Truth
+01:19:50 | INFO | 🚀 Initializing SimulatorHost...
+01:19:50 | INFO | 🆕 Creating new game state
+01:19:50 | INFO | ⚖️ Loading Arbiter (Deterministic Logic Core)...
+01:19:50 | INFO | Deterministic Arbiter (Iron Frame) initialized.
+01:19:50 | INFO | 📖 Loading Chronicler (Narrative Engine)...
+01:19:50 | INFO | Initializing Chronicler with ollama:llama3.2:1b
+01:19:50 | INFO | 🎲 Loading Quartermaster...
+01:19:50 | INFO | 💎 Loading Loot System...
+01:19:50 | INFO | LootSystem initialized without artifact support
+01:19:50 | INFO | ✅ SimulatorHost initialization complete
+01:19:50 | INFO | 🛑 SimulatorHost stopped
+01:19:50 | INFO | 💾 Validating Memory Footprint
+01:19:50 | INFO | Semantic Baker initialized with model: all-MiniLM-L6-v2
+01:19:50 | INFO | Loaded 11 pre-baked intent embeddings (55 total examples)
+01:19:50 | INFO | ✅ Instant boot: Loaded pre-baked embeddings
+01:19:50 | INFO | 🏛️ SimulatorHost initialized - Single Source of Truth
+01:19:50 | INFO | 🚀 Initializing SimulatorHost...
+01:19:50 | INFO | 🆕 Creating new game state
+01:19:50 | INFO | ⚖️ Loading Arbiter (Deterministic Logic Core)...
+01:19:50 | INFO | Deterministic Arbiter (Iron Frame) initialized.
+01:19:50 | INFO | 📖 Loading Chronicler (Narrative Engine)...
+01:19:50 | INFO | Initializing Chronicler with ollama:llama3.2:1b
+01:19:50 | INFO | 🎲 Loading Quartermaster...
+01:19:50 | INFO | 💎 Loading Loot System...
+01:19:50 | INFO | LootSystem initialized without artifact support
+01:19:50 | INFO | ✅ SimulatorHost initialization complete
+01:19:50 | INFO | 🛑 SimulatorHost stopped
+01:19:50 | INFO | ⏱️ Validating Action Latency
+01:19:50 | INFO | Semantic Baker initialized with model: all-MiniLM-L6-v2
+01:19:50 | INFO | Loaded 11 pre-baked intent embeddings (55 total examples)
+01:19:50 | INFO | ✅ Instant boot: Loaded pre-baked embeddings
+01:19:50 | INFO | 🏛️ SimulatorHost initialized - Single Source of Truth
+01:19:50 | INFO | 🚀 Initializing SimulatorHost...
+01:19:50 | INFO | 🆕 Creating new game state
+01:19:50 | INFO | ⚖️ Loading Arbiter (Deterministic Logic Core)...
+01:19:50 | INFO | Deterministic Arbiter (Iron Frame) initialized.
+01:19:50 | INFO | 📖 Loading Chronicler (Narrative Engine)...
+01:19:50 | INFO | Initializing Chronicler with ollama:llama3.2:1b
+01:19:50 | INFO | 🎲 Loading Quartermaster...
+01:19:50 | INFO | 💎 Loading Loot System...
+01:19:50 | INFO | LootSystem initialized without artifact support
+01:19:50 | INFO | ✅ SimulatorHost initialization complete
+01:19:50 | INFO | Loading embedding model on-demand: all-MiniLM-L6-v2
+01:19:56 | INFO | Intent resolution: 'I look around' → investigate (confidence: 0.490, matched exemplar: 'Look around for anything unusual')
+01:19:56 | INFO | Social consequences applied for None (success=True)
+01:19:56 | INFO | Loot generated: Torch Stub
+01:20:04 | ERROR | Chronicler stream failed: Exceeded maximum retries (1) for output validation
+01:20:04 | INFO | Game saved to temp_latency_test.json
+01:20:04 | INFO | ✅ Action processed: investigate -> SUCCESS
+01:20:04 | INFO | 🛑 SimulatorHost stopped
+01:20:04 | INFO | 🗂️ Validating Asset Integrity
+01:20:04 | INFO | 📜 Validating Seed Zero Archive
+01:20:04 | INFO | 📚 Validating Documentation
+01:20:04 | INFO | 📊 Generating Validation Report
+01:20:04 | INFO | 📄 Validation report saved to PRODUCTION_VALIDATION_REPORT.json
