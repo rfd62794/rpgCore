@@ -130,7 +130,8 @@ class WorldFactory:
         settlement_chunks = self._create_settlement_area(center_coord, radius, world_seed)
         
         # Apply historical layers to chunks
-        for coord, chunk in settlement_chunks.items():
+        for coord_tuple, chunk in settlement_chunks.items():
+            coord = Coordinate(coord_tuple[0], coord_tuple[1], 0)
             self.world_ledger.add_historical_tags_to_chunk(chunk, coord)
         
         return {
@@ -517,38 +518,6 @@ class WorldFactory:
                 ]
             }
         }
-    
-    def get_location(self, location_id: str) -> Optional[Room]:
-        """
-        Get a Room object from location template.
-        
-        Args:
-            location_id: Template identifier
-            
-        Returns:
-            Room object or None if not found
-        """
-        template = self.templates.get(location_id)
-        if not template:
-            logger.warning(f"Location template not found: {location_id}")
-            return None
-        
-        # Create NPCs
-        npcs = []
-        for npc_name in template.initial_npcs:
-            npcs.append(NPC(name=npc_name))
-        
-        # Create Room
-        room = Room(
-            name=template.name,
-            description=template.description,
-            npcs=npcs,
-            items=template.props,
-            exits=template.connections,
-            tags=template.environment_tags
-        )
-        
-        return room
     
     def load_scenario(self, scenario_id: str, game_state: GameState):
         """

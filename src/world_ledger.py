@@ -461,6 +461,23 @@ class WorldLedger:
         
         return nearby_chunks
     
+    def add_historical_tags_to_chunk(self, chunk: WorldChunk, coord: Coordinate):
+        """
+        Add historical tags to a chunk's metadata.
+        
+        Args:
+            chunk: Chunk to modify
+            coord: Coordinate of the chunk
+        """
+        tags = self.get_historical_tags(coord)
+        
+        # Add significant tags to chunk metadata
+        for tag in tags:
+            if tag["intensity"] > 0.3:  # Only significant tags
+                chunk.tags.append(tag["tag"])
+        
+        return chunk
+    
     def get_historical_tags(self, coord: Coordinate) -> List[Dict[str, Any]]:
         """
         Get historical tags for a coordinate.
@@ -474,7 +491,7 @@ class WorldLedger:
         with sqlite3.connect(self.save_path) as conn:
             cursor = conn.execute("""
                 SELECT tag, epoch, event_type, faction, description, intensity, decay_rate
-                FROM historical_tags
+                FROM world_history
                 WHERE coordinate = ?
                 ORDER BY intensity DESC
             """, (f"{coord.x},{coord.y}",))
@@ -492,44 +509,6 @@ class WorldLedger:
                 })
             
             return tags
-    
-    def get_historical_context(self, coord: Coordinate, current_turn: int) -> List[str]:
-        """
-        Get historical context for narrative generation.
-        
-        Args:
-            coord: Coordinate to check
-            current_turn: Current world turn
-            
-        Returns:
-            List of historical descriptions for Chronicler
-        """
-        tags = self.get_historical_tags(coord)
-        
-        # Filter by intensity and create descriptions
-        context = []
-        for tag in tags:
-            if tag["intensity"] > 0.3:  # Only show significant tags
-                context.append(tag["description"])
-        
-        return context
-    
-    def add_historical_tags_to_chunk(self, chunk: WorldChunk, coord: Coordinate):
-        """
-        Add historical tags to a chunk's metadata.
-        
-        Args:
-            chunk: Chunk to modify
-            coord: Coordinate of the chunk
-        """
-        tags = self.get_historical_tags(coord)
-        
-        # Add significant tags to chunk metadata
-        for tag in tags:
-            if tag["intensity"] > 0.3:  # Only significant tags
-                chunk.tags.append(tag["tag"])
-        
-        return chunk
     
     def get_statistics(self) -> Dict[str, Any]:
         """Get world ledger statistics."""

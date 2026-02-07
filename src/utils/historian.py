@@ -9,6 +9,7 @@ ADR 020: The Historian Utility & Sedimentary World-Gen Implementation
 
 import sqlite3
 import random
+import math
 from typing import Dict, List, Optional, Tuple, Any
 from dataclasses import dataclass
 from enum import Enum
@@ -124,6 +125,10 @@ class Historian:
                     world_state TEXT
                 )
             """)
+            
+            # Add indexes for performance
+            conn.execute("CREATE INDEX IF NOT EXISTS idx_coordinate ON world_history(coordinate)")
+            conn.execute("CREATE INDEX IF NOT EXISTS idx_epoch ON world_history(epoch_number)")
             
             conn.execute("""
                 CREATE TABLE IF NOT EXISTS epoch_summary (
@@ -302,6 +307,9 @@ class Historian:
         total_prob = sum(event_probabilities.values())
         if total_prob > 0:
             event_probabilities = {k: v/total_prob for k, v in event_probabilities.items()}
+        else:
+            # Fallback to equal probabilities if all are 0
+            event_probabilities = {event: 1.0/len(self.event_templates) for event in self.event_templates}
         
         # Choose event
         rand = random.random()
@@ -338,7 +346,8 @@ class Historian:
                 faction: world_state["factions"].get(faction.value, 0) 
                 for faction in template["factions"]
             }
-            dominant_faction = max(faction_influence, key=faction_influence.get)
+            if faction_influence:  # Check if dictionary is not empty
+                dominant_faction = max(faction_influence, key=faction_influence.get)
         
         # Create historical tags
         tags_created = []
@@ -349,11 +358,11 @@ class Historian:
             tag = random.choice(template["tags"])
             
             # Random position within settlement radius
-            angle = random.uniform(0, 2 * 3.14159)
+            angle = random.uniform(0, 2 * math.pi)
             distance = random.uniform(0, world_seed.radius)
             
-            tag_x = int(world_seed.coordinates[0] + distance * (angle / (2 * 3.14159)))
-            tag_y = int(world_seed.coordinates[1] + distance * (angle / (2 * 3.14159)))
+            tag_x = int(world_seed.coordinates[0] + distance * math.cos(angle))
+            tag_y = int(world_seed.coordinates[1] + distance * math.sin(angle))
             
             historical_tag = HistoricalTag(
                 coordinate=(tag_x, tag_y),
@@ -416,8 +425,9 @@ class Historian:
         """Update world state based on epoch outcomes."""
         new_state = world_state.copy()
         
-        # Update population
-        new_state["population"] = int(world_state["population"] * epoch.population_trend)
+        # Update population with minimum bound
+        new_population = int(world_state["population"] * epoch.population_trend)
+        new_state["population"] = max(0, new_population)
         
         # Update faction influence
         if epoch.dominant_faction:
@@ -450,7 +460,7 @@ class Historian:
                 ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
             """, (
                 tag.epoch,
-                tag.coordinate[0] * 100 + tag.coordinate[1],  # Simple year calculation
+                tag.epoch * 100 + random.randint(0, 99),  # Year within epoch
                 f"{tag.coordinate[0]},{tag.coordinate[1]}",
                 tag.event_type.value,
                 tag.faction.value if tag.faction else None,
