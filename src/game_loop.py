@@ -245,7 +245,7 @@ class GameREPL:
         
         # Apply state changes
         if outcome.hp_delta != 0:
-             self.state.player.hp += outcome.hp_delta
+             self.state.player.take_damage(abs(outcome.hp_delta)) if outcome.hp_delta < 0 else self.state.player.heal(outcome.hp_delta)
         
         # Update NPC state if needed
         if target_npc and room:
