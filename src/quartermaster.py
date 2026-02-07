@@ -92,7 +92,7 @@ class Quartermaster:
         # Log the math for debugging
         log_msg = (
             f"Action: {intent_id} | Tags: {room_tags} | "
-            f"Roll: {d20_roll} + Bonus: {player_bonus} + TagMod: {tag_mod} = {total_score} "
+            f"Roll: {d20_roll} + Bonus: {attr_bonus} + TagMod: {tag_mod} = {total_score} "
             f"vs DC: {target_dc} ({base_difficulty} + {arbiter_mod}) -> "
             f"{'SUCCESS' if success else 'FAILURE'}"
         )
