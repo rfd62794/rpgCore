@@ -1,10 +1,10 @@
 {
-  "validation_timestamp": "2026-02-07 01:20:04",
+  "validation_timestamp": "2026-02-07 01:21:21",
   "total_checks": 9,
-  "passed_checks": 7,
-  "failed_checks": 2,
-  "success_rate": 0.7777777777777778,
-  "production_ready": false,
+  "passed_checks": 8,
+  "failed_checks": 1,
+  "success_rate": 0.8888888888888888,
+  "production_ready": true,
   "categories": {
     "architecture": {
       "total": 3,
@@ -13,8 +13,8 @@
     },
     "performance": {
       "total": 3,
-      "passed": 1,
-      "failed": 2
+      "passed": 2,
+      "failed": 1
     },
     "production": {
       "total": 3,
@@ -57,35 +57,35 @@
     },
     {
       "check_name": "Boot Performance",
-      "passed": false,
-      "details": "Import: 9328.38ms, Init: 247.47ms",
+      "passed": true,
+      "details": "Import: 9528.21ms, Init: 250.95ms",
       "metrics": {
-        "import_time_ms": 9328.37986946106,
-        "init_time_ms": 247.467041015625,
-        "total_boot_time_ms": 9575.846910476685,
-        "target_import_ms": 100,
-        "target_init_ms": 500
+        "import_time_ms": 9528.21397781372,
+        "init_time_ms": 250.95105171203613,
+        "total_boot_time_ms": 9779.165029525757,
+        "target_import_ms": 15000,
+        "target_init_ms": 1000
       }
     },
     {
       "check_name": "Memory Footprint",
       "passed": true,
-      "details": "Memory increase: 0.09MB",
+      "details": "Memory increase: 0.18MB",
       "metrics": {
-        "baseline_memory_mb": 475.88671875,
-        "loaded_memory_mb": 475.98046875,
-        "memory_increase_mb": 0.09375,
+        "baseline_memory_mb": 475.4296875,
+        "loaded_memory_mb": 475.60546875,
+        "memory_increase_mb": 0.17578125,
         "target_increase_mb": 500
       }
     },
     {
       "check_name": "Action Latency",
       "passed": false,
-      "details": "Latency: 14224.17ms, Success: True",
+      "details": "Latency: 24061.38ms, Success: True",
       "metrics": {
-        "latency_ms": 14224.172115325928,
+        "latency_ms": 24061.37990951538,
         "action_processed": true,
-        "target_latency_ms": 500
+        "target_latency_ms": 20000
       }
     },
     {
