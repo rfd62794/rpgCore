@@ -322,36 +322,47 @@ class Voyager:
         self.intent_cooldown: float = 0.01  # 10ms for movie mode
         
         logger.info("🚶 Voyager initialized - STATE_PONDERING support ready")
-    
+
     # === FACADE INTERFACE ===
-    
+
     async def generate_next_intent(self, game_state: GameState) -> Optional[Union[MovementIntent, InteractionIntent, PonderIntent]]:
-        """Generate next intent based on state and goals (Facade method)"""
+        """Generate next intent based on state and quest objectives (Facade method)"""
         start_time = time.time()
-        
+
+        # Update position in Chronos Engine
+        await self.chronos_engine.update_character_position(self.current_position)
+
         intent = None
-        
+
         if self.state == VoyagerState.STATE_IDLE:
-            intent = await self._generate_idle_intent(game_state)
+            if self.quest_mode:
+                intent = await self._follow_quest_objective(game_state)
+            else:
+                intent = await self._generate_idle_intent(game_state)
         elif self.state == VoyagerState.STATE_PONDERING:
             intent = await self._generate_pondering_intent(game_state)
         elif self.state == VoyagerState.STATE_MOVING:
             intent = await self._generate_movement_intent(game_state)
-        
+
         # Track performance
-        generation_time = (time.time() - start_time) * 1000
+        generation_time = time.time() - start_time
         self.intent_generation_times.append(generation_time)
+
+        # Keep performance history manageable
         if len(self.intent_generation_times) > 100:
-            self.intent_generation_times.pop(0)
-        
+            self.intent_generation_times = self.intent_generation_times[-50:]
+
+        if intent:
+            logger.debug(f"🚶 Generated {intent.intent_type} intent in {generation_time:.3f}s")
+
         return intent
-    
+
     async def generate_movement_intent(self, target_position: Tuple[int, int]) -> Optional[MovementIntent]:
         """Generate movement intent with pathfinding (Facade method)"""
         if not validate_position(target_position):
             logger.warning(f"🚶 Invalid target position: {target_position}")
             return None
-        
+
         # Get collision map (synchronous fallback)
         collision_map = self._get_collision_map()
         
@@ -437,7 +448,7 @@ class Voyager:
     # === STATE MACHINE ===
     
     async def _generate_idle_intent(self, game_state: GameState) -> Optional[Union[MovementIntent, InteractionIntent, PonderIntent]]:
-        """Generate intent when idle"""
+        """Generate intent when idle - now quest-driven"""
         # Check if we have pending discoveries to ponder
         if self.discovered_interest_points:
             for ip in self.discovered_interest_points:
@@ -445,8 +456,11 @@ class Voyager:
                     # Time to ponder this discovery
                     return await self._create_ponder_intent(ip)
         
-        # Follow movie script
-        return await self._follow_movie_script(game_state)
+        # Follow quest objectives or legacy script
+        if self.quest_mode:
+            return await self._follow_quest_objective(game_state)
+        else:
+            return await self._follow_legacy_script(game_state)
     
     async def _generate_pondering_intent(self, game_state: GameState) -> Optional[PonderIntent]:
         """Generate intent when pondering"""
