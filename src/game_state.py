@@ -37,12 +37,22 @@ class PlayerStats(BaseModel):
     inventory: List[Item] = Field(default_factory=list)
     attributes: Dict[str, int] = Field(
         default_factory=lambda: {
-            "strength": 0,
-            "dexterity": 0,
-            "intelligence": 0,
-            "charisma": 0
+            "strength": 10,
+            "dexterity": 10,
+            "constitution": 10,
+            "intelligence": 10,
+            "wisdom": 10,
+            "charisma": 10
         }
     )
+    
+    def __init__(self, **data):
+        """Initialize with constitution-based HP calculation."""
+        super().__init__(**data)
+        # Calculate HP based on constitution (10 + constitution modifier)
+        con_mod = (self.attributes.get("constitution", 10) - 10) // 2
+        self.max_hp = 10 + con_mod * 5  # 5 HP per constitution modifier
+        self.hp = self.max_hp
     
     def is_alive(self) -> bool:
         """Check if player is still alive."""

@@ -95,23 +95,26 @@ class D20Resolver:
         attribute_bonus, attr_name = self._get_attribute_bonus(intent_id, game_state.player.attributes)
         item_bonus = self._calculate_item_bonus(intent_id, game_state.player.inventory)
         
-        # 3. Roll the dice
-        d20_roll = random.randint(1, 20)
+        # 3. Determine advantage/disadvantage based on state
+        advantage_type = self._determine_advantage(intent_id, game_state, room_tags, target_npc)
         
-        # 4. Calculate total
+        # 4. Roll the dice with advantage/disadvantage
+        d20_roll, raw_rolls = self._roll_dice(advantage_type)
+        
+        # 5. Calculate total
         total_score = d20_roll + attribute_bonus + item_bonus
         
-        # 5. Determine success
+        # 6. Determine success
         success = total_score >= dc
         
-        # 6. Calculate consequences
+        # 7. Calculate consequences
         hp_delta = self._calculate_hp_delta(success, total_score, dc)
         reputation_deltas = self._calculate_reputation_changes(intent_id, success, target_npc)
         relationship_changes = self._calculate_relationship_changes(intent_id, success, target_npc)
         npc_state_changes = self._calculate_npc_state_changes(intent_id, success, target_npc, game_state)
         goals_completed = self._check_goal_completion(intent_id, success, game_state, player_input)
         
-        # 7. Build narrative context (technical, not creative)
+        # 8. Build narrative context (technical, not creative)
         narrative_parts = [
             f"Roll: {d20_roll}",
             f"{attr_name.title()}: {attribute_bonus:+d}" if attribute_bonus != 0 else "",
@@ -119,11 +122,17 @@ class D20Resolver:
             f"vs DC {dc}",
             dc_reasoning
         ]
+        
+        # Add advantage/disadvantage info
+        if advantage_type:
+            narrative_parts.insert(0, f"{advantage_type.title()}: {raw_rolls[0]} & {raw_rolls[1]} → {d20_roll}")
+        
         narrative_context = " | ".join(filter(None, narrative_parts))
         
         logger.info(
             f"D20 Resolution: {intent_id} -> {total_score} vs DC {dc} "
             f"({'SUCCESS' if success else 'FAILURE'})"
+            + (f" ({advantage_type})" if advantage_type else "")
         )
         
         return D20Result(
@@ -136,7 +145,9 @@ class D20Resolver:
             relationship_changes=relationship_changes,
             npc_state_changes=npc_state_changes,
             goals_completed=goals_completed,
-            narrative_context=narrative_context
+            narrative_context=narrative_context,
+            advantage_type=advantage_type,
+            raw_rolls=raw_rolls
         )
     
     def _calculate_difficulty_class(self, intent_id: str, room_tags: List[str]) -> Tuple[int, str]:
@@ -159,9 +170,80 @@ class D20Resolver:
                 reasons.append(f"{tag.title()} ({mod:+d})")
         
         final_dc = base_dc + tag_delta
-        reasoning = ", ".join(reasons)
+        return final_dc, ", ".join(reasons)
+    
+    def _determine_advantage(
+        self, 
+        intent_id: str, 
+        game_state: GameState, 
+        room_tags: List[str], 
+        target_npc: Optional[str]
+    ) -> Optional[str]:
+        """
+        Determine if action has advantage or disadvantage based on state.
         
-        return final_dc, reasoning
+        This is the "Wit & Grit" system - mathematical enforcement of state consequences.
+        """
+        intent = intent_id.lower()
+        
+        # Check for disadvantage conditions
+        disadvantage_conditions = []
+        
+        # Wanted state gives disadvantage on social actions
+        if game_state.reputation.get("law", 0) <= -10:
+            if intent in ["charm", "persuade", "social"]:
+                disadvantage_conditions.append("Wanted status")
+        
+        # Hostile NPCs give disadvantage on social actions
+        if target_npc:
+            room = game_state.rooms.get(game_state.current_room)
+            if room:
+                for npc in room.npcs:
+                    if npc.name.lower() == target_npc.lower() and npc.state == "hostile":
+                        if intent in ["charm", "persuade", "social"]:
+                            disadvantage_conditions.append(f"Hostile {target_npc}")
+        
+        # Environmental disadvantages
+        if "dimly_lit" in room_tags and intent in ["investigate", "search", "perception"]:
+            disadvantage_conditions.append("Dim lighting")
+        
+        if "sticky floors" in room_tags and intent in ["finesse", "stealth", "acrobatics"]:
+            disadvantage_conditions.append("Sticky floors")
+        
+        # Check for advantage conditions
+        advantage_conditions = []
+        
+        # Good reputation gives advantage on social actions
+        if game_state.reputation.get("law", 0) >= 10:
+            if intent in ["charm", "persuade", "social"]:
+                advantage_conditions.append("Good reputation")
+        
+        # Charmed NPCs give advantage on social actions
+        if target_npc:
+            room = game_state.rooms.get(game_state.current_room)
+            if room:
+                for npc in room.npcs:
+                    if npc.name.lower() == target_npc.lower() and npc.state == "charmed":
+                        if intent in ["charm", "persuade", "social"]:
+                            advantage_conditions.append(f"Charmed {target_npc}")
+        
+        # Environmental advantages
+        if "dimly_lit" in room_tags and intent in ["stealth", "hide"]:
+            advantage_conditions.append("Dim lighting")
+        
+        # Determine final result
+        if disadvantage_conditions and advantage_conditions:
+            # They cancel out
+            logger.debug(f"Advantage and disadvantage cancel: {advantage_conditions} vs {disadvantage_conditions}")
+            return None
+        elif disadvantage_conditions:
+            logger.debug(f"Disadvantage applied: {', '.join(disadvantage_conditions)}")
+            return "disadvantage"
+        elif advantage_conditions:
+            logger.debug(f"Advantage applied: {', '.join(advantage_conditions)}")
+            return "advantage"
+        
+        return None
     
     def _get_attribute_bonus(self, intent_id: str, attributes: Dict[str, int]) -> Tuple[int, str]:
         """Map intent to primary attribute and return bonus."""
@@ -171,17 +253,20 @@ class D20Resolver:
             "force": "strength",
             "combat": "strength",
             "athletics": "strength",
+            
             "finesse": "dexterity", 
             "stealth": "dexterity",
             "acrobatics": "dexterity",
+            "leave_area": "dexterity",
+            
             "investigate": "intelligence",
             "search": "intelligence",
-            "perception": "intelligence",
+            "perception": "wisdom",  # Perception uses wisdom
+            
             "charm": "charisma",
             "persuade": "charisma",
             "social": "charisma",
-            "distract": "charisma",
-            "leave_area": "dexterity"
+            "distract": "charisma"
         }
         
         attr_name = mapping.get(intent, "luck")
