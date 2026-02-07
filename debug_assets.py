@@ -46,13 +46,8 @@ class AssetDisplayTool:
         # Build UI first
         self._build_ui()
         
-        # Initialize PPU now that canvas exists
-        if self.canvas:
-            try:
-                self.ppu = NativeTkinterPPU(self.canvas, self.registry)
-                logger.info("🎨 PPU initialized for asset display")
-            except Exception as e:
-                logger.error(f"⚠️ PPU initialization failed: {e}")
+        # Initialize deconstructed systems
+        self._initialize_deconstructed_systems()
         
         # Display assets
         self._display_all_assets()
