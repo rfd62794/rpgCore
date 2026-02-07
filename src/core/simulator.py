@@ -26,6 +26,7 @@ from sync_engines import ChroniclerEngine
 from quartermaster import Quartermaster
 from loot_system import LootSystem
 from core.world_map import get_world_map, EnvironmentType
+from logic.scenic_anchor import get_scenic_anchor
 
 
 class ViewMode(Enum):
@@ -173,6 +174,9 @@ class SimulatorHost:
         
         # World map for spatial authority
         self.world_map = get_world_map()
+        
+        # Scenic anchor for narrative scaffolding
+        self.scenic_anchor = get_scenic_anchor()
         
         # View management
         self.views: List[SimulatorView] = []
