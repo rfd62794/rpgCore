@@ -354,7 +354,8 @@ class GameDashboard:
         completed_goals: list = None,
         success: bool = True,
         radar_data: List[Dict[str, Any]] = None,
-        perception_system: Optional[PerceptionSystem] = None
+        perception_system: Optional[PerceptionSystem] = None,
+        legacy_handler: Optional[LegacyHandler] = None
     ):
         """Update the entire dashboard with new game state."""
         # Update narrative panel
@@ -371,19 +372,25 @@ class GameDashboard:
             self.monitor.create_context_panel(context)
         )
         
+        # Get legacy context if available
+        legacy_context = []
+        if legacy_handler and hasattr(self, 'current_player_pos'):
+            legacy_context = legacy_handler.get_nearby_legacy_context(self.current_player_pos)
+        
         # Update monitor panels
         self.monitor.update_monitor(
             d20_result, 
             active_goals, 
             completed_goals,
-            radar_data
+            radar_data,
+            legacy_context
         )
         
         # Refresh the live display
         if self.live:
             self.live.update(self.monitor.get_layout())
     
-    def display_welcome(self, perception_system: Optional[PerceptionSystem] = None):
+    def display_welcome(self, perception_system: Optional[PerceptionSystem] = None, legacy_handler: Optional[LegacyHandler] = None):
         """Display welcome message in dashboard format."""
         welcome_content = (
             "[bold cyan]Welcome to the Semantic RPG - Director's Monitor Edition[/bold cyan]\n\n"
@@ -422,7 +429,12 @@ class GameDashboard:
                 0
             )
         
-        self.monitor.update_monitor(empty_result, [], [], radar_data)
+        # Get initial legacy context if available
+        legacy_context = []
+        if legacy_handler:
+            legacy_context = legacy_handler.get_nearby_legacy_context(Coordinate(0, 0, 0))
+        
+        self.monitor.update_monitor(empty_result, [], [], radar_data, legacy_context)
         
         if self.live:
             self.live.update(self.monitor.get_layout())
