@@ -36,6 +36,8 @@ class D20Result:
     npc_state_changes: Dict[str, str]  # npc_id -> new_state
     goals_completed: List[str]  # goal IDs
     narrative_context: str  # Technical explanation for Chronicler
+    advantage_type: Optional[str] = None  # "advantage", "disadvantage", or None
+    raw_rolls: Optional[Tuple[int, int]] = None  # For advantage/disadvantage transparency
 
 
 class D20Resolver:
@@ -48,6 +50,30 @@ class D20Resolver:
     
     def __init__(self):
         logger.info("D20 Core initialized - deterministic rules engine ready")
+    
+    def _roll_dice(self, advantage_type: Optional[str] = None) -> Tuple[int, Optional[Tuple[int, int]]]:
+        """
+        Roll dice with advantage/disadvantage logic.
+        
+        Args:
+            advantage_type: "advantage", "disadvantage", or None
+            
+        Returns:
+            Tuple of (final_roll, raw_rolls_for_transparency)
+        """
+        if advantage_type == "advantage":
+            roll1 = random.randint(1, 20)
+            roll2 = random.randint(1, 20)
+            final_roll = max(roll1, roll2)
+            return final_roll, (roll1, roll2)
+        elif advantage_type == "disadvantage":
+            roll1 = random.randint(1, 20)
+            roll2 = random.randint(1, 20)
+            final_roll = min(roll1, roll2)
+            return final_roll, (roll1, roll2)
+        else:
+            roll = random.randint(1, 20)
+            return roll, None
     
     def resolve_action(
         self,
