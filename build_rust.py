@@ -6,6 +6,7 @@ Python 3.12 compatible build system for high-performance image processing
 
 import subprocess
 import sys
+import os
 from pathlib import Path
 import shutil
 from loguru import logger
@@ -61,7 +62,7 @@ def build_rust_module():
         # Use development mode for faster iteration
         result = subprocess.run([
             'maturin', 'build', '--release', '--target-dir', '..'
-        ], cwd=rust_dir, capture_output=True, text=True)
+        ], cwd=rust_dir, capture_output=True, text=True, encoding='utf-8', errors='replace')
         
         if result.returncode == 0:
             logger.success("✅ Rust module built successfully")
