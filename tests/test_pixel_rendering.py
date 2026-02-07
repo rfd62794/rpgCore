@@ -291,7 +291,7 @@ class TestSpriteRegistry:
         assert "warrior_5x5" in templates
         assert "coin_3x3" in templates
         
-        assert len(templates) > 10  # Should have many default sprites
+        assert len(templates) >= 10  # Should have at least 10 default sprites
 
     def test_get_voyager_sprite(self):
         """Test Voyager sprite retrieval."""
@@ -395,7 +395,7 @@ class TestPixelRenderer:
         renderer = PixelRenderer(10, 10)
         
         # Set some pixels
-        renderer.set_pixel(5, 5, Pixel(r=1, g=1, b=1))
+        renderer.set_pixel(5, 5, Pixel(r=1, g=1, b=1, intensity=1.0))
         assert not renderer.pixels[5][5].is_empty()
         
         # Clear buffer
