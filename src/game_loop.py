@@ -90,7 +90,7 @@ class GameREPL:
         if auto_mode:
             from voyager_sync import SyncVoyagerAgent
             self.console.print(f"[magenta]Loading Voyager (auto-play) with '{personality}' personality...[/magenta]")
-            self.voyager = SyncVoyagerAgent(personality=personality)
+            self.voyager = SyncVoyagerAgent(personality=personality, model_name="llama3.2:1b")
         
         # Turn history for stutter check (last 5 actions)
         self.turn_history: list[str] = []
