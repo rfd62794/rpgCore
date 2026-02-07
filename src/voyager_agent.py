@@ -12,7 +12,7 @@ Design:
 """
 
 import os
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from pydantic_ai import Agent
 from loguru import logger
 
