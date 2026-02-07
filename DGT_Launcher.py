@@ -208,7 +208,7 @@ class DGTLauncher:
         try:
             # Change to src directory and run game
             os.chdir(self.src_dir)
-            subprocess.run([sys.executable, "game_loop.py"], check=True)
+            subprocess.run([sys.executable, "game_loop.py", "--auto"], check=True)
             return True
         except subprocess.CalledProcessError as e:
             logger.error(f"❌ Terminal mode launch failed: {e}")
