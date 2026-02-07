@@ -23,13 +23,19 @@ from .graphics_engine import (
 
 # Tri-Modal Display Suite
 try:
-    from ...body.dispatcher import DisplayDispatcher, DisplayMode, RenderPacket
-    from ...body.terminal import TerminalBody, create_terminal_body
-    from ...body.cockpit import CockpitBody, create_cockpit_body
-    from ...body.ppu import PPUBody, create_ppu_body
+    # Try absolute imports first
+    import sys
+    import os
+    sys.path.append(os.path.join(os.path.dirname(__file__), '..', '..'))
+    
+    from body.dispatcher import DisplayDispatcher, DisplayMode, RenderPacket
+    from body.terminal import TerminalBody, create_terminal_body
+    from body.cockpit import CockpitBody, create_cockpit_body
+    from body.ppu import PPUBody, create_ppu_body
     
     TRI_MODAL_AVAILABLE = True
-except ImportError:
+except ImportError as e:
+    logger.warning(f"⚠️ Tri-Modal Display Suite import failed: {e}")
     TRI_MODAL_AVAILABLE = False
     DisplayDispatcher = None
     DisplayMode = None

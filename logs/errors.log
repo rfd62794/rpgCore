@@ -6481,3 +6481,58 @@ expected alphabetic or numeric character, but found '.'
 2026-02-07 15:53:33 | ERROR | src.body.dispatcher:set_mode:172 | ❌ Failed to initialize ppu body
 2026-02-07 15:54:54 | ERROR | engines.body.tri_modal_engine:_init_legacy_engine:84 | ❌ Failed to initialize legacy engine: int() argument must be a string, a bytes-like object or a real number, not 'tuple'
 2026-02-07 15:55:09 | ERROR | engines.body.tri_modal_engine:_init_legacy_engine:90 | ❌ Failed to initialize legacy engine: GraphicsEngine.__init__() got an unexpected keyword argument 'width'
+2026-02-07 15:55:43 | ERROR | engines.body.tri_modal_engine:_init_legacy_engine:90 | ❌ Failed to initialize legacy engine: GraphicsEngine.__init__() got an unexpected keyword argument 'width'
+2026-02-07 15:55:44 | ERROR | src.body.dispatcher:set_mode:158 | ❌ No body registered for terminal mode
+2026-02-07 15:55:44 | ERROR | src.body.dispatcher:set_mode:158 | ❌ No body registered for cockpit mode
+2026-02-07 15:55:44 | ERROR | src.body.dispatcher:set_mode:158 | ❌ No body registered for ppu mode
+2026-02-07 15:55:44 | ERROR | engines.body.tri_modal_engine:_render_tri_modal:163 | ❌ Tri-modal rendering failed: 1 validation error for RenderPacket
+mode
+  Input should be 'terminal', 'cockpit' or 'ppu' [type=enum, input_value=<DisplayMode.TERMINAL: 'terminal'>, input_type=DisplayMode]
+    For further information visit https://errors.pydantic.dev/2.12/v/enum
+2026-02-07 15:55:44 | ERROR | engines.body.tri_modal_engine:_init_legacy_engine:90 | ❌ Failed to initialize legacy engine: GraphicsEngine.__init__() got an unexpected keyword argument 'width'
+2026-02-07 15:55:44 | ERROR | engines.body.tri_modal_engine:_init_legacy_engine:90 | ❌ Failed to initialize legacy engine: GraphicsEngine.__init__() got an unexpected keyword argument 'width'
+2026-02-07 15:55:44 | ERROR | src.body.dispatcher:set_mode:158 | ❌ No body registered for terminal mode
+2026-02-07 15:55:44 | ERROR | engines.body.tri_modal_engine:_render_tri_modal:163 | ❌ Tri-modal rendering failed: 1 validation error for RenderPacket
+mode
+  Input should be 'terminal', 'cockpit' or 'ppu' [type=enum, input_value=<DisplayMode.TERMINAL: 'terminal'>, input_type=DisplayMode]
+    For further information visit https://errors.pydantic.dev/2.12/v/enum
+2026-02-07 15:55:45 | ERROR | src.body.dispatcher:set_mode:158 | ❌ No body registered for cockpit mode
+2026-02-07 15:55:45 | ERROR | engines.body.tri_modal_engine:_render_tri_modal:163 | ❌ Tri-modal rendering failed: 1 validation error for RenderPacket
+mode
+  Input should be 'terminal', 'cockpit' or 'ppu' [type=enum, input_value=<DisplayMode.COCKPIT: 'cockpit'>, input_type=DisplayMode]
+    For further information visit https://errors.pydantic.dev/2.12/v/enum
+2026-02-07 15:55:45 | ERROR | src.body.dispatcher:set_mode:158 | ❌ No body registered for ppu mode
+2026-02-07 15:55:45 | ERROR | engines.body.tri_modal_engine:_render_tri_modal:163 | ❌ Tri-modal rendering failed: 1 validation error for RenderPacket
+mode
+  Input should be 'terminal', 'cockpit' or 'ppu' [type=enum, input_value=<DisplayMode.PPU: 'ppu'>, input_type=DisplayMode]
+    For further information visit https://errors.pydantic.dev/2.12/v/enum
+2026-02-07 15:55:46 | ERROR | src.body.dispatcher:set_mode:158 | ❌ No body registered for terminal mode
+2026-02-07 15:55:46 | ERROR | engines.body.tri_modal_engine:_render_tri_modal:163 | ❌ Tri-modal rendering failed: 1 validation error for RenderPacket
+mode
+  Input should be 'terminal', 'cockpit' or 'ppu' [type=enum, input_value=<DisplayMode.TERMINAL: 'terminal'>, input_type=DisplayMode]
+    For further information visit https://errors.pydantic.dev/2.12/v/enum
+2026-02-07 15:55:46 | ERROR | src.body.dispatcher:set_mode:158 | ❌ No body registered for cockpit mode
+2026-02-07 15:55:46 | ERROR | engines.body.tri_modal_engine:_render_tri_modal:163 | ❌ Tri-modal rendering failed: 1 validation error for RenderPacket
+mode
+  Input should be 'terminal', 'cockpit' or 'ppu' [type=enum, input_value=<DisplayMode.COCKPIT: 'cockpit'>, input_type=DisplayMode]
+    For further information visit https://errors.pydantic.dev/2.12/v/enum
+2026-02-07 15:55:47 | ERROR | src.body.dispatcher:set_mode:158 | ❌ No body registered for ppu mode
+2026-02-07 15:55:47 | ERROR | engines.body.tri_modal_engine:_render_tri_modal:163 | ❌ Tri-modal rendering failed: 1 validation error for RenderPacket
+mode
+  Input should be 'terminal', 'cockpit' or 'ppu' [type=enum, input_value=<DisplayMode.PPU: 'ppu'>, input_type=DisplayMode]
+    For further information visit https://errors.pydantic.dev/2.12/v/enum
+2026-02-07 15:55:47 | ERROR | src.body.dispatcher:set_mode:158 | ❌ No body registered for terminal mode
+2026-02-07 15:55:47 | ERROR | engines.body.tri_modal_engine:_render_tri_modal:163 | ❌ Tri-modal rendering failed: 1 validation error for RenderPacket
+mode
+  Input should be 'terminal', 'cockpit' or 'ppu' [type=enum, input_value=<DisplayMode.TERMINAL: 'terminal'>, input_type=DisplayMode]
+    For further information visit https://errors.pydantic.dev/2.12/v/enum
+2026-02-07 15:55:48 | ERROR | src.body.dispatcher:set_mode:158 | ❌ No body registered for cockpit mode
+2026-02-07 15:55:48 | ERROR | engines.body.tri_modal_engine:_render_tri_modal:163 | ❌ Tri-modal rendering failed: 1 validation error for RenderPacket
+mode
+  Input should be 'terminal', 'cockpit' or 'ppu' [type=enum, input_value=<DisplayMode.COCKPIT: 'cockpit'>, input_type=DisplayMode]
+    For further information visit https://errors.pydantic.dev/2.12/v/enum
+2026-02-07 15:55:48 | ERROR | src.body.dispatcher:set_mode:158 | ❌ No body registered for ppu mode
+2026-02-07 15:55:48 | ERROR | engines.body.tri_modal_engine:_render_tri_modal:163 | ❌ Tri-modal rendering failed: 1 validation error for RenderPacket
+mode
+  Input should be 'terminal', 'cockpit' or 'ppu' [type=enum, input_value=<DisplayMode.PPU: 'ppu'>, input_type=DisplayMode]
+    For further information visit https://errors.pydantic.dev/2.12/v/enum
