@@ -582,17 +582,26 @@ crystal:
     state: "glowing"
     rarity: 0.05
     integrity: 80
+    weight: "light"
     triggers:
       on_touch: "absorb_mana"
       on_break: "release_energy"
-    tags: ["magical", "rare", "energy"]
-    interaction_hooks: ["touch", "break", "study"]
+      on_study: "learn_properties"
+    tags: ["magical", "rare", "energy", "valuable"]
+    interaction_hooks: ["touch", "break", "study", "examine"]
+    resistances: ["blunt", "sharp"]
+    weaknesses: ["magic", "dispel"]
+    d20_checks:
+      examine: {"difficulty": 10, "skill": "arcana", "success": "learn_properties"}
+      study: {"difficulty": 12, "skill": "investigation", "success": "understand_crystal"}
+      touch: {"difficulty": 8, "skill": "magic", "success": "absorb_mana"}
   collision: false
   friction: 0.0
   sprite_id: "crystal"
   metadata:
     mana_amount: 50
     energy_type: "arcane"
+    crystal_type: "magical"
 
 fountain:
   characteristics:
