@@ -17,8 +17,8 @@ from rich.table import Table
 from game_state import GameState, create_tavern_scenario
 from semantic_engine import SemanticResolver, create_default_intent_library
 
-# Council of Three imports (sync wrappers)
 from sync_engines import ArbiterEngine, ChroniclerEngine
+from quartermaster import Quartermaster
 
 
 class GameREPL:
@@ -78,6 +78,9 @@ class GameREPL:
         # Initialize Quartermaster (loot system)
         from loot_system import LootSystem
         self.loot = LootSystem()
+        
+        # Initialize Quartermaster (Logic)
+        self.quartermaster = Quartermaster()
         
         # Initialize Voyager (auto-play agent) if in auto mode
         self.auto_mode = auto_mode
@@ -155,16 +158,29 @@ class GameREPL:
             player_gold=self.state.player.gold
         )
         
-        logger.info(
-            f"Arbiter: success={arbiter_result.success}, "
-            f"hp_delta={arbiter_result.hp_delta}, "
-            f"npc_state={arbiter_result.new_npc_state}"
+        # Step 2.5: Quartermaster calculates final outcome
+        self.console.print("[dim]🎲 Quartermaster rolling dice...[/dim]")
+        
+        # Get room tags
+        room = self.state.rooms.get(self.state.current_room)
+        room_tags = room.tags if room else []
+        
+        # Calculate outcome
+        outcome = self.quartermaster.calculate_outcome(
+            intent_id=intent_match.intent_id,
+            room_tags=room_tags,
+            arbiter_mod=arbiter_result.difficulty_mod,
+            player_bonus=0 # TODO: Add stats from Player model
         )
         
-        # Step 2.5: Quartermaster checks for loot (if investigate or force)
+        logger.info(
+            f"Quartermaster: success={outcome.success}, "
+            f"roll={outcome.total_score} vs DC {outcome.difficulty_class}"
+        )
+
+        # Step 2.6: Loot check (if investigate or force)
         loot_item = None
-        if arbiter_result.success and intent_match.intent_id in ["investigate", "force"]:
-            room = self.state.rooms.get(self.state.current_room)
+        if outcome.success and intent_match.intent_id in ["investigate", "force"]:
             location_name = room.name if room else "unknown"
             loot_item = self.loot.generate_loot(
                 location=location_name,
@@ -177,28 +193,25 @@ class GameREPL:
         # Step 3: Update game state BEFORE narration
         # Infer target NPC
         target_npc = arbiter_result.target_npc_id
-        if not target_npc:
-            room = self.state.rooms.get(self.state.current_room)
-            if room and room.npcs:
-                for npc in room.npcs:
-                    if npc.name.lower() in player_input.lower():
-                        target_npc = npc.name
-                        break
-                
-                if not target_npc and len(room.npcs) == 1:
-                    target_npc = room.npcs[0].name
+        if not target_npc and room and room.npcs:
+            for npc in room.npcs:
+                if npc.name.lower() in player_input.lower():
+                    target_npc = npc.name
+                    break
+            
+            if not target_npc and len(room.npcs) == 1:
+                target_npc = room.npcs[0].name
         
         # Apply state changes
-        self.state.player.hp += arbiter_result.hp_delta
-        self.state.player.gold += arbiter_result.gold_delta
+        if outcome.hp_delta != 0:
+             self.state.player.hp += outcome.hp_delta
         
-        if target_npc:
-            room = self.state.rooms.get(self.state.current_room)
-            if room:
-                for npc in room.npcs:
-                    if npc.name == target_npc:
-                        npc.state = arbiter_result.new_npc_state
-                        break
+        # Update NPC state if needed
+        if target_npc and room:
+            for npc in room.npcs:
+                if npc.name == target_npc:
+                    npc.state = arbiter_result.new_npc_state
+                    break
         
         # Step 4: Chronicler generates narrative
         self.console.print("[dim]📖 Chronicler narrating...[/dim]")
@@ -207,19 +220,19 @@ class GameREPL:
             player_input=player_input,
             intent_id=intent_match.intent_id,
             arbiter_result={
-                'success': arbiter_result.success,
-                'hp_delta': arbiter_result.hp_delta,
-                'gold_delta': arbiter_result.gold_delta,
+                'success': outcome.success,
+                'hp_delta': outcome.hp_delta,
+                'gold_delta': outcome.gold_delta,
                 'new_npc_state': arbiter_result.new_npc_state,
-                'reasoning': arbiter_result.reasoning,
+                'reasoning': f"{arbiter_result.reasoning}. {outcome.narrative_context}",
                 'narrative_seed': arbiter_result.narrative_seed
             },
             context=context
         )
         
         # Step 5: Display narrative
-        success_icon = "✅" if arbiter_result.success else "❌"
-        narrative_color = "green" if arbiter_result.success else "yellow"
+        success_icon = "✅" if outcome.success else "❌"
+        narrative_color = "green" if outcome.success else "yellow"
         
         # Build output with optional loot notification
         output_text = chronicler_result.narrative
