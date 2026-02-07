@@ -187,14 +187,14 @@ class PathfindingGrid:
         goal_node.h_score = 0
         
         # Open and closed sets for A*
-        open_set = {}
+        open_set = {start_node.position: start_node}
         closed_set = {}
         
         while open_set:
             # Get node with lowest f_score
-            current = min(open_set, key=lambda n: n.f_score)
-            open_set.remove(current)
-            closed_set.add(current)
+            current = min(open_set.values(), key=lambda n: n.f_score)
+            del open_set[current.position]
+            closed_set[current.position] = current
             
             # Check if goal reached
             if current.position == goal_node.position:
@@ -210,7 +210,7 @@ class PathfindingGrid:
             for neighbor_pos in self.get_neighbors(current.position):
                 neighbor = self._grid[neighbor_pos[1]][neighbor_pos[0]]
                 
-                if neighbor in closed_set:
+                if neighbor.position in closed_set:
                     continue
                 
                 # Calculate costs
@@ -220,14 +220,14 @@ class PathfindingGrid:
                 
                 # Check if this path is better
                 tentative_g_score = current.g_score + 1
-                if neighbor in open_set and tentative_g_score >= open_set[neighbor].g_score:
+                if neighbor.position in open_set and tentative_g_score >= open_set[neighbor.position].g_score:
                     continue
                 
                 neighbor.g_score = tentative_g_score
                 neighbor.h_score = h_score
                 neighbor.f_score = f_score
                 neighbor.parent = current
-                open_set.add(neighbor)
+                open_set[neighbor.position] = neighbor
         
         logger.warning(f"❌ No path found from {start} to {goal}")
         return None
