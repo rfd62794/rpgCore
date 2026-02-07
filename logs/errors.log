@@ -6458,3 +6458,8 @@ expected alphabetic or numeric character, but found '.'
 2026-02-07 14:57:28 | ERROR | __main__:_load_single_asset:99 | ⚠️ Error loading Tileset/Tileset Spring.png: 'PhotoImage' object has no attribute 'zoom'
 2026-02-07 14:57:28 | ERROR | __main__:_load_single_asset:99 | ⚠️ Error loading Farm Animals/Chicken Red.png: 'PhotoImage' object has no attribute 'zoom'
 2026-02-07 14:57:28 | ERROR | __main__:_load_single_asset:99 | ⚠️ Error loading Farm Animals/Female Cow Brown.png: 'PhotoImage' object has no attribute 'zoom'
+2026-02-07 15:51:27 | ERROR | body.dispatcher:set_mode:158 | ❌ No body registered for ppu mode
+2026-02-07 15:51:28 | ERROR | body.dispatcher:initialize:75 | ❌ Failed to initialize PPU: NativeTkinterPPU.__init__() missing 1 required positional argument: 'asset_loader'
+2026-02-07 15:51:28 | ERROR | body.ppu:create_ppu_body:410 | ❌ Failed to create PPU body
+2026-02-07 15:51:31 | ERROR | body.dispatcher:initialize:75 | ❌ Failed to initialize PPU: NativeTkinterPPU.__init__() missing 1 required positional argument: 'asset_loader'
+2026-02-07 15:51:31 | ERROR | body.ppu:create_ppu_body:410 | ❌ Failed to create PPU body
