@@ -225,6 +225,34 @@ class DirectorMonitor:
             padding=(0, 1)
         )
     
+    def format_legacy_panel(self, legacy_context: List[str]) -> Panel:
+        """
+        Format the legacy panel showing ghost strings from previous avatars.
+        
+        Args:
+            legacy_context: List of legacy descriptions
+            
+        Returns:
+            Panel formatted for legacy display
+        """
+        table = Table(show_header=False, box=None, padding=0)
+        table.add_column("Echo", style="bold purple", width=20)
+        
+        if legacy_context:
+            for context in legacy_context[:5]:  # Show top 5 echoes
+                # Clean up the context string
+                clean_context = context.replace("[TAG: ", "").replace("]", "")
+                table.add_row(f"[dim]{clean_context}[/dim]")
+        else:
+            table.add_row("[dim]No legacy echoes nearby[/dim]")
+        
+        return Panel(
+            table,
+            title="[bold purple]👻 Legacy[/bold purple]",
+            border_style="purple",
+            padding=(0, 1)
+        )
+    
     def update_monitor(
         self, 
         d20_result: D20Result, 
