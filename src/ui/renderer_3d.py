@@ -60,8 +60,8 @@ class ASCIIDoomRenderer:
         self.half_height = height // 2
         self.max_distance = 20  # Maximum ray distance
         
-        # Rendering buffer
-        self.buffer = [[' ' for _ in range(height)] for _ in range(width)]
+        # Rendering buffer - height rows of width columns
+        self.buffer = [[' ' for _ in range(width)] for _ in range(height)]
         
         # Visual elements mapping
         self.wall_chars = ['#', '#', '=', '=', '+', '-', '|', '/', '\\']
@@ -269,7 +269,7 @@ class ASCIIDoomRenderer:
         end_y = self.half_height + column_height // 2
         
         for y in range(start_y, end_y):
-            if 0 <= y < self.height:
+            if 0 <= y < self.height and 0 <= x < self.width:
                 self.buffer[y][x] = char
     
     def _apply_distance_shading(self, char: str, distance: float) -> str:
