@@ -268,9 +268,11 @@ class AssetLoader:
                 'crystal': {'color': (255, 0, 255, 255), 'shape': 'diamond'},
                 'iron_chest': {'color': (128, 128, 128, 255), 'shape': 'rectangle'},
                 'wooden_door': {'color': (139, 90, 43, 255), 'shape': 'rectangle'},
+                'wooden_box': {'color': (160, 82, 45, 255), 'shape': 'box'},
                 'tree': {'color': (0, 128, 0, 255), 'shape': 'tree'},
                 'bush': {'color': (0, 100, 0, 255), 'shape': 'circle'},
-                'animated_flower': {'color': (255, 182, 193, 255), 'shape': 'flower'}
+                'animated_flower': {'color': (255, 182, 193, 255), 'shape': 'flower'},
+                'sonic_flower': {'color': (255, 182, 193, 255), 'shape': 'flower'}
             }
             
             for object_id, props in object_types.items():
