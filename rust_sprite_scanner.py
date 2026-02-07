@@ -64,7 +64,7 @@ class RustSpriteScanner:
             # Define Rust function signature
             scan_function = rust_lib.scan_sprite_for_chest
             scan_function.argtypes = [ctypes.c_char_p, ctypes.c_uint, ctypes.c_uint]
-            scan_function.restype = ctypes.c_float
+            scan_function.restype = ctypes.c_double
             
             # Convert pixels to bytes
             pixels_ptr = ctypes.create_string_buffer(pixels)
