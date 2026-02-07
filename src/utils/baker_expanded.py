@@ -34,6 +34,7 @@ class AssetType(Enum):
     TRAITS = "traits"
     LORE = "lore"
     INTERACTIONS = "interactions"
+    DIALOGUE = "dialogue"
 
 
 @dataclass
