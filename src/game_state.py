@@ -15,8 +15,8 @@ from typing import List, Dict, Optional, Any
 from enum import Enum
 import uuid
 
-from world_ledger import Coordinate
-from logic.orientation import Orientation, WorldChunk
+from world_ledger import Coordinate, WorldChunk
+from logic.orientation import Orientation
 
 class Goal(BaseModel):
     """A narrative objective for the player/agent."""

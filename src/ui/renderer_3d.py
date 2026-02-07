@@ -89,7 +89,7 @@ class ASCIIDoomRenderer:
             List of strings representing the rendered frame
         """
         # Clear buffer
-        self.buffer = [[' ' ' for _ in range(self.height)] for _ in range(self.width)]
+        self.buffer = [[' ' for _ in range(self.height)] for _ in range(self.width)]
         
         # Get player position
         player_x = game_state.position.x
