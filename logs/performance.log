@@ -2,3 +2,6 @@
 2026-02-07 09:31:45 | INFO | core.heartbeat:_background_performance_monitor:351 | 📊 Background performance monitoring started
 2026-02-07 09:31:45 | INFO | core.heartbeat:_heartbeat_loop:123 | 🫀 Starting 60 FPS heartbeat loop
 2026-02-07 09:31:49 | INFO | core.heartbeat:_background_performance_monitor:374 | 📊 Background performance monitoring stopped
+2026-02-07 09:32:04 | INFO | core.heartbeat:start:84 | 🫀 Heartbeat started - 60 FPS target
+2026-02-07 09:32:04 | INFO | core.heartbeat:_background_performance_monitor:351 | 📊 Background performance monitoring started
+2026-02-07 09:32:04 | INFO | core.heartbeat:_heartbeat_loop:123 | 🫀 Starting 60 FPS heartbeat loop

@@ -432,4 +432,6 @@ __all__ = [
     "PersistenceError", "LLMError",
     
     # Utilities
-    "vali
+    "validate_position", "validate_tile_type", "validate_intent",
+    "create_initial_game_state", "DIRECTION_VECTORS"
+]
