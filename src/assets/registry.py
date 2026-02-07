@@ -28,6 +28,7 @@ class AssetDefinition:
     d20_checks: Dict[str, Any] = None
     triggers: Dict[str, Any] = None
     metadata: Dict[str, Any] = None
+    animation: Optional[str] = None  # Added for animation support
     
     def __post_init__(self):
         if self.tags is None:
@@ -49,6 +50,7 @@ class MaterialDefinition:
     resistances: List[str] = None
     weaknesses: List[str] = None
     physics: Dict[str, Any] = None
+    inherits: Optional[str] = None  # Added for inheritance support
     
     def __post_init__(self):
         if self.tags is None:
@@ -84,6 +86,7 @@ class EntityDefinition:
     combat_stats: Dict[str, int] = None
     skills: Dict[str, int] = None
     special: Dict[str, Any] = None
+    inventory: Optional[Dict[str, Any]] = None  # Added for inventory support
     
     def __post_init__(self):
         if self.base_stats is None:

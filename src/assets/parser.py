@@ -108,3 +108,98 @@ class AssetParser:
         
         logger.info("✅ All required files loaded")
         return True
+    
+    def _load_materials(self, data: Dict) -> None:
+        """Load material definitions with inheritance support"""
+        for material_id, material_data in data.items():
+            if isinstance(material_data, dict):
+                try:
+                    # Handle inheritance
+                    if 'inherits' in material_data:
+                        parent_id = material_data['inherits']
+                        parent_data = self.parsed_data.get('materials', {}).get(parent_id, {})
+                        # Merge parent data with child data (child overrides parent)
+                        merged_data = {**parent_data, **material_data}
+                        # Remove inherits from merged data to avoid recursion
+                        if 'inherits' in merged_data:
+                            del merged_data['inherits']
+                        # Use material_id as the key
+                        material_def = MaterialDefinition(material_id, **merged_data)
+                    else:
+                        # No inheritance, use material_id as key
+                        if 'material' in material_data:
+                            material_data['material_id'] = material_data.pop('material')
+                        material_def = MaterialDefinition(material_id, **material_data)
+                    
+                    self.registry[f"material_{material_id}"] = material_def
+                    logger.debug(f"📦 Loaded material: {material_id}")
+                    
+                except Exception as e:
+                    logger.error(f"💥 Failed to load material {material_id}: {e}")
+                    # Create fallback material
+                    try:
+                        material_def = MaterialDefinition(material_id)
+                        self.registry[f"material_{material_id}"] = material_def
+                        logger.warning(f"⚠️ Created fallback material: {material_id}")
+                    except Exception as e2:
+                        logger.error(f"💥 Failed to create fallback material {material_id}: {e2}")
+    
+    def _load_objects(self, data: Dict) -> None:
+        """Load object definitions with material linking"""
+        for object_id, object_data in data.items():
+            if isinstance(object_data, dict):
+                try:
+                    # Link material properties
+                    material_id = object_data.get('material')
+                    if material_id and material_id in self.parsed_data.get('materials', {}):
+                        material_def = self.parsed_data['materials'][material_id]
+                        if material_def:
+                            # Merge material properties into object
+                            self._merge_material_properties(object_data, material_def)
+                    
+                    # Create asset definition
+                    asset_def = AssetDefinition(object_id, **object_data)
+                    
+                    self.registry[object_id] = asset_def
+                    logger.debug(f"📦 Loaded object: {object_id}")
+                except Exception as e:
+                    logger.error(f"💥 Failed to load object {object_id}: {e}")
+    
+    def _load_animations(self, data: Dict) -> None:
+        """Load animation definitions"""
+        for animation_id, animation_data in data.items():
+            if isinstance(animation_data, dict):
+                try:
+                    animation_def = AnimationDefinition(animation_id, **animation_data)
+                    self.registry[f"animation_{animation_id}"] = animation_def
+                    logger.debug(f"📦 Loaded animation: {animation_id}")
+                except Exception as e:
+                    logger.error(f"💥 Failed to load animation {animation_id}: {e}")
+    
+    def _load_entities(self, data: Dict) -> None:
+        """Load entity definitions"""
+        for entity_id, entity_data in data.items():
+            if isinstance(entity_data, dict):
+                try:
+                    entity_def = EntityDefinition(entity_id, **entity_data)
+                    self.registry[f"entity_{entity_id}"] = entity_def
+                    logger.debug(f"📦 Loaded entity: {entity_id}")
+                except Exception as e:
+                    logger.error(f"💥 Failed to load entity {entity_id}: {e}")
+    
+    def _merge_material_properties(self, object_data: Dict, material_def) -> None:
+        """Merge material properties into object data"""
+        # Merge material tags
+        material_tags = getattr(material_def, 'tags', [])
+        object_tags = object_data.get('tags', [])
+        object_data['tags'] = list(set(material_tags + object_tags))
+        
+        # Merge resistances and weaknesses
+        material_resistances = getattr(material_def, 'resistances', [])
+        material_weaknesses = getattr(material_def, 'weaknesses', [])
+        
+        # Add material properties to metadata for reference
+        metadata = object_data.get('metadata', {})
+        metadata['material_resistances'] = material_resistances
+        metadata['material_weaknesses'] = material_weaknesses
+        object_data['metadata'] = metadata
