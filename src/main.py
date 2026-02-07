@@ -101,7 +101,7 @@ class DGTSystem:
         """Setup signal handlers for graceful shutdown"""
         def signal_handler(signum, frame):
             logger.info(f"🛑 Received signal {signum}, shutting down...")
-            self.shutdown()
+            asyncio.create_task(self.shutdown())
             sys.exit(0)
         
         signal.signal(signal.SIGINT, signal_handler)
@@ -375,14 +375,14 @@ class DGTSystem:
             await self.voyager.navigate_to_position(position)
             await asyncio.sleep(1)
     
-    def shutdown(self) -> None:
+    async def shutdown(self) -> None:
         """Graceful shutdown"""
         logger.info("🛑 Shutting down DGT System...")
         
         self.running = False
         
         if self.heartbeat:
-            self.heartbeat.stop()
+            await self.heartbeat.stop()
         
         logger.info("✅ DGT System shutdown complete")
     
