@@ -216,11 +216,15 @@ class StageManager:
             return False
         
         # Execute portal jump
+        # Handle EnvironmentType being None in demo mode
+        from_env_type = EnvironmentType.TOWN_SQUARE if EnvironmentType else "town_square"
+        to_env_type = EnvironmentType.TAVERN_INTERIOR if EnvironmentType else "tavern_interior"
+        
         success = self._execute_portal_jump(
             from_pos=(20, 10),
             to_pos=(25, 30),
-            from_env=EnvironmentType.TOWN_SQUARE,
-            to_env=EnvironmentType.TAVERN_INTERIOR
+            from_env=from_env_type,
+            to_env=to_env_type
         )
         
         if not success:
@@ -303,7 +307,11 @@ class StageManager:
         Returns:
             True if portal jump was successful
         """
-        logger.info(f"🌀 Portal jump: {from_pos} → {to_pos} ({from_env.value} → {to_env.value})")
+        # Handle string types in demo mode
+        from_env_name = from_env.value if hasattr(from_env, 'value') else str(from_env)
+        to_env_name = to_env.value if hasattr(to_env, 'value') else str(to_env)
+        
+        logger.info(f"🌀 Portal jump: {from_pos} → {to_pos} ({from_env_name} → {to_env_name})")
         
         if self.simulator:
             return self.simulator.execute_portal_jump(from_pos, to_pos, from_env, to_env)
