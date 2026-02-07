@@ -24,8 +24,9 @@ import random
 from loguru import logger
 
 from core.state import (
-    GameState, InterestPoint, validate_position
+    GameState, InterestPoint, validate_position, BiomeType, InterestType
 )
+from core.system_config import ChronosConfig, SystemConfig
 from narrative.persona import PersonaEngine, FactionType
 
 
