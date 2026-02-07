@@ -349,6 +349,14 @@ class Voyager:
         if self.chronos_engine:
             await self.chronos_engine.update_character_position(self.current_position)
 
+        # Update idle timer for animations
+        if hasattr(self, 'idle_timer'):
+            self.idle_timer += 1
+            if self.idle_timer >= self.idle_threshold:
+                self.is_idle = True
+            else:
+                self.is_idle = False
+
         intent = None
 
         if self.state == VoyagerState.STATE_IDLE:
@@ -360,6 +368,12 @@ class Voyager:
             intent = await self._generate_pondering_intent(game_state)
         elif self.state == VoyagerState.STATE_MOVING:
             intent = await self._generate_movement_intent(game_state)
+
+        # Reset idle timer if moving
+        if intent and intent.intent_type == "movement":
+            if hasattr(self, 'idle_timer'):
+                self.idle_timer = 0
+                self.is_idle = False
 
         # Track performance
         generation_time = time.time() - start_time
