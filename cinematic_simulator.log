@@ -2781,3 +2781,132 @@
 01:49:53 | INFO | 🛑 Stopping Cinematic Simulator
 01:49:53 | INFO | 🛑 SimulatorHost stopped
 01:49:53 | INFO | 🎬 Cinematic Simulator stopped
+01:53:37 | DEBUG | Added intent: distract with 5 exemplars
+01:53:37 | DEBUG | Added intent: force with 5 exemplars
+01:53:37 | DEBUG | Added intent: finesse with 5 exemplars
+01:53:37 | DEBUG | Added intent: charm with 5 exemplars
+01:53:37 | DEBUG | Added intent: intimidate with 5 exemplars
+01:53:37 | DEBUG | Added intent: deceive with 5 exemplars
+01:53:37 | DEBUG | Added intent: investigate with 5 exemplars
+01:53:37 | DEBUG | Added intent: use_item with 5 exemplars
+01:53:37 | DEBUG | Added intent: defend with 5 exemplars
+01:53:37 | DEBUG | Added intent: leave_area with 5 exemplars
+01:53:37 | DEBUG | Added intent: improvise with 5 exemplars
+01:53:37 | INFO | Semantic Baker initialized with model: all-MiniLM-L6-v2
+01:53:37 | INFO | Loaded 11 pre-baked intent embeddings (55 total examples)
+01:53:37 | INFO | ✅ Instant boot: Loaded pre-baked embeddings
+01:53:37 | INFO | 🏛️ SimulatorHost initialized - Single Source of Truth
+01:53:37 | INFO | 🎬 CinematicSimulator initialized
+01:53:37 | INFO | 🚀 Initializing Cinematic Simulator...
+01:53:37 | INFO | 🚀 Initializing SimulatorHost...
+01:53:37 | INFO | 🆕 Creating new game state
+01:53:37 | INFO | ⚖️ Loading Arbiter (Deterministic Logic Core)...
+01:53:37 | INFO | Deterministic Arbiter (Iron Frame) initialized.
+01:53:37 | INFO | 📖 Loading Chronicler (Narrative Engine)...
+01:53:38 | INFO | Initializing Chronicler with ollama:llama3.2:1b
+01:53:38 | INFO | 🎲 Loading Quartermaster...
+01:53:38 | INFO | 💎 Loading Loot System...
+01:53:38 | INFO | LootSystem initialized without artifact support
+01:53:38 | INFO | ✅ SimulatorHost initialization complete
+01:53:38 | INFO | 🎬 Autonomous Director initialized
+01:53:38 | DEBUG | 🗺️ Pathfinding grid initialized: 64x64
+01:53:38 | INFO | 🧭 Navigation system initialized
+01:53:38 | INFO | 🎥 Cinematic camera initialized
+01:53:38 | INFO | 🎬 Camera controller initialized
+01:53:38 | DEBUG | 💬 Dialogue box initialized
+01:53:38 | INFO | 🎬 Cinematic pauses system initialized
+01:53:38 | INFO | 🖥️ TerminalView initialized - Observer of SimulatorHost
+01:53:38 | INFO | 🖼️ GUIView initialized - Observer of SimulatorHost
+01:53:38 | DEBUG | 👁️ Added observer: TerminalView
+01:53:38 | DEBUG | 👁️ Added observer: GUIView
+01:53:38 | INFO | ✅ Cinematic Simulator initialized successfully
+01:53:38 | INFO | 🖥️ Starting terminal-only mode
+01:53:38 | INFO | 🎬 Starting autonomous cinematic mode
+01:53:38 | INFO | 🎬 Starting Autonomous Director Mode
+01:53:38 | INFO | 🎭 Generating initial narrative beacons
+01:53:38 | INFO | 🛑 Stopping Cinematic Simulator
+01:53:38 | INFO | 🛑 SimulatorHost stopped
+01:53:38 | INFO | 🎬 Cinematic Simulator stopped
+01:53:38 | ERROR | ❌ Cinematic simulator error: 'AutonomousDirector' object has no attribute '_llm_generate_beacons'
+01:53:38 | INFO | 🛑 Stopping Cinematic Simulator
+01:53:38 | INFO | 🛑 SimulatorHost stopped
+01:53:38 | INFO | 🎬 Cinematic Simulator stopped
+01:53:55 | DEBUG | Added intent: distract with 5 exemplars
+01:53:55 | DEBUG | Added intent: force with 5 exemplars
+01:53:55 | DEBUG | Added intent: finesse with 5 exemplars
+01:53:55 | DEBUG | Added intent: charm with 5 exemplars
+01:53:55 | DEBUG | Added intent: intimidate with 5 exemplars
+01:53:55 | DEBUG | Added intent: deceive with 5 exemplars
+01:53:55 | DEBUG | Added intent: investigate with 5 exemplars
+01:53:55 | DEBUG | Added intent: use_item with 5 exemplars
+01:53:55 | DEBUG | Added intent: defend with 5 exemplars
+01:53:55 | DEBUG | Added intent: leave_area with 5 exemplars
+01:53:55 | DEBUG | Added intent: improvise with 5 exemplars
+01:53:55 | INFO | Semantic Baker initialized with model: all-MiniLM-L6-v2
+01:53:55 | INFO | Loaded 11 pre-baked intent embeddings (55 total examples)
+01:53:55 | INFO | ✅ Instant boot: Loaded pre-baked embeddings
+01:53:55 | INFO | 🏛️ SimulatorHost initialized - Single Source of Truth
+01:53:55 | INFO | 🎬 CinematicSimulator initialized
+01:53:55 | INFO | 🚀 Initializing Cinematic Simulator...
+01:53:55 | INFO | 🚀 Initializing SimulatorHost...
+01:53:55 | INFO | 🆕 Creating new game state
+01:53:55 | INFO | ⚖️ Loading Arbiter (Deterministic Logic Core)...
+01:53:55 | INFO | Deterministic Arbiter (Iron Frame) initialized.
+01:53:55 | INFO | 📖 Loading Chronicler (Narrative Engine)...
+01:53:55 | INFO | Initializing Chronicler with ollama:llama3.2:1b
+01:53:55 | INFO | 🎲 Loading Quartermaster...
+01:53:55 | INFO | 💎 Loading Loot System...
+01:53:55 | INFO | LootSystem initialized without artifact support
+01:53:55 | INFO | ✅ SimulatorHost initialization complete
+01:53:55 | INFO | 🎬 Autonomous Director initialized
+01:53:55 | DEBUG | 🗺️ Pathfinding grid initialized: 64x64
+01:53:55 | INFO | 🧭 Navigation system initialized
+01:53:55 | INFO | 🎥 Cinematic camera initialized
+01:53:55 | INFO | 🎬 Camera controller initialized
+01:53:55 | DEBUG | 💬 Dialogue box initialized
+01:53:55 | INFO | 🎬 Cinematic pauses system initialized
+01:53:55 | INFO | 🖥️ TerminalView initialized - Observer of SimulatorHost
+01:53:55 | INFO | 🖼️ GUIView initialized - Observer of SimulatorHost
+01:53:55 | DEBUG | 👁️ Added observer: TerminalView
+01:53:55 | DEBUG | 👁️ Added observer: GUIView
+01:53:55 | INFO | ✅ Cinematic Simulator initialized successfully
+01:53:55 | INFO | 🖥️ Starting terminal-only mode
+01:53:55 | INFO | 🎬 Starting autonomous cinematic mode
+01:53:55 | INFO | 🎬 Starting Autonomous Director Mode
+01:53:55 | INFO | 🎭 Generating initial narrative beacons
+01:53:55 | INFO | 🎯 Generated landmark beacon: Tavern Door at (20, 10)
+01:53:55 | INFO | 🎯 Generated travel beacon: Tavern Interior at (25, 30)
+01:53:55 | INFO | 🎯 Generated travel beacon: Forest Path at (0, -1)
+01:53:55 | INFO | 🎯 New beacon: Visit Tavern Door
+01:53:55 | INFO | 🛤️ Path set: 20 steps to (20, 10)
+01:53:55 | INFO | 🎯 Generated beacon: Visit Tavern Door at (20, 10)
+01:53:55 | INFO | 🎯 New beacon: Travel to Tavern Interior
+01:53:55 | INFO | 🛤️ Path set: 30 steps to (25, 30)
+01:53:55 | INFO | 🎯 Generated beacon: Travel to Tavern Interior at (25, 30)
+01:53:55 | INFO | 🎯 New beacon: Travel to Forest Path
+01:53:55 | WARNING | ❌ Invalid start or goal position: start=(0, 0), goal=(0, -1)
+01:53:55 | WARNING | ❌ No path found to (0, -1)
+01:53:55 | INFO | 🎯 Generated beacon: Travel to Forest Path at (0, -1)
+01:53:55 | INFO | 🚀 Initializing SimulatorHost...
+01:53:55 | INFO | 🆕 Creating new game state
+01:53:55 | INFO | ⚖️ Loading Arbiter (Deterministic Logic Core)...
+01:53:55 | INFO | Deterministic Arbiter (Iron Frame) initialized.
+01:53:55 | INFO | 📖 Loading Chronicler (Narrative Engine)...
+01:53:55 | INFO | Initializing Chronicler with ollama:llama3.2:1b
+01:53:55 | INFO | 🎲 Loading Quartermaster...
+01:53:55 | INFO | 💎 Loading Loot System...
+01:53:55 | INFO | LootSystem initialized without artifact support
+01:53:55 | INFO | ✅ SimulatorHost initialization complete
+01:53:55 | INFO | 🚀 SimulatorHost started
+01:53:55 | INFO | 🎬 Director loop started
+01:53:55 | ERROR | ❌ Director loop error: 'AutonomousDirector' object has no attribute 'is_paused'
+01:53:55 | INFO | 🎬 Director loop stopped
+01:53:55 | INFO | 🎮 Starting 30 FPS game loop
+01:53:55 | INFO | 🎬 Cinematic loop started
+01:54:07 | INFO | 🖥️ Terminal mode stopped by user
+01:54:08 | INFO | 🛑 Stopping Cinematic Simulator
+01:54:08 | INFO | 🛑 SimulatorHost stopped
+01:54:08 | INFO | 🎬 Cinematic Simulator stopped
+01:54:08 | INFO | 🛑 Stopping Cinematic Simulator
+01:54:08 | INFO | 🛑 SimulatorHost stopped
+01:54:08 | INFO | 🎬 Cinematic Simulator stopped

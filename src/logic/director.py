@@ -351,7 +351,7 @@ class AutonomousDirector:
         context = state.get_context_str()
         
         # Generate initial beacons using LLM
-        initial_beacons = await self._llm_generate_beacons(context, num_beacons=3)
+        initial_beacons = await self._generate_narrative_beacons(context, num_beacons=3)
         
         for beacon_data in initial_beacons:
             beacon = NarrativeBeacon(
