@@ -301,8 +301,12 @@ class TheaterDirectorFactory:
     @staticmethod
     def create_tavern_voyage_director() -> Tuple[TheaterDirector, 'Playbook', 'StageManager']:
         """Create a complete Tavern Voyage production setup."""
-        from logic.playbook import PlaybookFactory
-        from core.stage_manager import StageManagerFactory
+        try:
+            from src.logic.playbook import PlaybookFactory
+            from src.core.stage_manager import StageManagerFactory
+        except ImportError:
+            from logic.playbook import PlaybookFactory
+            from core.stage_manager import StageManagerFactory
         
         # Create components
         playbook = PlaybookFactory.create_tavern_voyage()
