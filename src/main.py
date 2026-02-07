@@ -428,7 +428,9 @@ class DGTSystem:
                 "world_engine": self.world_engine is not None,
                 "dd_engine": self.dd_engine is not None,
                 "graphics_engine": self.graphics_engine is not None,
-                "voyager": self.voyager is not None
+                "voyager": self.voyager is not None,
+                "chronos_engine": self.chronos_engine is not None,
+                "persona_engine": self.persona_engine is not None
             },
             "config": self.config
         }
