@@ -1,7 +1,7 @@
 {
   "player": {
     "name": "Adventurer",
-    "hp": 26,
+    "hp": -1,
     "max_hp": 100,
     "gold": 50,
     "inventory": [],
@@ -73,7 +73,9 @@
         "south": "tavern",
         "down": "sewers"
       },
-      "tags": []
+      "tags": [
+        "Path Clear"
+      ]
     }
   },
   "turn_count": 0,
