@@ -106,8 +106,21 @@ class DGTOptimizationIntegrator:
                 "description": "Ensure D20 Core produces consistent results for safe pre-caching"
             }
             
-            # Step 3: Run performance benchmarks
-            logger.info("📊 Step 3: Running performance benchmarks...")
+            # Step 3: Run turn-around latency benchmark
+            logger.info("🔄 Step 3: Running turn-around latency benchmark...")
+            step_start = time.perf_counter()
+            
+            turn_around_results = await self._run_turn_around_benchmark()
+            results["steps"]["turn_around_benchmark"] = {
+                "success": turn_around_results["success_rate"] >= 0.8,
+                "duration": time.perf_counter() - step_start,
+                "success_rate": turn_around_results["success_rate"],
+                "avg_recovery_time": turn_around_results["avg_recovery_time"],
+                "description": "Validate trajectory-aware cache invalidation performance"
+            }
+            
+            # Step 4: Run performance benchmarks
+            logger.info("📊 Step 4: Running performance benchmarks...")
             step_start = time.perf_counter()
             
             benchmark_results = await self._run_performance_benchmarks()
@@ -119,8 +132,8 @@ class DGTOptimizationIntegrator:
                 "description": "Measure boot time and narrative latency improvements"
             }
             
-            # Step 4: Generate integration report
-            logger.info("📋 Step 4: Generating integration report...")
+            # Step 5: Generate integration report
+            logger.info("📋 Step 5: Generating integration report...")
             step_start = time.perf_counter()
             
             report_path = await self._generate_integration_report(results)
@@ -192,6 +205,36 @@ class DGTOptimizationIntegrator:
         except Exception as e:
             logger.error(f"❌ Deterministic validation failed: {e}")
             return {"consistency_score": 0.0, "error": str(e)}
+    
+    async def _run_turn_around_benchmark(self) -> dict:
+        """Run turn-around latency benchmark."""
+        try:
+            benchmark = TurnAroundBenchmark(self.reports_dir / "turn_around")
+            results = await benchmark.run_benchmark(iterations=3)
+            
+            # Calculate overall statistics
+            all_metrics = []
+            for metrics_list in results.values():
+                all_metrics.extend(metrics_list)
+            
+            successful = [m for m in all_metrics if m.success]
+            success_rate = len(successful) / len(all_metrics) if all_metrics else 0.0
+            
+            avg_recovery_time = 0.0
+            if successful:
+                import statistics
+                avg_recovery_time = statistics.mean([m.total_recovery_time for m in successful])
+            
+            return {
+                "success_rate": success_rate,
+                "avg_recovery_time": avg_recovery_time,
+                "total_scenarios": len(results),
+                "successful_runs": len(successful)
+            }
+            
+        except Exception as e:
+            logger.error(f"❌ Turn-around benchmark failed: {e}")
+            return {"success_rate": 0.0, "avg_recovery_time": 999.0, "error": str(e)}
     
     async def _run_performance_benchmarks(self) -> dict:
         """Run performance benchmarks."""
