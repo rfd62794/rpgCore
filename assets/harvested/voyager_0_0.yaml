@@ -1,5 +1,5 @@
 object_id: voyager_0_0
-object_type: material
+object_type: entity
 material_id: organic
 sprite_path: assets/harvested/voyager_0_0.png
 collision: false
@@ -18,7 +18,7 @@ dimensions:
   width: 16
   height: 16
 detection_info:
-  detected_type: material
+  detected_type: entity
   is_chest: false
   edge_threshold: 2
   content_bounds: !!python/tuple
@@ -27,7 +27,8 @@ detection_info:
   - 16
   - 16
 tags:
-- building
-- surface
+- interactive
+- player
+- character
 - edge_cleaned
 - auto_detected

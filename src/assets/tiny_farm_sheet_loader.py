@@ -6,9 +6,10 @@ Handles sprite sheets with proper slicing and frame extraction
 import os
 import tkinter as tk
 from PIL import Image, ImageTk
-from typing import Dict, List, Tuple, Optional
+from typing import Dict, List, Tuple, Optional, Set
 from pathlib import Path
 from loguru import logger
+import dataclasses
 
 
 class SpriteFrame:
@@ -53,11 +54,11 @@ class TinyFarmSpriteSheet:
             # Extract frame
             frame_image = self.sheet_image.crop((frame_x, frame_y, frame_x + self.frame_width, frame_y + self.frame_height))
             
-            # Convert to tkinter PhotoImage
-            tk_image = ImageTk.PhotoImage(frame_image)
+            # Scale for display using PIL resize instead of zoom
+            scaled_image = frame_image.resize((self.frame_width*4, self.frame_height*4), Image.Resampling.NEAREST)
             
-            # Scale for display (4x) using subsample instead of zoom
-            tk_image = tk_image.subsample(1, 1)  # Keep original size for now
+            # Convert to tkinter PhotoImage AFTER PIL processing
+            tk_image = ImageTk.PhotoImage(scaled_image)
             
             # Store frame
             self.frames.append(SpriteFrame(tk_image, frame_index))

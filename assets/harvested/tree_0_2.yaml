@@ -1,5 +1,5 @@
 object_id: tree_0_2
-object_type: material
+object_type: decoration
 material_id: organic
 sprite_path: assets/harvested/tree_0_2.png
 collision: false
@@ -18,7 +18,7 @@ dimensions:
   width: 16
   height: 16
 detection_info:
-  detected_type: material
+  detected_type: decoration
   is_chest: false
   edge_threshold: 2
   content_bounds: !!python/tuple
@@ -27,7 +27,10 @@ detection_info:
   - 16
   - 14
 tags:
-- building
-- surface
+- visual
+- ambient
+- organic
+- natural
+- tree
 - edge_cleaned
 - auto_detected

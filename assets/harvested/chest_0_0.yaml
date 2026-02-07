@@ -1,8 +1,8 @@
 object_id: chest_0_0
-object_type: material
+object_type: entity
 material_id: metal
 sprite_path: assets/harvested/chest_0_0.png
-collision: false
+collision: true
 auto_detected: true
 auto_cleaned: true
 is_baked: true
@@ -18,8 +18,8 @@ dimensions:
   width: 16
   height: 16
 detection_info:
-  detected_type: material
-  is_chest: false
+  detected_type: entity
+  is_chest: true
   edge_threshold: 2
   content_bounds: !!python/tuple
   - 8
@@ -27,7 +27,9 @@ detection_info:
   - 16
   - 16
 tags:
-- building
-- surface
+- interactive
+- container
+- lootable
+- static
 - edge_cleaned
 - auto_detected
