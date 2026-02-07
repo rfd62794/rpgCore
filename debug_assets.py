@@ -10,7 +10,6 @@ import os
 import sys
 import tkinter as tk
 from typing import Dict, List, Tuple, Optional
-from PIL import Image, ImageTk
 from loguru import logger
 from pathlib import Path
 
@@ -20,7 +19,7 @@ sys.path.append(os.path.join(os.path.dirname(__file__), 'src'))
 from graphics.ppu_tk_native import NativeTkinterPPU
 from core.system_config import create_default_config
 from assets.parser import AssetParser
-from assets.fabricator import AssetFabricator
+from assets.fabricator_tkinter import AssetFabricator
 from assets.registry import AssetRegistry
 
 class AssetDisplayTool:
