@@ -46,6 +46,11 @@ class PlayerStats(BaseModel):
         }
     )
     
+    # Additional fields for character factory
+    archetype_name: Optional[str] = None
+    personality_traits: List[str] = Field(default_factory=list)
+    skill_proficiencies: List[str] = Field(default_factory=list)
+    
     def __init__(self, **data):
         """Initialize with constitution-based HP calculation."""
         super().__init__(**data)

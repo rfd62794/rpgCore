@@ -201,7 +201,7 @@ class CharacterFactory:
                 basic_item = Item(
                     name=item_name,
                     description="A basic item",
-                    target_stat="luck",
+                    target_stat="strength",  # Default to strength instead of luck
                     modifier_value=0
                 )
                 inventory.append(basic_item)
