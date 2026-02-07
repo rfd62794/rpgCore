@@ -111,23 +111,43 @@ class EnhancedTkinterAdapter:
         # Warrior - armored figure with sword
         warrior_pixels = self._create_warrior_pixels()
         self.metasprites[CharacterRole.WARRIOR] = Metasprite(
-            MetaspriteConfig(CharacterRole.WARRIOR),
-            warrior_pixels
+            MetaspriteConfig(CharacterRole.WARRIOR)
         )
+        self.metasprites[CharacterRole.WARRIOR].pixel_buffer = [[None for _ in range(16)] for _ in range(16)]
+        
+        # Convert pixel colors to pixel buffer
+        for y in range(16):
+            for x in range(16):
+                color = warrior_pixels[y][x]
+                if color != 'black':
+                    # Create a simple pixel representation
+                    self.metasprites[CharacterRole.WARRIOR].pixel_buffer[y][x] = type('Pixel', (), {'color': color})()
         
         # Mage - robed figure with staff
         mage_pixels = self._create_mage_pixels()
         self.metasprites[CharacterRole.MAGE] = Metasprite(
-            MetaspriteConfig(CharacterRole.MAGE),
-            mage_pixels
+            MetaspriteConfig(CharacterRole.MAGE)
         )
+        self.metasprites[CharacterRole.MAGE].pixel_buffer = [[None for _ in range(16)] for _ in range(16)]
+        
+        for y in range(16):
+            for x in range(16):
+                color = mage_pixels[y][x]
+                if color != 'black':
+                    self.metasprites[CharacterRole.MAGE].pixel_buffer[y][x] = type('Pixel', (), {'color': color})()
         
         # Rogue - dark figure with dagger
         rogue_pixels = self._create_rogue_pixels()
         self.metasprites[CharacterRole.ROGUE] = Metasprite(
-            MetaspriteConfig(CharacterRole.ROGUE),
-            rogue_pixels
+            MetaspriteConfig(CharacterRole.ROGUE)
         )
+        self.metasprites[CharacterRole.ROGUE].pixel_buffer = [[None for _ in range(16)] for _ in range(16)]
+        
+        for y in range(16):
+            for x in range(16):
+                color = rogue_pixels[y][x]
+                if color != 'black':
+                    self.metasprites[CharacterRole.ROGUE].pixel_buffer[y][x] = type('Pixel', (), {'color': color})()
         
         print("✅ Metasprites initialized for Warrior, Mage, Rogue")
     
