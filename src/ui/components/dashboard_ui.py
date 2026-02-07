@@ -103,7 +103,8 @@ class DashboardUI:
             conversation_messages=[],
             system_status={},
             last_update=0.0,
-            pulse_active=False
+            pulse_active=False,
+            game_state=None
         )
         
         # Layout configuration
@@ -152,6 +153,7 @@ class DashboardUI:
         
         # Update the game state in dashboard state
         self.state.game_state = game_state
+        logger.info(f"Dashboard game_state updated: {game_state.position.x}, {game_state.position.y}")
         
         # Update vital status
         self.state.vital_status = VitalStatus(
