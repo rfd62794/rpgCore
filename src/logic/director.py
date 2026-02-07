@@ -233,43 +233,113 @@ class AutonomousDirector:
         current_pos = self.get_voyager_position()
         beacon_coords = self.current_beacon.target_coords
         
-        # For now, use simple path calculation (would integrate with NavigationSystem)
+        # Check for proximity interactions first
+        distance = abs(current_pos[0] - beacon_coords[0]) + abs(current_pos[1] - beacon_coords[1])
+        
+        if distance <= 1:
+            # Proximity interaction triggered
+            await self._execute_proximity_interaction()
+            return
+        
+        # Calculate path to beacon
         path = self._calculate_path_to_beacon(current_pos, beacon_coords)
         
         if not path:
-            logger.warning(f"❌ No path found to beacon {self.current_beacon.target_coords}")
-            self.current_beacon.achieved = True
-            if self.on_beacon_achieved:
-                self.on_beacon_achieved(self.current_beacon)
-            self.mode = DirectorMode.PLANNING
+            logger.warning("❌ No path found to beacon")
             return
         
-        # Execute path step by step
-        for i, next_pos in enumerate(path):
-            if self.mode != DirectorMode.EXECUTING:
+        logger.info(f"🛤️ Path set: {len(path)} steps to {beacon_coords}")
+        
+        # Execute movement along path
+        for next_pos in path:
+            # Check if scene is locked (wait for cinematic transitions)
+            if self.simulator.is_scene_locked():
+                logger.info("🎬 Scene locked - waiting for transition to complete")
+                await asyncio.sleep(0.5)  # Wait for scene lock to release
+                continue
+            
+            # Check proximity before each move
+            current_pos = self.get_voyager_position()
+            distance = abs(current_pos[0] - beacon_coords[0]) + abs(current_pos[1] - beacon_coords[1])
+            
+            if distance <= 1:
+                await self._execute_proximity_interaction()
                 break
             
-            # Calculate direction from current position to next position
-            current_pos = self.get_voyager_position()  # Get fresh position
+            # Calculate direction
             direction = self._get_direction_from_movement(current_pos, next_pos)
-            action_input = f"I move {direction}"
             
-            # Submit action through simulator
+            # Submit movement action
+            action_input = f"I move {direction}"
             self.simulator.submit_action(action_input)
             
-            # Wait for action processing
+            # Wait for action processing and pacing
             await asyncio.sleep(0.5 / self.playback_speed)
             
-            # Check if reached beacon
-            current_pos = self.get_voyager_position()  # Get updated position
-            if current_pos == self.current_beacon.target_coords:
+            # Update current position
+            current_pos = self.get_voyager_position()
+            
+            # Check if beacon achieved
+            if current_pos == beacon_coords:
                 self.current_beacon.achieved = True
+                self.beacon_history.append(self.current_beacon)
+                logger.info(f"✅ Beacon achieved: {self.current_beacon.description}")
+                
                 if self.on_beacon_achieved:
                     self.on_beacon_achieved(self.current_beacon)
                 
-                logger.info(f"🎯 Beacon achieved: {self.current_beacon.description}")
-                self.mode = DirectorMode.CINEMATIC
                 break
+            
+            # Check turn limit
+            if self.turn_count >= self.max_turns:
+                logger.info(f"🎬 Maximum turns ({self.max_turns}) reached")
+                break
+    
+    async def _execute_proximity_interaction(self) -> None:
+        """Execute interaction when Voyager is near a landmark."""
+        if not self.current_beacon:
+            return
+        
+        try:
+            current_pos = self.get_voyager_position()
+            target_pos = self.current_beacon.target_coords
+            
+            # Find the landmark at target position
+            landmark = self.world_map.get_landmark_at(target_pos[0], target_pos[1])
+            
+            if landmark:
+                logger.info(f"🎯 Proximity interaction: {landmark.name}")
+                
+                # Determine interaction type based on landmark
+                if landmark.interaction_type == "portal":
+                    action_input = "I enter the tavern"
+                elif landmark.interaction_type == "chest":
+                    action_input = "I open the chest"
+                elif landmark.interaction_type == "npc":
+                    action_input = "I talk to the person"
+                elif landmark.interaction_type == "door":
+                    action_input = "I open the door"
+                else:
+                    action_input = "I investigate the area"
+                
+                # Submit interaction action
+                self.simulator.submit_action(action_input)
+                
+                # Wait for interaction processing
+                await asyncio.sleep(1.0 / self.playback_speed)
+                
+                # Mark beacon as achieved
+                self.current_beacon.achieved = True
+                self.beacon_history.append(self.current_beacon)
+                logger.info(f"✅ Interaction completed: {landmark.name}")
+                
+                if self.on_beacon_achieved:
+                    self.on_beacon_achieved(self.current_beacon)
+            else:
+                logger.warning(f"❌ No landmark found at {target_pos}")
+                
+        except Exception as e:
+            logger.error(f"❌ Failed to execute proximity interaction: {e}")
         
         # Return to planning if not paused
         if self.mode != DirectorMode.PAUSED:
