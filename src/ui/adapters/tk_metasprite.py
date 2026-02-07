@@ -164,7 +164,7 @@ class EnhancedTkinterAdapter:
         # Face (row 4-6)
         for y in range(4, 7):
             for x in range(7, 9):
-                pixels[y][x] = 'peach'
+                pixels[y][x] = 'wheat'  # Tkinter-compatible skin color
         
         # Armor body (rows 7-12)
         for y in range(7, 13):
@@ -199,7 +199,7 @@ class EnhancedTkinterAdapter:
         # Face (rows 5-7)
         for y in range(5, 8):
             for x in range(7, 9):
-                pixels[y][x] = 'peach'
+                pixels[y][x] = 'wheat'  # Tkinter-compatible skin color
         
         # Robes (rows 8-15)
         for y in range(8, 16):
@@ -250,13 +250,16 @@ class EnhancedTkinterAdapter:
     
     def draw_metasprite(self, metasprite: Metasprite, grid_x: int, grid_y: int):
         """Draw a metasprite at the specified grid position."""
-        pixels = metasprite.pixels
+        if not metasprite.pixel_buffer:
+            return
         
-        # Convert 16x16 metasprite to scaled grid coordinates
+        # Draw 16x16 metasprite
         for py in range(16):
             for px in range(16):
-                color = pixels[py][px]
-                if color != 'black':
+                pixel = metasprite.pixel_buffer[py][px]
+                if pixel and hasattr(pixel, 'color'):
+                    color = pixel.color
+                    
                     # Calculate screen position
                     screen_x = (grid_x + px // self.scale) * self.scale
                     screen_y = (grid_y + py // self.scale) * self.scale
