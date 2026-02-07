@@ -353,6 +353,7 @@ class SmoothDemo:
                     sprite.put("#808080", (x, y))
     
     def _update_performance_display(self) -> None:
+        """Update performance UI elements"""
         current_time = time.time()
         
         # Update FPS display
