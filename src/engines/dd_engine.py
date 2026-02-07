@@ -312,8 +312,8 @@ class DD_Engine:
     
     def _calculate_movement_range(self) -> int:
         """Calculate maximum movement range based on D20 rules"""
-        # Base movement range (could be modified by character stats, effects, etc.)
-        base_range = 6
+        # Base movement range (increased for demo navigation)
+        base_range = 15  # Increased from 6 to accommodate demo paths
         
         # Apply modifiers from active effects
         for effect in self.state.active_effects:
@@ -377,7 +377,7 @@ class DD_Engine:
     def _initialize_validation_rules(self) -> Dict[str, Any]:
         """Initialize D&D rule validation parameters"""
         return {
-            "max_movement_range": 6,
+            "max_movement_range": 15,  # Increased for demo navigation
             "interaction_range": 1,
             "effect_duration_default": 5.0
         }
