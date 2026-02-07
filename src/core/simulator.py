@@ -714,6 +714,15 @@ class SimulatorHost:
         try:
             logger.info(f"🎯 Interaction triggered: {landmark.name} ({landmark.interaction_type})")
             
+            # Check for portal interactions (door transitions)
+            if landmark.interaction_type == "portal" or landmark.interaction_type == "door":
+                # Find portal transition for this landmark
+                portal = self.world_map.find_portal_at(landmark.coords[0], landmark.coords[1])
+                if portal:
+                    logger.info(f"🚪 Portal detected: {portal.name}")
+                    self._execute_portal_transition(portal.to_env, portal.to_coords)
+                    return
+            
             # Notify views for interaction handling
             self._notify_observers("landmark_interaction", {
                 "landmark": landmark.name,
