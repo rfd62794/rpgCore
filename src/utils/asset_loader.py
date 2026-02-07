@@ -439,7 +439,7 @@ class AssetLoader:
             
             for state in voyager_states:
                 # Generate voyager sprite
-                voyager_img = Image.new((16, 16), (255, 255, 255, 0))
+                voyager_img = Image.new((16, 16), (255, 255, 255, 0), "RGBA")
                 voyager_draw = ImageDraw.Draw(voyager_img)
                 
                 if state == "idle":
@@ -468,7 +468,7 @@ class AssetLoader:
             
             for enemy_type in enemy_types:
                 # Generate base enemy sprite
-                enemy_img = Image.new((16, 16), (255, 255, 255, 0))
+                enemy_img = Image.new((16, 16), (255, 255, 255, 0), "RGBA")
                 enemy_draw = ImageDraw.Draw(enemy_img)
                 
                 if enemy_type == "guardian":
@@ -511,7 +511,7 @@ class AssetLoader:
             }
             
             for sprite_id, color in basic_sprites.items():
-                img = Image.new((16, 16), (255, 255, 255, 0))
+                img = Image.new((16, 16), (255, 255, 255, 0), "RGBA")
                 draw = ImageDraw.Draw(img)
                 draw.rectangle([2, 2, 14, 14], fill=color + (255,))
                 
@@ -523,6 +523,9 @@ class AssetLoader:
         
         except Exception as e:
             logger.error(f"💥 Failed to generate fallback sprites: {e}")
+            # Create empty registry to prevent crashes
+            self.registry = {}
+            self._sprite_refs = []
     
     def _create_sprite_variant(self, image: Image.Image, sprite_id: str) -> None:
         """Create a sprite variant and store it"""
