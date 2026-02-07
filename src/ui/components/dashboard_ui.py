@@ -307,12 +307,14 @@ class DashboardUI:
         try:
             if zone_type == ZoneType.VIEWPORT:
                 # Check if we have a valid game state
+                print(f"DASHBOARD: _render_component VIEWPORT, game_state is None: {self.state.game_state is None}")
                 if self.state.game_state is None:
                     return Panel(
                         "[yellow]No game state available[/yellow]",
                         title="[yellow]VIEWPORT[/yellow]",
                         border_style="yellow"
                     )
+                print(f"DASHBOARD: Rendering viewport with game state at ({self.state.game_state.position.x}, {self.state.game_state.position.y})")
                 return component.render_frame(self.state.game_state)
             elif zone_type == ZoneType.VITALS:
                 pulse = self.vitals.update_pulse()
