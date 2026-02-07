@@ -205,6 +205,34 @@ class ObserverView:
             except Exception as e:
                 self.log_event(f"⚠️ Failed to render {obj.asset_id}: {e}")
     
+    def run(self) -> None:
+        """Run the observer view"""
+        if self.enable_graphics:
+            self.root.protocol("WM_DELETE_WINDOW", self.on_closing)
+            
+            # Use asyncio to run both the Tkinter main loop and autonomous session
+            self.root.after(100, self._update_asyncio)
+            
+            # Run Tkinter main loop
+            self.root.mainloop()
+        else:
+            # Run headless
+            asyncio.run(self.run_autonomous_session())
+    
+    def _update_asyncio(self) -> None:
+        """Update asyncio tasks and Tkinter"""
+        try:
+            # Process asyncio events
+            loop = asyncio.get_event_loop()
+            if loop.is_running():
+                loop.run_until_complete(asyncio.sleep(0.1))
+            
+            # Schedule next update
+            if self.running:
+                self.root.after(100, self._update_asyncio)
+        except Exception as e:
+            self.log_event(f"⚠️ Asyncio update error: {e}")
+    
     async def run_autonomous_session(self) -> None:
         """Run the autonomous movie session"""
         self.running = True
