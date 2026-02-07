@@ -6537,3 +6537,6 @@ mode
   Input should be 'terminal', 'cockpit' or 'ppu' [type=enum, input_value=<DisplayMode.PPU: 'ppu'>, input_type=DisplayMode]
     For further information visit https://errors.pydantic.dev/2.12/v/enum
 2026-02-07 16:03:37 | ERROR | __mp_main__:run_ppu_client:115 | ❌ PPU client process failed: name 'dataclass' is not defined
+2026-02-07 16:09:53 | ERROR | __main__:connect_to_server:74 | ❌ Failed to connect to server: name 'dataclass' is not defined
+2026-02-07 16:10:00 | ERROR | dgt_core.client:start:190 | ❌ Display engine not available
+2026-02-07 16:10:00 | ERROR | __main__:start:185 | ❌ Failed to start client

@@ -15,6 +15,7 @@ import json
 import socket
 from pathlib import Path
 import sys
+from dataclasses import dataclass
 
 # Add parent directories for imports
 sys.path.append(str(Path(__file__).parent.parent.parent))

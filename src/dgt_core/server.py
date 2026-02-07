@@ -23,6 +23,7 @@ sys.path.append(str(Path(__file__).parent.parent.parent))
 from loguru import logger
 from .core.state import Entity, GameState, TileType, BiomeType
 from .core.constants import TARGET_FPS, FRAME_DELAY_MS
+from .simulation.breeding import GeneticBreedingService, UniversalTurtlePacket
 
 @dataclass
 class SimulationConfig:
@@ -286,6 +287,7 @@ class SimulationServer:
         self.entity_system = EntitySystem(self.config.max_entities)
         self.physics_engine = PhysicsEngine() if self.config.enable_physics else None
         self.d20_system = D20System() if self.config.enable_d20 else None
+        self.genetic_service = GeneticBreedingService() if self.config.enable_genetics else None
         
         # State management
         self.current_state = GameState()
@@ -365,6 +367,13 @@ class SimulationServer:
         # Update D20 system (random events)
         if self.d20_system and random.random() < 0.1:  # 10% chance per frame
             self._trigger_random_event()
+        
+        # Update genetic service (5-second generation cycles)
+        if self.genetic_service:
+            new_turtle_packets = self.genetic_service.update(dt)
+            if new_turtle_packets:
+                logger.info(f"🧬 {len(new_turtle_packets)} new turtles born")
+                self._sync_turtles_to_entities(new_turtle_packets)
         
         # Update frame count
         self.frame_count += 1
@@ -459,6 +468,80 @@ class SimulationServer:
             timestamp=time.time(),
             frame_count=self.frame_count
         )
+    
+    def _sync_turtles_to_entities(self, turtle_packets: List[UniversalTurtlePacket]):
+        """Sync genetic turtle data to entity system"""
+        for packet in turtle_packets:
+            # Check if turtle entity already exists
+            if packet.turtle_id not in self.entity_system.entities:
+                # Create new entity for turtle
+                turtle_entity = Entity(
+                    id=packet.turtle_id,
+                    x=random.randint(5, 45),
+                    y=random.randint(5, 45),
+                    entity_type="genetic_turtle",
+                    metadata={
+                        'generation': packet.generation,
+                        'shell_pattern': packet.shell_pattern,
+                        'primary_color': packet.primary_color,
+                        'secondary_color': packet.secondary_color,
+                        'speed': packet.speed,
+                        'stamina': packet.stamina,
+                        'intelligence': packet.intelligence,
+                        'fitness_score': packet.fitness_score,
+                        'genome': packet.genome_serialized,
+                        'birth_time': packet.birth_time,
+                        'mutations': packet.mutations
+                    }
+                )
+                self.entity_system.add_entity(turtle_entity)
+            else:
+                # Update existing turtle entity
+                entity = self.entity_system.entities[packet.turtle_id]
+                entity.metadata.update({
+                    'generation': packet.generation,
+                    'shell_pattern': packet.shell_pattern,
+                    'primary_color': packet.primary_color,
+                    'secondary_color': packet.secondary_color,
+                    'speed': packet.speed,
+                    'stamina': packet.stamina,
+                    'intelligence': packet.intelligence,
+                    'fitness_score': packet.fitness_score,
+                    'genome': packet.genome_serialized,
+                    'mutations': packet.mutations
+                })
+    
+    def get_alpha_turtle_state(self) -> Optional[Dict[str, Any]]:
+        """Get alpha turtle state for PPU visualization"""
+        if not self.genetic_service:
+            return None
+        
+        alpha_turtle = self.genetic_service.get_alpha_turtle()
+        if not alpha_turtle:
+            return None
+        
+        turtle_id, genome = alpha_turtle
+        packet = self.genetic_service.create_turtle_packet(turtle_id)
+        if not packet:
+            return None
+        
+        return {
+            'turtle_id': packet.turtle_id,
+            'generation': packet.generation,
+            'shell_pattern': packet.shell_pattern,
+            'primary_color': packet.primary_color,
+            'secondary_color': packet.secondary_color,
+            'speed': packet.speed,
+            'fitness_score': packet.fitness_score,
+            'timestamp': packet.timestamp
+        }
+    
+    def get_genetic_stats(self) -> Dict[str, Any]:
+        """Get genetic breeding service statistics"""
+        if not self.genetic_service:
+            return {}
+        
+        return self.genetic_service.get_population_stats()
     
     def _update_performance_stats(self, dt: float):
         """Update performance statistics"""
