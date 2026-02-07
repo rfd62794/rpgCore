@@ -18,6 +18,7 @@ from ui.sprite_registry import SpriteRegistry
 from ui.tile_bank import TileBank, TileType
 from models.metasprite import Metasprite, MetaspriteConfig, CharacterRole
 from ui.virtual_ppu import VirtualPPU
+from world_ledger import WorldLedger
 
 
 class _InternalPixelViewport:
