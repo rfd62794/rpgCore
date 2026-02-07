@@ -255,13 +255,15 @@ class HeartbeatController:
                 interest_point.manifestation = manifestation
                 interest_point.manifestation_timestamp = time.time()
                 
-                # Create world delta for persistence
-                delta = self.persistence_manager.create_interest_delta(interest_point)
-                await self.dd_engine.apply_world_delta(delta)
+                # Create world delta for persistence (if manager is available)
+                if self.persistence_manager:
+                    delta = self.persistence_manager.create_interest_delta(interest_point)
+                    await self.dd_engine.apply_world_delta(delta)
                 
-                # Generate subtitle
-                subtitle = f"Discovered: {manifestation}"
-                await self.chronicler.add_subtitle(subtitle, 4.0)
+                # Generate subtitle (if chronicler is available)
+                if self.chronicler:
+                    subtitle = f"Discovered: {manifestation}"
+                    await self.chronicler.add_subtitle(subtitle, 4.0)
                 
                 logger.info(f"✨ Interest Point manifested: {manifestation}")
                 break
@@ -271,20 +273,22 @@ class HeartbeatController:
     
     async def _render_frame(self, state: GameState) -> None:
         """Render the current frame"""
-        # Render game state
-        frame = await self.graphics_engine.render_state(state)
-        
-        # Render subtitles
-        subtitles = await self.chronicler.get_current_subtitles()
-        await self.graphics_engine.render_subtitles(frame, subtitles)
-        
-        # Display frame
-        await self.graphics_engine.display_frame(frame)
+        # Render game state (if graphics engine is available)
+        if self.graphics_engine:
+            frame = await self.graphics_engine.render_state(state)
+            
+            # Render subtitles (if chronicler is available)
+            if self.chronicler:
+                subtitles = await self.chronicler.get_current_subtitles()
+                await self.graphics_engine.render_subtitles(frame, subtitles)
+            
+            # Display frame
+            await self.graphics_engine.display_frame(frame)
     
     async def _handle_persistence(self, state: GameState) -> None:
         """Handle persistence operations"""
-        # Check if persistence is needed
-        if state.turn_count % 10 == 0:  # Every 10 turns
+        # Check if persistence is needed and manager is available
+        if self.persistence_manager and state.turn_count % 10 == 0:  # Every 10 turns
             await self.persistence_manager.save_state(state)
     
     async def _update_metrics(self, frame_start_time: float) -> None:
