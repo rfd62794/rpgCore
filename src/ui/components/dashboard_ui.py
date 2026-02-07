@@ -52,6 +52,7 @@ class DashboardState:
     system_status: Dict[str, Any]
     last_update: float
     pulse_active: bool
+    game_state: Optional[GameState] = None
     
     def needs_update(self, current_time: float) -> bool:
         """Check if dashboard needs update based on component states."""
