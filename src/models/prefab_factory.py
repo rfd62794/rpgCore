@@ -23,44 +23,40 @@ from .instantiation_factory import (
 from .cache_manager import LRUCacheManager, CacheManagerFactory
 
 
-class PrefabFactory:
+class PrefabFactory(IAssetRegistry):
     """
-    Runtime factory for instantiating pre-baked assets.
+    Refactored PrefabFactory using SOLID principles.
     
-    Loads the binary assets.dgt file via memory mapping and provides
-    methods to instantiate characters, objects, and environments with
-    sub-millisecond performance.
+    Orchestrates asset loading, caching, and instantiation through
+    dependency injection. Each component has a single responsibility.
     """
     
-    def __init__(self, asset_path: Path):
+    def __init__(self, asset_path: Path, asset_loader: Optional[IAssetLoader] = None):
         """
-        Initialize the PrefabFactory.
+        Initialize the PrefabFactory with dependency injection.
         
         Args:
             asset_path: Path to the assets.dgt binary file
+            asset_loader: Optional custom asset loader (defaults to BinaryAssetLoader)
         """
         self.asset_path = asset_path
-        self._mmap_handle: Optional[mmap.mmap] = None
-        self._file_handle: Optional[Any] = None
         
-        # Asset registries (loaded from binary)
-        self.sprite_bank: Dict[str, Any] = {}
-        self.tile_registry: Dict[str, Any] = {}
-        self.object_registry: Dict[str, Any] = {}
-        self.environment_registry: Dict[str, Any] = {}
-        self.interaction_registry: Dict[str, Any] = {}
+        # Dependency injection with defaults
+        self._asset_loader = asset_loader or BinaryAssetLoader()
+        self._instantiation_factory: Optional[IInstantiationFactory] = None
+        self._interaction_provider: Optional[IInteractionProvider] = None
         
-        # Runtime caches
-        self._character_cache: Dict[str, CharacterInstance] = {}
-        self._object_cache: Dict[str, ObjectInstance] = {}
-        self._environment_cache: Dict[str, EnvironmentInstance] = {}
+        # Cache managers for different asset types
+        self._character_cache = CacheManagerFactory.create_character_cache()
+        self._object_cache = CacheManagerFactory.create_object_cache()
+        self._environment_cache = CacheManagerFactory.create_environment_cache()
         
         logger.info(f"🏭 PrefabFactory initialized")
         logger.info(f"📁 Asset file: {asset_path}")
     
     def load_assets(self) -> bool:
         """
-        Load all assets from the binary file via memory mapping.
+        Load all assets using the injected asset loader.
         
         Returns:
             True if loading succeeded, False otherwise
@@ -68,42 +64,22 @@ class PrefabFactory:
         try:
             logger.info("📦 Loading pre-baked assets...")
             
-            # Open file for memory mapping
-            self._file_handle = open(self.asset_path, 'rb')
-            self._mmap_handle = mmap.mmap(self._file_handle.fileno(), 0, access=mmap.ACCESS_READ)
+            # Load assets using injected loader
+            if not self._asset_loader.load_assets(self.asset_path):
+                logger.error("❌ Asset loader failed")
+                return False
             
-            # Read and validate header
-            header_data = self._mmap_handle[:40]  # Read full header
-            magic = header_data[:4]
-            version = struct.unpack('<I', header_data[4:8])[0]
-            build_time = struct.unpack('<d', header_data[8:16])[0]
-            checksum = header_data[16:32]
-            asset_count = struct.unpack('<I', header_data[32:36])[0]
-            data_offset = struct.unpack('<I', header_data[36:40])[0]
+            # Get loaded asset data
+            asset_data = self._asset_loader.get_asset_data()
+            if not asset_data:
+                logger.error("❌ No asset data available")
+                return False
             
-            if magic != b'DGT\x01':
-                raise ValueError(f"Invalid file format: {magic}")
+            # Create instantiation factory with dependencies
+            self._instantiation_factory = InstantiationFactoryFactory.create_factory(asset_data)
             
-            logger.info(f"✅ Validated DGT binary v{version}")
-            logger.info(f"📊 Assets: {asset_count}")
-            logger.info(f"🔤 Checksum: {checksum.hex()}")
-            
-            # Read compressed asset data
-            raw_data = self._mmap_handle[data_offset:]
-            # Find actual gzip start
-            gzip_start = raw_data.find(b'\x1f\x8b')
-            if gzip_start == -1:
-                raise ValueError("No gzip data found in file")
-            
-            compressed_data = raw_data[gzip_start:]
-            asset_data = pickle.loads(gzip.decompress(compressed_data))
-            
-            # Load asset registries
-            self.sprite_bank = asset_data['sprite_bank']
-            self.tile_registry = asset_data['tile_registry']
-            self.object_registry = asset_data['object_registry']
-            self.environment_registry = asset_data['environment_registry']
-            self.interaction_registry = asset_data['interaction_registry']
+            # Extract interaction provider
+            self._interaction_provider = self._instantiation_factory.interaction_provider
             
             logger.info("✅ All asset registries loaded")
             return True
@@ -114,7 +90,7 @@ class PrefabFactory:
     
     def create_character(self, character_id: str, position: Tuple[int, int] = (0, 0), palette_override: Optional[str] = None) -> Optional[CharacterInstance]:
         """
-        Create a character instance from pre-baked sprite data.
+        Create a character instance using the instantiation factory.
         
         Args:
             character_id: ID of the character to create
@@ -124,52 +100,19 @@ class PrefabFactory:
         Returns:
             Character instance or None if not found
         """
-        try:
-            # Check cache first
-            cache_key = f"{character_id}_{palette_override or 'default'}"
-            if cache_key in self._character_cache:
-                instance = self._character_cache[cache_key]
-                instance.position = position
-                return instance
-            
-            # Get sprite data
-            if character_id not in self.sprite_bank['sprites']:
-                logger.warning(f"Character not found: {character_id}")
-                return None
-            
-            # Decompress sprite data
-            compressed_sprite = self.sprite_bank['sprites'][character_id]
-            sprite_data = pickle.loads(gzip.decompress(compressed_sprite))
-            
-            # Get palette
-            palette_id = palette_override or self.sprite_bank['metadata'][character_id].get('palette', 'legion_red')
-            palette = self.sprite_bank['palettes'].get(palette_id, [])
-            
-            # Apply palette to sprite data
-            colored_sprite = self._apply_palette(sprite_data, palette)
-            
-            # Create instance
-            instance = CharacterInstance(
-                character_id=character_id,
-                sprite_data=colored_sprite,
-                palette=palette,
-                metadata=self.sprite_bank['metadata'][character_id],
-                position=position
-            )
-            
-            # Cache instance
-            self._character_cache[cache_key] = instance
-            
-            logger.debug(f"👤 Created character: {character_id} at {position}")
-            return instance
-            
-        except Exception as e:
-            logger.error(f"❌ Failed to create character {character_id}: {e}")
+        if not self._instantiation_factory:
+            logger.error("❌ Assets not loaded - call load_assets() first")
             return None
+        
+        return self._instantiation_factory.create_character(
+            character_id=character_id,
+            position=position,
+            palette_override=palette_override
+        )
     
     def create_object(self, object_id: str, position: Tuple[int, int] = (0, 0)) -> Optional[ObjectInstance]:
         """
-        Create an object instance from pre-baked object data.
+        Create an object instance using the instantiation factory.
         
         Args:
             object_id: ID of the object to create
@@ -178,43 +121,18 @@ class PrefabFactory:
         Returns:
             Object instance or None if not found
         """
-        try:
-            # Check cache first
-            if object_id in self._object_cache:
-                instance = self._object_cache[object_id]
-                instance.position = position
-                return instance
-            
-            # Get object data
-            if object_id not in self.object_registry['objects']:
-                logger.warning(f"Object not found: {object_id}")
-                return None
-            
-            # Decompress object data
-            compressed_object = self.object_registry['objects'][object_id]
-            object_data = pickle.loads(gzip.decompress(compressed_object))
-            
-            # Create instance
-            instance = ObjectInstance(
-                object_id=object_id,
-                sprite_data=object_data,
-                interaction_id=self.object_registry['interactions'][object_id],
-                position=position
-            )
-            
-            # Cache instance
-            self._object_cache[object_id] = instance
-            
-            logger.debug(f"📦 Created object: {object_id} at {position}")
-            return instance
-            
-        except Exception as e:
-            logger.error(f"❌ Failed to create object {object_id}: {e}")
+        if not self._instantiation_factory:
+            logger.error("❌ Assets not loaded - call load_assets() first")
             return None
+        
+        return self._instantiation_factory.create_object(
+            object_id=object_id,
+            position=position
+        )
     
     def create_environment(self, environment_id: str) -> Optional[EnvironmentInstance]:
         """
-        Create an environment instance from pre-baked map data.
+        Create an environment instance using the instantiation factory.
         
         Args:
             environment_id: ID of the environment to create
@@ -222,52 +140,11 @@ class PrefabFactory:
         Returns:
             Environment instance or None if not found
         """
-        try:
-            # Check cache first
-            if environment_id in self._environment_cache:
-                return self._environment_cache[environment_id]
-            
-            # Get environment data
-            if environment_id not in self.environment_registry['maps']:
-                logger.warning(f"Environment not found: {environment_id}")
-                return None
-            
-            # Decompress map data
-            compressed_map = self.environment_registry['maps'][environment_id]
-            rle_data = pickle.loads(gzip.decompress(compressed_map))
-            
-            # Decompress tile map
-            tile_map = self._rle_decompress(rle_data)
-            
-            # Get dimensions
-            dimensions = self.environment_registry['dimensions'][environment_id]
-            
-            # Create object instances
-            objects = []
-            for obj_data in self.environment_registry['object_placements'][environment_id]:
-                obj = self.create_object(obj_data['type'], tuple(obj_data['position']))
-                if obj:
-                    objects.append(obj)
-            
-            # Create instance
-            instance = EnvironmentInstance(
-                environment_id=environment_id,
-                tile_map=tile_map,
-                dimensions=dimensions,
-                objects=objects,
-                npcs=self.environment_registry['npc_placements'][environment_id],
-                metadata={'loaded_at': time.time()}
-            )
-            
-            # Cache instance
-            self._environment_cache[environment_id] = instance
-            
-            logger.debug(f"🗺️ Created environment: {environment_id} ({dimensions[0]}x{dimensions[1]})")
-            return instance
-            
-        except Exception as e:
-            logger.error(f"❌ Failed to create environment {environment_id}: {e}")
+        if not self._instantiation_factory:
+            logger.error("❌ Assets not loaded - call load_assets() first")
             return None
+        
+        return self._instantiation_factory.create_environment(environment_id=environment_id)
     
     def get_interaction(self, interaction_id: str) -> Optional[Dict[str, Any]]:
         """
@@ -279,7 +156,11 @@ class PrefabFactory:
         Returns:
             Interaction data or None if not found
         """
-        return self.interaction_registry['interactions'].get(interaction_id)
+        if not self._interaction_provider:
+            logger.error("❌ Assets not loaded - call load_assets() first")
+            return None
+        
+        return self._interaction_provider.get_interaction(interaction_id)
     
     def get_dialogue_set(self, dialogue_set_id: str) -> Optional[Dict[str, List[str]]]:
         """
@@ -291,69 +172,57 @@ class PrefabFactory:
         Returns:
             Dialogue set data or None if not found
         """
-        return self.interaction_registry['dialogue_sets'].get(dialogue_set_id)
-    
-    def _apply_palette(self, sprite_data: List[List[Optional[str]]], palette: List[str]) -> List[List[Optional[str]]]:
-        """Apply color palette to sprite data."""
-        if not palette:
-            return sprite_data
+        if not self._interaction_provider:
+            logger.error("❌ Assets not loaded - call load_assets() first")
+            return None
         
-        # Create color mapping from palette
-        color_map = {}
-        for i, color in enumerate(palette):
-            if isinstance(color, dict):
-                color_map[i] = color.get(i, 'transparent')
-            else:
-                color_map[i] = color
-        
-        # Apply palette to sprite
-        colored_sprite = []
-        for row in sprite_data:
-            colored_row = []
-            for pixel in row:
-                if pixel is not None and isinstance(pixel, str):
-                    # Map color through palette
-                    colored_row.append(pixel)  # Simplified for demo
-                else:
-                    colored_row.append(pixel)
-            colored_sprite.append(colored_row)
-        
-        return colored_sprite
-    
-    def _rle_decompress(self, rle_data: List[Tuple[int, int]]) -> List[int]:
-        """Decompress RLE data back to tile map."""
-        if not rle_data:
-            return []
-        
-        decompressed = []
-        for value, count in rle_data:
-            decompressed.extend([value] * count)
-        
-        return decompressed
+        return self._interaction_provider.get_dialogue_set(dialogue_set_id)
     
     def get_available_characters(self) -> List[str]:
         """Get list of available character IDs."""
-        return list(self.sprite_bank['sprites'].keys())
+        if not self._instantiation_factory:
+            return []
+        
+        asset_data = self._asset_loader.get_asset_data()
+        return list(asset_data.get('sprite_bank', {}).get('sprites', {}).keys())
     
     def get_available_objects(self) -> List[str]:
         """Get list of available object IDs."""
-        return list(self.object_registry['objects'].keys())
+        if not self._instantiation_factory:
+            return []
+        
+        asset_data = self._asset_loader.get_asset_data()
+        return list(asset_data.get('object_registry', {}).get('objects', {}).keys())
     
     def get_available_environments(self) -> List[str]:
         """Get list of available environment IDs."""
-        return list(self.environment_registry['maps'].keys())
+        if not self._instantiation_factory:
+            return []
+        
+        asset_data = self._asset_loader.get_asset_data()
+        return list(asset_data.get('environment_registry', {}).get('maps', {}).keys())
+    
+    def get_cache_stats(self) -> Dict[str, Any]:
+        """Get cache statistics for monitoring."""
+        return {
+            'character_cache': self._character_cache.get_stats(),
+            'object_cache': self._object_cache.get_stats(),
+            'environment_cache': self._environment_cache.get_stats()
+        }
     
     def cleanup(self) -> None:
-        """Clean up memory-mapped resources."""
-        if self._mmap_handle:
-            self._mmap_handle.close()
-        if self._file_handle:
-            self._file_handle.close()
+        """Clean up all resources."""
+        # Clean up asset loader
+        self._asset_loader.cleanup()
         
         # Clear caches
         self._character_cache.clear()
         self._object_cache.clear()
         self._environment_cache.clear()
+        
+        # Reset factories
+        self._instantiation_factory = None
+        self._interaction_provider = None
         
         logger.info("🧹 PrefabFactory cleaned up")
 
