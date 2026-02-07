@@ -219,11 +219,12 @@ class IsometricRenderer:
         if self.faction_system:
             faction = self.faction_system.get_faction_at_coordinate(coordinate)
         if faction:
-            if faction.id == "legion":
+            faction_id = faction.id if isinstance(faction.id, str) else str(faction.id)
+            if faction_id == "legion":
                 return self.entity_chars["guard"], self.entity_colors["guard"], "guard"
-            elif faction.id == "traders":
+            elif faction_id == "traders":
                 return self.entity_chars["merchant"], self.entity_colors["merchant"], "merchant"
-            elif faction.id == "cult":
+            elif faction_id == "cult":
                 return self.entity_chars["cultist"], self.entity_colors["cultist"], "cultist"
         
         # Check for legacy props (wells, statues, etc.)
