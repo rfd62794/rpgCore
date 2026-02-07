@@ -259,7 +259,13 @@ class ObserverView:
         
         # Initialize Voyager position
         self.voyager.current_position = (10, 25)
+        
+        # Disable quest mode for object-aware behavior
+        if hasattr(self.voyager, 'quest_mode'):
+            self.voyager.quest_mode = False
+        
         self.log_event(f"🚶 Voyager starting at {self.voyager.current_position}")
+        self.log_event("🎯 Object-Aware mode: PRIORITIZING interactions over movement")
         
         # Main session loop
         session_turns = 0
