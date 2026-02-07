@@ -509,9 +509,20 @@ class TestIntegration:
             # Add some walls
             if coord.x in [10, 20, 30] and coord.y in [10, 20, 30]:
                 chunk.tags = ["wall"]
+            else:
+                chunk.tags = []
             return chunk
         
         mock_ledger.get_chunk = mock_get_chunk
+        
+        # Create a proper mock with __iter__ method
+        class IterableMock:
+            def __init__(self):
+                self.items = []
+            def __iter__(self):
+                return iter(self.items)
+        
+        mock_ledger.__iter__ = IterableMock().__iter__
         
         context = RenderContext(
             game_state=mock_game_state,
