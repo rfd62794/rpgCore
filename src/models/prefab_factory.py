@@ -15,6 +15,7 @@ The PrefabFactory provides:
 import pickle
 import gzip
 import mmap
+import time
 from pathlib import Path
 from typing import Dict, List, Any, Optional, Tuple, Union
 from dataclasses import dataclass
