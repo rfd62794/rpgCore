@@ -439,16 +439,10 @@ class DGTWindowHandler:
                 self.canvas.create_image(0, 0, image=self.background_buffer, anchor='nw', tags="background")
             self.full_redraw = False
         else:
-            # Smart redraw - only update dirty rectangles
-            for rect in self.dirty_rects:
-                x, y, w, h = rect
-                # Clear dirty area and redraw background portion
-                self.canvas.create_rectangle(x, y, x + w, y + h, fill='#0a0a0a', outline="", tags="dirty")
-                
-                # Redraw background portion if available
-                if self.background_buffer:
-                    # Create temporary clipped view of background
-                    self.canvas.create_image(x, y, image=self.background_buffer, anchor='nw', tags="background_patch")
+            # Always draw background first
+            if self.background_buffer:
+                self.canvas.delete("background")
+                self.canvas.create_image(0, 0, image=self.background_buffer, anchor='nw', tags="background")
         
         # Always draw dynamic entities (they change every frame)
         self._draw_dynamic_entities()
@@ -471,6 +465,11 @@ class DGTWindowHandler:
                         tags="dynamic"
                     )
                     self._mark_dirty(x, y, sprite.width(), sprite.height())
+    
+    def _draw_baked_background(self) -> None:
+        """Draw the baked background to canvas"""
+        if self.background_buffer:
+            self.canvas.create_image(0, 0, image=self.background_buffer, anchor='nw', tags="background")
     
     def _update_performance_metrics(self, pulse_start: float) -> None:
         """Update FPS and performance metrics"""
