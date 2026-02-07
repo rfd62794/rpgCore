@@ -21,6 +21,7 @@ class IntentMatch:
     intent_id: str
     description: str
     confidence: float
+    reasoning: str = ""  # Added reasoning attribute for compatibility
 
 
 class IntentLibrary:
@@ -328,7 +329,8 @@ class SemanticResolver:
         return IntentMatch(
             intent_id=best_intent_id,
             description=best_exemplar,  # Return the matched exemplar
-            confidence=best_score
+            confidence=best_score,
+            reasoning=f"Matched exemplar: '{best_exemplar}' with confidence {best_score:.3f}"
         )
     
     def add_intent(self, intent_id: str, exemplars: list[str]) -> None:
