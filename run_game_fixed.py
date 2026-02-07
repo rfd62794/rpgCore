@@ -229,6 +229,20 @@ class SyntheticRealityDirector:
         if duration is None:
             duration = self.scene_duration
         
+        # Get current NPC mood for threat indicators (only for Doom mode)
+        current_npc_mood = None
+        threat_mode = False
+        
+        if self.view_mode == "doom":
+            faction = self.faction_system.get_faction_at_coordinate(self.game_state.position)
+            if faction:
+                current_npc_mood = self.dashboard.conversation_engine.calculate_npc_mood(
+                    "Guard", self.game_state.reputation, 
+                    (self.game_state.position.x, self.game_state.position.y)
+                )
+                threat_mode = current_npc_mood in ["hostile", "unfriendly"]
+                self.renderer.set_threat_mode(threat_mode)
+        
         # Calculate perception range
         wisdom = self.game_state.player.attributes.get("wisdom", 10)
         intelligence = self.game_state.player.attributes.get("intelligence", 10)
@@ -273,7 +287,7 @@ class SyntheticRealityDirector:
                 self.game_state, 
                 self.game_state.player_angle, 
                 perception_range,
-                None
+                current_npc_mood
             )
             
             frame_str = self.renderer.get_frame_as_string(frame)
@@ -290,6 +304,9 @@ class SyntheticRealityDirector:
             print(f"📍 Position: ({self.game_state.position.x}, {self.game_state.position.y})")
             print(f"🧭 Facing: {self.orientation_manager.get_facing_direction()}")
             print(f"👁️  Perception: {perception_range}")
+            
+            if current_npc_mood:
+                print(f"😊 NPC Mood: {current_npc_mood}")
         
         # Wait for scene duration
         if not self.auto_mode:
