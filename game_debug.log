@@ -565,3 +565,34 @@
 20:59:23 | INFO | Game initialized with Council of Three architecture
 20:59:27 | WARNING | Failed to warm up llama3.2:3b: HTTP Error 500: Internal Server Error
 20:59:30 | DEBUG | Voyager deciding from menu...
+21:00:28 | INFO | Game loaded from savegame.json
+21:00:28 | DEBUG | Added intent: distract with 5 exemplars
+21:00:28 | DEBUG | Added intent: force with 5 exemplars
+21:00:28 | DEBUG | Added intent: finesse with 5 exemplars
+21:00:28 | DEBUG | Added intent: charm with 5 exemplars
+21:00:28 | DEBUG | Added intent: intimidate with 5 exemplars
+21:00:28 | DEBUG | Added intent: deceive with 5 exemplars
+21:00:28 | DEBUG | Added intent: investigate with 5 exemplars
+21:00:28 | DEBUG | Added intent: use_item with 5 exemplars
+21:00:28 | DEBUG | Added intent: defend with 5 exemplars
+21:00:28 | DEBUG | Added intent: improvise with 5 exemplars
+21:00:28 | INFO | Loading embedding model: all-MiniLM-L6-v2
+21:00:33 | INFO | Precomputed embeddings for 10 intents (50 total exemplars)
+21:00:33 | INFO | Initializing Arbiter with ollama:llama3.2:1b
+21:00:33 | INFO | Initializing Chronicler with ollama:llama3.2:latest
+21:00:33 | INFO | Voyager initialized with 'aggressive' personality
+21:00:33 | INFO | Game initialized with Council of Three architecture
+21:00:38 | WARNING | Failed to warm up llama3.2:3b: HTTP Error 500: Internal Server Error
+21:00:40 | DEBUG | Voyager deciding from menu...
+21:03:00 | DEBUG | Added intent: distract with 5 exemplars
+21:03:00 | DEBUG | Added intent: force with 5 exemplars
+21:03:00 | DEBUG | Added intent: finesse with 5 exemplars
+21:03:00 | DEBUG | Added intent: charm with 5 exemplars
+21:03:00 | DEBUG | Added intent: intimidate with 5 exemplars
+21:03:00 | DEBUG | Added intent: deceive with 5 exemplars
+21:03:00 | DEBUG | Added intent: investigate with 5 exemplars
+21:03:00 | DEBUG | Added intent: use_item with 5 exemplars
+21:03:00 | DEBUG | Added intent: defend with 5 exemplars
+21:03:00 | DEBUG | Added intent: improvise with 5 exemplars
+21:03:00 | INFO | Loading embedding model: all-MiniLM-L6-v2
+21:03:04 | INFO | Precomputed embeddings for 10 intents (50 total exemplars)

@@ -71,11 +71,16 @@ class GameREPL:
         self.resolver = SemanticResolver(intent_library, confidence_threshold=0.35)
         
         # Initialize Council of Three
-        self.console.print("[cyan]Loading Arbiter (logic engine)...[/cyan]")
+        # Set context window limit (2048 tokens = ~1.5GB less VRAM per model)
+        os.environ["OLLAMA_NUM_CTX"] = "2048"
+        
+        # Initialize Council of Three
+        self.console.print("[cyan]Loading Arbiter (logic engine - 1B)...[/cyan]")
         self.arbiter = ArbiterEngine(model_name='ollama:llama3.2:1b')
         
-        self.console.print("[cyan]Loading Chronicler (narrative engine)...[/cyan]")
-        self.chronicler = ChroniclerEngine(model_name='ollama:llama3.2:latest', tone='humorous')
+        self.console.print("[cyan]Loading Chronicler (narrative engine - 1B)...[/cyan]")
+        # Downgrade to 1B for memory safety
+        self.chronicler = ChroniclerEngine(model_name='ollama:llama3.2:1b', tone='humorous')
         
         # Initialize Quartermaster (loot system)
         from loot_system import LootSystem
