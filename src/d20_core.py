@@ -158,6 +158,7 @@ class D20Resolver:
                 dc_reasoning += f" | Travel Fatigue: {fatigue_penalty}"
         
         # 5. Roll the dice with advantage/disadvantage
+        advantage_type = None  # Default to no advantage/disadvantage
         d20_roll, raw_rolls = self._roll_dice(advantage_type)
         
         # 6. Calculate total

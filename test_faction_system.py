@@ -169,8 +169,19 @@ def test_faction_system():
     # Advance time with faction processing
     events = chronos.advance_time(50)
     
-    faction_events = [e for e in events if e.get("type") == "faction_conflict"]
-    expansion_events = [e for e in events if e.get("type") == "faction_expansion"]
+    # Convert WorldEvent objects to dictionaries for filtering
+    event_dicts = []
+    for event in events:
+        event_dict = {
+            "type": event.event_type,
+            "description": event.description,
+            "turn": event.turn,
+            "impact": event.impact
+        }
+        event_dicts.append(event_dict)
+    
+    faction_events = [e for e in event_dicts if e.get("type") == "faction_conflict"]
+    expansion_events = [e for e in event_dicts if e.get("type") == "faction_expansion"]
     
     print(f"   Faction conflicts: {len(faction_events)}")
     print(f"   Faction expansions: {len(expansion_events)}")
