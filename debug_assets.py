@@ -12,6 +12,7 @@ import tkinter as tk
 from typing import Dict, List, Tuple, Optional
 from PIL import Image, ImageTk
 from loguru import logger
+from pathlib import Path
 
 # Add src to path
 sys.path.append(os.path.join(os.path.dirname(__file__), 'src'))
@@ -86,10 +87,10 @@ class AssetDisplayTool:
                     self.ppu = NativeTkinterPPU(self.canvas, self.registry)
                     logger.info("🎨 PPU initialized for asset display")
                 except Exception as e:
-                    logger.error(f"⚠️ PPU initialization failed: {e}")
+                    print(f"⚠️ PPU initialization failed: {e}")
             
         except Exception as e:
-            logger.error(f"💥 System initialization failed: {e}")
+            print(f"💥 System initialization failed: {e}")
     
     def _build_ui(self) -> None:
         """Build the UI components"""
