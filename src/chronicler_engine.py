@@ -10,7 +10,9 @@ import os
 from loguru import logger
 from pydantic import BaseModel, Field
 from pydantic_ai import Agent
-from pydantic_ai.models.openai import OpenAIModel
+
+from model_factory import get_model
+
 
 
 class ChroniclerProse(BaseModel):
@@ -47,11 +49,9 @@ class ChroniclerEngine:
         if 'OLLAMA_BASE_URL' not in os.environ:
             os.environ['OLLAMA_BASE_URL'] = 'http://localhost:11434'
             
-        # Configure OpenAI compatible env vars for PydanticAI
-        os.environ["OPENAI_BASE_URL"] = f"{os.environ['OLLAMA_BASE_URL']}/v1"
-        os.environ["OPENAI_API_KEY"] = "ollama"
-        
-        model = OpenAIModel(model_name)
+        # Use factory to get shared model connection
+        # High temperature for creativity
+        model = get_model(model_name, temperature=0.8)
         
         self.tone = tone
         system_prompt = self._build_chronicler_prompt(tone)
