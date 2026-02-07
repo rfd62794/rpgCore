@@ -198,7 +198,21 @@ class GeneticBreedingService:
         
         # Create offspring through genetic crossover
         offspring_genome = self._crossover(parent1, parent2)
-        offspring_id = f"gen{self.generation_counter}_turtle_{len(self.turtles)}"
+        
+        # Create genetic signature to prevent ghost turtles
+        genome_data = {
+            'shell_pattern': [p.value for p in offspring_genome.shell_pattern],
+            'color_primary': [c.value for c in offspring_genome.color_primary],
+            'color_secondary': [c.value for c in offspring_genome.color_secondary],
+            'speed_genes': offspring_genome.speed_genes,
+            'stamina_genes': offspring_genome.stamina_genes,
+            'intelligence_genes': offspring_genome.intelligence_genes,
+            'mutation_rate': offspring_genome.mutation_rate,
+            'generation': offspring_genome.generation
+        }
+        
+        genetic_signature = GeneticSignature.create_signature(genome_data)
+        offspring_id = f"gen{self.generation_counter}_{genetic_signature}"
         
         # Apply mutations
         if random.random() < offspring_genome.mutation_rate:
@@ -206,6 +220,42 @@ class GeneticBreedingService:
             logger.info(f"Mutation occurred in {offspring_id}")
         
         self.turtles[offspring_id] = offspring_genome
+        
+        # Log to evolution registry (ADR 125)
+        parent_signatures = [
+            GeneticSignature.create_signature({
+                'shell_pattern': [p.value for p in parent1.shell_pattern],
+                'color_primary': [c.value for c in parent1.color_primary],
+                'speed_genes': parent1.speed_genes,
+                'stamina_genes': parent1.stamina_genes,
+                'intelligence_genes': parent1.intelligence_genes,
+                'generation': parent1.generation
+            }),
+            GeneticSignature.create_signature({
+                'shell_pattern': [p.value for p in parent2.shell_pattern],
+                'color_primary': [c.value for c in parent2.color_primary],
+                'speed_genes': parent2.speed_genes,
+                'stamina_genes': parent2.stamina_genes,
+                'intelligence_genes': parent2.intelligence_genes,
+                'generation': parent2.generation
+            })
+        ]
+        
+        turtle_data = {
+            'turtle_id': offspring_id,
+            'generation': offspring_genome.generation,
+            'genome_data': genome_data,
+            'parent_signatures': parent_signatures,
+            'fitness_score': offspring_genome.calculate_fitness(),
+            'shell_pattern': offspring_genome.get_dominant_pattern().value,
+            'primary_color': offspring_genome.get_dominant_color().value,
+            'secondary_color': offspring_genome.get_secondary_color().value,
+            'speed': offspring_genome.calculate_speed(),
+            'stamina': sum(offspring_genome.stamina_genes) / len(offspring_genome.stamina_genes),
+            'intelligence': sum(offspring_genome.intelligence_genes) / len(offspring_genome.intelligence_genes)
+        }
+        
+        self.evolution_log.log_turtle_birth(turtle_data)
         
         logger.debug(f"Bred {parent1_id} + {parent2_id} -> {offspring_id}")
         return offspring_id
@@ -445,6 +495,12 @@ class GeneticBreedingService:
         # Evolve generation if it's time
         new_offspring = self.evolve_generation()
         
+        # Cull population if it's time (bottom 20% every 10 seconds)
+        current_time = time.time()
+        if current_time - self.last_culling_time >= self.culling_interval:
+            self._cull_bottom_performers()
+            self.last_culling_time = current_time
+        
         # Create packets for new turtles
         packets = []
         for offspring_id in new_offspring:
@@ -453,3 +509,56 @@ class GeneticBreedingService:
                 packets.append(packet)
         
         return packets
+    
+    def _cull_bottom_performers(self):
+        """Cull bottom 20% of performers to make room for new mutations"""
+        if len(self.turtles) <= self.population_size // 2:
+            return
+        
+        # Calculate fitness for all turtles
+        fitness_scores = [
+            (turtle_id, genome.calculate_fitness())
+            for turtle_id, genome in self.turtles.items()
+        ]
+        
+        # Sort by fitness (ascending - worst first)
+        fitness_scores.sort(key=lambda x: x[1])
+        
+        # Calculate how many to cull (bottom 20%)
+        cull_count = max(1, int(len(self.turtles) * 0.2))
+        turtles_to_cull = fitness_scores[:cull_count]
+        
+        # Remove worst performers
+        for turtle_id, fitness in turtles_to_cull:
+            del self.turtles[turtle_id]
+        
+        logger.info(f"🧬 Culled {len(turtles_to_cull)} bottom performers (fitness < {fitness_scores[cull_count-1][1]:.3f})")
+    
+    def fitness_test(self, distance: float = 100.0) -> Dict[str, float]:
+        """Simulate fitness test (100-meter dash) for current generation"""
+        results = {}
+        
+        for turtle_id, genome in self.turtles.items():
+            # Calculate race time based on speed and stamina
+            speed = genome.calculate_speed()
+            stamina = sum(genome.stamina_genes) / len(genome.stamina_genes)
+            intelligence = sum(genome.intelligence_genes) / len(genome.intelligence_genes)
+            
+            # Race simulation: time = distance / (speed * stamina_factor * intelligence_factor)
+            stamina_factor = 0.8 + (stamina * 0.4)  # Stamina affects endurance
+            intelligence_factor = 0.9 + (intelligence * 0.2)  # Intelligence affects strategy
+            
+            effective_speed = speed * stamina_factor * intelligence_factor
+            race_time = distance / effective_speed if effective_speed > 0 else float('inf')
+            
+            # Add small random variation (environmental factors)
+            race_time *= random.uniform(0.95, 1.05)
+            
+            results[turtle_id] = race_time
+        
+        # Sort by race time (fastest first)
+        sorted_results = dict(sorted(results.items(), key=lambda x: x[1]))
+        
+        logger.info(f"🏁 Fitness test completed: {len(sorted_results)} turtles raced {distance}m")
+        
+        return sorted_results
