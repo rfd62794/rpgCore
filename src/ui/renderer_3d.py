@@ -45,7 +45,8 @@ class ASCIIDoomRenderer:
     """
     ASCII-Doom style 3D renderer for tactical depth.
     
-    Implements Wolfenstein-style raycasting with perception-based FoV.
+    Implements Wolfenstein-style raycasting with perception-based FoV
+    and visual threat indicators for hostile NPCs.
     """
     
     def __init__(self, world_ledger: WorldLedger, width: int = 80, height: int = 24):
@@ -60,7 +61,7 @@ class ASCIIDoomRenderer:
         self.half_height = height // 2
         self.max_distance = 20  # Maximum ray distance
         
-        # Rendering buffer - height rows of width columns
+        # Rendering buffer
         self.buffer = [[' ' for _ in range(width)] for _ in range(height)]
         
         # Visual elements mapping
@@ -69,13 +70,23 @@ class ASCIIDoomRenderer:
         self.entity_chars = ['@', '&', '%', '*', '!']
         self.item_chars = ['$', '%', '^', '+', '?']
         
+        # Threat indicator characters
+        self.threat_chars = ['!', '?', 'X', '@', '#']
+        self.threat_mode = False  # Whether to show threat indicators
+        
         logger.info(f"ASCII-Doom Renderer initialized: {width}x{height} viewport, {self.fov}° FoV")
+    
+    def set_threat_mode(self, enabled: bool):
+        """Enable or disable threat indicator mode."""
+        self.threat_mode = enabled
+        logger.info(f"Threat mode {'enabled' if enabled else 'disabled'}")
     
     def render_frame(
         self, 
         game_state: GameState, 
         player_angle: float,
-        perception_range: int
+        perception_range: int,
+        npc_mood: Optional[str] = None
     ) -> List[List[str]]:
         """
         Render a 3D frame using raycasting.
@@ -84,6 +95,7 @@ class ASCIIDoomRenderer:
             game_state: Current game state
             player_angle: Player's facing angle in degrees
             perception_range: Player's perception range
+            npc_mood: Current NPC mood for threat indicators
             
         Returns:
             List of strings representing the rendered frame
@@ -98,6 +110,9 @@ class ASCIIDoomRenderer:
         # Calculate FoV based on perception
         effective_fov = min(self.fov, perception_range * 2)  # Scale FoV by perception
         half_fov = effective_fov / 2
+        
+        # Determine if threat mode should be active
+        threat_active = self.threat_mode and npc_mood in ["hostile", "unfriendly"]
         
         # Cast rays across the viewport
         for x in range(self.width):
@@ -115,10 +130,27 @@ class ASCIIDoomRenderer:
             # Cast ray and get hit result
             hit_result = self._cast_ray(ray, game_state)
             
+            # Apply threat indicators if active
+            if threat_active and hit_result.hit:
+                hit_result.content = self._apply_threat_indicator(hit_result.content, hit_result.distance)
+            
             # Render column based on hit result
             self._render_column(x, hit_result)
         
         return self.buffer
+    
+    def _apply_threat_indicator(self, char: str, distance: float) -> str:
+        """Apply threat indicator to character based on distance."""
+        if distance < 3:
+            return self.threat_chars[0]  # ! - immediate threat
+        elif distance < 6:
+            return self.threat_chars[1]  # ? - potential threat
+        elif distance < 10:
+            return self.threat_chars[2]  # X - distant threat
+        elif distance < 15:
+            return self.threat_chars[3]  # @ - warning
+        else:
+            return self.threat_chars[4]  # # - distant warning
     
     def _cast_ray(self, ray: Ray3D, game_state: GameState) -> HitResult:
         """

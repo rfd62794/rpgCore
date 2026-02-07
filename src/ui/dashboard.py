@@ -296,10 +296,23 @@ class UnifiedDashboard:
         self.perception_range = max(5, (wisdom + intelligence) // 2)
         
         # Render 3D viewport
+        # Get current NPC mood for threat indicators
+        current_npc_mood = None
+        faction = self.faction_system.get_faction_at_coordinate(game_state.position)
+        if faction:
+            current_npc_mood = self.conversation_engine.calculate_npc_mood(
+                "Guard", game_state.reputation, 
+                (game_state.position.x, game_state.position.y)
+            )
+            
+            # Enable threat mode if NPC is hostile
+            self.renderer.set_threat_mode(current_npc_mood in ["hostile", "unfriendly"])
+        
         frame = self.renderer.render_frame(
             game_state, 
             self.player_angle, 
-            self.perception_range
+            self.perception_range,
+            current_npc_mood
         )
         self.current_frame = frame
         
