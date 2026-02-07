@@ -137,7 +137,7 @@ class D20Resolver:
         """
         Core resolution: Roll(d20) + Modifiers vs DC.
         
-        Returns pure deterministic results for the orchestrator.
+        Enhanced with travel mechanics and fatigue for Phase 3.
         """
         # 1. Calculate Difficulty Class
         dc, dc_reasoning = self._calculate_difficulty_class(intent_id, room_tags)
@@ -149,23 +149,30 @@ class D20Resolver:
         # 3. Determine advantage/disadvantage based on state
         advantage_type = self._determine_advantage(intent_id, game_state, room_tags, target_npc)
         
-        # 4. Roll the dice with advantage/disadvantage
+        # 4. Apply travel fatigue if this is a travel action
+        fatigue_penalty = 0
+        if intent_id == "travel":
+            fatigue_penalty = self._calculate_travel_fatigue(game_state)
+            if fatigue_penalty != 0:
+                dc_reasoning += f" | Travel Fatigue: {fatigue_penalty}"
+        
+        # 5. Roll the dice with advantage/disadvantage
         d20_roll, raw_rolls = self._roll_dice(advantage_type)
         
-        # 5. Calculate total
-        total_score = d20_roll + attribute_bonus + item_bonus
+        # 6. Calculate total
+        total_score = d20_roll + attribute_bonus + item_bonus - fatigue_penalty
         
-        # 6. Determine success
+        # 7. Determine success
         success = total_score >= dc
         
-        # 7. Calculate consequences
+        # 8. Calculate consequences
         hp_delta = self._calculate_hp_delta(success, total_score, dc)
         reputation_deltas = self._calculate_reputation_changes(intent_id, success, target_npc)
         relationship_changes = self._calculate_relationship_changes(intent_id, success, target_npc)
         npc_state_changes = self._calculate_npc_state_changes(intent_id, success, target_npc, game_state)
         goals_completed = self._check_goal_completion(intent_id, success, game_state, player_input)
         
-        # 8. Build narrative context (technical, not creative)
+        # 9. Build narrative context (technical, not creative)
         narrative_parts = [
             f"Roll: {d20_roll}",
             f"{attr_name.title()}: {attribute_bonus:+d}" if attribute_bonus != 0 else "",
@@ -173,6 +180,10 @@ class D20Resolver:
             f"vs DC {dc}",
             dc_reasoning
         ]
+        
+        # Add fatigue info if applicable
+        if fatigue_penalty != 0:
+            narrative_parts.append(f"Fatigue: {fatigue_penalty}")
         
         # Add advantage/disadvantage info
         if advantage_type:
@@ -200,6 +211,119 @@ class D20Resolver:
             advantage_type=advantage_type,
             raw_rolls=raw_rolls
         )
+    
+    def _calculate_travel_fatigue(self, game_state: GameState) -> int:
+        """
+        Calculate travel fatigue penalty based on stamina and constitution.
+        
+        Args:
+            game_state: Current game state
+            
+        Returns:
+            Fatigue penalty to apply to rolls
+        """
+        constitution = game_state.player.attributes.get("constitution", 10)
+        travel_stamina = game_state.travel_stamina
+        turns_since_rest = game_state.world_time - game_state.last_rest_turn
+        
+        # Base fatigue calculation
+        fatigue_penalty = 0
+        
+        # Constitution modifier (higher CON = less fatigue)
+        con_mod = (constitution - 10) // 2
+        
+        # Stamina penalty (low stamina = more fatigue)
+        if travel_stamina < 30:
+            fatigue_penalty += 2  # Severe fatigue
+        elif travel_stamina < 60:
+            fatigue_penalty += 1  # Moderate fatigue
+        
+        # Time since rest penalty
+        if turns_since_rest > 20:  # More than 2 days without rest
+            fatigue_penalty += 1
+        
+        # Constitution bonus (higher CON reduces fatigue)
+        fatigue_penalty = max(0, fatigue_penalty - con_mod)
+        
+        return fatigue_penalty
+    
+    def calculate_travel_encounter_chance(
+        self, distance: int, game_state: GameState, terrain_tags: List[str]
+    ) -> float:
+        """
+        Calculate chance of random encounter during travel.
+        
+        Args:
+            distance: Distance being traveled
+            game_state: Current game state
+            terrain_tags: Terrain tags affecting encounter chance
+            
+        Returns:
+            Probability of encounter (0.0 to 1.0)
+        """
+        base_chance = 0.1  # 10% base chance per unit distance
+        
+        # Distance modifier
+        distance_modifier = distance * 0.05  # 5% additional chance per unit distance
+        
+        # Terrain modifiers
+        terrain_modifier = 0.0
+        if "dangerous" in terrain_tags:
+            terrain_modifier += 0.2  # Dangerous terrain increases encounters
+        elif "safe" in terrain_tags:
+            terrain_modifier -= 0.1  # Safe terrain reduces encounters
+        elif "wild" in terrain_tags:
+            terrain_modifier += 0.15  # Wild terrain increases encounters
+        
+        # Time of day modifier (if we had time tracking)
+        # For now, assume neutral
+        
+        total_chance = base_chance + distance_modifier + terrain_modifier
+        
+        # Cap at reasonable bounds
+        return max(0.05, min(0.8, total_chance))  # 5% to 80% chance
+    
+    def calculate_travel_time(
+        self, distance: int, terrain_tags: List[str], player_stats: Dict[str, int]
+    ) -> int:
+        """
+        Calculate travel time in turns based on distance and terrain.
+        
+        Args:
+            distance: Distance to travel
+            terrain_tags: Terrain tags affecting travel speed
+            player_stats: Player attributes
+            
+        Returns:
+            Travel time in turns
+        """
+        base_time = distance  # 1 turn per unit distance
+        
+        # Terrain modifiers
+        terrain_modifier = 1.0
+        if "difficult" in terrain_tags:
+            terrain_modifier = 1.5  # Difficult terrain takes 50% longer
+        elif "easy" in terrain_tags:
+            terrain_modifier = 0.8  # Easy terrain is 20% faster
+        elif "mountain" in terrain_tags:
+            terrain_modifier = 2.0  # Mountains take twice as long
+        
+        # Attribute modifiers
+        dexterity = player_stats.get("dexterity", 10)
+        constitution = player_stats.get("constitution", 10)
+        
+        # High dexterity reduces travel time
+        dex_mod = (dexterity - 10) // 2
+        if dex_mod > 0:
+            terrain_modifier *= (1.0 - dex_mod * 0.05)  # 5% faster per positive DEX mod
+        
+        # High constitution increases endurance (reduces rest needs)
+        con_mod = (constitution - 10) // 2
+        if con_mod > 0:
+            terrain_modifier *= (1.0 - con_mod * 0.03)  # 3% faster per positive CON mod
+        
+        travel_time = int(base_time * terrain_modifier)
+        return max(1, travel_time)  # Minimum 1 turn
     
     def _calculate_difficulty_class(self, intent_id: str, room_tags: List[str]) -> Tuple[int, str]:
         """Calculate DC using deterministic table lookup."""
