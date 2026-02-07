@@ -245,3 +245,75 @@
 01:29:04 | INFO | 🛑 Stopping Cinematic Simulator
 01:29:04 | INFO | 🛑 SimulatorHost stopped
 01:29:04 | INFO | 🎬 Cinematic Simulator stopped
+01:29:27 | DEBUG | Added intent: distract with 5 exemplars
+01:29:27 | DEBUG | Added intent: force with 5 exemplars
+01:29:27 | DEBUG | Added intent: finesse with 5 exemplars
+01:29:27 | DEBUG | Added intent: charm with 5 exemplars
+01:29:27 | DEBUG | Added intent: intimidate with 5 exemplars
+01:29:27 | DEBUG | Added intent: deceive with 5 exemplars
+01:29:27 | DEBUG | Added intent: investigate with 5 exemplars
+01:29:27 | DEBUG | Added intent: use_item with 5 exemplars
+01:29:27 | DEBUG | Added intent: defend with 5 exemplars
+01:29:27 | DEBUG | Added intent: leave_area with 5 exemplars
+01:29:27 | DEBUG | Added intent: improvise with 5 exemplars
+01:29:27 | INFO | Semantic Baker initialized with model: all-MiniLM-L6-v2
+01:29:27 | INFO | Loaded 11 pre-baked intent embeddings (55 total examples)
+01:29:27 | INFO | ✅ Instant boot: Loaded pre-baked embeddings
+01:29:27 | INFO | 🏛️ SimulatorHost initialized - Single Source of Truth
+01:29:27 | INFO | 🎬 CinematicSimulator initialized
+01:29:27 | INFO | 🚀 Initializing Cinematic Simulator...
+01:29:27 | INFO | 🚀 Initializing SimulatorHost...
+01:29:27 | INFO | 🆕 Creating new game state
+01:29:27 | INFO | ⚖️ Loading Arbiter (Deterministic Logic Core)...
+01:29:27 | INFO | Deterministic Arbiter (Iron Frame) initialized.
+01:29:27 | INFO | 📖 Loading Chronicler (Narrative Engine)...
+01:29:27 | INFO | Initializing Chronicler with ollama:llama3.2:1b
+01:29:27 | INFO | 🎲 Loading Quartermaster...
+01:29:27 | INFO | 💎 Loading Loot System...
+01:29:27 | INFO | LootSystem initialized without artifact support
+01:29:27 | INFO | ✅ SimulatorHost initialization complete
+01:29:27 | INFO | 🎬 Autonomous Director initialized
+01:29:27 | DEBUG | 🗺️ Pathfinding grid initialized: 64x64
+01:29:27 | INFO | 🧭 Navigation system initialized
+01:29:27 | INFO | 🎥 Cinematic camera initialized
+01:29:27 | INFO | 🎬 Camera controller initialized
+01:29:27 | DEBUG | 💬 Dialogue box initialized
+01:29:27 | INFO | 🎬 Cinematic pauses system initialized
+01:29:27 | INFO | 🖥️ TerminalView initialized - Observer of SimulatorHost
+01:29:27 | INFO | 🖼️ GUIView initialized - Observer of SimulatorHost
+01:29:27 | DEBUG | 👁️ Added observer: TerminalView
+01:29:27 | DEBUG | 👁️ Added observer: GUIView
+01:29:27 | INFO | ✅ Cinematic Simulator initialized successfully
+01:29:27 | INFO | 🖥️ Starting terminal-only mode
+01:29:27 | INFO | 🎬 Starting autonomous cinematic mode
+01:29:27 | INFO | 🎬 Starting Autonomous Director Mode
+01:29:27 | INFO | 🎭 Generating initial narrative beacons
+01:29:27 | INFO | 🎯 New beacon: Explore the surrounding area
+01:29:27 | INFO | 🛤️ Path set: 10 steps to (10, 10)
+01:29:27 | INFO | 🎯 Generated beacon: Explore the surrounding area at (10, 10)
+01:29:27 | INFO | 🎯 New beacon: Investigate nearby points of interest
+01:29:27 | INFO | 🛤️ Path set: 5 steps to (5, 5)
+01:29:27 | INFO | 🎯 Generated beacon: Investigate nearby points of interest at (5, 5)
+01:29:27 | INFO | 🚀 Initializing SimulatorHost...
+01:29:27 | INFO | 🆕 Creating new game state
+01:29:27 | INFO | ⚖️ Loading Arbiter (Deterministic Logic Core)...
+01:29:27 | INFO | Deterministic Arbiter (Iron Frame) initialized.
+01:29:27 | INFO | 📖 Loading Chronicler (Narrative Engine)...
+01:29:27 | INFO | Initializing Chronicler with ollama:llama3.2:1b
+01:29:27 | INFO | 🎲 Loading Quartermaster...
+01:29:27 | INFO | 💎 Loading Loot System...
+01:29:27 | INFO | LootSystem initialized without artifact support
+01:29:27 | INFO | ✅ SimulatorHost initialization complete
+01:29:27 | INFO | 🚀 SimulatorHost started
+01:29:27 | INFO | 🎬 Director loop started
+01:29:27 | DEBUG | 📋 Planning phase: Generating narrative beacons
+01:29:27 | ERROR | ❌ Director loop error: AutonomousDirector._generate_narrative_beacons() missing 1 required positional argument: 'context'
+01:29:27 | INFO | 🎬 Director loop stopped
+01:29:27 | INFO | 🎮 Starting 30 FPS game loop
+01:29:27 | INFO | 🎬 Cinematic loop started
+01:29:39 | INFO | 🛑 Stopping Cinematic Simulator
+01:29:39 | INFO | 🛑 SimulatorHost stopped
+01:29:39 | INFO | 🎬 Cinematic Simulator stopped
+01:29:39 | INFO | 🛑 Stopping Cinematic Simulator
+01:29:39 | INFO | 🛑 SimulatorHost stopped
+01:29:39 | INFO | 🎬 Cinematic Simulator stopped
