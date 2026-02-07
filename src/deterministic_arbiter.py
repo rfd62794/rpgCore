@@ -21,6 +21,7 @@ class ArbiterLogic(BaseModel):
     new_npc_state: Literal["neutral", "hostile", "distracted", "charmed", "dead"] = "neutral"
     reasoning: str = Field(description="Brief tactical reason")
     narrative_seed: str = Field(default="")
+    reputation_deltas: Dict[str, int] = Field(default_factory=dict)
 
 class DeterministicArbiter:
     """
@@ -36,12 +37,14 @@ class DeterministicArbiter:
         intent_id: str,
         player_input: str,
         context: str, # Mostly for logging/compat
-        room_tags: List[str]
+        room_tags: List[str],
+        reputation: dict | None = None
     ) -> ArbiterLogic:
         """
         Evaluate difficulty mod and NPC state using DC_TABLE and rules.
         """
         intent = intent_id.lower()
+        reputation = reputation or {}
         
         # 1. Calculate Difficulty Mod based on Room Tags
         # This mirrors the logic in Quartermaster but provides the 'Arbiter' half
@@ -60,8 +63,15 @@ class DeterministicArbiter:
                     difficulty_mod += mod
                     reasons.append(f"{tag.title()} impact: {mod:+d}")
 
-        # 2. State Rules
+        # 2. State & Reputation Rules
         new_npc_state = "neutral"
+        reputation_deltas = {}
+        
+        if reputation.get("city_watch", 0) <= -10:
+            if "Wanted" not in room_tags:
+                room_tags.append("Wanted")
+                difficulty_mod += 5
+                reasons.append("Guards are on high alert (Wanted)")
         if "hostile" in context.lower():
             new_npc_state = "hostile"
             
@@ -72,6 +82,7 @@ class DeterministicArbiter:
         if intent == "combat":
             new_npc_state = "hostile"
             difficulty_mod += 2 # Combat is inherently tense
+            reputation_deltas["city_watch"] = -10
         elif intent == "distract":
             new_npc_state = "distracted"
         elif intent == "charm":
@@ -83,6 +94,7 @@ class DeterministicArbiter:
         elif intent == "force" and "guard" in player_input.lower():
              # If we tried to force a guard, we assume it's combat-like
              new_npc_state = "hostile"
+             reputation_deltas["city_watch"] = -5
              
         # 3. Build Logic Trace
         internal_logic = f"Deterministic Logic: Intent '{intent}' evaluated against tags {room_tags}. "
@@ -116,7 +128,8 @@ class DeterministicArbiter:
             internal_logic=internal_logic,
             new_npc_state=new_npc_state, # type: ignore
             reasoning=reasoning,
-            narrative_seed=seed
+            narrative_seed=seed,
+            reputation_deltas=reputation_deltas
         )
 
     def resolve_action_sync(self, *args, **kwargs) -> ArbiterLogic:

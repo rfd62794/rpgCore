@@ -114,6 +114,15 @@ class GameState(BaseModel):
     rooms: Dict[str, Room] = Field(default_factory=dict)
     turn_count: int = 0
     
+    # Global standing with world powers
+    reputation: Dict[str, int] = Field(
+        default_factory=lambda: {
+            "city_watch": 0,
+            "underworld": 0,
+            "clergy": 0
+        }
+    )
+    
     # DGT Social Graph: Location-scoped NPC relationships
     # Format: { "tavern": { "Bartender": Relationship(...), "Guard": Relationship(...) } }
     social_graph: Dict[str, Dict[str, Relationship]] = Field(default_factory=dict)

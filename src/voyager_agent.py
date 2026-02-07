@@ -49,6 +49,8 @@ class VoyagerAgent:
         """
         self.personality = personality.lower()
         self.used_actions = [] # History buffer
+        self.turns_in_room = 0
+        self.last_room_id = ""
         logger.info(f"Voyager initialized (Deterministic) with '{self.personality}' personality")
     
     async def decide_action(
@@ -60,6 +62,18 @@ class VoyagerAgent:
     ) -> VoyagerDecision:
         """Decide next action using heuristic scoring."""
         
+        # 0. Track Room Resident Time
+        # Extract current room from context if possible
+        current_room_name = ""
+        if "Location: " in scene_context:
+            current_room_name = scene_context.split("\n")[0].replace("Location: ", "").strip()
+            
+        if current_room_name != self.last_room_id:
+            self.turns_in_room = 0
+            self.last_room_id = current_room_name
+        else:
+            self.turns_in_room += 1
+
         # 1. Get Candidate Actions
         options = STANDARD_ACTIONS.get(self.personality, STANDARD_ACTIONS["curious"])
         
@@ -125,15 +139,20 @@ class VoyagerAgent:
             
             score -= history_penalty
             
-            # E. Room Exit Priority
-            # If "Path Clear" is present, heavily prioritize 'leave_area'
-            if room_tags and "Path Clear" in room_tags and action_id == "leave_area":
-                score += 500
+            # E. Room Exit Priority & Cooldown
+            if action_id == "leave_area":
+                # If "Path Clear" is present, heavily prioritize
+                if room_tags and "Path Clear" in room_tags:
+                    score += 500
+                
+                # BOREDOM LOGIC: Strongly penalize leaving if we just arrived
+                if self.turns_in_room < 5:
+                    score -= 1000 # Massive penalty for trying to skip the scene
 
             scored_actions.append({
                 "action": action,
                 "score": score,
-                "reason": f"Stat({stat_val}) + Item({item_bonus}) - DC({estimated_dc}) - Hist({history_penalty})"
+                "reason": f"Stat({stat_val}) - DC({estimated_dc}) - Hist({history_penalty}) + Cooldown({self.turns_in_room})"
             })
             
         # 3. Pick Best Action
