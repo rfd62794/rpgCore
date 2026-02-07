@@ -37,7 +37,7 @@ class Pixel:
     r: int = 0  # Red 0-5 (ANSI 6-level)
     g: int = 0  # Green 0-5  
     b: int = 0  # Blue 0-5
-    intensity: float = 1.0  # Brightness 0.0-1.0
+    intensity: float = 0.0  # Brightness 0.0-1.0 (0.0 = empty/transparent)
     
     def is_empty(self) -> bool:
         """Check if pixel is empty/transparent."""
