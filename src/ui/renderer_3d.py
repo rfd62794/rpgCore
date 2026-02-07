@@ -89,7 +89,7 @@ class ASCIIDoomRenderer:
             List of strings representing the rendered frame
         """
         # Clear buffer
-        self.buffer = [[' ' for _ in range(self.height)] for _ in range(self.width)]
+        self.buffer = [[' ' for _ in range(self.width)] for _ in range(self.height)]
         
         # Get player position
         player_x = game_state.position.x
@@ -271,6 +271,9 @@ class ASCIIDoomRenderer:
         for y in range(start_y, end_y):
             if 0 <= y < self.height and 0 <= x < self.width:
                 self.buffer[y][x] = char
+            else:
+                # Debug: print out of bounds info
+                logger.debug(f"Out of bounds: y={y}, height={self.height}, x={x}, width={self.width}")
     
     def _apply_distance_shading(self, char: str, distance: float) -> str:
         """Apply distance-based shading to a character."""
