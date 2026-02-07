@@ -398,44 +398,91 @@ class AssetLoader:
         
         return sprite
     
-    def _create_effect_sprite(self, effect_type: str) -> Image.Image:
-        """Create procedural effect sprite"""
-        sprite = Image.new('RGB', (TILE_SIZE_PIXELS, TILE_SIZE_PIXELS), (0, 0, 0, 0))  # Transparent
-        draw = ImageDraw.Draw(sprite)
+    def _generate_actor_sprites(self) -> None:
+        """Generate actor sprites for multiple states"""
+        # Generate Voyager sprites
+        voyager_states = ["idle", "moving", "interacting", "combat"]
         
-        if effect_type == "fire":
-            # Fire effect
-            draw.ellipse([1, 1, 7, 7], fill=(255, 100, 0))
-            draw.ellipse([2, 2, 6, 6], fill=(255, 200, 0))
-            draw.ellipse([3, 3, 5, 5], fill=(255, 255, 0))
+        for state in voyager_states:
+            # Generate voyager sprite
+            voyager_img = Image.new((16, 16), (255, 255, 255, 0))
+            voyager_draw = ImageDraw.Draw(voyager_img)
             
-        elif effect_type == "water":
-            # Water effect
-            draw.ellipse([1, 3, 7, 5], fill=(0, 100, 200))
-            draw.ellipse([2, 4, 6, 4], fill=(0, 150, 255))
+            if state == "idle":
+                # Blue circle for idle
+                voyager_draw.ellipse([2, 2, 14, 14], fill=(0, 100, 255, 255))
+            elif state == "moving":
+                # Blue triangle for moving
+                voyager_draw.polygon([(8, 2), (2, 14), (14, 14)], fill=(0, 150, 255, 255))
+            elif state == "interacting":
+                # Blue square with interaction indicator
+                voyager_draw.rectangle([2, 2, 14, 14], fill=(0, 200, 255, 255))
+                voyager_draw.ellipse([6, 6, 10, 10], fill=(255, 255, 0, 255))
+            elif state == "combat":
+                # Blue diamond for combat
+                voyager_draw.polygon([(8, 2), (14, 8), (8, 14), (2, 8)], fill=(0, 100, 255, 255))
             
-        elif effect_type == "blood":
-            # Blood effect
-            for i in range(3):
-                x = 2 + i * 2
-                y = 3 + (i % 2)
-                draw.ellipse([x, y, x+1, y+1], fill=(200, 0, 0))
+            # Create both left and right facing versions for combat
+            self._create_sprite_variant(voyager_img, f"voyager_{state}_left")
+            self._create_sprite_variant(voyager_img, f"voyager_{state}_right")
+            
+            # Default sprite (left-facing for combat)
+            self._create_sprite_variant(voyager_img, f"voyager_{state}")
         
-        return sprite
+        # Generate enemy sprites with orientations
+        enemy_types = ["guardian", "forest_imp", "shadow_beast"]
+        
+        for enemy_type in enemy_types:
+            # Generate base enemy sprite
+            enemy_img = Image.new((16, 16), (255, 255, 255, 0))
+            enemy_draw = ImageDraw.Draw(enemy_img)
+            
+            if enemy_type == "guardian":
+                # Stone guardian - gray diamond
+                enemy_draw.polygon([(8, 2), (14, 8), (8, 14), (2, 8)], fill=(128, 128, 128, 255))
+                enemy_draw.polygon([(8, 4), (12, 8), (8, 12), (4, 8)], fill=(96, 96, 96, 255))
+            elif enemy_type == "forest_imp":
+                # Forest imp - green triangle
+                enemy_draw.polygon([(8, 2), (2, 14), (14, 14)], fill=(0, 128, 0, 255))
+                enemy_draw.ellipse([6, 6, 10, 10], fill=(255, 0, 0, 255))
+            elif enemy_type == "shadow_beast":
+                # Shadow beast - purple circle
+                enemy_draw.ellipse([2, 2, 14, 14], fill=(128, 0, 128, 255))
+                enemy_draw.ellipse([4, 4, 12, 12], fill=(64, 0, 64, 255))
+            
+            # Create both left and right facing versions
+            self._create_sprite_variant(enemy_img, f"{enemy_type}_left")
+            self._create_sprite_variant(enemy_img, f"{enemy_type}_right")
+            
+            # Default sprite
+            self._create_sprite_variant(enemy_img, enemy_type)
+        
+        logger.info("🎨 Generated actor sprites for multiple states and orientations")
     
-    # === PUBLIC ACCESS METHODS ===
+    def _create_sprite_variant(self, image: Image.Image, sprite_id: str) -> None:
+        """Create a sprite variant and store it"""
+        # Convert to PhotoImage
+        photo = ImageTk.PhotoImage(image)
+        
+        # Store in registry
+        self.registry[sprite_id] = photo
+        
+        # Store reference to prevent garbage collection
+        self._sprite_refs.append(photo)
     
-    def get_tile_sprite(self, tile_type: TileType) -> Optional[Image.Image]:
-        """Get tile sprite"""
-        return self.tile_sprites.get(tile_type)
+    def get_actor_sprite(self, actor_id: str, state: str = "idle", orientation: str = "left") -> Optional[ImageTk.PhotoImage]:
+        """Get actor sprite with state and orientation"""
+        sprite_id = f"{actor_id}_{state}_{orientation}"
+        return self.registry.get(sprite_id)
     
-    def get_object_sprite(self, object_id: str) -> Optional[Image.Image]:
-        """Get object sprite"""
-        return self.object_sprites.get(object_id)
-    
-    def get_actor_sprite(self, actor_type: str, state: str = "idle") -> Optional[Image.Image]:
-        """Get actor sprite with state"""
-        if actor_type in self.actor_sprites:
+    def get_combat_sprite(self, entity_id: str, orientation: str = "left") -> Optional[ImageTk.PhotoImage]:
+        """Get combat-oriented sprite"""
+        # Try combat state first, then fallback to idle
+        combat_sprite = self.get_actor_sprite(entity_id, "combat", orientation)
+        if combat_sprite:
+            return combat_sprite
+        
+        return self.get_actor_sprite(entity_id, "idle", orientation)
             return self.actor_sprites[actor_type].get(state, self.actor_sprites[actor_type].get("idle"))
         return None
     
