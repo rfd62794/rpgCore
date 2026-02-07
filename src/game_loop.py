@@ -248,7 +248,8 @@ class GameREPL:
             player_input=player_input,
             context=context,
             room_tags=room_tags,
-            reputation=self.state.reputation
+            reputation=self.state.reputation,
+            player_hp=self.state.player.hp
         )
         
         # Step 2.5: Quartermaster calculates final outcome
@@ -460,6 +461,11 @@ class GameREPL:
         
         try:
             while turn_count < max_turns:
+                # DEAD LOCK: If player is dead, end auto-play
+                if not self.state.player.is_alive():
+                    self.console.print("\n[bold red]💀 PLAYER IS DEAD. AUTOMATION TERMINATED.[/bold red]")
+                    break
+                
                 turn_count += 1
                 self.console.print(f"\n[bold cyan]═══ Turn {turn_count} ═══[/bold cyan]")
                 

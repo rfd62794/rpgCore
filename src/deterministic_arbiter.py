@@ -40,13 +40,24 @@ class DeterministicArbiter:
         player_input: str,
         context: str, # Mostly for logging/compat
         room_tags: List[str],
-        reputation: dict | None = None
+        reputation: dict | None = None,
+        player_hp: int = 100
     ) -> ArbiterLogic:
         """
         Evaluate difficulty mod and NPC state using DC_TABLE and rules.
         """
         intent = intent_id.lower()
         reputation = reputation or {}
+        
+        # 0. Death Guard: If dead, most actions fail
+        if player_hp <= 0:
+            return ArbiterLogic(
+                difficulty_mod=100, # Impossible
+                internal_logic="Player is dead. No actions possible.",
+                reasoning="You are a ghost. Your actions have no weight.",
+                narrative_seed="A hollow, spectral effort.",
+                new_npc_state="neutral"
+            )
         
         # 1. Calculate Difficulty Mod based on Room Tags
         # This mirrors the logic in Quartermaster but provides the 'Arbiter' half

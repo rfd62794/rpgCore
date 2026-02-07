@@ -29,6 +29,18 @@ OBJECTIVE_TEMPLATES = {
             "desc": "Start a tavern brawl to cause a distraction.",
             "methods": ["combat", "force"],
             "targets": ["Patron", "Bartender"]
+        },
+        {
+            "id": "cheat_dice",
+            "desc": "Win a game of dice by cheating at the corner table.",
+            "methods": ["finesse", "stealth", "intelligence"],
+            "targets": ["Patron", "Dice"]
+        },
+        {
+            "id": "extort_info",
+            "desc": "Corner the nervous informant and squeeze them for info.",
+            "methods": ["force", "combat", "intimidation"],
+            "targets": ["Informant"]
         }
     ],
     "plaza": [
@@ -49,6 +61,18 @@ OBJECTIVE_TEMPLATES = {
             "desc": "Find the secret lever hidden in the Great Fountain.",
             "methods": ["investigate", "search"],
             "targets": ["Fountain"]
+        },
+        {
+            "id": "liberate_merchandise",
+            "desc": "Liberate' some high-end silks from a distracted vendor.",
+            "methods": ["stealth", "finesse"],
+            "targets": ["Merchant", "Silks"]
+        },
+        {
+            "id": "stop_pickpocket",
+            "desc": "Catch the street urchin before they reach the alley.",
+            "methods": ["combat", "force", "intelligence"],
+            "targets": ["Street Urchin"]
         }
     ],
     "dungeon": [
@@ -63,6 +87,24 @@ OBJECTIVE_TEMPLATES = {
             "desc": "Decode the runes on the Obsidian Gate.",
             "methods": ["investigate", "intelligence"],
             "targets": ["Gate"]
+        },
+        {
+            "id": "rescue_captive",
+            "desc": "Pick the lock on the rusted iron cage.",
+            "methods": ["finesse", "stealth", "force"],
+            "targets": ["Cage", "Captive"]
+        },
+        {
+            "id": "collect_motes",
+            "desc": "Gather glowing shadow motes from the dungeon walls.",
+            "methods": ["investigate", "finesse"],
+            "targets": ["Wall", "Mote"]
+        },
+        {
+            "id": "find_map",
+            "desc": "Search the skeleton in the corner for a tattered map.",
+            "methods": ["search", "investigate"],
+            "targets": ["Skeleton", "Map"]
         }
     ]
 }

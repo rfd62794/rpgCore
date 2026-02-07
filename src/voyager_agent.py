@@ -153,6 +153,12 @@ class VoyagerAgent:
                 # GOAL MALUS: Penalize leaving if there are still active goals in this room
                 if active_goals and len(active_goals) > 0:
                     score -= 500 # Don't leave till the work is done
+                    
+                # RETREAT LOGIC: If HP is low, ignore other penalties and RUN
+                current_hp = player_stats.get('hp', 100)
+                max_hp = player_stats.get('max_hp', 100)
+                if current_hp / max_hp < 0.25:
+                    score += 2000 # Emergency retreat override
             
             # F. Goal Alignment (The "Purpose" Fix)
             goal_bonus = 0
