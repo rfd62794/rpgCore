@@ -532,9 +532,13 @@ class DGTWindowHandler:
             for sx in range(sprite_width):
                 if x + sx < self.width and y + sy < self.height:
                     # Get pixel color from sprite
-                    color = sprite.get(sx, sy)
-                    if color and color != '' and color != 'None':
-                        buffer.put(color, (x + sx, y + sy))
+                    try:
+                        color = sprite.get(sx, sy)
+                        if color and color != '' and color != 'None' and color != '0':
+                            buffer.put(color, (x + sx, y + sy))
+                    except Exception:
+                        # Skip invalid pixels
+                        continue
     
     def _draw_baked_background(self) -> None:
         """Draw the baked background to canvas"""

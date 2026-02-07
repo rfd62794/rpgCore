@@ -56,8 +56,8 @@ class TinyFarmSpriteSheet:
             # Convert to tkinter PhotoImage
             tk_image = ImageTk.PhotoImage(frame_image)
             
-            # Scale for display (4x)
-            tk_image = tk_image.zoom(4, 4)
+            # Scale for display (4x) using subsample instead of zoom
+            tk_image = tk_image.subsample(1, 1)  # Keep original size for now
             
             # Store frame
             self.frames.append(SpriteFrame(tk_image, frame_index))
@@ -236,8 +236,9 @@ class TinyFarmSheetLoader:
                 # Convert to tkinter PhotoImage
                 tk_image = ImageTk.PhotoImage(image)
                 
-                # Scale for display (4x)
-                tk_image = tk_image.zoom(4, 4)
+                # Scale for display using PIL resize instead of zoom
+                scaled_image = image.resize((64, 64), Image.Resampling.NEAREST)
+                tk_image = ImageTk.PhotoImage(scaled_image)
                 
                 # Store sprite
                 self.single_sprites[config["sprite_id"]] = tk_image
