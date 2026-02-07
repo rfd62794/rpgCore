@@ -147,10 +147,10 @@ class D20Resolver:
         attribute_bonus, attr_name = self._get_attribute_bonus(intent_id, game_state.player.attributes)
         item_bonus = self._calculate_item_bonus(intent_id, game_state.player.inventory)
         
-        # 3. Determine advantage/disadvantage based on state
-        advantage_type = self._determine_advantage(intent_id, game_state, room_tags, target_npc)
+        # 3. Apply faction-based disadvantages
+        faction_modifier = self._calculate_faction_modifier(intent_id, game_state)
         
-        # 4. Apply travel fatigue if this is a travel action
+        # 4. Calculate fatigue penalty for travel
         fatigue_penalty = 0
         if intent_id == "travel":
             fatigue_penalty = self._calculate_travel_fatigue(game_state)
@@ -161,7 +161,7 @@ class D20Resolver:
         d20_roll, raw_rolls = self._roll_dice(advantage_type)
         
         # 6. Calculate total
-        total_score = d20_roll + attribute_bonus + item_bonus - fatigue_penalty
+        total_score = d20_roll + attribute_bonus + item_bonus + faction_modifier - fatigue_penalty
         
         # 7. Determine success
         success = total_score >= dc
