@@ -17,6 +17,7 @@ import uuid
 
 from world_ledger import Coordinate, WorldChunk
 from logic.orientation import Orientation
+from loot_system import Item
 
 class Goal(BaseModel):
     """A narrative objective for the player/agent."""

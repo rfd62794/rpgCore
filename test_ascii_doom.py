@@ -51,7 +51,6 @@ def test_ascii_doom_renderer():
             # Create walls around the perimeter
             if abs(x) == 5 or abs(y) == 5:
                 chunk = WorldChunk(
-                    coordinate=coord,
                     name=f"Wall at ({x}, {y})",
                     description="A solid stone wall",
                     tags=["wall", "stone", "barrier"]
@@ -59,7 +58,6 @@ def test_ascii_doom_renderer():
             else:
                 # Create floor
                 chunk = WorldChunk(
-                    coordinate=coord,
                     name=f"Floor at ({x}, {y})",
                     description="A stone floor",
                     tags=["floor", "stone"]
