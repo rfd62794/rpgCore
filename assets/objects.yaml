@@ -159,6 +159,25 @@ signpost:
     <<: *wood_base.metadata
     weathering: "moderate"
 
+wooden_box:
+  <<: *wood_base
+  characteristics:
+    <<: *wood_base.characteristics
+    state: "closed"
+    integrity: 40
+    triggers:
+      on_open: "item_release"
+      on_break: "wood_fragmentation"
+    d20_checks:
+      open: {"difficulty": 10, "skill": "dexterity", "success": "open_box"}
+      force: {"difficulty": 8, "skill": "strength", "success": "smash_box"}
+    interaction_hooks: ["examine", "open", "take"]
+  sprite_id: "box_wood"
+  metadata:
+    <<: *wood_base.metadata
+    container_type: "small"
+    contents: ["random_item"]
+
 # Stone Objects
 stone_wall:
   <<: *stone_base
