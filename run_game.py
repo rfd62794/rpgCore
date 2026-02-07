@@ -11,6 +11,7 @@ import random
 from pathlib import Path
 
 from loguru import logger
+from rich.console import Console
 
 # Add src to path
 sys.path.append(os.path.join(os.path.dirname(__file__), 'src'))
