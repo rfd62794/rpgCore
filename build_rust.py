@@ -50,7 +50,7 @@ def check_maturin():
 
 
 def build_rust_module():
-    """Build the Rust module using maturin develop mode"""
+    """Build the Rust module using maturin build mode (no virtualenv required)"""
     rust_dir = Path('dgt_harvest_rust')
     
     if not rust_dir.exists():
@@ -63,12 +63,12 @@ def build_rust_module():
     # CRITICAL: Force PyO3 to use the current Python executable
     env["PYO3_PYTHON"] = sys.executable
     
-    # Use develop mode for faster iteration (like PhantomArbiter)
-    logger.info("🔨 Building Rust harvest core in develop mode...")
+    # Use build mode instead of develop (no virtualenv required)
+    logger.info("🔨 Building Rust harvest core in build mode...")
     
     try:
-        # Use maturin develop for faster iteration
-        command = ['maturin', 'develop', '--release']
+        # Use maturin build (works without virtualenv)
+        command = ['maturin', 'build', '--release', '--target-dir', '..']
         
         logger.info(f"Running: {' '.join(command)}")
         result = subprocess.run(command, cwd=rust_dir, capture_output=True, text=True, 
@@ -78,8 +78,29 @@ def build_rust_module():
             logger.success("✅ Rust module built successfully")
             logger.info(result.stdout)
             
+            # Install the wheel
+            logger.info("📦 Installing Rust module wheel...")
+            wheel_files = list(Path('.').glob('dgt_harvest_rust*.whl'))
+            
+            if wheel_files:
+                for wheel_file in wheel_files:
+                    logger.info(f"📦 Installing: {wheel_file.name}")
+                    install_result = subprocess.run([
+                        sys.executable, '-m', 'pip', 'install', str(wheel_file), '--force-reinstall'
+                    ], capture_output=True, text=True)
+                    
+                    if install_result.returncode == 0:
+                        logger.success(f"✅ Installed: {wheel_file.name}")
+                    else:
+                        logger.error(f"❌ Failed to install: {wheel_file.name}")
+                        logger.error(install_result.stderr)
+                        return False
+            else:
+                logger.error("❌ No wheel files found after build")
+                return False
+            
             # Verify the module can be imported
-            logger.info("� Verifying Rust module import...")
+            logger.info("🔍 Verifying Rust module import...")
             verify = subprocess.run([
                 sys.executable, '-c', 
                 'import dgt_harvest_rust; print("SUCCESS: dgt_harvest_rust loaded successfully")'
