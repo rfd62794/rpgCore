@@ -657,7 +657,7 @@ class DGTSheetCutter:
         
         return (min_x, min_y, max_x + 1, max_y + 1)
     
-    def _save_sprite_with_metadata(self, sprite: Image.Image, asset_id: str, coords: Tuple[int, int]) -> None:
+    def _save_sprite_with_metadata(self, sprite: Image.Image, asset_id: str, coords: Tuple[int, int], detected_type: str = "material") -> None:
         """Save sprite image and YAML metadata"""
         # Create output directory
         output_dir = Path("assets/harvested")
@@ -670,10 +670,12 @@ class DGTSheetCutter:
         # Create YAML metadata (Sovereign DNA)
         metadata = {
             "object_id": asset_id,
-            "object_type": self.type_var.get(),
+            "object_type": detected_type,
             "material_id": self.material_entry.get().strip(),
             "sprite_path": f"assets/harvested/{asset_id}.png",
             "collision": self.collision_var.get(),
+            "auto_detected": self.auto_detect_var.get(),
+            "auto_cleaned": self.auto_clean_var.get(),
             "grid_coords": {
                 "x": coords[0],
                 "y": coords[1],
@@ -684,6 +686,11 @@ class DGTSheetCutter:
             "dimensions": {
                 "width": self.grid_size,
                 "height": self.grid_size
+            },
+            "detection_info": {
+                "detected_type": detected_type,
+                "is_chest": detected_type == "entity" and self._is_chest(sprite, {}, self.grid_size, self.grid_size),
+                "edge_threshold": self.threshold_var.get() if self.auto_clean_var.get() else None
             }
         }
         
@@ -692,7 +699,7 @@ class DGTSheetCutter:
         with open(yaml_path, 'w') as f:
             yaml.dump(metadata, f, default_flow_style=False, sort_keys=False)
         
-        logger.info(f"💾 Saved {asset_id}: PNG + YAML metadata")
+        logger.info(f"💾 Saved {asset_id} ({detected_type}): PNG + YAML metadata")
     
     def _select_next_tile(self, current_x: int, current_y: int) -> None:
         """Select the next tile in the grid"""
