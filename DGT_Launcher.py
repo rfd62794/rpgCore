@@ -42,8 +42,8 @@ class DGTLauncher:
         self.src_dir = self.root_dir / "src"
         
         # Asset paths
-        self.asset_manifest = self.assets_dir / "ASSET_MANIFEST.yaml"
-        self.binary_assets = self.assets_dir / "assets.dgt"
+        self.asset_manifest = self.root_dir / "assets" / "ASSET_MANIFEST.yaml"
+        self.binary_assets = self.root_dir / "assets" / "assets.dgt"
         
         # Component paths
         self.terminal_game = self.src_dir / "game_loop.py"
