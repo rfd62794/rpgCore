@@ -167,6 +167,13 @@ class GameREPL:
                 dynamic = get_dynamic_tags(self.state.reputation)
                 existing.tags = list(set(loc.environment_tags + dynamic))
                 
+                # Assign Goals if none exist
+                if not self.state.active_goals:
+                    new_goals = generate_goals_for_location(loc_id, loc_id)
+                    self.state.active_goals.extend(new_goals)
+                    for g in new_goals:
+                        self.console.print(f"[bold magenta]🎯 New Objective: {g.description}[/bold magenta]")
+                
                 # Items could be dynamic, let's refresh them from props
                 existing.items = [p.name for p in loc.props]
 

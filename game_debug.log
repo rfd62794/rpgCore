@@ -1900,3 +1900,373 @@
 21:59:54 | INFO | Quartermaster: success=False, roll=7 vs DC 10
 21:59:54 | INFO | Player took 3 damage. HP: 74/100
 21:59:54 | DEBUG | Chronicler streaming: charm
+22:02:22 | DEBUG | Added intent: distract with 5 exemplars
+22:02:22 | DEBUG | Added intent: force with 5 exemplars
+22:02:22 | DEBUG | Added intent: finesse with 5 exemplars
+22:02:22 | DEBUG | Added intent: charm with 5 exemplars
+22:02:22 | DEBUG | Added intent: intimidate with 5 exemplars
+22:02:22 | DEBUG | Added intent: deceive with 5 exemplars
+22:02:22 | DEBUG | Added intent: investigate with 5 exemplars
+22:02:22 | DEBUG | Added intent: use_item with 5 exemplars
+22:02:22 | DEBUG | Added intent: defend with 5 exemplars
+22:02:22 | DEBUG | Added intent: leave_area with 5 exemplars
+22:02:22 | DEBUG | Added intent: improvise with 5 exemplars
+22:02:22 | INFO | Loading embedding model: all-MiniLM-L6-v2
+22:02:26 | INFO | Precomputed embeddings for 11 intents (55 total exemplars)
+22:02:26 | INFO | Deterministic Arbiter (Iron Frame) initialized.
+22:02:26 | INFO | Initializing Chronicler with ollama:llama3.2:1b
+22:02:26 | INFO | Voyager initialized (Deterministic) with 'aggressive' personality
+22:02:26 | INFO | Game initialized with Council of Three architecture
+22:02:27 | INFO | Voyager Heuristic: Selected force with score -8
+22:02:27 | INFO | Intent resolution: 'Intimidate the guard' → charm (confidence: 0.653, matched exemplar: 'Convince the guard to let me pass with words')
+22:02:27 | DEBUG | Action: charm | Tags: ['Sticky Floors', 'Rowdy Crowd', 'Smoky', 'Path Clear'] | Roll: 17 + Attr: 0 + Item: 0 + Tag: 0 = 17 vs DC: 10 (10 + -2) -> SUCCESS
+22:02:27 | INFO | Quartermaster: success=True, roll=17 vs DC 10
+22:02:27 | DEBUG | Chronicler streaming: charm
+22:02:27 | ERROR | Chronicler stream failed: status_code: 400, model_name: ollama:llama3.2:1b, body: {'message': 'model is required', 'type': 'api_error', 'param': None, 'code': None}
+22:02:27 | INFO | Game saved to savegame.json
+22:02:29 | INFO | Voyager Heuristic: Selected combat with score -10
+22:02:29 | INFO | Intent resolution: 'Start a brawl' → force (confidence: 0.543, matched exemplar: 'Punch someone in the face aggressively')
+22:02:29 | DEBUG | Action: force | Tags: ['Sticky Floors', 'Rowdy Crowd', 'Smoky', 'Path Clear'] | Roll: 4 + Attr: 0 + Item: 0 + Tag: 0 = 4 vs DC: 8 (10 + -2) -> FAILURE
+22:02:29 | INFO | Quartermaster: success=False, roll=4 vs DC 8
+22:02:29 | INFO | Player took 3 damage. HP: 97/100
+22:02:29 | DEBUG | Chronicler streaming: force
+22:02:30 | ERROR | Chronicler stream failed: status_code: 400, model_name: ollama:llama3.2:1b, body: {'message': 'model is required', 'type': 'api_error', 'param': None, 'code': None}
+22:02:30 | INFO | Game saved to savegame.json
+22:02:32 | INFO | Voyager Heuristic: Selected investigate with score -20
+22:02:32 | INFO | Intent resolution: 'Search for weapons' → use_item (confidence: 0.398, matched exemplar: 'Equip my sword and shield for combat')
+22:02:32 | DEBUG | Action: use_item | Tags: ['Sticky Floors', 'Rowdy Crowd', 'Smoky', 'Path Clear'] | Roll: 17 + Attr: 0 + Item: 0 + Tag: 0 = 17 vs DC: 12 (10 + 0) -> SUCCESS
+22:02:32 | INFO | Quartermaster: success=True, roll=17 vs DC 12
+22:02:32 | DEBUG | Chronicler streaming: use_item
+22:02:32 | ERROR | Chronicler stream failed: status_code: 400, model_name: ollama:llama3.2:1b, body: {'message': 'model is required', 'type': 'api_error', 'param': None, 'code': None}
+22:02:32 | INFO | Game saved to savegame.json
+22:02:34 | INFO | Voyager Heuristic: Selected force with score -23
+22:02:34 | INFO | Intent resolution: 'Intimidate the guard' → charm (confidence: 0.653, matched exemplar: 'Convince the guard to let me pass with words')
+22:02:34 | DEBUG | Action: charm | Tags: ['Sticky Floors', 'Rowdy Crowd', 'Smoky', 'Path Clear'] | Roll: 5 + Attr: 0 + Item: 0 + Tag: 0 = 5 vs DC: 10 (10 + -2) -> FAILURE
+22:02:34 | INFO | Quartermaster: success=False, roll=5 vs DC 10
+22:02:34 | INFO | Player took 8 damage. HP: 89/100
+22:02:34 | DEBUG | Chronicler streaming: charm
+22:02:35 | ERROR | Chronicler stream failed: status_code: 400, model_name: ollama:llama3.2:1b, body: {'message': 'model is required', 'type': 'api_error', 'param': None, 'code': None}
+22:02:35 | INFO | Game saved to savegame.json
+22:02:37 | INFO | Voyager Heuristic: Selected force with score -23
+22:02:37 | INFO | Intent resolution: 'I look around the room carefully' → investigate (confidence: 0.668, matched exemplar: 'Search the room carefully for hidden clues')
+22:02:37 | DEBUG | Action: investigate | Tags: ['Sticky Floors', 'Rowdy Crowd', 'Smoky', 'Path Clear'] | Roll: 14 + Attr: 0 + Item: 0 + Tag: 0 = 14 vs DC: 20 (10 + 5) -> FAILURE
+22:02:37 | INFO | Quartermaster: success=False, roll=14 vs DC 20
+22:02:37 | INFO | Player took 5 damage. HP: 84/100
+22:02:37 | DEBUG | Chronicler streaming: investigate
+22:02:37 | ERROR | Chronicler stream failed: status_code: 400, model_name: ollama:llama3.2:1b, body: {'message': 'model is required', 'type': 'api_error', 'param': None, 'code': None}
+22:02:37 | INFO | Game saved to savegame.json
+22:02:39 | INFO | Voyager Heuristic: Selected leave_area with score 5
+22:02:39 | INFO | Intent resolution: 'Leave this place' → leave_area (confidence: 1.000, matched exemplar: 'Leave this place')
+22:02:39 | DEBUG | Action: leave_area | Tags: ['Sticky Floors', 'Rowdy Crowd', 'Smoky', 'Path Clear'] | Roll: 3 + Attr: 0 + Item: 0 + Tag: 0 = 3 vs DC: -5 (10 + -15) -> SUCCESS
+22:02:39 | INFO | Quartermaster: success=True, roll=3 vs DC -5
+22:02:39 | DEBUG | Chronicler streaming: leave_area
+22:02:40 | ERROR | Chronicler stream failed: status_code: 400, model_name: ollama:llama3.2:1b, body: {'message': 'model is required', 'type': 'api_error', 'param': None, 'code': None}
+22:02:40 | INFO | Game saved to savegame.json
+22:02:42 | INFO | Voyager Heuristic: Selected combat with score -10
+22:02:42 | INFO | Intent resolution: 'Start a brawl' → force (confidence: 0.543, matched exemplar: 'Punch someone in the face aggressively')
+22:02:42 | DEBUG | Action: force | Tags: ['Open Space', 'Bustling', 'Marble Floors'] | Roll: 2 + Attr: 0 + Item: 0 + Tag: 0 = 2 vs DC: 10 (10 + 0) -> FAILURE
+22:02:42 | INFO | Quartermaster: success=False, roll=2 vs DC 10
+22:02:42 | INFO | Player took 6 damage. HP: 78/100
+22:02:42 | DEBUG | Chronicler streaming: force
+22:02:42 | ERROR | Chronicler stream failed: status_code: 400, model_name: ollama:llama3.2:1b, body: {'message': 'model is required', 'type': 'api_error', 'param': None, 'code': None}
+22:02:42 | INFO | Game saved to savegame.json
+22:02:44 | INFO | Voyager Heuristic: Selected investigate with score -15
+22:02:44 | INFO | Intent resolution: 'Search for weapons' → use_item (confidence: 0.398, matched exemplar: 'Equip my sword and shield for combat')
+22:02:44 | DEBUG | Action: use_item | Tags: ['Open Space', 'Bustling', 'Marble Floors'] | Roll: 4 + Attr: 0 + Item: 0 + Tag: 0 = 4 vs DC: 12 (10 + 0) -> FAILURE
+22:02:44 | INFO | Quartermaster: success=False, roll=4 vs DC 12
+22:02:44 | INFO | Player took 7 damage. HP: 71/100
+22:02:44 | DEBUG | Chronicler streaming: use_item
+22:02:45 | ERROR | Chronicler stream failed: status_code: 400, model_name: ollama:llama3.2:1b, body: {'message': 'model is required', 'type': 'api_error', 'param': None, 'code': None}
+22:02:45 | INFO | Game saved to savegame.json
+22:02:47 | INFO | Voyager Heuristic: Selected force with score -10
+22:02:47 | INFO | Intent resolution: 'Intimidate the guard' → charm (confidence: 0.653, matched exemplar: 'Convince the guard to let me pass with words')
+22:02:47 | DEBUG | Action: charm | Tags: ['Open Space', 'Bustling', 'Marble Floors', 'Path Clear'] | Roll: 5 + Attr: 0 + Item: 0 + Tag: 0 = 5 vs DC: 12 (10 + 0) -> FAILURE
+22:02:47 | INFO | Quartermaster: success=False, roll=5 vs DC 12
+22:02:47 | INFO | Player took 10 damage. HP: 61/100
+22:02:47 | DEBUG | Chronicler streaming: charm
+22:02:47 | ERROR | Chronicler stream failed: status_code: 400, model_name: ollama:llama3.2:1b, body: {'message': 'model is required', 'type': 'api_error', 'param': None, 'code': None}
+22:02:47 | INFO | Game saved to savegame.json
+22:02:49 | INFO | Voyager Heuristic: Selected force with score -25
+22:02:49 | INFO | Intent resolution: 'I look around the room carefully' → investigate (confidence: 0.668, matched exemplar: 'Search the room carefully for hidden clues')
+22:02:49 | DEBUG | Action: investigate | Tags: ['Open Space', 'Bustling', 'Marble Floors', 'Path Clear'] | Roll: 9 + Attr: 0 + Item: 0 + Tag: 0 = 9 vs DC: 15 (10 + 0) -> FAILURE
+22:02:49 | INFO | Quartermaster: success=False, roll=9 vs DC 15
+22:02:49 | INFO | Player took 6 damage. HP: 55/100
+22:02:49 | DEBUG | Chronicler streaming: investigate
+22:02:50 | ERROR | Chronicler stream failed: status_code: 400, model_name: ollama:llama3.2:1b, body: {'message': 'model is required', 'type': 'api_error', 'param': None, 'code': None}
+22:02:50 | INFO | Game saved to savegame.json
+22:02:52 | INFO | Voyager Heuristic: Selected combat with score -10
+22:02:52 | INFO | Intent resolution: 'Start a brawl' → force (confidence: 0.543, matched exemplar: 'Punch someone in the face aggressively')
+22:02:52 | DEBUG | Action: force | Tags: ['Open Space', 'Bustling', 'Marble Floors', 'Path Clear'] | Roll: 20 + Attr: 0 + Item: 0 + Tag: 0 = 20 vs DC: 10 (10 + 0) -> SUCCESS
+22:02:52 | INFO | Quartermaster: success=True, roll=20 vs DC 10
+22:02:52 | INFO | Loot generated: Skull Fragment
+22:02:52 | INFO | Loot added to inventory: Skull Fragment
+22:02:52 | DEBUG | Chronicler streaming: force
+22:02:52 | ERROR | Chronicler stream failed: status_code: 400, model_name: ollama:llama3.2:1b, body: {'message': 'model is required', 'type': 'api_error', 'param': None, 'code': None}
+22:02:52 | INFO | Game saved to savegame.json
+22:02:54 | INFO | Voyager Heuristic: Selected leave_area with score 505
+22:02:54 | INFO | Intent resolution: 'Leave this place' → leave_area (confidence: 1.000, matched exemplar: 'Leave this place')
+22:02:54 | DEBUG | Action: leave_area | Tags: ['Open Space', 'Bustling', 'Marble Floors', 'Path Clear'] | Roll: 20 + Attr: 0 + Item: 0 + Tag: 0 = 20 vs DC: -5 (10 + -15) -> SUCCESS
+22:02:54 | INFO | Quartermaster: success=True, roll=20 vs DC -5
+22:02:54 | DEBUG | Chronicler streaming: leave_area
+22:02:55 | ERROR | Chronicler stream failed: status_code: 400, model_name: ollama:llama3.2:1b, body: {'message': 'model is required', 'type': 'api_error', 'param': None, 'code': None}
+22:02:55 | INFO | Game saved to savegame.json
+22:02:57 | INFO | Voyager Heuristic: Selected investigate with score -20
+22:02:57 | INFO | Intent resolution: 'Search for weapons' → use_item (confidence: 0.398, matched exemplar: 'Equip my sword and shield for combat')
+22:02:57 | DEBUG | Action: use_item | Tags: ['Sticky Floors', 'Smoky', 'Rowdy Crowd', 'Path Clear'] | Roll: 11 + Attr: 0 + Item: 0 + Tag: 0 = 11 vs DC: 12 (10 + 0) -> FAILURE
+22:02:57 | INFO | Quartermaster: success=False, roll=11 vs DC 12
+22:02:57 | INFO | Player took 1 damage. HP: 54/100
+22:02:57 | DEBUG | Chronicler streaming: use_item
+22:02:57 | ERROR | Chronicler stream failed: status_code: 400, model_name: ollama:llama3.2:1b, body: {'message': 'model is required', 'type': 'api_error', 'param': None, 'code': None}
+22:02:57 | INFO | Game saved to savegame.json
+22:02:59 | INFO | Voyager Heuristic: Selected force with score -8
+22:02:59 | INFO | Intent resolution: 'Intimidate the guard' → charm (confidence: 0.653, matched exemplar: 'Convince the guard to let me pass with words')
+22:02:59 | DEBUG | Action: charm | Tags: ['Sticky Floors', 'Smoky', 'Rowdy Crowd', 'Path Clear'] | Roll: 17 + Attr: 0 + Item: 0 + Tag: 0 = 17 vs DC: 10 (10 + -2) -> SUCCESS
+22:02:59 | INFO | Quartermaster: success=True, roll=17 vs DC 10
+22:02:59 | DEBUG | Chronicler streaming: charm
+22:03:00 | ERROR | Chronicler stream failed: status_code: 400, model_name: ollama:llama3.2:1b, body: {'message': 'model is required', 'type': 'api_error', 'param': None, 'code': None}
+22:03:00 | INFO | Game saved to savegame.json
+22:03:02 | INFO | Voyager Heuristic: Selected combat with score -10
+22:03:02 | INFO | Intent resolution: 'Start a brawl' → force (confidence: 0.543, matched exemplar: 'Punch someone in the face aggressively')
+22:03:02 | DEBUG | Action: force | Tags: ['Sticky Floors', 'Smoky', 'Rowdy Crowd', 'Path Clear'] | Roll: 2 + Attr: 0 + Item: 0 + Tag: 0 = 2 vs DC: 8 (10 + -2) -> FAILURE
+22:03:02 | INFO | Quartermaster: success=False, roll=2 vs DC 8
+22:03:02 | INFO | Player took 5 damage. HP: 49/100
+22:03:02 | DEBUG | Chronicler streaming: force
+22:03:02 | ERROR | Chronicler stream failed: status_code: 400, model_name: ollama:llama3.2:1b, body: {'message': 'model is required', 'type': 'api_error', 'param': None, 'code': None}
+22:03:02 | INFO | Game saved to savegame.json
+22:03:04 | INFO | Voyager Heuristic: Selected force with score -23
+22:03:04 | INFO | Intent resolution: 'Intimidate the guard' → charm (confidence: 0.653, matched exemplar: 'Convince the guard to let me pass with words')
+22:03:04 | DEBUG | Action: charm | Tags: ['Sticky Floors', 'Smoky', 'Rowdy Crowd', 'Path Clear'] | Roll: 20 + Attr: 0 + Item: 0 + Tag: 0 = 20 vs DC: 10 (10 + -2) -> SUCCESS
+22:03:04 | INFO | Quartermaster: success=True, roll=20 vs DC 10
+22:03:04 | DEBUG | Chronicler streaming: charm
+22:03:05 | ERROR | Chronicler stream failed: status_code: 400, model_name: ollama:llama3.2:1b, body: {'message': 'model is required', 'type': 'api_error', 'param': None, 'code': None}
+22:03:05 | INFO | Game saved to savegame.json
+22:03:07 | INFO | Voyager Heuristic: Selected investigate with score -20
+22:03:07 | INFO | Intent resolution: 'Search for weapons' → use_item (confidence: 0.398, matched exemplar: 'Equip my sword and shield for combat')
+22:03:07 | DEBUG | Action: use_item | Tags: ['Sticky Floors', 'Smoky', 'Rowdy Crowd', 'Path Clear'] | Roll: 7 + Attr: 0 + Item: 0 + Tag: 0 = 7 vs DC: 12 (10 + 0) -> FAILURE
+22:03:07 | INFO | Quartermaster: success=False, roll=7 vs DC 12
+22:03:07 | INFO | Player took 5 damage. HP: 44/100
+22:03:07 | DEBUG | Chronicler streaming: use_item
+22:03:07 | ERROR | Chronicler stream failed: status_code: 400, model_name: ollama:llama3.2:1b, body: {'message': 'model is required', 'type': 'api_error', 'param': None, 'code': None}
+22:03:07 | INFO | Game saved to savegame.json
+22:03:09 | INFO | Voyager Heuristic: Selected leave_area with score 505
+22:03:09 | INFO | Intent resolution: 'Leave this place' → leave_area (confidence: 1.000, matched exemplar: 'Leave this place')
+22:03:09 | DEBUG | Action: leave_area | Tags: ['Sticky Floors', 'Smoky', 'Rowdy Crowd', 'Path Clear'] | Roll: 12 + Attr: 0 + Item: 0 + Tag: 0 = 12 vs DC: -5 (10 + -15) -> SUCCESS
+22:03:09 | INFO | Quartermaster: success=True, roll=12 vs DC -5
+22:03:09 | DEBUG | Chronicler streaming: leave_area
+22:03:10 | ERROR | Chronicler stream failed: status_code: 400, model_name: ollama:llama3.2:1b, body: {'message': 'model is required', 'type': 'api_error', 'param': None, 'code': None}
+22:03:10 | INFO | Game saved to savegame.json
+22:03:12 | INFO | Voyager Heuristic: Selected combat with score -10
+22:03:12 | INFO | Intent resolution: 'Start a brawl' → force (confidence: 0.543, matched exemplar: 'Punch someone in the face aggressively')
+22:03:12 | DEBUG | Action: force | Tags: ['Bustling', 'Friendly Guards', 'Marble Floors', 'Open Space'] | Roll: 17 + Attr: 0 + Item: 0 + Tag: 0 = 17 vs DC: 10 (10 + 0) -> SUCCESS
+22:03:12 | INFO | Quartermaster: success=True, roll=17 vs DC 10
+22:03:12 | INFO | Loot generated: Skull Fragment
+22:03:12 | INFO | Loot added to inventory: Skull Fragment
+22:03:12 | DEBUG | Chronicler streaming: force
+22:03:12 | ERROR | Chronicler stream failed: status_code: 400, model_name: ollama:llama3.2:1b, body: {'message': 'model is required', 'type': 'api_error', 'param': None, 'code': None}
+22:03:12 | INFO | Game saved to savegame.json
+22:03:14 | INFO | Voyager Heuristic: Selected force with score -10
+22:03:14 | INFO | Intent resolution: 'Intimidate the guard' → charm (confidence: 0.653, matched exemplar: 'Convince the guard to let me pass with words')
+22:03:14 | DEBUG | Action: charm | Tags: ['Bustling', 'Friendly Guards', 'Marble Floors', 'Open Space', 'Path Clear'] | Roll: 20 + Attr: 0 + Item: 0 + Tag: 0 = 20 vs DC: 12 (10 + 0) -> SUCCESS
+22:03:14 | INFO | Quartermaster: success=True, roll=20 vs DC 12
+22:03:14 | DEBUG | Chronicler streaming: charm
+22:03:15 | ERROR | Chronicler stream failed: status_code: 400, model_name: ollama:llama3.2:1b, body: {'message': 'model is required', 'type': 'api_error', 'param': None, 'code': None}
+22:03:15 | INFO | Game saved to savegame.json
+22:03:17 | INFO | Voyager Heuristic: Selected investigate with score -15
+22:03:17 | INFO | Intent resolution: 'Search for weapons' → use_item (confidence: 0.398, matched exemplar: 'Equip my sword and shield for combat')
+22:03:17 | DEBUG | Action: use_item | Tags: ['Bustling', 'Friendly Guards', 'Marble Floors', 'Open Space', 'Path Clear'] | Roll: 6 + Attr: 0 + Item: 0 + Tag: 0 = 6 vs DC: 12 (10 + 0) -> FAILURE
+22:03:17 | INFO | Quartermaster: success=False, roll=6 vs DC 12
+22:03:17 | INFO | Player took 10 damage. HP: 34/100
+22:03:17 | DEBUG | Chronicler streaming: use_item
+22:03:17 | ERROR | Chronicler stream failed: status_code: 400, model_name: ollama:llama3.2:1b, body: {'message': 'model is required', 'type': 'api_error', 'param': None, 'code': None}
+22:03:17 | INFO | Game saved to savegame.json
+22:03:19 | INFO | Voyager Heuristic: Selected force with score -25
+22:03:19 | INFO | Intent resolution: 'Intimidate the guard' → charm (confidence: 0.653, matched exemplar: 'Convince the guard to let me pass with words')
+22:03:19 | DEBUG | Action: charm | Tags: ['Bustling', 'Friendly Guards', 'Marble Floors', 'Open Space', 'Path Clear'] | Roll: 8 + Attr: 0 + Item: 0 + Tag: 0 = 8 vs DC: 12 (10 + 0) -> FAILURE
+22:03:19 | INFO | Quartermaster: success=False, roll=8 vs DC 12
+22:03:19 | INFO | Player took 1 damage. HP: 33/100
+22:03:19 | DEBUG | Chronicler streaming: charm
+22:03:20 | ERROR | Chronicler stream failed: status_code: 400, model_name: ollama:llama3.2:1b, body: {'message': 'model is required', 'type': 'api_error', 'param': None, 'code': None}
+22:03:20 | INFO | Game saved to savegame.json
+22:03:22 | INFO | Voyager Heuristic: Selected combat with score -10
+22:03:22 | INFO | Intent resolution: 'Start a brawl' → force (confidence: 0.543, matched exemplar: 'Punch someone in the face aggressively')
+22:03:22 | DEBUG | Action: force | Tags: ['Bustling', 'Friendly Guards', 'Marble Floors', 'Open Space', 'Path Clear'] | Roll: 7 + Attr: 0 + Item: 0 + Tag: 0 = 7 vs DC: 10 (10 + 0) -> FAILURE
+22:03:22 | INFO | Quartermaster: success=False, roll=7 vs DC 10
+22:03:22 | INFO | Player took 3 damage. HP: 30/100
+22:03:22 | DEBUG | Chronicler streaming: force
+22:03:22 | ERROR | Chronicler stream failed: status_code: 400, model_name: ollama:llama3.2:1b, body: {'message': 'model is required', 'type': 'api_error', 'param': None, 'code': None}
+22:03:22 | INFO | Game saved to savegame.json
+22:03:24 | INFO | Voyager Heuristic: Selected leave_area with score 505
+22:03:24 | INFO | Intent resolution: 'Leave this place' → leave_area (confidence: 1.000, matched exemplar: 'Leave this place')
+22:03:24 | DEBUG | Action: leave_area | Tags: ['Bustling', 'Friendly Guards', 'Marble Floors', 'Open Space', 'Path Clear'] | Roll: 9 + Attr: 0 + Item: 0 + Tag: 0 = 9 vs DC: -5 (10 + -15) -> SUCCESS
+22:03:24 | INFO | Quartermaster: success=True, roll=9 vs DC -5
+22:03:24 | DEBUG | Chronicler streaming: leave_area
+22:03:25 | ERROR | Chronicler stream failed: status_code: 400, model_name: ollama:llama3.2:1b, body: {'message': 'model is required', 'type': 'api_error', 'param': None, 'code': None}
+22:03:25 | INFO | Game saved to savegame.json
+22:03:27 | INFO | Voyager Heuristic: Selected investigate with score -20
+22:03:27 | INFO | Intent resolution: 'Search for weapons' → use_item (confidence: 0.398, matched exemplar: 'Equip my sword and shield for combat')
+22:03:27 | DEBUG | Action: use_item | Tags: ['Sticky Floors', 'Smoky', 'Friendly Guards', 'Rowdy Crowd', 'Path Clear'] | Roll: 20 + Attr: 0 + Item: 0 + Tag: 0 = 20 vs DC: 12 (10 + 0) -> SUCCESS
+22:03:27 | INFO | Quartermaster: success=True, roll=20 vs DC 12
+22:03:27 | DEBUG | Chronicler streaming: use_item
+22:03:27 | ERROR | Chronicler stream failed: status_code: 400, model_name: ollama:llama3.2:1b, body: {'message': 'model is required', 'type': 'api_error', 'param': None, 'code': None}
+22:03:27 | INFO | Game saved to savegame.json
+22:03:29 | INFO | Voyager Heuristic: Selected force with score -8
+22:03:29 | INFO | Intent resolution: 'Intimidate the guard' → charm (confidence: 0.653, matched exemplar: 'Convince the guard to let me pass with words')
+22:03:29 | DEBUG | Action: charm | Tags: ['Sticky Floors', 'Smoky', 'Friendly Guards', 'Rowdy Crowd', 'Path Clear'] | Roll: 8 + Attr: 0 + Item: 0 + Tag: 0 = 8 vs DC: 10 (10 + -2) -> FAILURE
+22:03:29 | INFO | Quartermaster: success=False, roll=8 vs DC 10
+22:03:29 | INFO | Player took 4 damage. HP: 26/100
+22:03:29 | DEBUG | Chronicler streaming: charm
+22:03:30 | ERROR | Chronicler stream failed: status_code: 400, model_name: ollama:llama3.2:1b, body: {'message': 'model is required', 'type': 'api_error', 'param': None, 'code': None}
+22:03:30 | INFO | Game saved to savegame.json
+22:03:32 | INFO | Voyager Heuristic: Selected combat with score -10
+22:03:32 | INFO | Intent resolution: 'Start a brawl' → force (confidence: 0.543, matched exemplar: 'Punch someone in the face aggressively')
+22:03:32 | DEBUG | Action: force | Tags: ['Sticky Floors', 'Smoky', 'Friendly Guards', 'Rowdy Crowd', 'Path Clear'] | Roll: 6 + Attr: 0 + Item: 0 + Tag: 0 = 6 vs DC: 8 (10 + -2) -> FAILURE
+22:03:32 | INFO | Quartermaster: success=False, roll=6 vs DC 8
+22:03:32 | INFO | Player took 2 damage. HP: 24/100
+22:03:32 | DEBUG | Chronicler streaming: force
+22:03:32 | ERROR | Chronicler stream failed: status_code: 400, model_name: ollama:llama3.2:1b, body: {'message': 'model is required', 'type': 'api_error', 'param': None, 'code': None}
+22:03:32 | INFO | Game saved to savegame.json
+22:03:34 | INFO | Voyager Heuristic: Selected leave_area with score 1505
+22:03:34 | INFO | Intent resolution: 'Leave this place' → leave_area (confidence: 1.000, matched exemplar: 'Leave this place')
+22:03:34 | DEBUG | Action: leave_area | Tags: ['Sticky Floors', 'Smoky', 'Friendly Guards', 'Rowdy Crowd', 'Path Clear'] | Roll: 3 + Attr: 0 + Item: 0 + Tag: 0 = 3 vs DC: -5 (10 + -15) -> SUCCESS
+22:03:34 | INFO | Quartermaster: success=True, roll=3 vs DC -5
+22:03:34 | DEBUG | Chronicler streaming: leave_area
+22:03:35 | ERROR | Chronicler stream failed: status_code: 400, model_name: ollama:llama3.2:1b, body: {'message': 'model is required', 'type': 'api_error', 'param': None, 'code': None}
+22:03:35 | INFO | Game saved to savegame.json
+22:03:37 | INFO | Voyager Heuristic: Selected leave_area with score 975
+22:03:37 | INFO | Intent resolution: 'Leave this place' → leave_area (confidence: 1.000, matched exemplar: 'Leave this place')
+22:03:37 | DEBUG | Action: leave_area | Tags: ['Bustling', 'Friendly Guards', 'Marble Floors', 'Open Space'] | Roll: 7 + Attr: 0 + Item: 0 + Tag: 0 = 7 vs DC: 10 (10 + 0) -> FAILURE
+22:03:37 | INFO | Quartermaster: success=False, roll=7 vs DC 10
+22:03:37 | INFO | Player took 1 damage. HP: 23/100
+22:03:37 | DEBUG | Chronicler streaming: leave_area
+22:03:37 | ERROR | Chronicler stream failed: status_code: 400, model_name: ollama:llama3.2:1b, body: {'message': 'model is required', 'type': 'api_error', 'param': None, 'code': None}
+22:03:37 | INFO | Game saved to savegame.json
+22:03:39 | INFO | Voyager Heuristic: Selected leave_area with score 960
+22:03:39 | INFO | Intent resolution: 'I look around the room carefully' → investigate (confidence: 0.668, matched exemplar: 'Search the room carefully for hidden clues')
+22:03:39 | DEBUG | Action: investigate | Tags: ['Bustling', 'Friendly Guards', 'Marble Floors', 'Open Space'] | Roll: 1 + Attr: 0 + Item: 0 + Tag: 0 = 1 vs DC: 15 (10 + 0) -> FAILURE
+22:03:39 | INFO | Quartermaster: success=False, roll=1 vs DC 15
+22:03:39 | INFO | Player took 7 damage. HP: 16/100
+22:03:39 | DEBUG | Chronicler streaming: investigate
+22:03:40 | ERROR | Chronicler stream failed: status_code: 400, model_name: ollama:llama3.2:1b, body: {'message': 'model is required', 'type': 'api_error', 'param': None, 'code': None}
+22:03:40 | INFO | Game saved to savegame.json
+22:03:42 | INFO | Voyager Heuristic: Selected leave_area with score 945
+22:03:42 | INFO | Intent resolution: 'Leave this place' → leave_area (confidence: 1.000, matched exemplar: 'Leave this place')
+22:03:42 | DEBUG | Action: leave_area | Tags: ['Bustling', 'Friendly Guards', 'Marble Floors', 'Open Space'] | Roll: 8 + Attr: 0 + Item: 0 + Tag: 0 = 8 vs DC: 10 (10 + 0) -> FAILURE
+22:03:42 | INFO | Quartermaster: success=False, roll=8 vs DC 10
+22:03:42 | INFO | Player took 1 damage. HP: 15/100
+22:03:42 | DEBUG | Chronicler streaming: leave_area
+22:03:42 | ERROR | Chronicler stream failed: status_code: 400, model_name: ollama:llama3.2:1b, body: {'message': 'model is required', 'type': 'api_error', 'param': None, 'code': None}
+22:03:42 | INFO | Game saved to savegame.json
+22:03:44 | INFO | Voyager Heuristic: Selected leave_area with score 945
+22:03:44 | INFO | Intent resolution: 'I look around the room carefully' → investigate (confidence: 0.668, matched exemplar: 'Search the room carefully for hidden clues')
+22:03:44 | DEBUG | Action: investigate | Tags: ['Bustling', 'Friendly Guards', 'Marble Floors', 'Open Space'] | Roll: 12 + Attr: 0 + Item: 0 + Tag: 0 = 12 vs DC: 15 (10 + 0) -> FAILURE
+22:03:44 | INFO | Quartermaster: success=False, roll=12 vs DC 15
+22:03:44 | INFO | Player took 2 damage. HP: 13/100
+22:03:44 | DEBUG | Chronicler streaming: investigate
+22:03:45 | ERROR | Chronicler stream failed: status_code: 400, model_name: ollama:llama3.2:1b, body: {'message': 'model is required', 'type': 'api_error', 'param': None, 'code': None}
+22:03:45 | INFO | Game saved to savegame.json
+22:03:47 | INFO | Voyager Heuristic: Selected leave_area with score 945
+22:03:47 | INFO | Intent resolution: 'Leave this place' → leave_area (confidence: 1.000, matched exemplar: 'Leave this place')
+22:03:47 | DEBUG | Action: leave_area | Tags: ['Bustling', 'Friendly Guards', 'Marble Floors', 'Open Space'] | Roll: 14 + Attr: 0 + Item: 0 + Tag: 0 = 14 vs DC: 10 (10 + 0) -> SUCCESS
+22:03:47 | INFO | Quartermaster: success=True, roll=14 vs DC 10
+22:03:47 | DEBUG | Chronicler streaming: leave_area
+22:03:47 | ERROR | Chronicler stream failed: status_code: 400, model_name: ollama:llama3.2:1b, body: {'message': 'model is required', 'type': 'api_error', 'param': None, 'code': None}
+22:03:47 | INFO | Game saved to savegame.json
+22:03:49 | INFO | Voyager Heuristic: Selected leave_area with score 945
+22:03:49 | INFO | Intent resolution: 'Leave this place' → leave_area (confidence: 1.000, matched exemplar: 'Leave this place')
+22:03:49 | DEBUG | Action: leave_area | Tags: ['Sticky Floors', 'Smoky', 'Friendly Guards', 'Rowdy Crowd', 'Path Clear'] | Roll: 4 + Attr: 0 + Item: 0 + Tag: 0 = 4 vs DC: -5 (10 + 0) -> SUCCESS
+22:03:49 | INFO | Quartermaster: success=True, roll=4 vs DC -5
+22:03:49 | DEBUG | Chronicler streaming: leave_area
+22:03:50 | ERROR | Chronicler stream failed: status_code: 400, model_name: ollama:llama3.2:1b, body: {'message': 'model is required', 'type': 'api_error', 'param': None, 'code': None}
+22:03:50 | INFO | Game saved to savegame.json
+22:03:50 | INFO | Game loaded from savegame.json
+22:03:50 | DEBUG | Added intent: distract with 5 exemplars
+22:03:50 | DEBUG | Added intent: force with 5 exemplars
+22:03:50 | DEBUG | Added intent: finesse with 5 exemplars
+22:03:50 | DEBUG | Added intent: charm with 5 exemplars
+22:03:50 | DEBUG | Added intent: intimidate with 5 exemplars
+22:03:50 | DEBUG | Added intent: deceive with 5 exemplars
+22:03:50 | DEBUG | Added intent: investigate with 5 exemplars
+22:03:50 | DEBUG | Added intent: use_item with 5 exemplars
+22:03:50 | DEBUG | Added intent: defend with 5 exemplars
+22:03:50 | DEBUG | Added intent: leave_area with 5 exemplars
+22:03:50 | DEBUG | Added intent: improvise with 5 exemplars
+22:03:50 | INFO | Loading embedding model: all-MiniLM-L6-v2
+22:03:52 | INFO | Voyager Heuristic: Selected leave_area with score 945
+22:03:52 | INFO | Intent resolution: 'Leave this place' → leave_area (confidence: 1.000, matched exemplar: 'Leave this place')
+22:03:52 | DEBUG | Action: leave_area | Tags: ['Bustling', 'Friendly Guards', 'Marble Floors', 'Open Space'] | Roll: 15 + Attr: 0 + Item: 0 + Tag: 0 = 15 vs DC: 10 (10 + 0) -> SUCCESS
+22:03:52 | INFO | Quartermaster: success=True, roll=15 vs DC 10
+22:03:52 | DEBUG | Chronicler streaming: leave_area
+22:03:52 | ERROR | Chronicler stream failed: status_code: 400, model_name: ollama:llama3.2:1b, body: {'message': 'model is required', 'type': 'api_error', 'param': None, 'code': None}
+22:03:52 | INFO | Game saved to savegame.json
+22:03:54 | INFO | Precomputed embeddings for 11 intents (55 total exemplars)
+22:03:54 | INFO | Deterministic Arbiter (Iron Frame) initialized.
+22:03:54 | INFO | Initializing Chronicler with ollama:llama3.2:1b
+22:03:54 | INFO | Voyager initialized (Deterministic) with 'aggressive' personality
+22:03:54 | INFO | Game initialized with Council of Three architecture
+22:03:54 | INFO | Voyager Heuristic: Selected leave_area with score 490
+22:03:54 | INFO | Intent resolution: 'Leave this place' → leave_area (confidence: 1.000, matched exemplar: 'Leave this place')
+22:03:54 | DEBUG | Action: leave_area | Tags: ['Sunlight', 'Crowded', 'Friendly Guards'] | Roll: 16 + Attr: 0 + Item: 0 + Tag: 0 = 16 vs DC: 10 (10 + 0) -> SUCCESS
+22:03:54 | INFO | Quartermaster: success=True, roll=16 vs DC 10
+22:03:54 | DEBUG | Chronicler streaming: leave_area
+22:03:54 | INFO | Voyager Heuristic: Selected leave_area with score 945
+22:03:54 | INFO | Intent resolution: 'Leave this place' → leave_area (confidence: 1.000, matched exemplar: 'Leave this place')
+22:03:54 | DEBUG | Action: leave_area | Tags: ['Sticky Floors', 'Smoky', 'Friendly Guards', 'Rowdy Crowd', 'Path Clear'] | Roll: 4 + Attr: 0 + Item: 0 + Tag: 0 = 4 vs DC: -5 (10 + 0) -> SUCCESS
+22:03:54 | INFO | Quartermaster: success=True, roll=4 vs DC -5
+22:03:54 | DEBUG | Chronicler streaming: leave_area
+22:03:55 | ERROR | Chronicler stream failed: status_code: 400, model_name: ollama:llama3.2:1b, body: {'message': 'model is required', 'type': 'api_error', 'param': None, 'code': None}
+22:03:55 | INFO | Game saved to savegame.json
+22:03:55 | ERROR | Chronicler stream failed: status_code: 400, model_name: ollama:llama3.2:1b, body: {'message': 'model is required', 'type': 'api_error', 'param': None, 'code': None}
+22:03:55 | INFO | Game saved to savegame.json
+22:03:57 | INFO | Voyager Heuristic: Selected leave_area with score 975
+22:03:57 | INFO | Intent resolution: 'Leave this place' → leave_area (confidence: 1.000, matched exemplar: 'Leave this place')
+22:03:57 | DEBUG | Action: leave_area | Tags: ['Loud', 'Dimly Lit', 'Friendly Guards', 'Path Clear'] | Roll: 10 + Attr: 0 + Item: 0 + Tag: 0 = 10 vs DC: -5 (10 + 0) -> SUCCESS
+22:03:57 | INFO | Quartermaster: success=True, roll=10 vs DC -5
+22:03:57 | DEBUG | Chronicler streaming: leave_area
+22:03:57 | INFO | Voyager Heuristic: Selected leave_area with score 945
+22:03:57 | INFO | Intent resolution: 'Leave this place' → leave_area (confidence: 1.000, matched exemplar: 'Leave this place')
+22:03:57 | DEBUG | Action: leave_area | Tags: ['Bustling', 'Friendly Guards', 'Marble Floors', 'Open Space'] | Roll: 14 + Attr: 0 + Item: 0 + Tag: 0 = 14 vs DC: 10 (10 + 0) -> SUCCESS
+22:03:57 | INFO | Quartermaster: success=True, roll=14 vs DC 10
+22:03:57 | DEBUG | Chronicler streaming: leave_area
+22:03:57 | ERROR | Chronicler stream failed: status_code: 400, model_name: ollama:llama3.2:1b, body: {'message': 'model is required', 'type': 'api_error', 'param': None, 'code': None}
+22:03:57 | INFO | Game saved to savegame.json
+22:03:57 | ERROR | Chronicler stream failed: status_code: 400, model_name: ollama:llama3.2:1b, body: {'message': 'model is required', 'type': 'api_error', 'param': None, 'code': None}
+22:03:57 | INFO | Game saved to savegame.json
+22:03:59 | INFO | Voyager Heuristic: Selected leave_area with score 960
+22:03:59 | INFO | Intent resolution: 'Leave this place' → leave_area (confidence: 1.000, matched exemplar: 'Leave this place')
+22:03:59 | DEBUG | Action: leave_area | Tags: ['Sunlight', 'Crowded', 'Friendly Guards'] | Roll: 7 + Attr: 0 + Item: 0 + Tag: 0 = 7 vs DC: 10 (10 + 0) -> FAILURE
+22:03:59 | INFO | Quartermaster: success=False, roll=7 vs DC 10
+22:03:59 | INFO | Player took 4 damage. HP: 9/100
+22:03:59 | DEBUG | Chronicler streaming: leave_area
+22:03:59 | INFO | Voyager Heuristic: Selected leave_area with score 945
+22:03:59 | INFO | Intent resolution: 'Leave this place' → leave_area (confidence: 1.000, matched exemplar: 'Leave this place')
+22:03:59 | DEBUG | Action: leave_area | Tags: ['Sticky Floors', 'Smoky', 'Friendly Guards', 'Rowdy Crowd', 'Path Clear'] | Roll: 7 + Attr: 0 + Item: 0 + Tag: 0 = 7 vs DC: -5 (10 + 0) -> SUCCESS
+22:03:59 | INFO | Quartermaster: success=True, roll=7 vs DC -5
+22:03:59 | DEBUG | Chronicler streaming: leave_area
+22:04:00 | ERROR | Chronicler stream failed: status_code: 400, model_name: ollama:llama3.2:1b, body: {'message': 'model is required', 'type': 'api_error', 'param': None, 'code': None}
+22:04:00 | INFO | Game saved to savegame.json
+22:04:00 | ERROR | Chronicler stream failed: status_code: 400, model_name: ollama:llama3.2:1b, body: {'message': 'model is required', 'type': 'api_error', 'param': None, 'code': None}
+22:04:00 | INFO | Game saved to savegame.json
+22:04:02 | INFO | Voyager Heuristic: Selected leave_area with score 945
+22:04:02 | INFO | Intent resolution: 'I look around the room carefully' → investigate (confidence: 0.668, matched exemplar: 'Search the room carefully for hidden clues')
+22:04:02 | DEBUG | Action: investigate | Tags: ['Sunlight', 'Crowded', 'Friendly Guards'] | Roll: 5 + Attr: 0 + Item: 0 + Tag: 0 = 5 vs DC: 15 (10 + 0) -> FAILURE
+22:04:02 | INFO | Quartermaster: success=False, roll=5 vs DC 15
+22:04:02 | INFO | Player took 8 damage. HP: 1/100
+22:04:02 | DEBUG | Chronicler streaming: investigate
+22:04:02 | INFO | Voyager Heuristic: Selected leave_area with score 945
+22:04:02 | INFO | Intent resolution: 'Leave this place' → leave_area (confidence: 1.000, matched exemplar: 'Leave this place')
+22:04:02 | DEBUG | Action: leave_area | Tags: ['Bustling', 'Friendly Guards', 'Marble Floors', 'Open Space'] | Roll: 3 + Attr: 0 + Item: 0 + Tag: 0 = 3 vs DC: 10 (10 + 0) -> FAILURE
+22:04:02 | INFO | Quartermaster: success=False, roll=3 vs DC 10
+22:04:02 | INFO | Player took 8 damage. HP: 5/100
+22:04:02 | DEBUG | Chronicler streaming: leave_area
+22:04:02 | ERROR | Chronicler stream failed: status_code: 400, model_name: ollama:llama3.2:1b, body: {'message': 'model is required', 'type': 'api_error', 'param': None, 'code': None}
+22:04:02 | INFO | Game saved to savegame.json
+22:04:02 | ERROR | Chronicler stream failed: status_code: 400, model_name: ollama:llama3.2:1b, body: {'message': 'model is required', 'type': 'api_error', 'param': None, 'code': None}
+22:04:02 | INFO | Game saved to savegame.json
+22:04:04 | INFO | Voyager Heuristic: Selected leave_area with score 945
+22:04:04 | INFO | Intent resolution: 'Leave this place' → leave_area (confidence: 1.000, matched exemplar: 'Leave this place')
+22:04:04 | DEBUG | Action: leave_area | Tags: ['Sunlight', 'Crowded', 'Friendly Guards'] | Roll: 4 + Attr: 0 + Item: 0 + Tag: 0 = 4 vs DC: 10 (10 + 0) -> FAILURE
+22:04:04 | INFO | Quartermaster: success=False, roll=4 vs DC 10
+22:04:04 | INFO | Player took 8 damage. HP: 0/100
+22:04:04 | DEBUG | Chronicler streaming: leave_area
+22:04:05 | ERROR | Chronicler stream failed: status_code: 400, model_name: ollama:llama3.2:1b, body: {'message': 'model is required', 'type': 'api_error', 'param': None, 'code': None}
+22:04:05 | INFO | Game saved to savegame.json

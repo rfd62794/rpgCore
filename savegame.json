@@ -1,0 +1,108 @@
+{
+  "player": {
+    "name": "Adventurer",
+    "hp": 0,
+    "max_hp": 100,
+    "gold": 50,
+    "inventory": [
+      {
+        "name": "Skull Fragment",
+        "description": "Creepy memento",
+        "stat_bonus": "",
+        "target_stat": null,
+        "modifier_value": 0,
+        "value": 1
+      },
+      {
+        "name": "Skull Fragment",
+        "description": "Creepy memento",
+        "stat_bonus": "",
+        "target_stat": null,
+        "modifier_value": 0,
+        "value": 1
+      }
+    ],
+    "attributes": {
+      "strength": 0,
+      "dexterity": 0,
+      "intelligence": 0,
+      "charisma": 0
+    }
+  },
+  "current_room": "plaza",
+  "rooms": {
+    "tavern": {
+      "name": "The Boar's Snout",
+      "description": "A typical tavern known as The Boar's Snout. Sticky Floors permeates the area.",
+      "npcs": [
+        {
+          "name": "Guard",
+          "state": "charmed",
+          "hp": 80,
+          "description": "A stern-looking town guard watching the entrance"
+        },
+        {
+          "name": "Bartender",
+          "state": "neutral",
+          "hp": 30,
+          "description": "A burly man wiping mugs behind the bar"
+        }
+      ],
+      "items": [
+        "Hearth",
+        "Wooden Table",
+        "Beer Mug"
+      ],
+      "exits": {
+        "north": "plaza"
+      },
+      "tags": [
+        "Loud",
+        "Dimly Lit",
+        "Friendly Guards",
+        "Path Clear"
+      ]
+    },
+    "plaza": {
+      "name": "Sun-Drenched Court",
+      "description": "A typical plaza known as Sun-Drenched Court. Marble Floors permeates the area.",
+      "npcs": [
+        {
+          "name": "Merchant",
+          "state": "neutral",
+          "hp": 50,
+          "description": "An ordinary person"
+        },
+        {
+          "name": "Noble",
+          "state": "neutral",
+          "hp": 50,
+          "description": "An ordinary person"
+        }
+      ],
+      "items": [
+        "Statue",
+        "Fountain",
+        "Fruit Stand"
+      ],
+      "exits": {
+        "south": "tavern",
+        "north": "dungeon"
+      },
+      "tags": [
+        "Sunlight",
+        "Crowded",
+        "Friendly Guards"
+      ]
+    }
+  },
+  "turn_count": 39,
+  "reputation": {
+    "law": 16,
+    "underworld": 0,
+    "clergy": 0
+  },
+  "active_goals": [],
+  "completed_goals": [],
+  "social_graph": {}
+}
