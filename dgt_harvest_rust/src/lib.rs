@@ -1,6 +1,7 @@
 """
 DGT Harvest Rust Core - High-Performance Image Processing
 Rust-powered semantic scanning for instant asset analysis
+Python 3.12 Compatible
 """
 
 use pyo3::prelude::*;
@@ -13,19 +14,19 @@ use rayon::prelude::*;
 #[derive(Clone)]
 struct SpriteAnalysis {
     #[pyo3(get)]
-    chest_probability: f32,
+    chest_probability: f64,
     #[pyo3(get)]
     is_chest: bool,
     #[pyo3(get)]
     content_bounds: (u32, u32, u32, u32),
     #[pyo3(get)]
-    color_diversity: f32,
+    color_diversity: f64,
     #[pyo3(get)]
-    green_ratio: f32,
+    green_ratio: f64,
     #[pyo3(get)]
-    gray_ratio: f32,
+    gray_ratio: f64,
     #[pyo3(get)]
-    brown_gold_ratio: f32,
+    brown_gold_ratio: f64,
     #[pyo3(get)]
     is_character: bool,
     #[pyo3(get)]
@@ -37,20 +38,20 @@ struct SpriteAnalysis {
 /// High-performance sprite scanner using Rust
 #[pyclass]
 struct HarvestScanner {
-    chest_threshold: f32,
-    green_threshold: f32,
-    gray_threshold: f32,
-    diversity_threshold: f32,
+    chest_threshold: f64,
+    green_threshold: f64,
+    gray_threshold: f64,
+    diversity_threshold: f64,
 }
 
 #[pymethods]
 impl HarvestScanner {
     #[new]
     fn new(
-        chest_threshold: Option<f32>,
-        green_threshold: Option<f32>,
-        gray_threshold: Option<f32>,
-        diversity_threshold: Option<f32>,
+        chest_threshold: Option<f64>,
+        green_threshold: Option<f64>,
+        gray_threshold: Option<f64>,
+        diversity_threshold: Option<f64>,
     ) -> Self {
         Self {
             chest_threshold: chest_threshold.unwrap_or(0.3),
@@ -112,7 +113,7 @@ impl HarvestScanner {
         let mut min_x = width;
         let mut min_y = height;
         let mut max_x = 0;
-        let mut max_y = 0;
+        let max_y = 0;
         
         // Color diversity tracking
         let mut colors = std::collections::HashSet::new();
@@ -158,33 +159,33 @@ impl HarvestScanner {
             }
         }
         
-        let total_pixels_f = total_pixels as f32;
+        let total_pixels_f = total_pixels as f64;
         let chest_probability = if total_pixels > 0 {
-            brown_gold_pixels as f32 / total_pixels_f
+            brown_gold_pixels as f64 / total_pixels_f
         } else {
             0.0
         };
         
         let green_ratio = if total_pixels > 0 {
-            green_pixels as f32 / total_pixels_f
+            green_pixels as f64 / total_pixels_f
         } else {
             0.0
         };
         
         let gray_ratio = if total_pixels > 0 {
-            gray_pixels as f32 / total_pixels_f
+            gray_pixels as f64 / total_pixels_f
         } else {
             0.0
         };
         
         let color_diversity = if total_pixels > 0 {
-            colors.len() as f32 / total_pixels_f
+            colors.len() as f64 / total_pixels_f
         } else {
             0.0
         };
         
         // Character detection (complex patterns, reasonable proportions)
-        let aspect_ratio = width as f32 / height as f32;
+        let aspect_ratio = width as f64 / height as f64;
         let is_character = total_pixels > 20 && 
                           0.5 <= aspect_ratio && aspect_ratio <= 2.0 && 
                           colors.len() > 3;
@@ -258,12 +259,12 @@ impl HarvestScanner {
 
 /// Internal analysis result
 struct SpriteAnalysisInternal {
-    chest_probability: f32,
+    chest_probability: f64,
     content_bounds: (u32, u32, u32, u32),
-    color_diversity: f32,
-    green_ratio: f32,
-    gray_ratio: f32,
-    brown_gold_ratio: f32,
+    color_diversity: f64,
+    green_ratio: f64,
+    gray_ratio: f64,
+    brown_gold_ratio: f64,
     is_character: bool,
     is_decoration: bool,
     is_material: bool,
@@ -277,7 +278,7 @@ fn dgt_harvest_rust(_py: Python, m: &PyModule) -> PyResult<()> {
     
     // Convenience function for quick chest detection
     #[pyfn(m)]
-    fn scan_sprite_for_chest(pixels: &PyBytes, width: u32, height: u32) -> PyResult<f32> {
+    fn scan_sprite_for_chest(pixels: &PyBytes, width: u32, height: u32) -> PyResult<f64> {
         let scanner = HarvestScanner::new(None, None, None, None);
         let analysis = scanner.analyze_sprite_internal(pixels.as_bytes(), width, height);
         Ok(analysis.chest_probability)
