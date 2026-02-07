@@ -18,7 +18,7 @@ from pathlib import Path
 from loguru import logger
 
 from core.state import (
-    Tile, TileType, BiomeType, InterestPoint, InterestType, Chunk, WorldDelta, validate_position
+    Tile, TileType, BiomeType, InterestPoint, InterestType, Chunk, WorldDelta, validate_position, TileData
 )
 from core.constants import (
     WORLD_SIZE_X, WORLD_SIZE_Y, CHUNK_SIZE, INTEREST_POINT_SPAWN_CHANCE,
