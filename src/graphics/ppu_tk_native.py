@@ -79,6 +79,9 @@ class NativeTkinterPPU:
         # Sprite registry (native PhotoImage objects)
         self.sprites: Dict[str, PhotoImage] = {}
         
+        # Keep references to prevent garbage collection
+        self._sprite_refs: List[PhotoImage] = []
+        
         # Canvas entity registry (maps world positions to canvas IDs)
         self.canvas_entities: Dict[Tuple[int, int], CanvasEntity] = {}
         
@@ -208,6 +211,9 @@ class NativeTkinterPPU:
         
         # Scale sprite for display using zoom
         scaled_sprite = base_sprite.zoom(DISPLAY_SCALE, DISPLAY_SCALE)
+        
+        # Keep reference to prevent garbage collection
+        self._sprite_refs.append(scaled_sprite)
         
         return scaled_sprite
     
