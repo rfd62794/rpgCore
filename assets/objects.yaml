@@ -74,6 +74,20 @@ liquid_base: &liquid_base
     viscosity: 1.0
     evaporation_rate: 0.01
 
+# Flora Base Archetype (Sonic Field DNA)
+flora_base: &flora_base
+  characteristics:
+    material: "organic"
+    tags: ["animated", "wind_sway", "flora"]
+    resistances: []
+    weaknesses: ["fire", "disease", "trample"]
+    interaction_hooks: ["examine", "touch", "collect"]
+  collision: false
+  friction: 0.1
+  metadata:
+    sway_speed: 0.5
+    aesthetic_style: "sonic_field"
+
 # === CORE OBJECTS (Inheriting from Archetypes) ===
 
 # Wooden Objects
@@ -309,7 +323,38 @@ forest_guardian:
     guardian_type: "stone"
     alignment: "neutral"
 
-# Animated Objects (Aesthetic Focus)
+# Animated Objects (Sonic Field Focus)
+sonic_flower:
+  <<: *flora_base
+  characteristics:
+    <<: *flora_base.characteristics
+    material: "flower_petals"
+    tags: ["animated", "flora", "wind_sensitive", "decorative", "sonic"]
+    state: "swaying"
+    integrity: 20
+    triggers:
+      on_touch: "pollen_release"
+      on_wind: "sway_animation"
+    d20_checks:
+      examine: {"difficulty": 5, "skill": "nature", "success": "observe_pollen"}
+      collect: {"difficulty": 8, "skill": "dexterity", "success": "gather_flower"}
+      touch: {"difficulty": 3, "skill": "nature", "success": "feel_petals"}
+    animation_frames:
+      wind_sway: ["flower_frame_1", "flower_frame_2", "flower_frame_3"]
+      frame_duration: 500
+    visual_effects:
+      pollen_particles: true
+      color_shift: ["pink", "light_pink", "white"]
+  collision: false
+  friction: 0.1
+  sprite_id: "flower_anim_set"
+  metadata:
+    <<: *flora_base.metadata
+    flower_type: "sonic_sway"
+    pollen_count: 5
+    sway_amplitude: 2
+    aesthetic_style: "sonic_field"
+
 animated_flower:
   <<: *organic_base
   characteristics:
