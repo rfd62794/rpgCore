@@ -48,7 +48,7 @@ class ObserverView:
         
         # Initialize core systems
         self.config = create_default_config(seed=self.seed)
-        self.world_engine = WorldEngineFactory.create_engine(self.config)
+        self.world_engine = WorldEngineFactory.create_world(self.config.world)
         self.asset_loader = None
         self.ppu = None
         self.root = None
