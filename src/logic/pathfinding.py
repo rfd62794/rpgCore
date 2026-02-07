@@ -58,7 +58,7 @@ class PathfindingGrid:
         self.width = width
         self.height = height
         self.collision_data = collision_data or {}
-        self._grid = [[PathNode((x, y), 0, 0, 0, None) for y in range(height) for x in range(width)]
+        self._grid = [[PathNode((x, y), 0, 0, 0, None) for x in range(width)] for y in range(height)]
         
         # Load collision data if available
         self._load_collision_data()
@@ -158,7 +158,7 @@ class PathfindingGrid:
         
         return neighbors
     
-    def find_path(self, start: Tuple[int, int], goal: Tuple[int, int]) -> Optional[List[Tuple[int, int]]):
+    def find_path(self, start: Tuple[int, int], goal: Tuple[int, int]) -> Optional[List[Tuple[int, int]]]:
         """
         Find path from start to goal using A* algorithm.
         
