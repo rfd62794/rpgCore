@@ -383,21 +383,10 @@ class SyntheticRealityDirector:
         )
         
         # Scene 5: Dialogue
-        npc_response = self.dashboard.handle_player_action(
-            "Greetings, I come in peace.",
-            self.game_state
-        )
-        
-        if npc_response:
-            self.render_cinematic_scene(
-                "First Contact",
-                f"The Legion guard responds: '{npc_response.text}' Their mood is {npc_response.mood}."
-            )
-        else:
-            self.render_cinematic_scene(
-                "First Contact",
-                "The Legion guard watches you cautiously, hand resting on their weapon."
-            )
+        # TODO: Implement dialogue system with static canvas
+        print("🎭 [bold cyan]DIALOGUE SCENE[/bold cyan]")
+        print("   The Legion guard watches you cautiously...")
+        print("   'State your business, traveler.'")
         
         # Scene 6: World Evolution
         print("\n⏰ DIRECTOR: Advancing world time...")
