@@ -247,13 +247,46 @@ class AssetLoader:
     
     def _generate_effect_sprites(self) -> None:
         """Generate procedural effect sprites"""
-        effect_types = ["fire", "water", "blood", "magic", "smoke"]
+        try:
+            effect_types = ["fire", "water", "blood", "magic", "smoke"]
+            
+            for effect_type in effect_types:
+                sprite = self._create_effect_sprite(effect_type)
+                self.effect_sprites[effect_type] = sprite
+            
+            logger.info(f"🎨 Generated {len(self.effect_sprites)} effect sprites")
         
-        for effect_type in effect_types:
-            sprite = self._create_effect_sprite(effect_type)
-            self.effect_sprites[effect_type] = sprite
+        except Exception as e:
+            logger.error(f"💥 Failed to generate effect sprites: {e}")
+    
+    def _create_effect_sprite(self, effect_type: str) -> Image.Image:
+        """Create a procedural effect sprite"""
+        sprite = Image.new((8, 8), (255, 255, 255, 0))
+        draw = ImageDraw.Draw(sprite)
         
-        logger.info(f"🎨 Generated {len(self.effect_sprites)} effect sprites")
+        if effect_type == "fire":
+            # Orange/red fire pattern
+            draw.ellipse([1, 1, 7, 7], fill=(255, 100, 0, 255))
+            draw.ellipse([2, 2, 6, 6], fill=(255, 200, 0, 255))
+            draw.ellipse([3, 3, 5, 5], fill=(255, 255, 0, 255))
+        elif effect_type == "water":
+            # Blue water droplet
+            draw.ellipse([1, 2, 7, 6], fill=(0, 100, 200, 255))
+            draw.ellipse([2, 3, 6, 5], fill=(0, 150, 255, 255))
+        elif effect_type == "blood":
+            # Red blood splatter
+            draw.ellipse([1, 1, 7, 7], fill=(200, 0, 0, 255))
+            draw.ellipse([3, 3, 5, 5], fill=(255, 0, 0, 255))
+        elif effect_type == "magic":
+            # Purple magic spark
+            draw.polygon([(4, 1), (7, 4), (4, 7), (1, 4)], fill=(200, 0, 255, 255))
+            draw.ellipse([3, 3, 5, 5], fill=(255, 150, 255, 255))
+        elif effect_type == "smoke":
+            # Gray smoke cloud
+            draw.ellipse([1, 2, 7, 6], fill=(100, 100, 100, 128))
+            draw.ellipse([2, 3, 6, 5], fill=(150, 150, 150, 128))
+        
+        return sprite
     
     def _generate_placeholder_sprites(self) -> None:
         """Generate placeholder sprites when PIL is not available"""
