@@ -30,74 +30,367 @@ from logic.artifacts import ArtifactGenerator
 from loot_system import LootSystem
 
 
-class GameEngine:
+class SyntheticRealityEngine:
     """
-    Thin orchestrator - the traffic controller of the D&D Framework.
+    Cinematic Orchestrator - integrates all seven phases of engineering.
     
-    Only responsibility: coordinate data flow between specialized modules.
+    Provides narrated journeys with historical context and spatial awareness.
     """
     
     def __init__(
         self,
         state: Optional[GameState] = None,
         save_path: Optional[Path] = None,
-        personality: str = "curious",
-        use_dashboard: bool = True
+        cinematic_mode: bool = True
     ):
-        """Initialize the engine with all specialized modules."""
+        """Initialize the Synthetic Reality Engine with all systems."""
         self.console = Console()
         self.save_path = save_path or Path("savegame.json")
-        self.use_dashboard = use_dashboard
+        self.cinematic_mode = cinematic_mode
         
-        # Initialize game state or load existing
-        self.state = state or self._create_fresh_state(personality)
-        if self.save_path.exists():
-            try:
-                self.console.print(f"[green]Loading saved game from {self.save_path}[/green]")
-                self.state = GameState.load_from_file(self.save_path)
-            except Exception as e:
-                logger.error(f"Failed to load save: {e}. Starting fresh.")
-                self.state = self._create_fresh_state(personality)
+        # Core systems
+        self.world_ledger = WorldLedger()
+        self.faction_system = FactionSystem(self.world_ledger)
+        self.chronos = ChronosEngine(self.world_ledger)
+        self.historian = Historian(self.world_ledger)
+        self.d20_resolver = D20Resolver(self.faction_system)
+        self.artifact_generator = ArtifactGenerator(self.world_ledger, self.faction_system)
+        self.loot_system = LootSystem(self.world_ledger, self.faction_system)
         
-        # Initialize specialized modules
-        self.semantic_resolver = SemanticResolver(
-            create_default_intent_library(), 
-            confidence_threshold=0.35
-        )
-        self.d20_resolver = D20Resolver()
-        self.narrator = Narrator()
-        self.world_factory = WorldFactory()
-        self.loot_system = LootSystem()
-        self.context_manager = ContextManager()
+        # Presentation systems
+        self.dashboard = UnifiedDashboard(self.world_ledger, self.faction_system)
+        self.renderer = ASCIIDoomRenderer(self.world_ledger)
+        self.orientation_manager = OrientationManager()
         
-        # Initialize dashboard if enabled
-        if self.use_dashboard:
-            self.dashboard = GameDashboard(self.console)
-            self.dashboard.start_dashboard()
-            self.dashboard.display_welcome()
+        # Initialize game state
+        self.state = state or self._create_fresh_state()
         
-        # Sync world data to state
-        self._sync_world_to_state()
+        # Cinematic settings
+        self.scene_duration = 2.0
+        self.narration_enabled = True
         
-        logger.info("Game Engine initialized with Domain-Driven Design")
+        logger.info("Synthetic Reality Engine initialized with cinematic orchestrator")
     
-    def _create_fresh_state(self, personality: str) -> GameState:
-        """Create fresh game state with character."""
-        character_factory = CharacterFactory()
-        player = character_factory.create(personality)
+    def _create_fresh_state(self) -> GameState:
+        """Create fresh game state with synthetic reality integration."""
+        from game_state import PlayerStats
+        
+        player = PlayerStats(
+            name="Synthetic Voyager",
+            attributes={"strength": 12, "dexterity": 14, "constitution": 13, "intelligence": 11, "wisdom": 10, "charisma": 12},
+            hp=100,
+            max_hp=100,
+            gold=100
+        )
+        
         state = GameState(player=player)
-        state.current_room = "tavern"
+        state.position = Coordinate(0, 0, 0)
+        state.player_angle = 0.0
+        state.world_time = 0
+        
+        # Set initial reputation
+        state.reputation = {
+            "law": 10,
+            "underworld": 0,
+            "clergy": 5,
+            "legion": 25,
+            "cult": -10,
+            "traders": 15
+        }
+        
         return state
     
-    def _sync_world_to_state(self):
-        """Sync world factory data into game state."""
-        current_location = self.state.current_room
+    def bake_world(self) -> bool:
+        """Phase 1: World Baking - Create the sedimentary world with 1,000-year history."""
+        try:
+            # Create factions
+            faction_configs = [
+                {
+                    "id": "legion",
+                    "name": "The Iron Legion",
+                    "type": "military",
+                    "color": "red",
+                    "home_base": [0, 0],
+                    "current_power": 0.8,
+                    "relations": {"cult": "hostile", "traders": "neutral"},
+                    "goals": ["expand_territory", "defend_borders"],
+                    "expansion_rate": 0.2,
+                    "aggression_level": 0.9
+                },
+                {
+                    "id": "cult",
+                    "name": "The Shadow Cult",
+                    "type": "religious",
+                    "color": "purple",
+                    "home_base": [10, 10],
+                    "current_power": 0.6,
+                    "relations": {"legion": "hostile", "traders": "neutral"},
+                    "goals": ["convert_followers", "establish_shrines"],
+                    "expansion_rate": 0.1,
+                    "aggression_level": 0.7
+                },
+                {
+                    "id": "traders",
+                    "name": "The Merchant Guild",
+                    "type": "economic",
+                    "color": "gold",
+                    "home_base": [-5, -5],
+                    "current_power": 0.7,
+                    "relations": {"legion": "neutral", "cult": "neutral"},
+                    "goals": ["establish_trade_routes", "accumulate_wealth"],
+                    "expansion_rate": 0.3,
+                    "aggression_level": 0.3
+                }
+            ]
+            
+            factions = self.faction_system.create_factions(faction_configs)
+            
+            # Simulate faction history
+            for turn in range(0, 100, 10):
+                self.faction_system.simulate_factions(turn)
+            
+            # Initialize world chunks
+            for x in range(-10, 11):
+                for y in range(-10, 11):
+                    coord = Coordinate(x, y, 0)
+                    chunk = self.world_ledger.get_chunk(coord, 0)
+            
+            logger.info("World baking complete - synthetic reality ready")
+            return True
+            
+        except Exception as e:
+            logger.error(f"World baking failed: {e}")
+            return False
+    
+    def generate_historical_narration(self, coordinate: Coordinate) -> str:
+        """Generate narration about historical context at current location."""
+        try:
+            # Get historical context
+            historical_tags = self.world_ledger.get_historical_tags(coordinate)
+            
+            if not historical_tags:
+                return "This area appears untouched by the great events of history."
+            
+            # Generate narrative based on historical tags
+            narratives = []
+            
+            for tag in historical_tags:
+                if "war" in tag.lower():
+                    narratives.append("The echoes of ancient battles still linger in this place.")
+                elif "peace" in tag.lower():
+                    narratives.append("This land has known long periods of peace and prosperity.")
+                elif "disaster" in tag.lower():
+                    narratives.append("Catastrophe once reshaped this landscape, leaving scars that time cannot heal.")
+                elif "discovery" in tag.lower():
+                    narratives.append("Great discoveries were made here, changing the course of history.")
+                elif "mystery" in tag.lower():
+                    narratives.append("This place holds secrets that have yet to be uncovered.")
+            
+            if narratives:
+                return " ".join(narratives[:2])  # Limit to 2 narratives
+            else:
+                return f"This location bears the marks of: {', '.join(historical_tags[:3])}"
+                
+        except Exception as e:
+            logger.error(f"Historical narration failed: {e}")
+            return "The history of this place is shrouded in mystery."
+    
+    def generate_artifact_commentary(self, artifact) -> str:
+        """Generate commentary about discovered artifacts."""
+        try:
+            if not artifact:
+                return "No artifacts of note are visible here."
+            
+            commentary = f"You discover {artifact.name}, "
+            
+            # Add lineage information
+            if hasattr(artifact, 'lineage') and artifact.lineage:
+                commentary += f"crafted in {artifact.lineage.get('epoch', 'unknown times')}. "
+            
+            # Add faction context
+            if hasattr(artifact, 'faction_affinity') and artifact.faction_affinity:
+                faction_name = artifact.faction_affinity.value.title()
+                commentary += f"It bears the mark of the {faction_name}. "
+            
+            # Add special properties
+            if hasattr(artifact, 'special_properties') and artifact.special_properties:
+                properties = ", ".join(artifact.special_properties)
+                commentary += f"It seems {properties}. "
+            
+            # Add value
+            if hasattr(artifact, 'value') and artifact.value:
+                commentary += f"Such an item would be worth approximately {artifact.value} gold coins."
+            
+            return commentary
+            
+        except Exception as e:
+            logger.error(f"Artifact commentary failed: {e}")
+            return "The artifact's significance eludes you for now."
+    
+    def render_cinematic_scene(self, scene_name: str, description: str, duration: float = None):
+        """Render a cinematic scene with 3D view and narration."""
+        if duration is None:
+            duration = self.scene_duration
         
-        # If location doesn't exist in state, create it from world factory
-        if current_location not in self.state.rooms:
-            location_data = self.world_factory.get_location(current_location)
-            if location_data:
-                self.state.rooms[current_location] = location_data
+        # Get current NPC mood for threat indicators
+        current_npc_mood = None
+        faction = self.faction_system.get_faction_at_coordinate(self.state.position)
+        if faction:
+            current_npc_mood = self.dashboard.conversation_engine.calculate_npc_mood(
+                "Guard", self.state.reputation, 
+                (self.state.position.x, self.state.position.y)
+            )
+            self.renderer.set_threat_mode(current_npc_mood in ["hostile", "unfriendly"])
+        
+        # Calculate perception range
+        wisdom = self.state.player.attributes.get("wisdom", 10)
+        intelligence = self.state.player.attributes.get("intelligence", 10)
+        perception_range = max(5, (wisdom + intelligence) // 2)
+        
+        # Render 3D viewport
+        frame = self.renderer.render_frame(
+            self.state, 
+            self.state.player_angle, 
+            perception_range,
+            current_npc_mood
+        )
+        
+        # Convert frame to string
+        frame_str = self.renderer.get_frame_as_string(frame)
+        
+        # Display scene
+        self.console.print(f"\n🎬 [bold cyan]SCENE: {scene_name}[/bold cyan]")
+        self.console.print(f"📝 {description}")
+        self.console.print("-" * 60)
+        
+        # Show 3D view
+        self.console.print("🎮 [bold green]3D VIEWPORT:[/bold green]")
+        self.console.print(frame_str)
+        
+        # Show status
+        self.console.print(f"📍 Position: ({self.state.position.x}, {self.state.position.y})")
+        self.console.print(f"🧭 Facing: {self.orientation_manager.get_facing_direction()}")
+        self.console.print(f"👁️  Perception: {perception_range}")
+        
+        if current_npc_mood:
+            self.console.print(f"😊 NPC Mood: {current_npc_mood}")
+        
+        # Generate historical narration
+        if self.narration_enabled:
+            historical_narration = self.generate_historical_narration(self.state.position)
+            self.console.print(f"\n📚 [bold yellow]HISTORICAL CONTEXT:[/bold yellow]")
+            self.console.print(historical_narration)
+            
+            # Check for artifacts
+            artifact = self.artifact_generator.generate_artifact(self.state.position, self.state.world_time)
+            if artifact:
+                artifact_commentary = self.generate_artifact_commentary(artifact)
+                self.console.print(f"\n🏺️ [bold magenta]ARTIFACT DISCOVERED:[/bold magenta]")
+                self.console.print(artifact_commentary)
+        
+        # Wait for scene duration
+        if not self.cinematic_mode:
+            input("\n[Press Enter to continue...]")
+        else:
+            import time
+            time.sleep(duration)
+    
+    async def process_action_with_narration(self, player_input: str) -> bool:
+        """Process action with cinematic narration and historical context."""
+        # Handle meta commands
+        if player_input.lower() in ["quit", "exit", "q"]:
+            return False
+        
+        if player_input.lower() in ["save"]:
+            self.state.save_to_file(self.save_path)
+            self.console.print("[green]Game saved![/green]")
+            return True
+        
+        # Generate historical context for action
+        historical_context = self.generate_historical_narration(self.state.position)
+        
+        # Process movement actions
+        if player_input.lower() == "look":
+            self.render_cinematic_scene(
+                "Observation",
+                f"You survey your surroundings. {historical_context}",
+                duration=1.0
+            )
+            return True
+        
+        elif player_input.lower() == "turn left":
+            self.orientation_manager.turn_left()
+            self.state.player_angle = self.orientation_manager.get_orientation().angle
+            self.render_cinematic_scene(
+                "Turning Left",
+                f"You turn left. Now facing {self.orientation_manager.get_facing_direction()}. {historical_context}",
+                duration=0.5
+            )
+            return True
+        
+        elif player_input.lower() == "turn right":
+            self.orientation_manager.turn_right()
+            self.state.player_angle = self.orientation_manager.get_orientation().angle
+            self.render_cinematic_scene(
+                "Turning Right",
+                f"You turn right. Now facing {self.orientation_manager.get_facing_direction()}. {historical_context}",
+                duration=0.5
+            )
+            return True
+        
+        elif player_input.lower() == "move forward":
+            new_pos = self.orientation_manager.move_forward()
+            old_pos = self.state.position
+            self.state.position = Coordinate(new_pos.x, new_pos.y, 0)
+            
+            # Check for artifacts at new position
+            artifact = self.artifact_generator.generate_artifact(self.state.position, self.state.world_time)
+            
+            scene_description = f"You move forward from ({old_pos.x}, {old_pos.y}) to ({new_pos.x}, {new_pos.y})."
+            
+            if artifact:
+                scene_description += f" You discover {artifact.name}!"
+            
+            self.render_cinematic_scene(
+                "Movement",
+                f"{scene_description} {historical_context}",
+                duration=1.0
+            )
+            return True
+        
+        elif player_input.lower() == "talk":
+            # Handle dialogue with historical context
+            npc_response = self.dashboard.handle_player_action(
+                "Greetings, I come in peace to learn about this place.",
+                self.state
+            )
+            
+            if npc_response:
+                self.render_cinematic_scene(
+                    "Dialogue",
+                    f"You attempt to converse with the locals. {npc_response.text} {historical_context}",
+                    duration=2.0
+                )
+            else:
+                self.render_cinematic_scene(
+                    "Dialogue",
+                    f"You call out, but no one responds to your words. {historical_context}",
+                    duration=1.5
+                )
+            return True
+        
+        # Default action
+        self.render_cinematic_scene(
+            "Action",
+            f"You attempt to {player_input}. {historical_context}",
+            duration=1.5
+        )
+        
+        return True
+    
+    def cleanup(self):
+        """Clean up resources when shutting down."""
+        logger.info("Synthetic Reality Engine shutting down")
     
     async def process_action(self, player_input: str) -> bool:
         """
@@ -388,4 +681,4 @@ class GameEngine:
 
 
 # Export for use by main game loop
-__all__ = ["GameEngine"]
+__all__ = ["SyntheticRealityEngine"]
