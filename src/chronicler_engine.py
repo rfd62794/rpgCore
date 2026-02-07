@@ -165,9 +165,8 @@ class ChroniclerEngine:
         logger.debug(f"Chronicler streaming: {intent_id}")
         
         try:
-            # We use result_type=str to get raw text streaming
-            # escaping the JSON structure for the sake of immediate user feedback
-            async with self.agent.run_stream(prompt, result_type=str) as result:
+            # We use text streaming directly
+            async with self.agent.run_stream(prompt) as result:
                 async for message in result.stream_text():
                     yield message
                     

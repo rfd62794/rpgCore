@@ -140,16 +140,22 @@ class VoyagerAgent:
             
             score -= history_penalty
             
-            # F. Goal Alignment (The "Purpose" Fix)
-            goal_bonus = 0
-            if active_goals:
-                for goal in active_goals:
-                    # Check if action ID or its general intent matches goal methods
-                    # (In this simple framework, action_id IS the intent)
-                    if action_id in goal.method_tags:
-                        goal_bonus += 500
+            # E. Room Exit Priority & Cooldown
+            if action_id == "leave_area":
+                # If "Path Clear" is present, heavily prioritize
+                if room_tags and "Path Clear" in room_tags:
+                    score += 500
+                
+                # BOREDOM LOGIC: Strongly penalize leaving if we just arrived
+                if self.turns_in_room < 5:
+                    score -= 1000 # Massive penalty for trying to skip the scene
+                    
+                # GOAL MALUS: Penalize leaving if there are still active goals in this room
+                # We assume any current active_goals are for this room
+                if active_goals and len(active_goals) > 0:
+                    score -= 500 # Don't leave till the work is done
             
-            score += goal_bonus
+            # F. Goal Alignment (The "Purpose" Fix)
 
             scored_actions.append({
                 "action": action,

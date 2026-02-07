@@ -21,11 +21,11 @@
       "charisma": 0
     }
   },
-  "current_room": "tavern",
+  "current_room": "plaza",
   "rooms": {
     "tavern": {
-      "name": "The Silver Tankard",
-      "description": "A typical tavern known as The Silver Tankard. Sticky Floors permeates the area.",
+      "name": "The Boar's Snout",
+      "description": "A typical tavern known as The Boar's Snout. Loud permeates the area.",
       "npcs": [
         {
           "name": "Guard",
@@ -41,22 +41,22 @@
         }
       ],
       "items": [
-        "Hearth",
-        "Wooden Table"
+        "Beer Mug",
+        "Hearth"
       ],
       "exits": {
         "north": "plaza"
       },
       "tags": [
-        "Dimly Lit",
-        "Sticky Floors",
+        "Rowdy Crowd",
+        "Loud",
         "Smoky",
         "Path Clear"
       ]
     },
     "plaza": {
-      "name": "Grand Plaza",
-      "description": "A typical plaza known as Grand Plaza. Bustling permeates the area.",
+      "name": "Merchant's Square",
+      "description": "A typical plaza known as Merchant's Square. Open Space permeates the area.",
       "npcs": [
         {
           "name": "Street Urchin",
@@ -73,8 +73,8 @@
       ],
       "items": [
         "Fruit Stand",
-        "Fountain",
-        "Statue"
+        "Statue",
+        "Fountain"
       ],
       "exits": {
         "south": "tavern",
@@ -82,17 +82,18 @@
       },
       "tags": [
         "Open Space",
-        "Bustling",
-        "Crowded",
-        "Path Clear"
+        "Sunlight",
+        "Crowded"
       ]
     }
   },
-  "turn_count": 0,
+  "turn_count": 1,
   "reputation": {
     "city_watch": 0,
     "underworld": 0,
     "clergy": 0
   },
+  "active_goals": [],
+  "completed_goals": [],
   "social_graph": {}
 }

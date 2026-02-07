@@ -1712,3 +1712,28 @@
 21:55:31 | DEBUG | Chronicler streaming: charm
 21:55:31 | ERROR | Chronicler stream failed: AbstractAgent.run_stream() got an unexpected keyword argument 'result_type'
 21:55:31 | INFO | Game saved to savegame.json
+21:55:58 | INFO | Game loaded from savegame.json
+21:55:58 | DEBUG | Added intent: distract with 5 exemplars
+21:55:58 | DEBUG | Added intent: force with 5 exemplars
+21:55:58 | DEBUG | Added intent: finesse with 5 exemplars
+21:55:58 | DEBUG | Added intent: charm with 5 exemplars
+21:55:58 | DEBUG | Added intent: intimidate with 5 exemplars
+21:55:58 | DEBUG | Added intent: deceive with 5 exemplars
+21:55:58 | DEBUG | Added intent: investigate with 5 exemplars
+21:55:58 | DEBUG | Added intent: use_item with 5 exemplars
+21:55:58 | DEBUG | Added intent: defend with 5 exemplars
+21:55:58 | DEBUG | Added intent: leave_area with 5 exemplars
+21:55:58 | DEBUG | Added intent: improvise with 5 exemplars
+21:55:58 | INFO | Loading embedding model: all-MiniLM-L6-v2
+21:56:01 | INFO | Precomputed embeddings for 11 intents (55 total exemplars)
+21:56:01 | INFO | Deterministic Arbiter (Iron Frame) initialized.
+21:56:02 | INFO | Initializing Chronicler with ollama:llama3.2:1b
+21:56:02 | INFO | Voyager initialized (Deterministic) with 'aggressive' personality
+21:56:02 | INFO | Game initialized with Council of Three architecture
+21:56:02 | INFO | Voyager Heuristic: Selected leave_area with score -9
+21:56:02 | INFO | Intent resolution: 'Leave this place' → leave_area (confidence: 1.000, matched exemplar: 'Leave this place')
+21:56:02 | DEBUG | Action: leave_area | Tags: ['Rowdy Crowd', 'Loud', 'Smoky', 'Path Clear'] | Roll: 20 + Attr: 0 + Item: 1 + Tag: 0 = 21 vs DC: -5 (10 + 0) -> SUCCESS
+21:56:02 | INFO | Quartermaster: success=True, roll=21 vs DC -5
+21:56:02 | DEBUG | Chronicler streaming: leave_area
+21:56:02 | ERROR | Chronicler stream failed: AbstractAgent.run_stream() got an unexpected keyword argument 'result_type'
+21:56:02 | INFO | Game saved to savegame.json
