@@ -287,12 +287,10 @@ class VirtualPPU:
                             # Check for transparency (Game Boy Color 0)
                             if pixel.intensity > 0:
                                 buffer_x = sprite_coord.x + x
-                                buffer_y = sprite_coord.y + y
+                                buffer_y = sprite_coord + y
                                 
                                 if (buffer_x < self.width and buffer_y < self.height):
                                     self.pixel_renderer.set_pixel(buffer_x, buffer_y, pixel)
-    
-    def _render_windows(self) -> None:
         """Render the window layer (WIN) - Text overlay."""
         for window in self.windows:
             self._render_text_box(window)
