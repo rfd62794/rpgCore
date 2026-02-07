@@ -86,7 +86,7 @@ class TriModalEngine:
     
     def _init_tri_modal_dispatcher(self):
         """Initialize tri-modal display dispatcher"""
-        if not TRI_MODAL_AVAILABLE:
+        if not TRI_MODAL_AVAILABLE or not DisplayMode:
             return
         
         try:
