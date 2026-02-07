@@ -100,6 +100,7 @@ class AutonomousDirector:
         self.cinematic_pause_duration: float = 2.0
         self.last_action_time: float = 0.0
         self.is_paused: bool = False
+        self.beacon_generation_interval: float = 10.0  # Generate new beacons every 10 turns
         
         # Callbacks for external coordination
         self.on_beacon_generated: Optional[Callable[[NarrativeBeacon], None]] = None
