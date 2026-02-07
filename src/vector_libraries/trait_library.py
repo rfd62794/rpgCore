@@ -15,6 +15,7 @@ import random
 from pydantic import BaseModel
 from sentence_transformers import SentenceTransformer
 import numpy as np
+from loguru import logger
 
 
 class TraitCategory(Enum):

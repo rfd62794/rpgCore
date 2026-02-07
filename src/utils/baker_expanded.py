@@ -132,7 +132,7 @@ class ExpandedBaker:
                 "model_name": self.model_name,
                 "categories": {
                     category.value: len(trait_library.get_traits_by_category(category))
-                    for category in trait_library.traits.values()
+                    for category in set(trait.category for trait in trait_library.traits.values())
                 }
             }
         )

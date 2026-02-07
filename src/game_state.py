@@ -6,7 +6,7 @@ Uses Pydantic for validation and JSON serialization.
 """
 
 from pathlib import Path
-from typing import Dict, List, Literal, Optional
+from typing import Dict, List, Literal, Optional, Any
 import numpy as np
 
 from loguru import logger
