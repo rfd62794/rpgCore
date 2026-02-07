@@ -195,6 +195,10 @@ class PathfindingGrid:
         start_node = self._grid[start[1]][start[0]]
         goal_node = self._grid[goal[1]][goal[0]]
         
+        if start_node is None or goal_node is None:
+            logger.warning(f"❌ Start or goal node is None: start={start}, goal={goal}")
+            return None
+        
         start_node.g_score = 0
         start_node.h_score = self._heuristic(start, goal)
         start_node.f_score = start_node.h_score
@@ -225,7 +229,7 @@ class PathfindingGrid:
             for neighbor_pos in self.get_neighbors(current.position):
                 neighbor = self._grid[neighbor_pos[1]][neighbor_pos[0]]
                 
-                if neighbor.position in closed_set:
+                if neighbor is None or neighbor.position in closed_set:
                     continue
                 
                 # Calculate costs
@@ -252,7 +256,7 @@ class PathfindingGrid:
         for y in range(self.height):
             for x in range(self.width):
                 node = self._grid[y][x]
-                if node:
+                if node is not None:
                     node.g_score = 0
                     node.h_score = 0
                     node.f_score = 0
