@@ -140,7 +140,12 @@ class DGTSystem:
             logger.info("🚶 Voyager initialized")
             
             # Initialize Heartbeat Controller
-            self.heartbeat = initialize_heartbeat()
+            try:
+                self.heartbeat = initialize_heartbeat()
+            except Exception as e:
+                logger.warning(f"⚠️ Heartbeat initialization failed: {e}")
+                # Create a simple fallback heartbeat
+                self.heartbeat = None
             
             # Register all services with heartbeat
             await self._register_services()
@@ -158,6 +163,7 @@ class DGTSystem:
     async def _register_services(self) -> None:
         """Register all services with heartbeat controller"""
         if not self.heartbeat:
+            logger.debug("⚠️ No heartbeat available for service registration")
             return
         
         # Register pillar services
@@ -223,16 +229,16 @@ class DGTSystem:
     
     async def run_autonomous_mode(self) -> None:
         """Run autonomous movie mode"""
-        if not self.heartbeat:
-            logger.error("💥 Heartbeat not initialized")
-            return
-        
         logger.info("🎬 Starting autonomous movie mode...")
         self.running = True
         
         try:
-            # Start the heartbeat loop
-            await self.heartbeat.run()
+            if self.heartbeat:
+                # Start the heartbeat loop
+                await self.heartbeat.run()
+            else:
+                # Fallback simple loop
+                await self._run_simple_autonomous_loop()
             
         except KeyboardInterrupt:
             logger.info("🛑 Autonomous mode interrupted")
@@ -241,6 +247,31 @@ class DGTSystem:
         finally:
             self.running = False
             logger.info("🎬 Autonomous mode ended")
+    
+    async def _run_simple_autonomous_loop(self) -> None:
+        """Simple autonomous loop fallback"""
+        logger.info("🔄 Running simple autonomous loop")
+        
+        while self.running:
+            try:
+                # Get current state
+                if self.dd_engine:
+                    state = self.dd_engine.get_current_state()
+                    logger.info(f"📍 Position: {state.player_position}, Turn: {state.turn_count}")
+                
+                # Generate next intent
+                if self.voyager:
+                    intent = await self.voyager.generate_next_intent(state)
+                    if intent:
+                        success = await self.voyager.submit_intent(intent)
+                        logger.info(f"🎯 Intent: {intent.intent_type}, Success: {success}")
+                
+                # Wait for next frame
+                await asyncio.sleep(1/60)  # 60 FPS
+                
+            except Exception as e:
+                logger.error(f"💥 Loop error: {e}")
+                await asyncio.sleep(1)
     
     async def run_interactive_mode(self) -> None:
         """Run interactive mode (for development)"""
