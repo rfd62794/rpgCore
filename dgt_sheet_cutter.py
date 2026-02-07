@@ -484,6 +484,150 @@ class DGTSheetCutter:
                     return False
             return True
     
+    def _detect_object_type(self, sprite: Image.Image) -> str:
+        """Intelligently detect object type from sprite characteristics"""
+        if sprite.mode != 'RGBA':
+            sprite = sprite.convert('RGBA')
+        
+        # Analyze sprite characteristics
+        width, height = sprite.size
+        pixels = list(sprite.get_flattened_data())
+        
+        # Count non-transparent pixels
+        non_transparent = [p for p in pixels if p[3] > 0]
+        
+        if not non_transparent:
+            return "material"  # Empty sprite
+        
+        # Analyze color distribution
+        colors = {}
+        for p in non_transparent:
+            color = (p[0], p[1], p[2])  # RGB only
+            colors[color] = colors.get(color, 0) + 1
+        
+        # Detect chests (rectangular, brown/gold colors, high density)
+        if self.detect_chests_var.get():
+            if self._is_chest(sprite, colors, width, height):
+                return "entity"  # Chests are entities (interactive)
+        
+        # Detect decorations (irregular shapes, varied colors)
+        if self._is_decoration(sprite, colors, width, height):
+            return "decoration"
+        
+        # Detect materials (simple shapes, uniform colors)
+        if self._is_material(sprite, colors, width, height):
+            return "material"
+        
+        # Default to entity for complex objects
+        return "entity"
+    
+    def _is_chest(self, sprite: Image.Image, colors: Dict, width: int, height: int) -> bool:
+        """Detect if sprite is a chest based on visual characteristics"""
+        # Chests are typically rectangular with brown/gold colors
+        aspect_ratio = width / height
+        
+        # Check for reasonable chest proportions
+        if not (0.5 <= aspect_ratio <= 2.0):
+            return False
+        
+        # Look for brown/gold color dominance
+        brown_gold_pixels = 0
+        total_pixels = len(colors)
+        
+        for color, count in colors.items():
+            r, g, b = color
+            # Brown range
+            if (100 <= r <= 150 and 50 <= g <= 100 and 0 <= b <= 50) or \
+               (180 <= r <= 220 and 150 <= g <= 180 and 0 <= b <= 50):  # Gold range
+                brown_gold_pixels += count
+        
+        # If brown/gold pixels dominate (>40%), likely a chest
+        return (brown_gold_pixels / total_pixels) > 0.4
+    
+    def _is_decoration(self, sprite: Image.Image, colors: Dict, width: int, height: int) -> bool:
+        """Detect if sprite is a decoration (plants, rocks, etc.)"""
+        # Decorations often have natural, varied colors
+        unique_colors = len(colors)
+        total_pixels = sum(colors.values())
+        
+        # High color variety suggests decoration
+        color_diversity = unique_colors / max(total_pixels, 1)
+        
+        # Plants are typically green-heavy
+        green_pixels = sum(count for (r, g, b), count in colors.items() if g > r and g > b)
+        
+        # Rocks are typically gray-heavy
+        gray_pixels = sum(count for (r, g, b), count in colors.items() 
+                        if abs(r - g) < 30 and abs(g - b) < 30)
+        
+        return (color_diversity > 0.1) or (green_pixels / total_pixels > 0.3) or (gray_pixels / total_pixels > 0.4)
+    
+    def _is_material(self, sprite: Image.Image, colors: Dict, width: int, height: int) -> bool:
+        """Detect if sprite is a material (tiles, bricks, etc.)"""
+        # Materials typically have uniform colors and simple patterns
+        unique_colors = len(colors)
+        total_pixels = sum(colors.values())
+        
+        # Low color diversity suggests material
+        color_diversity = unique_colors / max(total_pixels, 1)
+        
+        return color_diversity < 0.05
+    
+    def _auto_clean_edges(self, sprite: Image.Image) -> Image.Image:
+        """Automatically clean up transparent edges around sprite"""
+        if sprite.mode != 'RGBA':
+            sprite = sprite.convert('RGBA')
+        
+        # Find bounding box of non-transparent pixels
+        bbox = self._get_content_bounds(sprite)
+        
+        if not bbox:
+            return sprite  # Empty sprite
+        
+        # Crop to content bounds with padding
+        threshold = self.threshold_var.get()
+        x1, y1, x2, y2 = bbox
+        
+        # Add small padding to preserve edge pixels
+        x1 = max(0, x1 - threshold)
+        y1 = max(0, y1 - threshold)
+        x2 = min(sprite.width, x2 + threshold)
+        y2 = min(sprite.height, y2 + threshold)
+        
+        # Crop sprite
+        cleaned = sprite.crop((x1, y1, x2, y2))
+        
+        # Resize back to original grid size if needed
+        if cleaned.size != (self.grid_size, self.grid_size):
+            cleaned = cleaned.resize((self.grid_size, self.grid_size), Image.Resampling.LANCZOS)
+        
+        return cleaned
+    
+    def _get_content_bounds(self, sprite: Image.Image) -> Optional[Tuple[int, int, int, int]]:
+        """Get the bounding box of non-transparent content"""
+        width, height = sprite.size
+        pixels = sprite.load()
+        
+        # Find bounds
+        min_x, min_y = width, height
+        max_x, max_y = 0, 0
+        
+        has_content = False
+        
+        for y in range(height):
+            for x in range(width):
+                if pixels[x, y][3] > 0:  # Alpha > 0
+                    has_content = True
+                    min_x = min(min_x, x)
+                    min_y = min(min_y, y)
+                    max_x = max(max_x, x)
+                    max_y = max(max_y, y)
+        
+        if not has_content:
+            return None
+        
+        return (min_x, min_y, max_x + 1, max_y + 1)
+    
     def _save_sprite_with_metadata(self, sprite: Image.Image, asset_id: str, coords: Tuple[int, int]) -> None:
         """Save sprite image and YAML metadata"""
         # Create output directory
