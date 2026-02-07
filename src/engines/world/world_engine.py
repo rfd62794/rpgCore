@@ -18,8 +18,7 @@ from pathlib import Path
 from loguru import logger
 
 from core.state import (
-    Tile, TileType, BiomeType, InterestPoint, InterestType,
-    Chunk, WorldDelta, validate_position
+    Tile, TileType, BiomeType, InterestPoint, InterestType, Chunk, WorldDelta, validate_position
 )
 from core.constants import (
     WORLD_SIZE_X, WORLD_SIZE_Y, CHUNK_SIZE, INTEREST_POINT_SPAWN_CHANCE,
@@ -514,9 +513,15 @@ class WorldEngineFactory:
     """Factory for creating World Engine instances"""
     
     @staticmethod
-    def create_world(seed: str = "SEED_ZERO") -> WorldEngine:
-        """Create a World Engine with specified seed"""
-        return WorldEngine(seed)
+    def create_world(config_or_seed) -> WorldEngine:
+        """Create a World Engine with configuration or seed"""
+        if hasattr(config_or_seed, 'seed'):
+            # It's a WorldConfig object
+            config = config_or_seed
+            return WorldEngine(config.seed)
+        else:
+            # It's a seed string (legacy compatibility)
+            return WorldEngine(config_or_seed)
     
     @staticmethod
     def create_tavern_world() -> WorldEngine:

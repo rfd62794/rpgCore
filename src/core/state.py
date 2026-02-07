@@ -228,6 +228,27 @@ class InterestPoint:
         return tag in self.tags
 
 @dataclass
+class Chunk:
+    """World chunk for procedural generation"""
+    position: Tuple[int, int]  # Chunk coordinates
+    size: int = 10  # Chunk size in tiles
+    seed: str = ""  # Seed for deterministic generation
+    tiles: Dict[Tuple[int, int], Tile] = field(default_factory=dict)
+    interest_points: List[InterestPoint] = field(default_factory=list)
+    
+    def get_tile(self, x: int, y: int) -> Optional[Tile]:
+        """Get tile at local coordinates"""
+        return self.tiles.get((x, y))
+    
+    def set_tile(self, x: int, y: int, tile: Tile) -> None:
+        """Set tile at local coordinates"""
+        self.tiles[(x, y)] = tile
+    
+    def add_interest_point(self, ip: InterestPoint) -> None:
+        """Add interest point to chunk"""
+        self.interest_points.append(ip)
+
+@dataclass
 class WorldDelta:
     """Immutable world state change"""
     position: Tuple[int, int]

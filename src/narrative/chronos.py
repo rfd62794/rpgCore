@@ -489,6 +489,149 @@ class ChronosEngine:
         self.persona_engine = persona_engine
         logger.info("⏳ Persona Engine dependency injected for NPC quests")
     
+    def set_world_engine(self, world_engine) -> None:
+        """Inject World Engine dependency for interest point scanning"""
+        self.world_engine = world_engine
+        logger.info("⏳ World Engine dependency injected for objective generation")
+    
+    def _initialize_biome_quest_rules(self) -> Dict[BiomeType, List[str]]:
+        """Initialize biome-based quest generation rules"""
+        return {
+            BiomeType.FOREST: [
+                "gather_herbs", "hunt_creatures", "explore_ruins", "find_lost_path"
+            ],
+            BiomeType.TAVERN: [
+                "speak_to_informant", "buy_drinks", "listen_to_rumors", "meet_mysterious_stranger"
+            ],
+            BiomeType.TOWN: [
+                "visit_market", "meet_guild_master", "attend_town_meeting", "deliver_package"
+            ],
+            BiomeType.MOUNTAIN: [
+                "climb_peak", "explore_cave", "find_minerals", "track_creature"
+            ],
+            BiomeType.DESERT: [
+                "find_oasis", "explore_ruins", "follow_caravan", "survive_storm"
+            ]
+        }
+    
+    async def scan_world_for_objectives(self) -> List[Quest]:
+        """Scan World Engine for high-value coordinates and generate quests"""
+        if not self.world_engine:
+            logger.warning("⚠️ World Engine not available for objective scanning")
+            return []
+        
+        generated_quests = []
+        
+        try:
+            # Get interest points from World Engine
+            interest_points = await self.world_engine.get_interest_points()
+            
+            for ip in interest_points:
+                # Skip if we already have a quest for this location
+                if self._has_quest_at_position(ip.position):
+                    continue
+                
+                # Generate biome-appropriate quest
+                quest = await self._generate_biome_quest(ip)
+                if quest:
+                    generated_quests.append(quest)
+                    self.quest_stack.add_quest(quest)
+                    logger.info(f"🎯 Generated quest: {quest.title} at {ip.position}")
+            
+        except Exception as e:
+            logger.error(f"💥 Failed to scan world for objectives: {e}")
+        
+        return generated_quests
+    
+    async def _generate_biome_quest(self, interest_point: InterestPoint) -> Optional[Quest]:
+        """Generate a biome-appropriate quest for an interest point"""
+        # Get tile at interest point to determine biome
+        if not self.world_engine:
+            return None
+        
+        try:
+            tile = await self.world_engine.get_tile_at_position(interest_point.position[0], interest_point.position[1])
+            biome = tile.biome_type
+            
+            # Get quest types for this biome
+            quest_types = self.biome_quest_rules.get(biome, ["explore"])
+            quest_type = self.random.choice(quest_types)
+            
+            # Generate quest based on type and interest point
+            quest_id = f"quest_{interest_point.position[0]}_{interest_point.position[1]}_{int(time.time())}"
+            
+            title, description = self._generate_quest_content(quest_type, interest_point)
+            
+            quest = Quest(
+                quest_id=quest_id,
+                title=title,
+                description=description,
+                quest_type=QuestType.DISCOVERY,
+                priority=TaskPriority.MEDIUM,
+                target_position=interest_point.position,
+                time_limit=self.config.quest_timeout_seconds
+            )
+            
+            return quest
+            
+        except Exception as e:
+            logger.error(f"💥 Failed to generate biome quest: {e}")
+            return None
+    
+    def _generate_quest_content(self, quest_type: str, interest_point: InterestPoint) -> Tuple[str, str]:
+        """Generate title and description based on quest type and interest point"""
+        content_templates = {
+            "gather_herbs": (
+                f"Gather Herbs at {interest_point.position}",
+                f"Collect valuable herbs from the area around {interest_point.position}. The local alchemist needs them for potions."
+            ),
+            "speak_to_informant": (
+                f"Meet Informant at {interest_point.position}",
+                f"A mysterious informant has information at {interest_point.position}. Seek them out for valuable rumors."
+            ),
+            "explore_ruins": (
+                f"Explore Ruins at {interest_point.position}",
+                f"Ancient ruins at {interest_point.position} may contain valuable artifacts and knowledge."
+            ),
+            "visit_market": (
+                f"Visit Market at {interest_point.position}",
+                f"The market at {interest_point.position} has rare goods and potential trading opportunities."
+            ),
+            "climb_peak": (
+                f"Climb Peak at {interest_point.position}",
+                f"The peak at {interest_point.position} offers a commanding view and may hide ancient secrets."
+            ),
+            "find_oasis": (
+                f"Find Oasis at {interest_point.position}",
+                f"An oasis at {interest_point.position} provides refuge in the harsh desert."
+            )
+        }
+        
+        return content_templates.get(quest_type, (
+            f"Explore {interest_point.position}",
+            f"Discover what lies at {interest_point.position}."
+        ))
+    
+    def _has_quest_at_position(self, position: Tuple[int, int]) -> bool:
+        """Check if there's already a quest for this position"""
+        for quest in self.quest_stack.quests.values():
+            if quest.target_position == position:
+                return True
+        return False
+    
+    async def update_procedural_quests(self) -> None:
+        """Periodically generate new procedural quests"""
+        if not self.config.enable_procedural_quests:
+            return
+        
+        current_time = time.time()
+        if current_time - self.last_quest_generation < self.config.quest_generation_interval:
+            return
+        
+        # Generate new quests from world interest points
+        await self.scan_world_for_objectives()
+        self.last_quest_generation = current_time
+    
     def _initialize_quest_templates(self) -> Dict[str, List[Dict[str, str]]]:
         """Initialize quest templates for procedural generation"""
         return {
@@ -562,17 +705,17 @@ class ChronosEngineFactory:
     """Factory for creating Chronos Engine instances"""
     
     @staticmethod
-    def create_engine() -> ChronosEngine:
-        """Create a Chronos Engine with default configuration"""
-        return ChronosEngine()
+    def create_engine(config: Optional[ChronosConfig] = None) -> ChronosEngine:
+        """Create a Chronos Engine with configuration"""
+        return ChronosEngine(config)
     
     @staticmethod
     def create_test_engine() -> ChronosEngine:
         """Create a Chronos Engine for testing"""
-        engine = ChronosEngine()
-        # Add test-specific configuration
-        engine.task_spawn_chance = 0.2  # Higher chance for testing
-        return engine
+        config = ChronosConfig(seed="TEST")
+        config.quest_generation_interval = 5.0  # Faster generation for testing
+        config.max_active_quests = 3
+        return ChronosEngine(config)
 
 
 # === SYNCHRONOUS WRAPPER ===

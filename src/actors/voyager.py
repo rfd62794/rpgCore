@@ -24,6 +24,7 @@ from core.state import (
 from core.constants import (
     VOYAGER_PONDERING_TIMEOUT_SECONDS, MOVEMENT_RANGE_TILES
 )
+from core.system_config import VoyagerConfig
 from narrative.chronos import ChronosEngine, ChronosEngineFactory
 
 
@@ -278,9 +279,17 @@ class IntentGenerator:
 class Voyager:
     """Autonomous pathfinding and intent generation with STATE_PONDERING support"""
     
-    def __init__(self, dd_engine, chronos_engine=None):
-        self.dd_engine = dd_engine
-        self.chronos_engine = chronos_engine or ChronosEngineFactory.create_engine()
+    def __init__(self, config_or_dd_engine, dd_engine=None, chronos_engine=None):
+        if hasattr(config_or_dd_engine, 'seed'):
+            # It's a VoyagerConfig object
+            self.config = config_or_dd_engine
+            self.dd_engine = dd_engine
+            self.chronos_engine = chronos_engine
+        else:
+            # Legacy mode
+            self.config = VoyagerConfig(seed="DEFAULT")
+            self.dd_engine = config_or_dd_engine
+            self.chronos_engine = chronos_engine or ChronosEngineFactory.create_engine()
         
         # Navigation components
         self.navigator = PathfindingNavigator()
@@ -790,9 +799,15 @@ class VoyagerFactory:
     """Factory for creating Voyager instances"""
     
     @staticmethod
-    def create_voyager(dd_engine) -> Voyager:
-        """Create a Voyager with D&D Engine dependency"""
-        return Voyager(dd_engine)
+    def create_voyager(config_or_dd_engine, dd_engine=None, chronos_engine=None) -> Voyager:
+        """Create a Voyager with configuration or dependencies"""
+        if hasattr(config_or_dd_engine, 'seed'):
+            # It's a VoyagerConfig object
+            config = config_or_dd_engine
+            return Voyager(config, dd_engine, chronos_engine)
+        else:
+            # Legacy mode - first arg is dd_engine
+            return Voyager(config_or_dd_engine, dd_engine, chronos_engine)
     
     @staticmethod
     def create_test_voyager(dd_engine) -> Voyager:

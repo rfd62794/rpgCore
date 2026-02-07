@@ -25,6 +25,7 @@ from core.state import (
 from core.constants import (
     MOVEMENT_RANGE_TILES, INTENT_COOLDOWN_MS, PERSISTENCE_INTERVAL_TURNS
 )
+from core.system_config import MindConfig
 
 
 class CommandStatus(Enum):
@@ -69,7 +70,8 @@ class CommandQueue:
 class DDEngine:
     """Deterministic D20 logic and state management with Command Pattern"""
     
-    def __init__(self):
+    def __init__(self, config: Optional[MindConfig] = None):
+        self.config = config or MindConfig(seed="DEFAULT")
         self.state: GameState = GameState()
         self.command_queue = CommandQueue()
         self.command_history: List[CommandResult] = []
@@ -532,9 +534,12 @@ class DDEngineFactory:
     """Factory for creating D&D Engine instances"""
     
     @staticmethod
-    def create_engine() -> DDEngine:
-        """Create a D&D Engine with default configuration"""
-        return DDEngine()
+    def create_engine(config=None) -> DDEngine:
+        """Create a D&D Engine with configuration"""
+        if config:
+            return DDEngine(config)
+        else:
+            return DDEngine()
     
     @staticmethod
     def create_test_engine() -> DDEngine:
