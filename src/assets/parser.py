@@ -7,9 +7,12 @@ If one file fails, the parser just skips it and moves to the next.
 """
 
 import yaml
+import logging
 from pathlib import Path
 from typing import Dict, List, Optional
-from loguru import logger
+
+# Configure logger for this module
+logger = logging.getLogger(__name__)
 
 class AssetParser:
     """Isolated YAML loader with fault tolerance"""

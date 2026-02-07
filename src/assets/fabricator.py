@@ -9,7 +9,10 @@ If an image fails to generate, the Fabricator creates the Pink X placeholder.
 import tkinter as tk
 from PIL import Image, ImageDraw, ImageTk
 from typing import Dict, Optional, Tuple
-from loguru import logger
+import logging
+
+# Configure logger for this module
+logger = logging.getLogger(__name__)
 
 class AssetFabricator:
     """Data-to-pixels generator with Pink X fallback"""

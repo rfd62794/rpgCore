@@ -8,7 +8,10 @@ Central authority for "DNA" lookups. Completely separate from the file system.
 
 from typing import Dict, List, Optional, Any
 from dataclasses import dataclass
-from loguru import logger
+import logging
+
+# Configure logger for this module
+logger = logging.getLogger(__name__)
 
 @dataclass
 class AssetDefinition:

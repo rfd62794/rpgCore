@@ -6406,3 +6406,4 @@ expected alphabetic or numeric character, but found '.'
 2026-02-07 13:53:33 | ERROR | utils.asset_loader:_generate_actor_sprites:771 | 💥 Failed to generate actor sprites: Size must be a sequence of length 2
 2026-02-07 13:53:33 | ERROR | utils.asset_loader:_generate_fallback_sprites:799 | 💥 Failed to generate fallback sprites: Size must be a sequence of length 2
 2026-02-07 13:53:33 | ERROR | utils.asset_loader:_generate_effect_sprites:516 | 💥 Failed to generate effect sprites: Size must be a sequence of length 2
+2026-02-07 13:56:27 | ERROR | __main__:_initialize_deconstructed_systems:85 | 💥 System initialization failed: 'SystemConfig' object has no attribute 'assets_path'
