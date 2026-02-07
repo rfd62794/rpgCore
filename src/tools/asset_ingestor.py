@@ -280,7 +280,15 @@ class AssetIngestor:
             display_image = ImageOps.grayscale(display_image)
         
         # Convert to PhotoImage
-        self.photo = tk.PhotoImage(display_image)
+        import io
+        import base64
+        
+        # Convert PIL Image to PhotoImage
+        buffer = io.BytesIO()
+        display_image.save(buffer, format='PNG')
+        buffer.seek(0)
+        
+        self.photo = tk.PhotoImage(data=buffer.getvalue())
         
         # Display on canvas
         self.canvas.create_image(0, 0, anchor=tk.NW, image=self.photo, tags="spritesheet")
