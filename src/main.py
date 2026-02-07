@@ -77,6 +77,9 @@ class MainHeartbeat:
         # Previous state for change detection
         self.previous_state = None
         
+        # Movie mode optimization
+        self.movie_mode = True  # Enable movie mode optimizations
+        
         logger.info("🎬 Main Heartbeat initialized - Autonomous Movie System ready")
     
     def run(self) -> None:

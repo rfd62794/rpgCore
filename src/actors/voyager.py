@@ -235,7 +235,7 @@ class Voyager:
         # Navigation state
         self.current_position: Tuple[int, int] = (10, 25)
         self.last_intent_time: float = 0.0
-        self.intent_cooldown: float = 0.1  # 100ms between intents
+        self.intent_cooldown: float = 0.01  # Reduced from 0.1s to 0.01s for movie mode
         
         logger.info("🚶 Voyager initialized - Actor Pillar ready")
     
