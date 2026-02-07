@@ -2270,3 +2270,30 @@
 22:04:04 | DEBUG | Chronicler streaming: leave_area
 22:04:05 | ERROR | Chronicler stream failed: status_code: 400, model_name: ollama:llama3.2:1b, body: {'message': 'model is required', 'type': 'api_error', 'param': None, 'code': None}
 22:04:05 | INFO | Game saved to savegame.json
+22:10:21 | DEBUG | Added intent: distract with 5 exemplars
+22:10:21 | DEBUG | Added intent: force with 5 exemplars
+22:10:21 | DEBUG | Added intent: finesse with 5 exemplars
+22:10:21 | DEBUG | Added intent: charm with 5 exemplars
+22:10:21 | DEBUG | Added intent: intimidate with 5 exemplars
+22:10:21 | DEBUG | Added intent: deceive with 5 exemplars
+22:10:21 | DEBUG | Added intent: investigate with 5 exemplars
+22:10:21 | DEBUG | Added intent: use_item with 5 exemplars
+22:10:21 | DEBUG | Added intent: defend with 5 exemplars
+22:10:21 | DEBUG | Added intent: leave_area with 5 exemplars
+22:10:21 | DEBUG | Added intent: improvise with 5 exemplars
+22:10:21 | INFO | Loading embedding model: all-MiniLM-L6-v2
+22:10:25 | INFO | Precomputed embeddings for 11 intents (55 total exemplars)
+22:10:25 | INFO | Deterministic Arbiter (Iron Frame) initialized.
+22:10:26 | INFO | Initializing Chronicler with ollama:llama3.2:1b
+22:10:26 | INFO | Voyager initialized (Deterministic) with 'aggressive' personality
+22:10:26 | INFO | Game initialized with Council of Three architecture
+22:10:26 | INFO | Voyager Heuristic: Selected force with score 290
+22:10:26 | INFO | Intent resolution: 'Intimidate the guard' → charm (confidence: 0.653, matched exemplar: 'Convince the guard to let me pass with words')
+22:10:26 | DEBUG | Action: charm | Tags: ['Rowdy Crowd', 'Loud', 'Dimly Lit'] | Roll: 1 + Attr: 0 + Item: 0 + Tag: 0 = 1 vs DC: 12 (10 + 2) -> FAILURE
+22:10:26 | INFO | Quartermaster: success=False, roll=1 vs DC 12
+22:10:26 | INFO | Player took 10 damage. HP: 90/100
+22:10:26 | INFO | Guard: neutral → hostile
+22:10:26 | INFO | Relationship updated: Guard @ tavern (disp: -10, tags: [])
+22:10:26 | DEBUG | Chronicler streaming: charm
+22:10:26 | ERROR | Chronicler stream failed: status_code: 400, model_name: ollama:llama3.2:1b, body: {'message': 'model is required', 'type': 'api_error', 'param': None, 'code': None}
+22:10:26 | INFO | Game saved to savegame.json

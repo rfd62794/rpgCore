@@ -17,7 +17,7 @@ class ArbiterLogic(BaseModel):
     
     difficulty_mod: int = Field(default=0)
     internal_logic: str = Field(description="Step-by-step reasoning (Hardcoded)")
-    target_npc: Optional[str] = None
+    target_npc: str | None = None
     new_npc_state: Literal["neutral", "hostile", "distracted", "charmed", "dead"] = "neutral"
     reasoning: str = Field(description="Brief tactical reason")
     narrative_seed: str = Field(default="")
