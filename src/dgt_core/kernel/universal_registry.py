@@ -12,7 +12,9 @@ from pathlib import Path
 from enum import Enum
 
 from loguru import logger
-from .persistence import LegendaryRegistry, ShipPerformance
+from .persistence import LegendaryRegistry
+from .models import asset_registry
+from ..tactics.graveyard_manager import GraveyardManager
 
 
 class EngineType(str, Enum):
