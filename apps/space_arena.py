@@ -246,18 +246,14 @@ class SpaceArenaPPU:
         
         try:
             frame_count = 0
-            vfx_queue = Queue(maxsize=10)
             
             while self.running:
                 # Get battle state
                 battle_state = self.battle_service._get_battle_state()
                 
                 if battle_state.get('battle_active', False):
-                    # Create visual state
-                    visual_state = self._create_battle_visualization(battle_state, vfx_queue)
-                    
-                    # Process VFX queue
-                    self._process_vfx_queue(vfx_queue)
+                    # Create simplified visual state
+                    visual_state = self._create_simplified_visualization(battle_state)
                     
                     # Display frame info
                     if frame_count % 30 == 0:  # Every second at 30 FPS
