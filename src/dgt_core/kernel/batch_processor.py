@@ -207,8 +207,14 @@ class ThreadSafeBatchProcessor:
             logger.warning("🔄 Cleared all pending batch updates")
 
 
+# Factory function for easy initialization
+def create_batch_processor(db_path: str = "roster.db") -> ThreadSafeBatchProcessor:
+    """Create a ThreadSafeBatchProcessor instance"""
+    return ThreadSafeBatchProcessor(db_path)
+
+
 # Global batch processor instance
-batch_processor = ThreadSafeBatchProcessor("roster.db")
+batch_processor = create_batch_processor("roster.db")
 
 
 # Integration function for PostBattleReporter

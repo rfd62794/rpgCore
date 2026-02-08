@@ -1,0 +1,9 @@
+2026-02-07 21:40:46.924 | INFO     | logger_config:configure_logging | 📝 Logging configured: level=INFO, rich=True, file=logs/dgt_launcher.log
+2026-02-07 21:40:46.953 | INFO     | dgt_universal_launcher:main | 🚀 DGT Universal Launcher started
+2026-02-07 21:40:46.955 | DEBUG    | space_physics:__init__ | 🚀 SpaceVoyagerEngine initialized: thrust=0.5, rotation=5.0
+2026-02-07 21:40:46.955 | INFO     | space_voyager_engine:__init__ | 🚀 SpaceVoyagerEngineRunner initialized: fleet_size=1
+2026-02-07 21:40:46.956 | DEBUG    | shell_wright:__init__ | 🐢 ShellWright initialized - ShipGenome to TurboShell adapter
+2026-02-07 21:40:46.956 | INFO     | shell_engine:__init__ | 🐢 ShellEngine initialized: party_size=1
+2026-02-07 21:40:46.958 | DEBUG    | dashboard:__init__ | 📊 CommanderDashboard initialized
+2026-02-07 21:40:46.959 | INFO     | persistence:__init__ | 🏆 Legendary Registry initialized: roster.db
+2026-02-07 21:40:46.961 | INFO     | universal_registry:__init__ | 🌍 UniversalRegistry initialized: roster.db
