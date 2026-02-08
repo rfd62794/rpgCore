@@ -385,6 +385,10 @@ class SpaceBattleArena:
             navigator = self.navigators[ship_id]
             nav_data = navigator.update(active_ships, self.simulation_time, self.dt)
             
+            # Debug output
+            if self.simulation_time < 2.0:  # Only show first 2 seconds
+                print(f"DEBUG {ship_id}: target={nav_data.get('target_position')}, should_fire={nav_data.get('should_fire')}")
+            
             # Update physics - ALWAYS move towards target
             target_pos = nav_data.get('target_position')
             if target_pos:
