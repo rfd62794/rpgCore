@@ -18,6 +18,8 @@ from typing import Dict, List, Optional, Tuple, Any
 from dataclasses import dataclass
 from enum import Enum
 
+from loguru import logger
+
 # Import DGT vector components
 from src.dgt_core.engines.body.ppu_vector import (
     VectorPPU, ShipShapeGenerator, ShipClass, initialize_vector_ppu
@@ -199,15 +201,15 @@ class VectorBattleArena:
         # Handle impacts
         for impact in impacts:
             self.total_hits += 1
-            self.total_damage += impact['damage']
+            self.total_damage += impact.damage_dealt
             
             # Remove projectile from vector PPU
-            self.vector_ppu.remove_projectile(impact['projectile_id'])
+            self.vector_ppu.remove_projectile(impact.projectile_id)
             
-            target_ship = self.ships.get(impact['target_id'])
+            target_ship = self.ships.get(impact.target_id)
             if target_ship and target_ship.is_destroyed():
-                self.ships_destroyed.append(impact['target_id'])
-                logger.info(f"☠️  Ship {impact['target_id']} destroyed!")
+                self.ships_destroyed.append(impact.target_id)
+                logger.info(f"☠️  Ship {impact.target_id} destroyed!")
         
         # Check battle end
         if len(active_ships) <= 1:

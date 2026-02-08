@@ -19,11 +19,29 @@ from loguru import logger
 
 try:
     # Import existing PPU components
-    from graphics.ppu_tk_native import NativeTkinterPPU, RenderEntity, RenderLayer, CanvasEntity
+    from src.graphics.ppu_tk_native import NativeTkinterPPU, RenderLayer, CanvasEntity, RenderEntity
     from tools.dithering_engine import DitheringEngine, TemplateGenerator
     PPU_AVAILABLE = True
 except ImportError as e:
     logger.warning(f"⚠️ PPU components not available: {e}")
+    # Create fallback RenderLayer enum
+    from enum import Enum
+    from dataclasses import dataclass
+    from typing import Tuple
+    
+    class RenderLayer(Enum):
+        BACKGROUND = 0
+        SURFACES = 1
+        FRINGE = 2
+        ACTORS = 3
+        UI = 4
+    
+    @dataclass
+    class RenderEntity:
+        """Fallback entity data for rendering"""
+        world_pos: Tuple[int, int]
+        sprite_id: str
+    
     PPU_AVAILABLE = False
 
 from .dispatcher import DisplayBody, RenderPacket, HUDData
