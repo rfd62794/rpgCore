@@ -429,19 +429,22 @@ class NeuroPilotFactory:
         for pilot in pilots:
             fitness_dict[pilot.genome.key] = pilot.fitness
         
-        # Evolve population using NEAT's built-in methods
-        self.population = neat.Population(self.config, self.population.population)
-        
-        # Set fitness for all genomes
+        # Set fitness for all genomes in the current population
         for genome_key, fitness in fitness_dict.items():
             if genome_key in self.population.population:
                 self.population.population[genome_key].fitness = fitness
         
-        # Evolve to next generation
-        self.population.population = neat.reproduction.Reproduction.reproduce(
-            self.config.species_set.species, self.config.genome_type, 
-            self.config.species_set.species, self.config, fitness_dict
-        )
+        # Evolve to next generation using NEAT's built-in methods
+        try:
+            # Use the population's evolve method which handles everything
+            self.population.population = self.population.reproduction.reproduce(
+                self.config.species_set.species, self.config.genome_type, 
+                self.config.species_set.species, self.config, fitness_dict
+            )
+        except Exception as e:
+            logger.error(f"🧠 NEAT evolution error: {e}")
+            # Fallback: create new random population if evolution fails
+            self.population = neat.Population(self.config)
         
         # Create new pilots from evolved genomes
         new_pilots = []
