@@ -378,7 +378,7 @@ class PilotRegistry:
             'Evasion': pilot.stats.evasion * 100,
             'Efficiency': pilot.stats.efficiency * 100,
             'Accuracy': pilot.stats.accuracy * 100,
-            'Combat Rating': pilot.stats.combat_rating()
+            'Combat Rating': pilot.stats.get_combat_rating()
         }
     
     def save_registry(self):
