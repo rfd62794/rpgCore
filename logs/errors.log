@@ -6540,3 +6540,4 @@ mode
 2026-02-07 16:09:53 | ERROR | __main__:connect_to_server:74 | ❌ Failed to connect to server: name 'dataclass' is not defined
 2026-02-07 16:10:00 | ERROR | dgt_core.client:start:190 | ❌ Display engine not available
 2026-02-07 16:10:00 | ERROR | __main__:start:185 | ❌ Failed to start client
+2026-02-07 19:46:43 | ERROR | __main__:create_sample_turtles:391 | 🔄 Failed to create sample turtles: name 'random' is not defined
