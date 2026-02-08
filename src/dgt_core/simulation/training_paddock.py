@@ -261,16 +261,32 @@ class TrainingPaddock:
         # Generate tournament brackets based on ELO ratings
         matches = self._generate_tournament_matches(num_matches)
         
-        # Run matches sequentially (single process to avoid pickling issues)
+        # Run matches in parallel
         all_matches = []
-        for match in matches:
-            pilot1 = next(p for p in self.pilots if p.genome.key == match[0])
-            pilot2 = next(p for p in self.pilots if p.genome.key == match[1])
+        if self.num_processes > 1:
+            # Prepare serializable pilot data for multiprocessing
+            match_args = []
+            for match in matches:
+                pilot1 = next(p for p in self.pilots if p.genome.key == match[0])
+                pilot2 = next(p for p in self.pilots if p.genome.key == match[1])
+                
+                pilot1_data = self.pilot_factory._serialize_pilot(pilot1)
+                pilot2_data = self.pilot_factory._serialize_pilot(pilot2)
+                match_args.append((pilot1_data, pilot2_data))
             
-            # Run single match
-            battle = HeadlessBattle()
-            match_result = battle.run_dogfight(pilot1, pilot2)
-            all_matches.append(match_result)
+            # Run matches in parallel
+            with mp.Pool(self.num_processes) as pool:
+                results = pool.starmap(self._run_single_match_worker, match_args)
+                all_matches.extend(results)
+        else:
+            # Single process fallback
+            for match in matches:
+                pilot1 = next(p for p in self.pilots if p.genome.key == match[0])
+                pilot2 = next(p for p in self.pilots if p.genome.key == match[1])
+                
+                battle = HeadlessBattle()
+                match_result = battle.run_dogfight(pilot1, pilot2)
+                all_matches.append(match_result)
         
         # Update ELO ratings
         self._update_elo_ratings(all_matches)
