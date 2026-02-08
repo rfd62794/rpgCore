@@ -1,0 +1,179 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "dgt-platform"
+version = "1.0.0"
+description = "Architectural Singularity - A Living Ecosystem of Genetic Evolution, Physics Engines, and Permadeath Stakes"
+readme = "README.md"
+requires-python = ">=3.14.0"
+license = {text = "MIT"}
+authors = [
+    {name = "DGT Platform Team", email = "team@dgt-platform.dev"}
+]
+keywords = ["game-engine", "genetic-algorithms", "physics", "rpg", "permadeath", "neat"]
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3.14",
+    "Programming Language :: Python :: 3.15",
+    "Topic :: Games/Entertainment :: Simulation",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+    "Topic :: Software Development :: Libraries :: pygame"
+]
+
+dependencies = [
+    "pydantic>=2.0.0",
+    "loguru>=0.7.0",
+    "rich>=13.0.0",
+    "numpy>=1.24.0",
+    "pygame>=2.5.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.0.0",
+    "black>=23.0.0",
+    "isort>=5.12.0",
+    "mypy>=1.0.0",
+    "pytest-cov>=4.0.0",
+    "pre-commit>=3.0.0"
+]
+
+ml = [
+    "openai>=1.0.0",
+    "sentence-transformers>=2.2.0",
+    "pydantic-ai>=0.0.13"
+]
+
+neat = [
+    "neat-python>=0.92"
+]
+
+all = [
+    "dgt-platform[dev,ml,neat]"
+]
+
+[project.urls]
+Homepage = "https://github.com/dgt-platform/dgt-core"
+Documentation = "https://github.com/dgt-platform/dgt-core/docs"
+Repository = "https://github.com/dgt-platform/dgt-core.git"
+"Bug Tracker" = "https://github.com/dgt-platform/dgt-core/issues"
+
+[project.scripts]
+dgt-launch = "scripts.universal_launcher:main"
+dgt-space = "scripts.launch_space:main"
+dgt-rpg = "scripts.launch_rpg:main"
+dgt-test = "scripts.run_tests:main"
+dgt-stress = "scripts.hardware_stress_test:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+dgt_core = [
+    "assets/**/*",
+    "kernel/*.py",
+    "engines/**/*.py",
+    "evolution/**/*.py",
+    "tactics/**/*.py",
+    "view/**/*.py"
+]
+
+[tool.black]
+line-length = 88
+target-version = ['py314']
+include = '\.pyi?$'
+extend-exclude = '''
+/(
+  # directories
+  \.eggs
+  | \.git
+  | \.hg
+  | \.mypy_cache
+  | \.tox
+  | \.venv
+  | build
+  | dist
+)/
+'''
+
+[tool.isort]
+profile = "black"
+multi_line_output = 3
+line_length = 88
+known_first_party = ["dgt_core"]
+
+[tool.mypy]
+python_version = "3.14"
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = true
+disallow_incomplete_defs = true
+check_untyped_defs = true
+disallow_untyped_decorators = true
+no_implicit_optional = true
+warn_redundant_casts = true
+warn_unused_ignores = true
+warn_no_return = true
+warn_unreachable = true
+strict_equality = true
+
+[[tool.mypy.overrides]]
+module = [
+    "pygame.*",
+    "numpy.*",
+    "loguru.*",
+    "rich.*"
+]
+ignore_missing_imports = true
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py", "*_test.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+addopts = [
+    "--strict-markers",
+    "--strict-config",
+    "--cov=dgt_core",
+    "--cov-report=term-missing",
+    "--cov-report=html",
+    "--cov-report=xml"
+]
+
+[tool.coverage.run]
+source = ["src/dgt_core"]
+omit = [
+    "*/tests/*",
+    "*/test_*",
+    "setup.py"
+]
+
+[tool.coverage.report]
+exclude_lines = [
+    "pragma: no cover",
+    "def __repr__",
+    "if self.debug:",
+    "if settings.DEBUG",
+    "raise AssertionError",
+    "raise NotImplementedError",
+    "if 0:",
+    "if __name__ == .__main__.:"
+]
+
+[tool.flake8]
+max-line-length = 88
+extend-ignore = ["E203", "W503"]
+exclude = [
+    ".git",
+    "__pycache__",
+    "build",
+    "dist",
+    ".eggs",
+    "*.egg-info",
+    ".venv",
+    ".tox"
+]
