@@ -376,6 +376,28 @@ class NeuroPilotFactory:
             genome = pickle.load(f)
         
         return self.create_pilot(genome)
+    
+    def _serialize_pilot(self, pilot: NeuroPilot) -> Dict:
+        """Serialize pilot for multiprocessing"""
+        return {
+            'genome_id': pilot.genome.key,
+            'fitness': pilot.fitness,
+            'genome_data': pilot.genome.__getstate__() if hasattr(pilot.genome, '__getstate__') else None
+        }
+    
+    @staticmethod
+    def _create_pilot_from_data(pilot_data: Dict) -> NeuroPilot:
+        """Create pilot from serialized data"""
+        # Create new genome from data
+        genome = neat.DefaultGenome(pilot_data['genome_id'])
+        if pilot_data['genome_data']:
+            genome.__setstate__(pilot_data['genome_data'])
+        
+        # Create pilot with existing config
+        factory = NeuroPilotFactory("neat_config_minimal.txt")
+        pilot = factory.create_pilot(genome)
+        pilot.fitness = pilot_data['fitness']
+        return pilot
 
 
 # Global neuro pilot factory
