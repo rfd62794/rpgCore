@@ -201,15 +201,26 @@ class VectorBattleArena:
         # Handle impacts
         for impact in impacts:
             self.total_hits += 1
-            self.total_damage += impact.damage_dealt
+            
+            # Debug: check what type of object impact is
+            if hasattr(impact, 'damage_dealt'):
+                # ImpactResult object
+                self.total_damage += impact.damage_dealt
+                proj_id = impact.projectile_id
+                target_id = impact.target_id
+            else:
+                # Dictionary object (fallback)
+                self.total_damage += impact.get('damage', 0)
+                proj_id = impact.get('projectile_id', 'unknown')
+                target_id = impact.get('target_id', 'unknown')
             
             # Remove projectile from vector PPU
-            self.vector_ppu.remove_projectile(impact.projectile_id)
+            self.vector_ppu.remove_projectile(proj_id)
             
-            target_ship = self.ships.get(impact.target_id)
+            target_ship = self.ships.get(target_id)
             if target_ship and target_ship.is_destroyed():
-                self.ships_destroyed.append(impact.target_id)
-                logger.info(f"☠️  Ship {impact.target_id} destroyed!")
+                self.ships_destroyed.append(target_id)
+                logger.info(f"☠️  Ship {target_id} destroyed!")
         
         # Check battle end
         if len(active_ships) <= 1:
