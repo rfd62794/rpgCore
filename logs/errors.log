@@ -6547,3 +6547,18 @@ mode
 2026-02-07 19:47:37 | ERROR | __main__:main:530 | ❌ Fatal error: TournamentBracket.__init__() missing 1 required positional argument: 'tournament_id'
 2026-02-07 19:47:56 | ERROR | __main__:main:530 | ❌ Fatal error: TournamentMatch.__init__() missing 1 required positional argument: 'match_id'
 2026-02-07 19:48:04 | ERROR | __main__:main:530 | ❌ Fatal error: name 'tournament' is not defined
+2026-02-07 19:48:14 | ERROR | dgt_core.simulation.infinite_tournament:_start_new_tournament:159 | ♾️ Failed to start new tournament: name 'tournament' is not defined
+2026-02-07 19:48:15 | ERROR | dgt_core.simulation.infinite_tournament:_start_new_tournament:159 | ♾️ Failed to start new tournament: name 'tournament' is not defined
+2026-02-07 19:48:16 | ERROR | dgt_core.simulation.infinite_tournament:_start_new_tournament:159 | ♾️ Failed to start new tournament: name 'tournament' is not defined
+2026-02-07 19:48:17 | ERROR | dgt_core.simulation.infinite_tournament:_start_new_tournament:159 | ♾️ Failed to start new tournament: name 'tournament' is not defined
+2026-02-07 19:48:18 | ERROR | dgt_core.simulation.infinite_tournament:_start_new_tournament:159 | ♾️ Failed to start new tournament: name 'tournament' is not defined
+2026-02-07 19:48:19 | ERROR | dgt_core.simulation.infinite_tournament:_start_new_tournament:159 | ♾️ Failed to start new tournament: name 'tournament' is not defined
+2026-02-07 19:48:20 | ERROR | dgt_core.simulation.infinite_tournament:_start_new_tournament:159 | ♾️ Failed to start new tournament: name 'tournament' is not defined
+2026-02-07 19:48:21 | ERROR | dgt_core.simulation.infinite_tournament:_start_new_tournament:159 | ♾️ Failed to start new tournament: name 'tournament' is not defined
+2026-02-07 19:48:22 | ERROR | dgt_core.simulation.infinite_tournament:_start_new_tournament:159 | ♾️ Failed to start new tournament: name 'tournament' is not defined
+2026-02-07 19:48:23 | ERROR | dgt_core.simulation.infinite_tournament:_start_new_tournament:159 | ♾️ Failed to start new tournament: name 'tournament' is not defined
+2026-02-07 19:48:24 | ERROR | dgt_core.simulation.infinite_tournament:_start_new_tournament:159 | ♾️ Failed to start new tournament: name 'tournament' is not defined
+2026-02-07 19:48:25 | ERROR | dgt_core.simulation.infinite_tournament:_start_new_tournament:159 | ♾️ Failed to start new tournament: name 'tournament' is not defined
+2026-02-07 19:48:26 | ERROR | dgt_core.simulation.infinite_tournament:_start_new_tournament:159 | ♾️ Failed to start new tournament: name 'tournament' is not defined
+2026-02-07 19:48:27 | ERROR | dgt_core.simulation.infinite_tournament:_start_new_tournament:159 | ♾️ Failed to start new tournament: name 'tournament' is not defined
+2026-02-07 19:48:28 | ERROR | dgt_core.simulation.infinite_tournament:_start_new_tournament:159 | ♾️ Failed to start new tournament: name 'tournament' is not defined
