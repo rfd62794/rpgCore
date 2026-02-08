@@ -407,8 +407,8 @@ class NeuroPilotFactory:
             genome.nodes[node_key] = node
         
         # Add connections
-        for conn_key, from_node, to_node, weight, enabled in pilot_data['connections']:
-            conn = neat.DefaultGenome.create_connection(genome.config, from_node, to_node, conn_key)
+        for conn_key, source, target, weight, enabled in pilot_data['connections']:
+            conn = neat.DefaultGenome.create_connection(genome.config, source, target, conn_key)
             conn.weight = weight
             conn.enabled = enabled
             genome.connections[conn_key] = conn
