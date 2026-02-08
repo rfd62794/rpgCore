@@ -160,7 +160,7 @@ class NeuroEvolutionArena:
     
     def update(self):
         """Update neuro evolution simulation"""
-        if not self.is_running or self.battle_complete:
+        if not self.is_running:
             return
         
         self.simulation_time += self.dt
@@ -168,9 +168,14 @@ class NeuroEvolutionArena:
         # Get active ships
         active_ships = [ship for ship in self.ships.values() if not ship.is_destroyed()]
         
+        # Auto-respawn if battle is complete to keep training running
+        if len(active_ships) < 2:
+            self._respawn_ships()
+            active_ships = [ship for ship in self.ships.values() if not ship.is_destroyed()]
+        
         # Update each neuro-controlled ship
-        for pilot_id, pilot in self.pilots.items():
-            ship = self.ships.get(pilot_id)
+        for fleet_ship in self.pilots.values():
+            ship = self.ships.get(fleet_ship.genome.key)
             if not ship or ship.is_destroyed():
                 continue
             
@@ -179,23 +184,23 @@ class NeuroEvolutionArena:
             threats = targets  # All enemies are threats in this demo
             
             # Get neural action
-            action = pilot.get_action(ship, targets, threats)
+            action = fleet_ship.get_action(ship, targets, threats)
             
             # Apply neural control
-            pilot.apply_action(ship, action, self.dt)
+            fleet_ship.apply_action(ship, action, self.dt)
             
             # Update vector PPU
-            self.vector_ppu.update_ship(pilot_id, ship.x, ship.y, ship.heading)
+            self.vector_ppu.update_ship(fleet_ship.genome.key, ship.x, ship.y, ship.heading)
             
             # Handle weapon firing
-            if pilot.should_fire_weapon(action, ship):
+            if fleet_ship.should_fire_weapon(action, ship):
                 if targets:
                     target = targets[0]  # Target first enemy
                     proj_id = self.projectile_system.fire_projectile(ship, target)
                     if proj_id:
                         self.shots_fired += 1
-                        pilot.shots_fired += 1
-                        logger.debug(f"🧠 {pilot.genome.key} fires neural weapon")
+                        fleet_ship.shots_fired += 1
+                        logger.debug(f"🧠 {fleet_ship.genome.key} fires neural weapon")
             
             # Keep ship in bounds
             self._keep_ship_in_bounds(ship)
@@ -218,7 +223,7 @@ class NeuroEvolutionArena:
             # Update pilot fitness
             target_pilot = self.pilots.get(impact.target_id)
             if target_pilot:
-                target_pilot.update_fitness(False, 0, impact.damage_dealt, False, 0)
+                target_pilot.update_fitness(False, 0, impact.damage_dealt, False, 0, self.current_generation)
             
             # Check for ship destruction
             target_ship = self.ships.get(impact.target_id)
@@ -228,23 +233,40 @@ class NeuroEvolutionArena:
                 if ship_body:
                     ship_body.is_destroyed = True
                 
-                logger.info(f"💥 Ship {impact.target_id} destroyed by neural combat!")
-        
-        # Check battle end
-        if len(active_ships) <= 1:
-            self.battle_complete = True
-            self.is_running = False
-            
-            if active_ships:
-                winner_pilot = self.pilots.get(active_ships[0].ship_id)
-                if winner_pilot:
-                    winner_pilot.update_fitness(True, 0, 0, True, 1)
-                    logger.info(f"🏆 Neural pilot {winner_pilot.genome.key} wins!")
-            else:
-                logger.info("💀 No survivors in neural battle!")
+                # Update fitness of attacker
+                attacker_pilot = self.pilots.get(impact.projectile_id.split('_')[0])
+                if attacker_pilot:
+                    attacker_pilot.update_fitness(True, 0, 0, True, 1, self.current_generation)
+                    logger.info(f"💥 Neural pilot {attacker_pilot.genome.key} scores a kill!")
         
         # Update status displays
         self.update_status_display()
+    
+    def _respawn_ships(self):
+        """Respawn destroyed ships to keep battle running"""
+        logger.info("🧠 Respawning ships for continuous training...")
+        
+        # Reset all ships
+        for pilot_id, pilot in self.pilots.items():
+            ship = self.ships.get(pilot_id)
+            if ship:
+                # Reset ship health and position
+                ship.hull_integrity = 200.0
+                ship.shield_strength = 100.0
+                ship.velocity_x = 0
+                ship.velocity_y = 0
+                
+                # Random respawn position
+                ship.x = random.randint(100, self.width - 100)
+                ship.y = random.randint(100, self.height - 100)
+                ship.heading = random.uniform(0, 360)
+                
+                # Reset vector PPU ship body
+                ship_body = self.vector_ppu.ship_bodies.get(pilot_id)
+                if ship_body:
+                    ship_body.is_destroyed = False
+                
+                logger.debug(f"🧠 Respawned ship {pilot_id}")
     
     def _keep_ship_in_bounds(self, ship):
         """Keep ship within arena bounds"""
