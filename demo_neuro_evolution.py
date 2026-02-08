@@ -25,6 +25,12 @@ from src.dgt_core.engines.body.ship_renderer import (
     ShipRenderer, ShipDNA, ShipClass, RenderPacket, 
     initialize_ship_renderer, get_ship_renderer
 )
+from src.dgt_core.engines.body.ppu_input import (
+    PPUInputService, TacticalNudge, initialize_ppu_input, get_ppu_input_service
+)
+from src.dgt_core.simulation.fleet_service import (
+    CommanderService, FleetMember, ShipRole, initialize_commander_service, get_commander_service
+)
 from src.dgt_core.simulation.space_physics import SpaceShip, SpaceVoyagerEngine
 from src.dgt_core.simulation.projectile_system import ProjectileSystem, initialize_projectile_system
 
@@ -39,6 +45,8 @@ class NeuroEvolutionArena:
         # Initialize systems
         self.ship_renderer = initialize_ship_renderer(width, height)
         self.projectile_system = initialize_projectile_system()
+        self.commander_service = initialize_commander_service()
+        self.ppu_input_service = initialize_ppu_input(width, height)
         
         # Initialize NEAT evolution components
         self.pilot_factory = initialize_neuro_pilot_factory()
@@ -84,14 +92,32 @@ class NeuroEvolutionArena:
         self.control_frame = tk.Frame(self.root, bg="#000011")
         self.control_frame.place(x=10, y=10)
         
+        # Commander HUD
+        self.commander_frame = tk.Frame(self.root, bg="#000011")
+        self.commander_frame.place(x=10, y=40)
+        
         self.status_label = tk.Label(
             self.control_frame,
             text="Initializing Neuro Evolution...",
-            bg="#000011",
-            fg="#00FF00",
-            font=("Courier", 10)
+            fg="white", bg="#000011", font=("Arial", 10)
         )
-        self.status_label.pack()
+        self.status_label.pack(anchor="w")
+        
+        # Commander status
+        self.commander_label = tk.Label(
+            self.commander_frame,
+            text="Commander: Level 1 | Credits: 1000",
+            fg="#FFD700", bg="#000011", font=("Arial", 10, "bold")
+        )
+        self.commander_label.pack(anchor="w")
+        
+        # Fleet status
+        self.fleet_label = tk.Label(
+            self.commander_frame,
+            text="Fleet: 0/6 | Battles: 0",
+            fg="#00FF00", bg="#000011", font=("Arial", 10)
+        )
+        self.fleet_label.pack(anchor="w")
         
         self.evolution_label = tk.Label(
             self.control_frame,
@@ -497,6 +523,10 @@ class NeuroEvolutionArena:
         # Start simulation
         self.is_running = True
         start_time = time.time()
+        
+        # Bind input handlers
+        self.ppu_input_service.bind_canvas(self.canvas, self.commander_service)
+        self.ppu_input_service.set_tactical_nudge_callback(self.handle_tactical_nudge)
         
         # Start game loop
         self.game_loop()
