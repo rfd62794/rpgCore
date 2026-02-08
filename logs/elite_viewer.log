@@ -1,0 +1,21 @@
+2026-02-07 20:52:05.936 | INFO     | src.dgt_core.engines.body.ship_renderer:__init__:107 - 🚀 ShipRenderer initialized: 1000x700
+2026-02-07 20:52:05.937 | INFO     | src.dgt_core.engines.body.ship_renderer:initialize_ship_renderer:338 - 🚀 Global ShipRenderer initialized
+2026-02-07 20:52:05.937 | INFO     | src.dgt_core.simulation.projectile_system:__init__:225 - 🚀 Projectile System initialized
+2026-02-07 20:52:05.937 | INFO     | src.dgt_core.simulation.projectile_system:initialize_projectile_system:420 - 🚀 Global Projectile System initialized
+2026-02-07 20:52:05.938 | ERROR    | src.dgt_core.simulation.pilot_registry:load_registry:442 - ❌ Failed to load pilot registry: 'PilotSpecialization.UNIVERSAL' is not a valid PilotSpecialization
+2026-02-07 20:52:05.938 | INFO     | src.dgt_core.simulation.pilot_registry:__init__:200 - 🎖️ PilotRegistry initialized: 0 pilots
+2026-02-07 20:52:05.939 | INFO     | src.dgt_core.simulation.pilot_registry:scan_for_new_pilots:229 - 🎖️ New elite pilot discovered: ACE-ALPHA-01 (Gen 0)
+2026-02-07 20:52:05.939 | INFO     | src.dgt_core.simulation.pilot_registry:initialize_pilot_registry:474 - 🎖️ Discovered 1 new elite pilots
+2026-02-07 20:52:05.940 | INFO     | src.dgt_core.simulation.fleet_service:_initialize_pilot_registry:106 - 🎖️ Pilot registry connected
+2026-02-07 20:52:05.940 | INFO     | src.dgt_core.simulation.fleet_service:__init__:100 - 🏆 Commander Service initialized: 1000 credits
+2026-02-07 20:52:05.940 | INFO     | src.dgt_core.simulation.fleet_service:initialize_commander_service:403 - 🏆 Global Commander Service initialized
+2026-02-07 20:52:05.940 | INFO     | src.dgt_core.engines.body.ppu_input:__init__:59 - 🖱️ PPU Input Service initialized: 1000x700
+2026-02-07 20:52:05.940 | INFO     | src.dgt_core.engines.body.ppu_input:initialize_ppu_input:197 - 🖱️ Global PPU Input Service initialized
+2026-02-07 20:52:05.944 | INFO     | src.dgt_core.simulation.neuro_pilot:__init__:471 - 🧠 NeuroPilotFactory initialized with config: neat_config_minimal.txt
+2026-02-07 20:52:05.945 | INFO     | src.dgt_core.simulation.headless_server:__init__:164 - 🚀 HeadlessSimulationServer initialized: 16 cores
+2026-02-07 20:52:05.991 | INFO     | __main__:__init__:140 - 🏆 Elite Pilot Arena initialized: 1000x700
+2026-02-07 20:52:06.006 | INFO     | __main__:load_elite_pilot:163 - 🏆 Loaded elite pilot: elite_genome_gen0.json
+2026-02-07 20:52:06.006 | ERROR    | __main__:load_elite_pilot:169 - ❌ Failed to load elite pilot: type object 'DefaultGenome' has no attribute 'new'
+2026-02-07 20:52:06.007 | INFO     | src.dgt_core.engines.body.ppu_input:bind_canvas:79 - 🖱️ Canvas input handlers bound
+2026-02-07 20:52:14.037 | INFO     | src.dgt_core.engines.body.ppu_input:_clear_priority:174 - 🎯 Priority target cleared
+2026-02-07 20:52:16.013 | INFO     | __main__:end_viewer:529 - 🏆 Elite pilot viewer completed

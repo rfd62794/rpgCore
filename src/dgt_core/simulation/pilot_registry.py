@@ -217,7 +217,10 @@ class PilotRegistry:
                 if genome_id in self.pilot_index:
                     continue
                 
-                # Create new elite pilot
+                # Create a minimal genome for identification
+                genome = neat.DefaultGenome(elite_data['pilot_id'])
+                
+                # Create pilot with the genome
                 pilot = self._create_pilot_from_elite_data(elite_data, file_path.name)
                 
                 # Add to registry
@@ -417,7 +420,11 @@ class PilotRegistry:
                 
                 # Convert specialization string to enum
                 spec_str = pilot_dict.pop('specialization', 'universal')
-                specialization = PilotSpecialization(spec_str)
+                try:
+                    specialization = PilotSpecialization(spec_str)
+                except ValueError:
+                    # Handle invalid specialization values
+                    specialization = PilotSpecialization.UNIVERSAL
                 
                 # Create pilot
                 pilot = ElitePilot(

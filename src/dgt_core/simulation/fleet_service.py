@@ -192,14 +192,21 @@ class CommanderService:
             # Run in background thread to avoid blocking
             def run_audition():
                 try:
-                    subprocess.run([
+                    result = subprocess.run([
                         "python", str(script_path), 
                         "--genome", genome_file,
                         "--duration", "60"
-                    ], check=True, capture_output=True)
-                    logger.info(f"🎬 Audition completed for {elite_pilot.call_sign}")
-                except subprocess.CalledProcessError as e:
-                    logger.error(f"❌ Audition failed for {elite_pilot.call_sign}: {e}")
+                    ], capture_output=True, text=True, timeout=120)  # 2 minute timeout
+                    
+                    if result.returncode == 0:
+                        logger.info(f"🎬 Audition completed for {elite_pilot.call_sign}")
+                    else:
+                        logger.error(f"❌ Audition failed for {elite_pilot.call_sign}: {result.stderr}")
+                        
+                except subprocess.TimeoutExpired:
+                    logger.error(f"❌ Audition timed out for {elite_pilot.call_sign}")
+                except Exception as e:
+                    logger.error(f"❌ Audition error for {elite_pilot.call_sign}: {e}")
             
             threading.Thread(target=run_audition, daemon=True).start()
             return True
