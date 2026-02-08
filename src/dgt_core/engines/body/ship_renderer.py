@@ -110,11 +110,11 @@ class ShipRenderer:
         """Generate procedural triangle geometry for each ship class"""
         geometry = {}
         
-        # Interceptor: Fast, triangular shape
+        # Interceptor: Fast, triangular shape (scaled up for visibility)
         geometry[ShipClass.INTERCEPTOR] = [
-            (0, -15),   # Nose
-            (-8, 10),   # Left wing
-            (8, 10)     # Right wing
+            (0, -25),   # Nose (increased from -15)
+            (-12, 18),  # Left wing (increased from -8, 10)
+            (12, 18)   # Right wing (increased from 8, 10)
         ]
         
         # Heavy: Bulky, diamond shape
