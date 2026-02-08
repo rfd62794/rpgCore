@@ -210,59 +210,11 @@ class ShellWright:
     def _apply_material_properties(self, shell: ShellAttributes, genome: ShipGenome):
         """Apply material-based visual properties from assets"""
         try:
-            # Determine material based on hull type and traits
-            material_id = self._determine_material_id(genome)
-            
-            # Load material asset
-            material = asset_registry.get_material(material_id)
-            if material:
-                # Apply material properties to shell
-                self._apply_material_to_shell(shell, material)
-                logger.debug(f"🐢 Applied material {material_id} to shell")
-            else:
-                logger.warning(f"🐢 Material not found: {material_id}")
+            # For now, skip material integration until assets are properly set up
+            logger.debug(f"🐢 Material properties skipped for {shell.primary_role.value}")
                 
         except Exception as e:
             logger.error(f"🐢 Failed to apply material properties: {e}")
-    
-    def _determine_material_id(self, genome: ShipGenome) -> str:
-        """Determine material ID based on genetic traits"""
-        # Map hull types to base materials
-        hull_material_map = {
-            'light': 'light_metal',
-            'medium': 'standard_metal', 
-            'heavy': 'heavy_metal',
-            'stealth': 'dark_metal'
-        }
-        
-        base_material = hull_material_map.get(genome.hull_type.value, 'standard_metal')
-        
-        # Modify based on plating density
-        if genome.plating_density > 1.5:
-            base_material = base_material.replace('metal', 'reinforced_metal')
-        elif genome.plating_density < 0.8:
-            base_material = base_material.replace('metal', 'light_metal')
-        
-        return base_material
-    
-    def _apply_material_to_shell(self, shell: ShellAttributes, material: MaterialAsset):
-        """Apply material properties to shell attributes"""
-        # Apply material-based stat modifications
-        if material.hardness > 5.0:
-            shell.armor_class += int((material.hardness - 5.0) * 2)
-        
-        if material.density > 5.0:
-            shell.hit_points *= (1.0 + (material.density - 5.0) * 0.1)
-        
-        # Store visual properties for rendering
-        shell.visual_properties = {
-            'base_color': material.base_color,
-            'accent_color': material.accent_color or material.base_color,
-            'surface_properties': [prop.value for prop in material.surface_properties],
-            'visual_style': material.visual_style.value,
-            'reflectivity': material.reflectivity,
-            'emissivity': material.emissivity
-        }
     
     def get_shell_summary(self, shell: ShellAttributes) -> Dict[str, Any]:
         """Get summary of shell attributes for display"""
