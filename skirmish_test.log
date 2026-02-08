@@ -1,2 +1,15 @@
 2026-02-07 21:08:29.521 | DEBUG    | src.dgt_core.simulation.space_physics:__init__:103 - 🚀 SpaceVoyagerEngine initialized: thrust=0.5, rotation=5.0
 2026-02-07 21:08:29.522 | INFO     | __main__:setup_5v5:58 - ⚔️ Setting up 5v5 Skirmish: Interceptors vs Heavies
+2026-02-07 21:09:53.395 | DEBUG    | src.dgt_core.simulation.space_physics:__init__:103 - 🚀 SpaceVoyagerEngine initialized: thrust=0.5, rotation=5.0
+2026-02-07 21:09:53.396 | INFO     | __main__:setup_5v5:58 - ⚔️ Setting up 5v5 Skirmish: Interceptors vs Heavies
+2026-02-07 21:09:53.396 | INFO     | __main__:spawn_ship:55 - 🚀 Spawned Alpha INTERCEPTOR: Mass=8.0, Thrust=500.8
+2026-02-07 21:09:53.397 | INFO     | __main__:spawn_ship:55 - 🚀 Spawned Alpha INTERCEPTOR: Mass=8.0, Thrust=525.7
+2026-02-07 21:09:53.397 | INFO     | __main__:spawn_ship:55 - 🚀 Spawned Alpha INTERCEPTOR: Mass=8.0, Thrust=381.6
+2026-02-07 21:09:53.397 | INFO     | __main__:spawn_ship:55 - 🚀 Spawned Alpha INTERCEPTOR: Mass=8.0, Thrust=383.4
+2026-02-07 21:09:53.398 | INFO     | __main__:spawn_ship:55 - 🚀 Spawned Alpha INTERCEPTOR: Mass=8.0, Thrust=658.4
+2026-02-07 21:09:53.398 | INFO     | __main__:spawn_ship:55 - 🚀 Spawned Bravo HEAVY: Mass=15.0, Thrust=193.1
+2026-02-07 21:09:53.398 | INFO     | __main__:spawn_ship:55 - 🚀 Spawned Bravo HEAVY: Mass=15.0, Thrust=217.5
+2026-02-07 21:09:53.399 | INFO     | __main__:spawn_ship:55 - 🚀 Spawned Bravo HEAVY: Mass=15.0, Thrust=188.9
+2026-02-07 21:09:53.399 | INFO     | __main__:spawn_ship:55 - 🚀 Spawned Bravo HEAVY: Mass=15.0, Thrust=144.7
+2026-02-07 21:09:53.400 | INFO     | __main__:spawn_ship:55 - 🚀 Spawned Bravo HEAVY: Mass=15.0, Thrust=231.4
+2026-02-07 21:09:53.400 | INFO     | __main__:run:114 - 🏁 Starting Simulation for 10 seconds...
