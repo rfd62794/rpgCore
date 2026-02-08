@@ -224,8 +224,24 @@ class HeadlessSimulationServer:
         
         return groups
     
-    def _evaluate_pilot_group(self, arena: HeadlessArena, pilots: List[NeuroPilot]) -> List[Dict[str, Any]]:
-        """Evaluate a group of pilots in a single arena"""
+    def _evaluate_pilot_group(self, arena_data: Tuple, pilots_data: List[Tuple]) -> List[Dict[str, Any]]:
+        """Evaluate a group of pilots in a single arena (pickle-safe)"""
+        # Reconstruct arena and pilots from pickle-safe data
+        arena_id, config_dict = arena_data
+        config = HeadlessConfig(**config_dict)
+        arena = HeadlessArena(arena_id, config)
+        
+        # Reconstruct pilots
+        pilots = []
+        for pilot_data in pilots_data:
+            # Create pilot from serialized data
+            pilot = self.pilot_factory.create_pilot()
+            pilot.fitness = pilot_data['fitness']
+            pilot.hits_scored = pilot_data['hits_scored']
+            pilot.shots_fired = pilot_data['shots_fired']
+            pilot.enemies_destroyed = pilot_data['enemies_destroyed']
+            pilots.append(pilot)
+        
         stats = []
         
         for pilot in pilots:

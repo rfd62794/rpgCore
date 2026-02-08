@@ -155,7 +155,7 @@ Examples:
     parser.add_argument('--verbose', action='store_true',
                        help='Enable verbose logging')
     
-    args = parser.parse()
+    args = parser.parse_args()
     
     # Handle configuration template
     if args.save_config:
