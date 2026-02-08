@@ -25,7 +25,7 @@ __all__ = [
     "TRI_MODAL_AVAILABLE",
     
     # Space engines (Star-Fleet)
-    "space_voyager_engine", "space_physics", "ship_genomics",
+    "space_voyager_engine", "space_physics", "ship_genetics",
     
     # Shell engines (TurboShells)
     "shell_engine", "shell_wright"
