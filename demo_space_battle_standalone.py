@@ -77,6 +77,9 @@ class SpaceShip:
         return self.hull_integrity <= 0
     
     def can_fire(self, current_time: float) -> bool:
+        # Always allow first shot, then respect fire rate
+        if self.last_fire_time == 0:
+            return True
         return current_time - self.last_fire_time >= (1.0 / self.fire_rate)
 
 
@@ -168,7 +171,7 @@ class SpaceVoyagerEngine:
 class TargetingSystem:
     """Automated targeting"""
     
-    def __init__(self, max_range: float = 300.0):
+    def __init__(self, max_range: float = 500.0):  # Increased range
         self.max_range = max_range
     
     def find_nearest_enemy(self, ship: SpaceShip, all_ships: List[SpaceShip]) -> Optional[SpaceShip]:
@@ -352,9 +355,9 @@ class SpaceBattleArena:
             heading=heading,
             hull_integrity=100.0,
             shield_strength=50.0,
-            weapon_range=200.0,
+            weapon_range=400.0,  # Increased range
             weapon_damage=15.0,
-            fire_rate=1.5
+            fire_rate=2.0  # Faster fire rate
         )
         
         # Add physics engine separately
@@ -491,12 +494,11 @@ class SpaceBattleArena:
             while self.is_running and (time.time() - start_time) < duration:
                 self.update()
                 
-                # Clear screen and display status
-                import os
-                os.system('cls' if os.name == 'nt' else 'clear')
+                # Don't clear screen - just print status
+                print(f"\n--- Time: {self.simulation_time:.1f}s ---")
                 print(self.create_display())
                 
-                time.sleep(0.1)  # Update every 100ms for visibility
+                time.sleep(0.5)  # Slower updates to see debug
         except KeyboardInterrupt:
             print("\nBattle interrupted by user")
         
