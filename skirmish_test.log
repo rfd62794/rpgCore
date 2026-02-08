@@ -1,0 +1,2 @@
+2026-02-07 21:08:29.521 | DEBUG    | src.dgt_core.simulation.space_physics:__init__:103 - 🚀 SpaceVoyagerEngine initialized: thrust=0.5, rotation=5.0
+2026-02-07 21:08:29.522 | INFO     | __main__:setup_5v5:58 - ⚔️ Setting up 5v5 Skirmish: Interceptors vs Heavies
