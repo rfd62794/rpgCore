@@ -381,7 +381,7 @@ class NeuroPilotFactory:
 # Global neuro pilot factory
 neuro_pilot_factory = None
 
-def initialize_neuro_pilot_factory(config_path: str = "neat_config.txt") -> NeuroPilotFactory:
+def initialize_neuro_pilot_factory(config_path: str = "neat_config_minimal.txt") -> NeuroPilotFactory:
     """Initialize global neuro pilot factory"""
     global neuro_pilot_factory
     neuro_pilot_factory = NeuroPilotFactory(config_path)
