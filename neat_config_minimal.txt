@@ -54,8 +54,8 @@ node_add_prob           = 0.4
 node_delete_prob        = 0.4
 
 # network parameters for space combat
-num_hidden              = 1
-num_inputs              = 10
+num_hidden              = 2  # Increased from 1 for more complex patterns
+num_inputs              = 11  # Increased from 10 to include pattern memory
 num_outputs             = 3
 
 # node response options

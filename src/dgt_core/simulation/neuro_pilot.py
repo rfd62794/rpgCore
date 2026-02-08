@@ -152,8 +152,17 @@ class NeuroPilot:
             self._normalize_angle(inputs.escape_angle),
             
             # Movement pattern memory (last action feedback)
-            0.0  # Will be updated with previous action
-        ]
+            if hasattr(self, 'last_action'):
+                # Add previous action feedback
+                prev_thrust = self.last_action.thrust
+                prev_rotation = self.last_action.rotation
+                prev_fire = self.last_action.fire_weapon
+            else:
+                prev_thrust = 0.0
+                prev_rotation = 0.0
+                prev_fire = 0.0
+            
+            input_array.extend([prev_thrust, prev_rotation, prev_fire])
         
         # Feed through neural network
         output = self.net.activate(input_array)
