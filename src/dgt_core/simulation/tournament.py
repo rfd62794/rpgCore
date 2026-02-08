@@ -49,9 +49,9 @@ class TournamentMatch:
 @dataclass
 class TournamentBracket:
     """Tournament bracket structure"""
-    tournament_id: str
     name: str
     participants: List[str]  # Turtle IDs
+    tournament_id: str = ""
     matches: List[TournamentMatch] = field(default_factory=list)
     current_round: int = 1
     total_rounds: int = 4

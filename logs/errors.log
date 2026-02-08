@@ -6545,3 +6545,4 @@ mode
 2026-02-07 19:47:14 | ERROR | __main__:create_sample_turtles:393 | 🔄 Failed to create sample turtles: TurtleRecord.__init__() missing 7 required positional arguments: 'turtle_id', 'created_at', 'last_active', 'race_history', 'total_races', 'wins', and 'earnings'
 2026-02-07 19:47:23 | ERROR | __main__:create_sample_turtles:393 | 🔄 Failed to create sample turtles: TurtleRecord.__init__() missing 7 required positional arguments: 'turtle_id', 'created_at', 'last_active', 'race_history', 'total_races', 'wins', and 'earnings'
 2026-02-07 19:47:37 | ERROR | __main__:main:530 | ❌ Fatal error: TournamentBracket.__init__() missing 1 required positional argument: 'tournament_id'
+2026-02-07 19:47:56 | ERROR | __main__:main:530 | ❌ Fatal error: TournamentMatch.__init__() missing 1 required positional argument: 'match_id'
