@@ -202,22 +202,31 @@ class SpaceArenaPPU:
         """Connect to battle and rendering services"""
         try:
             from dgt_core.simulation.battle import battle_service
-            from dgt_core.engines.body.ship_compositor import ship_compositor
+            from dgt_core.simulation.ship_genetics import ship_genetic_registry
             
             self.battle_service = battle_service
-            self.ship_compositor = ship_compositor
+            self.ship_registry = ship_genetic_registry
+            
+            # Try to initialize component renderer, but don't fail if it doesn't exist
+            try:
+                from dgt_core.engines.body.ship_compositor import ship_compositor
+                self.ship_compositor = ship_compositor
+                logger.info("🚀 Connected to ship compositor")
+            except ImportError:
+                logger.warning("🚀 Ship compositor not available - using simplified rendering")
+                self.ship_compositor = None
             
             logger.info("🚀 Connected to PPU services")
             return True
             
         except Exception as e:
-            logger.error(f"🚀 Failed to connect to PPU services: {e}")
+            logger.error(f"🚀 Failed to connect to services: {e}")
             return False
     
     def start(self):
         """Start PPU rendering"""
-        if not self.battle_service or not self.ship_compositor:
-            logger.error("🚀 No service connections")
+        if not self.battle_service:
+            logger.error("🚀 No battle service connection")
             return False
         
         self.running = True
