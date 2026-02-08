@@ -167,7 +167,7 @@ class ParticleEffectsSystem:
         
         logger.info("🚀 Particle Effects System initialized")
     
-    def create_explosion(self, x: float, y: float, explosion_type: ExplosionType = ExplosionType.SMEDIUM) -> str:
+    def create_explosion(self, x: float, y: float, explosion_type: ExplosionType = ExplosionType.MEDIUM) -> str:
         """Create new explosion effect"""
         self.explosion_counter += 1
         explosion_id = f"explosion_{self.explosion_counter}"

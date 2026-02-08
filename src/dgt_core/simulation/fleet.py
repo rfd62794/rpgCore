@@ -16,7 +16,7 @@ from pydantic import BaseModel, Field
 from loguru import logger
 
 from .space_physics import SpaceShip, SpaceVoyagerEngine
-from .ship_genetics import ShipGenome, ship_genetic_registry, ShipClass
+from .ship_genetics import ShipGenome, ship_genetic_registry
 
 
 class TeamAffiliation(str, Enum):
