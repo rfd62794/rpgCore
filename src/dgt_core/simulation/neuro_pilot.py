@@ -242,10 +242,61 @@ class NeuroPilot:
             pressure_multiplier = 1.0 + (generation / 50.0)  # Up to 2x pressure
             self.fitness *= pressure_multiplier
         
+        # Pattern diversity bonus (encourages varied flight patterns)
+        pattern_diversity = self._calculate_pattern_diversity()
+        self.fitness += pattern_diversity * 5.0
+        
+        # Movement efficiency bonus (rewards smooth, purposeful movement)
+        movement_efficiency = self._calculate_movement_efficiency()
+        self.fitness += movement_efficiency * 3.0
+        
         # Tactical score (combination of factors)
         self.tactical_score = (self.enemies_destroyed * 10 + 
                               self.accuracy * 5 + 
                               (self.damage_dealt - self.damage_taken) * 0.1)
+    
+    def _calculate_pattern_diversity(self) -> float:
+        """Calculate diversity of movement patterns"""
+        if len(self.action_history) < 10:
+            return 0.0
+        
+        # Analyze recent actions for diversity
+        recent_actions = self.action_history[-10:]
+        thrust_changes = sum(1 for i in range(1, len(recent_actions)) 
+                          if abs(recent_actions[i].thrust - recent_actions[i-1].thrust) > 0.1)
+        rotation_changes = sum(1 for i in range(1, len(recent_actions)) 
+                            if abs(recent_actions[i].rotation - recent_actions[i-1].rotation) > 0.1)
+        
+        # Reward diverse patterns
+        diversity_score = (thrust_changes + rotation_changes) / 20.0
+        return min(1.0, diversity_score)
+    
+    def _calculate_movement_efficiency(self) -> float:
+        """Calculate movement efficiency (smooth, purposeful movement)"""
+        if len(self.position_history) < 5:
+            return 0.0
+        
+        # Calculate movement smoothness
+        recent_positions = self.position_history[-5:]
+        if len(recent_positions) < 2:
+            return 0.0
+        
+        # Check for jittery movement (penalty)
+        position_changes = []
+        for i in range(1, len(recent_positions)):
+            dx = recent_positions[i][0] - recent_positions[i-1][0]
+            dy = recent_positions[i][1] - recent_positions[i-1][1]
+            distance = math.sqrt(dx**2 + dy**2)
+            position_changes.append(distance)
+        
+        # Reward smooth, consistent movement
+        if position_changes:
+            avg_movement = sum(position_changes) / len(position_changes)
+            variance = sum((x - avg_movement)**2 for x in position_changes) / len(position_changes)
+            efficiency = max(0.0, 1.0 - variance / (avg_movement + 1.0))
+            return efficiency
+        
+        return 0.0
     
     def calculate_novelty_score(self, all_behaviors: List[List]) -> float:
         """Calculate novelty score based on behavior diversity (from PyPongAI)"""
