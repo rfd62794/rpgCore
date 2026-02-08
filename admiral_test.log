@@ -29,3 +29,22 @@
 2026-02-07 21:14:47.177 | DEBUG    | __main__:run_test:69 - 👀 pilot_alpha_4 Tactical Input: {'vec_fleet_center_x': 0.0, 'vec_fleet_center_y': 0.0, 'vec_focus_target_x': 0.39391412623329075, 'vec_focus_target_y': 0.9191329612110117}
 2026-02-07 21:14:47.804 | INFO     | __main__:run_test:90 - 🏁 Test Complete. Fleet Center moved to (50.0, 10.0)
 2026-02-07 21:14:47.805 | ERROR    | __main__:run_test:95 - ❌ FAILURE: Fleet did not converge significantly
+2026-02-07 21:15:42.916 | INFO     | src.dgt_core.simulation.pilot_registry:load_registry:446 - 🎖️ Pilot registry loaded: 1 pilots
+2026-02-07 21:15:42.917 | INFO     | src.dgt_core.simulation.pilot_registry:__init__:200 - 🎖️ PilotRegistry initialized: 1 pilots
+2026-02-07 21:15:42.918 | INFO     | src.dgt_core.simulation.fleet_service:_initialize_pilot_registry:110 - 🎖️ Pilot registry connected
+2026-02-07 21:15:42.919 | INFO     | src.dgt_core.simulation.fleet_service:__init__:104 - 🏆 Commander Service initialized: 1000 credits
+2026-02-07 21:15:42.919 | DEBUG    | src.dgt_core.simulation.space_physics:__init__:103 - 🚀 SpaceVoyagerEngine initialized: thrust=0.5, rotation=5.0
+2026-02-07 21:15:42.919 | INFO     | __main__:setup_fleet:23 - 🛠️ Setting up Alpha Fleet via CommanderService...
+2026-02-07 21:15:42.920 | INFO     | __main__:setup_fleet:43 - 🚀 Deployed pilot_alpha_0 (Mass: 8.0)
+2026-02-07 21:15:42.920 | INFO     | __main__:setup_fleet:43 - 🚀 Deployed pilot_alpha_1 (Mass: 8.0)
+2026-02-07 21:15:42.920 | INFO     | __main__:setup_fleet:43 - 🚀 Deployed pilot_alpha_2 (Mass: 8.0)
+2026-02-07 21:15:42.921 | INFO     | __main__:setup_fleet:43 - 🚀 Deployed pilot_alpha_3 (Mass: 8.0)
+2026-02-07 21:15:42.921 | INFO     | __main__:setup_fleet:43 - 🚀 Deployed pilot_alpha_4 (Mass: 8.0)
+2026-02-07 21:15:42.921 | INFO     | __main__:run_test:54 - 📢 Admiral issuing FOCUS_FIRE on TARGET_DUMMY
+2026-02-07 21:15:42.921 | DEBUG    | __main__:run_test:69 - 👀 pilot_alpha_0 Tactical Input: {'vec_fleet_center_x': 0.0, 'vec_fleet_center_y': 0.0, 'vec_focus_target_x': 0.39391412623329075, 'vec_focus_target_y': 0.9191329612110117}
+2026-02-07 21:15:42.922 | DEBUG    | __main__:run_test:69 - 👀 pilot_alpha_1 Tactical Input: {'vec_fleet_center_x': 0.0, 'vec_fleet_center_y': 0.0, 'vec_focus_target_x': 0.39391412623329075, 'vec_focus_target_y': 0.9191329612110117}
+2026-02-07 21:15:42.922 | DEBUG    | __main__:run_test:69 - 👀 pilot_alpha_2 Tactical Input: {'vec_fleet_center_x': 0.0, 'vec_fleet_center_y': 0.0, 'vec_focus_target_x': 0.39391412623329075, 'vec_focus_target_y': 0.9191329612110117}
+2026-02-07 21:15:42.923 | DEBUG    | __main__:run_test:69 - 👀 pilot_alpha_3 Tactical Input: {'vec_fleet_center_x': 0.0, 'vec_fleet_center_y': 0.0, 'vec_focus_target_x': 0.39391412623329075, 'vec_focus_target_y': 0.9191329612110117}
+2026-02-07 21:15:42.923 | DEBUG    | __main__:run_test:69 - 👀 pilot_alpha_4 Tactical Input: {'vec_fleet_center_x': 0.0, 'vec_fleet_center_y': 0.0, 'vec_focus_target_x': 0.39391412623329075, 'vec_focus_target_y': 0.9191329612110117}
+2026-02-07 21:15:43.549 | INFO     | __main__:run_test:90 - 🏁 Test Complete. Fleet Center moved to (80.83279100638069, 81.9431790148882)
+2026-02-07 21:15:43.549 | INFO     | __main__:run_test:93 - ✅ SUCCESS: Fleet moved towards target (80, 80)
