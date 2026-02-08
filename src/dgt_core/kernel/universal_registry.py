@@ -44,9 +44,14 @@ class UniversalRegistry(LegendaryRegistry):
     """Tracks performance across Space and Shell engines with cross-engine compatibility"""
     
     def __init__(self, db_path: str = "roster.db"):
-        super().__init__(db_path)
-        self._init_universal_schema()
-        logger.info(f"🌍 UniversalRegistry initialized: {self.db_path}")
+        self.db_path = db_path
+        self.conn = None
+        self.graveyard_manager = GraveyardManager(db_path)
+        
+        self._init_db()
+        self._migrate_schema()
+        
+        logger.info(f"🌍 UniversalRegistry initialized: {db_path}")
     
     def _init_universal_schema(self):
         """Initialize universal registry schema with cross-engine tracking"""
