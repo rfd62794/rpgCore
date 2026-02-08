@@ -37,9 +37,9 @@ class NeuroEvolutionArena:
         self.vector_ppu = initialize_vector_ppu()
         self.projectile_system = initialize_projectile_system()
         
-        # Neuro evolution components
+        # Initialize NEAT evolution components
         self.pilot_factory = initialize_neuro_pilot_factory()
-        self.training_paddock = initialize_training_paddock(population_size=20, num_processes=4)
+        self.training_paddock = initialize_training_paddock(population_size=10, num_processes=1)  # Single process for now
         
         # Battle ships
         self.ships: Dict[str, SpaceShip] = {}

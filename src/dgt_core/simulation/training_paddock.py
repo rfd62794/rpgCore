@@ -261,19 +261,16 @@ class TrainingPaddock:
         # Generate tournament brackets based on ELO ratings
         matches = self._generate_tournament_matches(num_matches)
         
-        # Run matches in parallel
+        # Run matches sequentially (single process to avoid pickling issues)
         all_matches = []
-        with mp.Pool(self.num_processes) as pool:
-            # Prepare match arguments
-            match_args = []
-            for match in matches:
-                pilot1 = next(p for p in self.pilots if p.genome.key == match[0])
-                pilot2 = next(p for p in self.pilots if p.genome.key == match[1])
-                match_args.append((pilot1, pilot2))
+        for match in matches:
+            pilot1 = next(p for p in self.pilots if p.genome.key == match[0])
+            pilot2 = next(p for p in self.pilots if p.genome.key == match[1])
             
-            # Run matches in parallel
-            results = pool.starmap(self._run_single_match_worker, match_args)
-            all_matches.extend(results)
+            # Run single match
+            battle = HeadlessBattle()
+            match_result = battle.run_dogfight(pilot1, pilot2)
+            all_matches.append(match_result)
         
         # Update ELO ratings
         self._update_elo_ratings(all_matches)
