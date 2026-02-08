@@ -36,18 +36,24 @@ class MeritocraticSelector:
         logger.debug(f"🧬 MeritocraticSelector initialized: pop_size={population_size}, elite_count={self.elite_count}")
     
     def apply_prestige_bias(self, population: List[GenomeFitness]) -> List[GenomeFitness]:
-        """Apply prestige bias to population fitness scores"""
+        """Apply prestige bias to population fitness scores - prevents stagnation"""
         biased_population = []
         
         for genome in population:
-            # Calculate prestige bias
+            # Calculate prestige bias (10% per victory)
             prestige_multiplier = genome.calculate_prestige_bias()
             
             # Apply weighted combination of fitness and prestige
+            # Prestige bias scales fitness but doesn't completely override it
             biased_fitness = (
                 genome.fitness * (1.0 - self.prestige_weight) +
                 (genome.fitness * prestige_multiplier) * self.prestige_weight
             )
+            
+            # Prevent overflow and ensure newcomers can compete
+            # Cap prestige bonus to prevent legendary dominance
+            max_prestige_bonus = genome.fitness * 2.0  # Max 2x fitness from prestige
+            biased_fitness = min(biased_fitness, max_prestige_bonus)
             
             # Create biased genome for selection
             biased_genome = GenomeFitness(
