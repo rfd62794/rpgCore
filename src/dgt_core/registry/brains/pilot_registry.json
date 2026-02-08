@@ -17,7 +17,7 @@
         "battles_lost": 0,
         "total_battles": 0,
         "prestige_points": 0,
-        "hire_count": 0,
+        "hire_count": 1,
         "total_service_time": 0.0,
         "genome_complexity": 61,
         "novelty_score": 0.0
@@ -25,7 +25,7 @@
       "specialization": "PilotSpecialization.UNIVERSAL",
       "base_cost": 100,
       "current_cost": 100,
-      "availability": true,
+      "availability": false,
       "created_at": 1770515301.7192447,
       "last_battle": 0.0,
       "genome_file": "genome_1.pkl",
@@ -38,6 +38,6 @@
   "statistics": {
     "average_fitness": 0.0,
     "total_pilots": 1,
-    "last_updated": 1770515525.9392033
+    "last_updated": 1770516198.6516001
   }
 }
