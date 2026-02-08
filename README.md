@@ -1,6 +1,27 @@
-# Semantic RPG Core
+# DGT Platform
 
-A terminal-based RPG engine that accepts natural language input via vector-similarity matching. Built for local laptop execution with no internet dependency.
+**A High-Concurrency Neuro-Evolutionary SDK for Cross-Engine Simulation**
+
+[![CI/CD](https://github.com/ConsumrBuzzy/rpgCore/workflows/ci/badge.svg)](https://github.com/ConsumrBuzzy/rpgCore/actions)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Python 3.12](https://img.shields.io/badge/python-3.12+-blue.svg)](https://www.python.org/downloads/)
+[![Code Coverage](https://codecov.io/gh/ConsumrBuzzy/rpgCore/branch/main/graph/badge.svg)](https://codecov.io/gh/ConsumrBuzzy/rpgCore/branch/main)
+
+---
+
+## 🎯 Value Proposition
+
+The DGT Platform is a **production-ready SDK** that combines genetic algorithms, physics engines, and permadeath mechanics into a unified system. It demonstrates advanced software architecture, thread-safe concurrent processing, and enterprise-grade data management—perfect for showcasing IT Management and Data Administration expertise.
+
+### 🚀 Key Features
+
+- **Neuro-Evolutionary AI**: NEAT-based genetic algorithm system
+- **Cross-Engine Physics**: Newtonian space combat + D20 RPG mechanics
+- **Permadeath System**: Resource depletion with legacy preservation
+- **Industrial Tools**: Professional asset pipeline and utilities
+- **60 FPS Performance**: High-concurrency rendering with hardware burn effects
+- **Thread-Safe Design**: Concurrent batch processing with SQLite
+- **Python 3.12 Standard**: Enterprise-grade stability and performance
 
 ## Architecture
 
@@ -17,14 +38,15 @@ A terminal-based RPG engine that accepts natural language input via vector-simil
 ## Installation
 
 ```bash
-# Install Python dependencies
-pip install -r requirements.txt
+# Clone repository
+git clone https://github.com/ConsumrBuzzy/rpgCore.git
+cd rpgCore
 
-# Install Ollama (one-time setup)
-# Download from: https://ollama.com
+# Install in development mode (Python 3.12+ required)
+pip install -e .
 
-# Pull the LLM model (one-time, ~2GB download)
-ollama pull llama3.2:3b
+# Run validation
+python scripts/run_tests.py
 ```
 
 ## Quick Start

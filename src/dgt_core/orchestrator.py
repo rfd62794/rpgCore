@@ -11,6 +11,9 @@ from dataclasses import dataclass
 
 from loguru import logger
 
+# Import version gatekeeper for Python 3.12 enforcement
+from .kernel.gatekeeper import verify_python_version
+
 from .engines.space import SpaceVoyagerEngineRunner, create_space_engine_runner
 from .engines.shells import ShellEngine, create_shell_engine
 from .view.view_coordinator import ViewCoordinator, create_view_coordinator
@@ -48,17 +51,21 @@ class OrchestratorConfig:
 class DGTOrchestrator:
     """The 'God Object' for the Singularity. Manages the lifecycle of a DGT session."""
     
-    def __init__(self, config: OrchestratorConfig):
-        self.config = config
+    def __init__(self, config: Optional[OrchestratorConfig] = None):
+        """Initialize the DGT Orchestrator with Python 3.12 enforcement"""
+        # Enforce Python 3.12 requirement immediately
+        verify_python_version()
+        
+        self.config = config or OrchestratorConfig()
         self.engine: Optional[Union[SpaceVoyagerEngineRunner, ShellEngine]] = None
         self.view_coordinator: Optional[ViewCoordinator] = None
         self.batch_processor: Optional[ThreadSafeBatchProcessor] = None
         self.universal_registry: Optional[UniversalRegistry] = None
+        self.is_running = False
+        self.start_time: Optional[float] = None
+        self.stop_time: Optional[float] = None
         
-        self._running = False
-        self._orchestration_thread: Optional[threading.Thread] = None
-        
-        logger.info(f"🎖️ DGTOrchestrator initialized: engine={config.engine_type.value}, view={config.view_type.value}")
+        logger.info(f"🎖️ DGTOrchestrator initialized: engine={self.config.engine_type.value}, view={self.config.view_type.value}")
     
     def start(self) -> bool:
         """Start the complete DGT ecosystem"""
