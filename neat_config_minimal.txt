@@ -10,7 +10,7 @@ single_structural_mutation = False
 structural_mutation_surer = default
 
 # activation options
-activation_default      = relu
+activation_default      = tanh
 activation_mutate_rate  = 0.0
 activation_options      = sigmoid tanh relu
 

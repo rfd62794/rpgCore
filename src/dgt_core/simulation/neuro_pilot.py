@@ -129,7 +129,7 @@ class NeuroPilot:
     
     def get_action(self, ship: SpaceShip, targets: List[SpaceShip], 
                    threats: List[SpaceShip]) -> NeuroOutput:
-        """Get neural network action for current state"""
+        """Get neural network action for current state with analog outputs"""
         # Calculate inputs
         inputs = self.calculate_neural_inputs(ship, targets, threats)
         
@@ -162,13 +162,19 @@ class NeuroPilot:
         
         input_array.append(prev_thrust)
         
-        # Feed through neural network
+        # Feed through neural network (tanh activation gives -1.0 to 1.0 range)
         output = self.net.activate(input_array)
         
-        # Convert neural outputs to actions with enhanced control
+        # Convert neural outputs to analog actions (Newtonian control)
         action = NeuroOutput()
-        action.thrust = max(0.0, min(1.0, output[0]))  # Clamp to [0, 1]
-        action.rotation = max(-1.0, min(1.0, output[1]))  # Clamp to [-1, 1]
+        
+        # Output 0: Thrust (-1.0 is Full Reverse, 1.0 is Full Forward)
+        action.thrust = max(-1.0, min(1.0, output[0]))  # Analog thrust with reverse
+        
+        # Output 1: Torque (-1.0 is Hard Port, 1.0 is Hard Starboard)  
+        action.rotation = max(-1.0, min(1.0, output[1]))  # Analog rotation
+        
+        # Output 2: Fire Weapon (still binary for now)
         action.fire_weapon = max(0.0, min(1.0, output[2]))  # Clamp to [0, 1]
         
         # Add movement pattern memory
