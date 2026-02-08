@@ -423,7 +423,13 @@ class NeuroEvolutionArena:
         )
         self.canvas.create_text(10, 10, text=status_text, fill="white", anchor="nw")
         
-        # Render ships with solid bodies
+        # Render ships with solid bodies and Top-ELO highlight
+        # Get Top-ELO ship for highlighting
+        top_elo_ship_id = None
+        if hasattr(self, 'training_paddock') and self.training_paddock.elo_ratings:
+            top_elo_ship_id = max(self.training_paddock.elo_ratings.keys(), 
+                                key=lambda k: self.training_paddock.elo_ratings[k].rating)
+        
         for ship_id, ship in self.ships.items():
             if not ship.is_destroyed():
                 # Get the pilot for this ship
@@ -449,8 +455,11 @@ class NeuroEvolutionArena:
                     thrust_level=thrust_level
                 )
                 
-                # Render solid ship body
-                self.ship_renderer.render_ship(render_packet, self.canvas)
+                # Check if this is the Top-ELO ship for highlighting
+                is_top_elo = (ship_id == top_elo_ship_id)
+                
+                # Render solid ship body with potential highlight
+                self.ship_renderer.render_ship(render_packet, self.canvas, is_top_elo)
         
         # Update and render particles
         self.ship_renderer.update_particles(self.dt, self.canvas)
