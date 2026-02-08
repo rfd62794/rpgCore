@@ -5,6 +5,8 @@ ADR 120: Tri-Modal Rendering Bridge
 ADR 122: Universal Packet Enforcement
 """
 
+from typing import Optional
+
 # Tri-Modal Display Suite
 from .dispatcher import DisplayDispatcher, DisplayMode, RenderPacket
 from .ppu import PPUBody, create_ppu_body

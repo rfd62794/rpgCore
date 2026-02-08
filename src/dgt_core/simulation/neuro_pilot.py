@@ -386,7 +386,7 @@ class NeuroPilotFactory:
         return {
             'genome_id': pilot.genome.key,
             'fitness': pilot.fitness,
-            'nodes': [(node.key, node.x, node.y) for node in pilot.genome.nodes.values()],
+            'nodes': [(node.key, getattr(node, 'x', 0.5), getattr(node, 'y', 0.5)) for node in pilot.genome.nodes.values()],
             'connections': [(conn.key, conn.in_node_id, conn.out_node_id, conn.weight, conn.enabled) 
                            for conn in pilot.genome.connections.values()]
         }
@@ -400,8 +400,10 @@ class NeuroPilotFactory:
         # Add nodes
         for node_key, x, y in pilot_data['nodes']:
             node = neat.DefaultGenome.create_node(genome.config, node_key)
-            node.x = x
-            node.y = y
+            if hasattr(node, 'x'):
+                node.x = x
+            if hasattr(node, 'y'):
+                node.y = y
             genome.nodes[node_key] = node
         
         # Add connections
