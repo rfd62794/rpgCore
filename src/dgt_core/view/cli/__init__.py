@@ -8,10 +8,11 @@ from .logger_config import (
     create_view_logger, create_graphics_logger, create_cli_logger, create_terminal_logger,
     RichLogHandler
 )
+from .resource_dashboard import ResourceDashboard
 
 __all__ = [
     'CommanderDashboard', 'create_commander_dashboard', 'commander_dashboard',
     'configure_logging', 'get_logger', 'ViewLogger',
     'create_view_logger', 'create_graphics_logger', 'create_cli_logger', 'create_terminal_logger',
-    'RichLogHandler'
+    'RichLogHandler', 'ResourceDashboard'
 ]
