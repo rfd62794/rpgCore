@@ -14,7 +14,7 @@ from loguru import logger
 class GraveyardManager:
     """Manages the graveyard for permadeath system"""
     
-    def __init__(self, db_path: str = "roster.db"):
+    def __init__(self, db_path: str = "data/roster.db"):
         self.db_path = db_path
         self._init_graveyard_table()
         
