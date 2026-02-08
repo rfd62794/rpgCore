@@ -436,7 +436,7 @@ class NeuroPilotFactory:
         
         # Evolve to next generation using NEAT's built-in methods
         try:
-            # Use the population's evolve method which handles everything
+            # Use the population's built-in evolve method
             self.population.population = self.population.reproduction.reproduce(
                 self.config.species_set.species, self.config.genome_type, 
                 self.config.species_set.species, self.config, fitness_dict
@@ -444,6 +444,7 @@ class NeuroPilotFactory:
         except Exception as e:
             logger.error(f"🧠 NEAT evolution error: {e}")
             # Fallback: create new random population if evolution fails
+            logger.info("🧠 Creating new random population as fallback")
             self.population = neat.Population(self.config)
         
         # Create new pilots from evolved genomes
