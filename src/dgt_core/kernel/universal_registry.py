@@ -274,7 +274,8 @@ class UniversalRegistry(LegendaryRegistry):
             # Get current registry data
             summary = self.get_cross_engine_summary(ship_id)
             
-            if 'error' in summary:
+            if 'error' in summary or not trait_snapshot:
+                logger.warning(f"🌍 No trait data found for pilot {ship_id}")
                 return None
             
             return {

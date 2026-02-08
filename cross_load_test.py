@@ -45,6 +45,10 @@ class CrossLoadTest:
             
             # Step 2: Record Space performance and export traits
             self._record_space_performance(space_ship)
+            
+            # Force commit to ensure data is written
+            universal_registry.conn.commit()
+            
             exported_data = universal_registry.export_pilot_for_engine_swap(space_ship.ship_id)
             self.test_results['trait_export'] = (exported_data is not None)
             
