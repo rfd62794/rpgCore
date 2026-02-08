@@ -136,7 +136,7 @@ class InfiniteTournamentLoop:
             # Create new tournament
             participant_count = min(
                 self.config.max_participants,
-                max(self.config.min_participants, len(self.roster_manager.active_roster))
+                max(self.config.min_participants, len(roster_manager.active_roster))
             )
             
             tournament_name = f"Evolution Championship #{self.tournament_count + 1}"

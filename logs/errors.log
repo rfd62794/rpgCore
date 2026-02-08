@@ -6562,3 +6562,11 @@ mode
 2026-02-07 19:48:26 | ERROR | dgt_core.simulation.infinite_tournament:_start_new_tournament:159 | ♾️ Failed to start new tournament: name 'tournament' is not defined
 2026-02-07 19:48:27 | ERROR | dgt_core.simulation.infinite_tournament:_start_new_tournament:159 | ♾️ Failed to start new tournament: name 'tournament' is not defined
 2026-02-07 19:48:28 | ERROR | dgt_core.simulation.infinite_tournament:_start_new_tournament:159 | ♾️ Failed to start new tournament: name 'tournament' is not defined
+2026-02-07 19:49:06 | ERROR | dgt_core.simulation.infinite_tournament:_start_new_tournament:159 | ♾️ Failed to start new tournament: 'InfiniteTournamentLoop' object has no attribute 'roster_manager'
+2026-02-07 19:49:07 | ERROR | dgt_core.simulation.infinite_tournament:_start_new_tournament:159 | ♾️ Failed to start new tournament: 'InfiniteTournamentLoop' object has no attribute 'roster_manager'
+2026-02-07 19:49:08 | ERROR | dgt_core.simulation.infinite_tournament:_start_new_tournament:159 | ♾️ Failed to start new tournament: 'InfiniteTournamentLoop' object has no attribute 'roster_manager'
+2026-02-07 19:49:09 | ERROR | dgt_core.simulation.infinite_tournament:_start_new_tournament:159 | ♾️ Failed to start new tournament: 'InfiniteTournamentLoop' object has no attribute 'roster_manager'
+2026-02-07 19:49:10 | ERROR | dgt_core.simulation.infinite_tournament:_start_new_tournament:159 | ♾️ Failed to start new tournament: 'InfiniteTournamentLoop' object has no attribute 'roster_manager'
+2026-02-07 19:49:11 | ERROR | dgt_core.simulation.infinite_tournament:_start_new_tournament:159 | ♾️ Failed to start new tournament: 'InfiniteTournamentLoop' object has no attribute 'roster_manager'
+2026-02-07 19:49:12 | ERROR | dgt_core.simulation.infinite_tournament:_start_new_tournament:159 | ♾️ Failed to start new tournament: 'InfiniteTournamentLoop' object has no attribute 'roster_manager'
+2026-02-07 19:49:13 | ERROR | dgt_core.simulation.infinite_tournament:_start_new_tournament:159 | ♾️ Failed to start new tournament: 'InfiniteTournamentLoop' object has no attribute 'roster_manager'
