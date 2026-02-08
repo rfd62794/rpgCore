@@ -269,34 +269,27 @@ class SpaceArenaPPU:
         logger.info("🚀 Space Arena PPU stopped")
         return True
     
-    def _create_battle_visualization(self, battle_state: Dict[str, Any], vfx_queue: Queue) -> Dict[str, Any]:
-        """Create battle visualization state"""
+    def _create_simplified_visualization(self, battle_state: Dict[str, Any]) -> Dict[str, Any]:
+        """Create simplified battle visualization state"""
         entities = []
         
         # Create ship entities
         for pid, participant in battle_state['participants'].items():
             if participant['status'] not in ['defeated', 'escaped']:
-                # Create ship from genome
-                genome_data = participant['genome']
-                genome = self._recreate_genome(genome_data)
+                # Create simple ship representation
+                entity = {
+                    'id': pid,
+                    'type': 'ship',
+                    'x': int(participant['position'][0]),
+                    'y': int(participant['position'][1]),
+                    'hp_percent': (participant['hp'] / participant['max_hp']) * 100,
+                    'shield_percent': (participant['shields'] / participant['max_shields']) * 100,
+                    'atb_progress': participant['atb_progress'],
+                    'status': participant['status'],
+                    'ship_type': f"{participant['genome']['hull_type']} {participant['genome']['engine_type']}"
+                }
                 
-                if genome:
-                    ship_data = self.ship_compositor.compose_ship(genome, participant['position'])
-                    
-                    # Create entity
-                    entity = {
-                        'id': pid,
-                        'type': 'ship',
-                        'x': int(participant['position'][0]),
-                        'y': int(participant['position'][1]),
-                        'ship_data': ship_data,
-                        'hp_percent': (participant['hp'] / participant['max_hp']) * 100,
-                        'shield_percent': (participant['shields'] / participant['max_shields']) * 100,
-                        'atb_progress': participant['atb_progress'],
-                        'status': participant['status']
-                    }
-                    
-                    entities.append(entity)
+                entities.append(entity)
         
         # Create background
         background = {
@@ -331,20 +324,12 @@ class SpaceArenaPPU:
             }
         }
     
-    def _recreate_genome(self, genome_data: Dict[str, Any]):
-        """Recreate genome from dictionary data"""
-        try:
-            from dgt_core.simulation.ship_genetics import ShipGenome
-            return ShipGenome(**genome_data)
-        except Exception as e:
-            logger.error(f"🚀 Failed to recreate genome: {e}")
-            return None
-    
     def _process_vfx_queue(self, vfx_queue: Queue):
         """Process visual effects queue"""
         try:
             while not vfx_queue.empty():
                 vfx_data = vfx_queue.get_nowait()
+                logger.debug(f"🚀 Processing VFX: {vfx_data}")
                 
                 # Create VFX entity
                 vfx_entity = {
