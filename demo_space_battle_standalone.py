@@ -146,11 +146,10 @@ class SpaceVoyagerEngine:
             ship.heading += max(-15.0, min(15.0, rotation_output)) * dt
             ship.heading = ship.heading % 360
             
-            # Apply thrust
-            if abs(angle_diff) < 10.0:  # Roughly aligned
-                rad = math.radians(ship.heading)
-                ship.velocity_x += math.cos(rad) * self.thrust_power
-                ship.velocity_y += math.sin(rad) * self.thrust_power
+            # ALWAYS apply thrust when we have a target
+            rad = math.radians(ship.heading)
+            ship.velocity_x += math.cos(rad) * self.thrust_power
+            ship.velocity_y += math.sin(rad) * self.thrust_power
         
         # Apply physics
         ship.velocity_x *= self.drag_coefficient
