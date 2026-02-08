@@ -297,6 +297,14 @@ class NeuroEvolutionArena:
             
             logger.info(f"🧠 Training step complete: Generation {self.current_generation}")
             
+            # Show generation info in status
+            gen_info = f"Gen {self.current_generation} | "
+            if self.current_generation > 0:
+                stats = self.training_paddock.get_training_stats()
+                gen_info += f"Avg Fit: {stats['average_fitness']:.2f} | "
+            
+            self.evolution_label.config(text=gen_info)
+            
         except Exception as e:
             logger.error(f"🧠 Training step failed: {e}")
         
