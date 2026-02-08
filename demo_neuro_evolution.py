@@ -330,6 +330,13 @@ class NeuroEvolutionArena:
             
             # Add new ship with best pilot
             new_ship = self._create_neuro_ship(f"Gen{self.current_generation}_Best", best_pilot, 700, 350, 180)
+            
+            # Update status to show improvement
+            if self.current_generation > 0:
+                stats = self.training_paddock.get_training_stats()
+                improvement = best_pilot.fitness - 81.0  # Compare with initial best fitness
+                status_text = f"🧠 Improvement: {improvement:+.1f} | "
+                self.status_label.config(text=status_text)
     
     def update_status_display(self):
         """Update status displays"""
