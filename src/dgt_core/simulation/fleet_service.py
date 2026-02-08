@@ -1,18 +1,24 @@
 """
-DGT Fleet Service - ADR 135 Implementation
-Commander's Deck for Tactical Fleet Management
+DGT Fleet Service - ADR 135 & 138 Implementation
+Commander's Deck for Tactical Fleet Management with Elite Pilot Integration
 
 Manages player credits, roster, and pilot acquisition
 for the Sovereign Fleet Commander game loop.
+Now integrates with Pilot Registry for elite pilot scouting.
 """
 
-from typing import Dict, List, Optional, Any
+from typing import Dict, List, Optional, Any, Tuple
 from dataclasses import dataclass
 from enum import Enum
 import json
 import time
+import subprocess
+import threading
+from pathlib import Path
 
 from loguru import logger
+
+from .pilot_registry import PilotRegistry, ElitePilot, initialize_pilot_registry, get_pilot_registry
 
 
 class ShipRole(Enum):
@@ -45,6 +51,7 @@ class FleetMember:
     status: FleetStatus = FleetStatus.DOCKED
     cost: int = 100  # Base cost to hire
     acquisition_time: float = 0.0  # When this pilot was acquired
+    elite_pilot_id: Optional[str] = None  # Link to elite pilot registry
     
     def __post_init__(self):
         """Calculate K/D ratio after initialization"""
