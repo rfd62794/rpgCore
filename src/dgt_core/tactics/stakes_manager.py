@@ -13,7 +13,7 @@ from loguru import logger
 
 from ..kernel.universal_registry import UniversalRegistry
 from ..kernel.models import StoryFragment, asset_registry
-from ..simulation.space_physics import PhysicsState
+from ..kernel.state import PhysicsState
 
 
 class ResourceStatus(str, Enum):

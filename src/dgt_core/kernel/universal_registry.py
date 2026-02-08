@@ -49,7 +49,6 @@ class UniversalRegistry(LegendaryRegistry):
         self.graveyard_manager = GraveyardManager(db_path)
         
         self._init_db()
-        self._migrate_schema()
         
         logger.info(f"🌍 UniversalRegistry initialized: {db_path}")
     
