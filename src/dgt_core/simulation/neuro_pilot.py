@@ -194,27 +194,23 @@ class NeuroPilot:
         return action.fire_weapon > 0.5 and ship.can_fire(time.time())
     
     def update_fitness(self, hit_scored: bool, damage_dealt: float, damage_taken: float, 
-                      survived: bool, enemies_destroyed: int):
-        """Update pilot fitness based on performance"""
-        # Hit accuracy bonus
+                      survived: bool, enemies_destroyed: int, generation: int = 0):
+        """Update pilot fitness based on performance with dynamic pressure"""
+        # Base fitness components
         if hit_scored:
             self.hits_scored += 1
             self.fitness += 10.0
         
-        # Damage dealt bonus
         self.damage_dealt += damage_dealt
         self.fitness += damage_dealt * 0.1
         
-        # Damage taken penalty
         self.damage_taken += damage_taken
         self.fitness -= damage_taken * 0.05
         
-        # Survival bonus
         if survived:
             self.survival_time += 1.0
             self.fitness += 1.0  # Small bonus for surviving
         
-        # Enemy destruction bonus
         self.enemies_destroyed += enemies_destroyed
         self.fitness += enemies_destroyed * 50.0
         
@@ -223,6 +219,12 @@ class NeuroPilot:
         if self.shots_fired > 0:
             self.accuracy = self.hits_scored / self.shots_fired
             self.fitness += self.accuracy * 20.0  # Accuracy bonus
+        
+        # Dynamic pressure based on generation
+        if generation > 10:
+            # Increase pressure in later generations
+            pressure_multiplier = 1.0 + (generation / 50.0)  # Up to 2x pressure
+            self.fitness *= pressure_multiplier
         
         # Tactical score (combination of factors)
         self.tactical_score = (self.enemies_destroyed * 10 + 
