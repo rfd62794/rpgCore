@@ -9,7 +9,6 @@ from enum import Enum
 
 from loguru import logger
 from ..space.ship_genetics import ShipGenome
-from ...kernel.models import MaterialAsset, asset_registry
 
 
 class ShellRole(str, Enum):
