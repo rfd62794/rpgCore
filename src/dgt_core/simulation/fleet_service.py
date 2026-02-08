@@ -19,6 +19,10 @@ from pathlib import Path
 from loguru import logger
 
 from .pilot_registry import PilotRegistry, ElitePilot, initialize_pilot_registry, get_pilot_registry
+from src.dgt_core.generators.ship_wright import ShipWright
+from src.dgt_core.kernel.state import ShipGenome
+from src.dgt_core.kernel.fleet_roles import FleetRole
+from src.dgt_core.simulation.space_physics import SpaceShip
 
 
 class ShipRole(Enum):
@@ -391,6 +395,63 @@ class CommanderService:
         self.credits += 500 * self.commander_level  # Level bonus
         
         logger.info(f"🌟 Promoted to Level {self.commander_level}! Fleet size: {self.max_fleet_size}")
+
+    def deploy_ship(self, member: FleetMember) -> Optional[SpaceShip]:
+        """
+        Hydrate a FleetMember into a physical SpaceShip entity using ShipWright.
+        Maps pilot stats (EliteGenome) to ship traits (ShipGenome).
+        """
+        if not member:
+            return None
+
+        # 1. underlying Pilot Stats
+        pilot_stats = None
+        if member.elite_pilot_id and self.pilot_registry:
+            elite = self.pilot_registry.elite_pilots.get(member.elite_pilot_id)
+            if elite:
+                pilot_stats = elite.stats
+        
+        # 2. Construct ShipGenome
+        genome = ShipGenome(genome_id=member.genome_id)
+        
+        # Map stats to traits (0.0 - 1.0)
+        # Default to 0.5 if no elite stats
+        aggression = pilot_stats.aggression if pilot_stats else 0.5
+        accuracy = pilot_stats.accuracy if pilot_stats else 0.5
+        evasion = pilot_stats.evasion if pilot_stats else 0.5
+        
+        genome.traits = {
+            "aggression": aggression,
+            "armor": 1.0 - evasion, # Heavier armor reduces evasion usually, or abstract mapping
+            "accuracy": accuracy
+        }
+        
+        # 3. Determine FleetRole
+        # Map member.ship_class (ShipRole enum string) to FleetRole enum
+        try:
+            role_name = member.ship_class.value.upper()
+            role = FleetRole[role_name]
+        except KeyError:
+            role = FleetRole.INTERCEPTOR
+            
+        # 4. Use ShipWright factory
+        physics_params = ShipWright.apply_genetics(genome, role)
+        
+        # 5. Instantiate SpaceShip
+        # Note: SpaceShip accepts mass/max_thrust/turn_rate if we updated it (we did)
+        ship = SpaceShip(
+            ship_id=member.pilot_id,
+            x=0, y=0, # Initial pos, caller should set
+            mass=physics_params['mass'],
+            max_thrust=physics_params['max_thrust'],
+            turn_rate=physics_params.get('turn_rate', 5.0)
+        )
+        # Cache metadata
+        ship.metadata['role'] = role.name
+        ship.metadata['pilot_name'] = member.pilot_name
+        
+        return ship
+
 
 
 # Global commander service instance
