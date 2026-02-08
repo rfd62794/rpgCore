@@ -7,7 +7,7 @@ Creates intelligent ship pilots that learn through evolution
 """
 
 import math
-import neat
+import neat_python as neat
 import random
 import time
 from typing import Dict, List, Optional, Tuple, Any
