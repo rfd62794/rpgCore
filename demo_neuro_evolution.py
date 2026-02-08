@@ -21,7 +21,10 @@ from loguru import logger
 # Import DGT neuro evolution components
 from src.dgt_core.simulation.neuro_pilot import NeuroPilot, NeuroPilotFactory, initialize_neuro_pilot_factory
 from src.dgt_core.simulation.training_paddock import TrainingPaddock, initialize_training_paddock
-from src.dgt_core.engines.body.ppu_vector import VectorPPU, ShipShapeGenerator, ShipClass, initialize_vector_ppu
+from src.dgt_core.engines.body.ship_renderer import (
+    ShipRenderer, ShipDNA, ShipClass, RenderPacket, 
+    initialize_ship_renderer, get_ship_renderer
+)
 from src.dgt_core.simulation.space_physics import SpaceShip, SpaceVoyagerEngine
 from src.dgt_core.simulation.projectile_system import ProjectileSystem, initialize_projectile_system
 
@@ -34,7 +37,7 @@ class NeuroEvolutionArena:
         self.height = height
         
         # Initialize systems
-        self.vector_ppu = initialize_vector_ppu()
+        self.ship_renderer = initialize_ship_renderer(width, height)
         self.projectile_system = initialize_projectile_system()
         
         # Initialize NEAT evolution components
@@ -133,27 +136,42 @@ class NeuroEvolutionArena:
         logger.info(f"🧠 Evolution battle setup: {len(self.ships)} ships")
     
     def _create_neuro_ship(self, ship_name: str, pilot: NeuroPilot, x: float, y: float, heading: float) -> SpaceShip:
-        """Create ship controlled by neuro pilot"""
-        # Create ship with balanced stats
+        """Create neuro-controlled ship with solid body rendering"""
+        # Create ship physics
         ship = SpaceShip(
             ship_id=pilot.genome.key,
             x=x, y=y,
             heading=heading,
+            velocity_x=0.0, velocity_y=0.0,
             hull_integrity=200.0,
             shield_strength=100.0,
             weapon_range=400.0,
-            weapon_damage=10.0,
-            fire_rate=1.0
+            weapon_damage=25.0,
+            fire_rate=2.0
         )
-        ship.physics_engine = SpaceVoyagerEngine(thrust_power=0.5, rotation_speed=5.0)
         
-        # Add to systems
-        self.ships[pilot.genome.key] = ship
+        # Create ship engine
+        ship.engine = SpaceVoyagerEngine(
+            thrust_power=0.5,
+            rotation_speed=5.0
+        )
+        
+        # Assign pilot
         self.pilots[pilot.genome.key] = pilot
+        self.ships[pilot.genome.key] = ship
         
-        # Add to vector PPU with interceptor shape
-        ship_shape = ShipShapeGenerator.create_interceptor()
-        self.vector_ppu.add_ship(pilot.genome.key, ship_shape)
+        # Create ShipDNA for solid body rendering
+        ship_dna = ShipDNA()
+        if "Random" in ship_name:
+            ship_dna.hull_color = "#4A90E2"  # Blue for random
+            ship_dna.reactor_color = "#F5A623"  # Orange
+        else:
+            ship_dna.hull_color = "#D0021B"  # Red for trained
+            ship_dna.reactor_color = "#BD10E0"  # Purple
+        
+        # Store ship DNA for rendering
+        ship.ship_dna = ship_dna
+        ship.ship_class = ShipClass.INTERCEPTOR
         
         logger.debug(f"🧠 Created neuro ship: {ship_name} (pilot: {pilot.genome.key})")
         return ship
@@ -189,8 +207,22 @@ class NeuroEvolutionArena:
             # Apply neural control
             fleet_ship.apply_action(ship, action, self.dt)
             
-            # Update vector PPU
-            self.vector_ppu.update_ship(fleet_ship.genome.key, ship.x, ship.y, ship.heading)
+            # Create render packet for solid body
+            render_packet = RenderPacket(
+                ship_id=ship.ship_id,
+                x=ship.x,
+                y=ship.y,
+                heading=ship.heading,
+                velocity_x=ship.velocity_x,
+                velocity_y=ship.velocity_y,
+                ship_class=getattr(ship, 'ship_class', ShipClass.INTERCEPTOR),
+                ship_dna=getattr(ship, 'ship_dna', ShipDNA()),
+                is_destroyed=ship.is_destroyed(),
+                thrust_level=action.thrust
+            )
+            
+            # Render solid ship body
+            self.ship_renderer.render_ship(render_packet, self.canvas)
             
             # Handle weapon firing
             if fleet_ship.should_fire_weapon(action, ship):
@@ -208,17 +240,13 @@ class NeuroEvolutionArena:
         # Update projectiles
         impacts = self.projectile_system.update(self.dt, active_ships)
         
-        # Update projectile positions in vector PPU
-        for projectile in self.projectile_system.get_active_projectiles():
-            self.vector_ppu.update_projectile(projectile.projectile_id, projectile.x, projectile.y)
+        # Update exhaust particles
+        self.ship_renderer.update_particles(self.dt, self.canvas)
         
         # Handle impacts
         for impact in impacts:
             self.total_hits += 1
             self.total_damage += impact.damage_dealt
-            
-            # Remove projectile from vector PPU
-            self.vector_ppu.remove_projectile(impact.projectile_id)
             
             # Update pilot fitness
             target_pilot = self.pilots.get(impact.target_id)
@@ -228,16 +256,14 @@ class NeuroEvolutionArena:
             # Check for ship destruction
             target_ship = self.ships.get(impact.target_id)
             if target_ship and target_ship.is_destroyed():
-                # Mark as destroyed in vector PPU
-                ship_body = self.vector_ppu.ship_bodies.get(impact.target_id)
-                if ship_body:
-                    ship_body.is_destroyed = True
-                
                 # Update fitness of attacker
                 attacker_pilot = self.pilots.get(impact.projectile_id.split('_')[0])
                 if attacker_pilot:
                     attacker_pilot.update_fitness(True, 0, 0, True, 1, self.current_generation)
                     logger.info(f"💥 Neural pilot {attacker_pilot.genome.key} scores a kill!")
+                
+                # Remove destroyed ship from renderer
+                self.ship_renderer.clear_destroyed_ships([impact.target_id], self.canvas)
         
         # Update status displays
         self.update_status_display()
@@ -261,10 +287,22 @@ class NeuroEvolutionArena:
                 ship.y = random.randint(100, self.height - 100)
                 ship.heading = random.uniform(0, 360)
                 
-                # Reset vector PPU ship body
-                ship_body = self.vector_ppu.ship_bodies.get(pilot_id)
-                if ship_body:
-                    ship_body.is_destroyed = False
+                # Clear destroyed flag in renderer
+                render_packet = RenderPacket(
+                    ship_id=ship.ship_id,
+                    x=ship.x,
+                    y=ship.y,
+                    heading=ship.heading,
+                    velocity_x=ship.velocity_x,
+                    velocity_y=ship.velocity_y,
+                    ship_class=getattr(ship, 'ship_class', ShipClass.INTERCEPTOR),
+                    ship_dna=getattr(ship, 'ship_dna', ShipDNA()),
+                    is_destroyed=False,
+                    thrust_level=0.0
+                )
+                
+                # Re-render ship as not destroyed
+                self.ship_renderer.render_ship(render_packet, self.canvas)
                 
                 logger.debug(f"🧠 Respawned ship {pilot_id}")
     

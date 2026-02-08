@@ -468,42 +468,46 @@ class NeuroPilotFactory:
         return self.create_pilot(genome)
     
     def _serialize_pilot(self, pilot: NeuroPilot) -> Dict:
-        """Serialize pilot for multiprocessing"""
-        # Create a simple serializable representation
+        """Serialize pilot for multiprocessing using Universal Packet Enforcement (ADR 122)"""
+        # Create a simple serializable representation - NO NEAT OBJECTS
         return {
-            'genome_id': pilot.genome.key,
+            'pilot_id': pilot.genome.key,
             'fitness': pilot.fitness,
-            'nodes': [(node.key, getattr(node, 'x', 0.5), getattr(node, 'y', 0.5)) for node in pilot.genome.nodes.values()],
-            'connections': [(conn.key, getattr(conn, 'source', conn.source), getattr(conn, 'target', conn.target), conn.weight, conn.enabled) 
-                           for conn in pilot.genome.connections.values()]
+            'hits_scored': pilot.hits_scored,
+            'shots_fired': pilot.shots_fired,
+            'enemies_destroyed': pilot.enemies_destroyed,
+            'accuracy': pilot.accuracy,
+            'tactical_score': pilot.tactical_score,
+            'novelty_score': pilot.novelty_score
+            # Note: We DO NOT serialize the neural network itself
+            # The client reconstructs behavior from the physics state
         }
     
     @staticmethod
     def _create_pilot_from_data(pilot_data: Dict) -> NeuroPilot:
-        """Create pilot from serialized data"""
-        # Create new genome
-        genome = neat.DefaultGenome(pilot_data['genome_id'])
+        """Create pilot from serialized data using Universal Packet Enforcement (ADR 122)"""
+        # For multiprocessing, we only need pilot statistics
+        # The actual neural network stays on the server side
+        # This method is used for fitness tracking only
         
-        # Add nodes
-        for node_key, x, y in pilot_data['nodes']:
-            node = neat.DefaultGenome.create_node(genome.config, node_key)
-            if hasattr(node, 'x'):
-                node.x = x
-            if hasattr(node, 'y'):
-                node.y = y
-            genome.nodes[node_key] = node
-        
-        # Add connections
-        for conn_key, source, target, weight, enabled in pilot_data['connections']:
-            conn = neat.DefaultGenome.create_connection(genome.config, source, target, conn_key)
-            conn.weight = weight
-            conn.enabled = enabled
-            genome.connections[conn_key] = conn
-        
-        # Create pilot with existing config
+        # Create a dummy pilot for statistics (neural network not needed for client)
         factory = NeuroPilotFactory("neat_config_minimal.txt")
+        
+        # Create a minimal genome for identification
+        genome = neat.DefaultGenome(pilot_data['pilot_id'])
+        
+        # Create pilot with the genome
         pilot = factory.create_pilot(genome)
-        pilot.fitness = pilot_data['fitness']
+        
+        # Restore statistics
+        pilot.fitness = pilot_data.get('fitness', 0.0)
+        pilot.hits_scored = pilot_data.get('hits_scored', 0)
+        pilot.shots_fired = pilot_data.get('shots_fired', 0)
+        pilot.enemies_destroyed = pilot_data.get('enemies_destroyed', 0)
+        pilot.accuracy = pilot_data.get('accuracy', 0.0)
+        pilot.tactical_score = pilot_data.get('tactical_score', 0.0)
+        pilot.novelty_score = pilot_data.get('novelty_score', 0.0)
+        
         return pilot
 
 
