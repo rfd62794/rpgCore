@@ -6576,3 +6576,12 @@ mode
 2026-02-07 19:49:30 | ERROR | dgt_core.simulation.infinite_tournament:_start_new_tournament:159 | ♾️ Failed to start new tournament: name 'tournament' is not defined
 2026-02-07 19:49:31 | ERROR | dgt_core.simulation.infinite_tournament:_start_new_tournament:159 | ♾️ Failed to start new tournament: name 'tournament' is not defined
 2026-02-07 19:49:32 | ERROR | dgt_core.simulation.infinite_tournament:_start_new_tournament:159 | ♾️ Failed to start new tournament: name 'tournament' is not defined
+2026-02-07 19:49:53 | ERROR | dgt_core.simulation.infinite_tournament:_process_current_tournament:179 | ♾️ Error processing tournament: 'RacerState' object has no attribute 'checkpoints'
+2026-02-07 19:49:54 | ERROR | dgt_core.simulation.infinite_tournament:_process_current_tournament:179 | ♾️ Error processing tournament: 'RacerState' object has no attribute 'checkpoints'
+2026-02-07 19:49:55 | ERROR | dgt_core.simulation.infinite_tournament:_process_current_tournament:179 | ♾️ Error processing tournament: 'RacerState' object has no attribute 'checkpoints'
+2026-02-07 19:49:56 | ERROR | dgt_core.simulation.infinite_tournament:_process_current_tournament:179 | ♾️ Error processing tournament: 'RacerState' object has no attribute 'checkpoints'
+2026-02-07 19:49:57 | ERROR | dgt_core.simulation.infinite_tournament:_process_current_tournament:179 | ♾️ Error processing tournament: 'RacerState' object has no attribute 'checkpoints'
+2026-02-07 19:49:58 | ERROR | dgt_core.simulation.infinite_tournament:_process_current_tournament:179 | ♾️ Error processing tournament: 'RacerState' object has no attribute 'checkpoints'
+2026-02-07 19:49:59 | ERROR | dgt_core.simulation.infinite_tournament:_process_current_tournament:179 | ♾️ Error processing tournament: 'RacerState' object has no attribute 'checkpoints'
+2026-02-07 19:50:00 | ERROR | dgt_core.simulation.infinite_tournament:_process_current_tournament:179 | ♾️ Error processing tournament: 'RacerState' object has no attribute 'checkpoints'
+2026-02-07 19:50:01 | ERROR | dgt_core.simulation.infinite_tournament:_process_current_tournament:179 | ♾️ Error processing tournament: 'RacerState' object has no attribute 'checkpoints'
