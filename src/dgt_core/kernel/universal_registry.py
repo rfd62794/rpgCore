@@ -323,6 +323,57 @@ class UniversalRegistry(LegendaryRegistry):
         except Exception as e:
             logger.error(f"🌍 Failed to import pilot: {e}")
             return False
+    
+    def move_to_graveyard(self, ship_id: str, death_cause: str = "unknown", epitaph: str = "Lost in battle"):
+        """Move a ship to the graveyard"""
+        try:
+            # Get final stats and genome snapshot
+            cursor = self.conn.execute("""
+                SELECT generation, total_xp, space_victories, shell_victories, 
+                       last_engine_type, trait_snapshot 
+                FROM fleet_roster WHERE ship_id = ?
+            """, (ship_id,))
+            
+            row = cursor.fetchone()
+            if not row:
+                logger.warning(f"🌍 Ship {ship_id} not found for graveyard transfer")
+                return False
+            
+            final_stats = {
+                "generation": row[0],
+                "total_xp": row[1],
+                "space_victories": row[2],
+                "shell_victories": row[3],
+                "last_engine_type": row[4]
+            }
+            
+            genome_snapshot = row[5]
+            
+            # Move to graveyard
+            success = self.graveyard_manager.move_to_graveyard(
+                ship_id=ship_id,
+                death_cause=death_cause,
+                epitaph=epitaph,
+                final_stats=final_stats,
+                genome_snapshot=genome_snapshot
+            )
+            
+            if success:
+                logger.info(f"🌍 Moved {ship_id} to graveyard: {epitaph}")
+            
+            return success
+            
+        except Exception as e:
+            logger.error(f"🌍 Failed to move {ship_id} to graveyard: {e}")
+            return False
+    
+    def get_graveyard_summary(self) -> Dict[str, Any]:
+        """Get graveyard summary"""
+        return self.graveyard_manager.get_graveyard_stats()
+    
+    def get_recent_deaths(self, limit: int = 10) -> List[Dict[str, Any]]:
+        """Get recent graveyard entries"""
+        return self.graveyard_manager.get_graveyard_entries(limit)
 
 
 # Factory function for easy initialization
