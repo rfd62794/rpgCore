@@ -102,12 +102,12 @@ class ElitePilot:
     metadata_file: str = ""
     
     def __post_init__(self):
-        """Initialize timestamps"""
+        """Initialize timestamps and calculate combat rating"""
         if self.created_at == 0.0:
             self.created_at = time.time()
         if self.current_cost == 100:
             # Dynamic pricing based on performance
-            self.current_cost = self.base_cost + int(self.stats.combat_rating() * 2)
+            self.current_cost = self.base_cost + int(self.get_combat_rating() * 2)
     
     def update_battle_record(self, won: bool, kills: int, damage_dealt: float, 
                            damage_taken: float, battle_time: float):
