@@ -13,3 +13,25 @@
 2026-02-07 21:09:53.399 | INFO     | __main__:spawn_ship:55 - 🚀 Spawned Bravo HEAVY: Mass=15.0, Thrust=144.7
 2026-02-07 21:09:53.400 | INFO     | __main__:spawn_ship:55 - 🚀 Spawned Bravo HEAVY: Mass=15.0, Thrust=231.4
 2026-02-07 21:09:53.400 | INFO     | __main__:run:114 - 🏁 Starting Simulation for 10 seconds...
+2026-02-07 21:10:31.094 | DEBUG    | src.dgt_core.simulation.space_physics:__init__:103 - 🚀 SpaceVoyagerEngine initialized: thrust=0.5, rotation=5.0
+2026-02-07 21:10:31.095 | INFO     | __main__:setup_5v5:58 - ⚔️ Setting up 5v5 Skirmish: Interceptors vs Heavies
+2026-02-07 21:10:31.097 | INFO     | __main__:spawn_ship:55 - 🚀 Spawned Alpha INTERCEPTOR: Mass=8.0, Thrust=510.2
+2026-02-07 21:10:31.098 | INFO     | __main__:spawn_ship:55 - 🚀 Spawned Alpha INTERCEPTOR: Mass=8.0, Thrust=476.4
+2026-02-07 21:10:31.099 | INFO     | __main__:spawn_ship:55 - 🚀 Spawned Alpha INTERCEPTOR: Mass=8.0, Thrust=347.8
+2026-02-07 21:10:31.100 | INFO     | __main__:spawn_ship:55 - 🚀 Spawned Alpha INTERCEPTOR: Mass=8.0, Thrust=619.7
+2026-02-07 21:10:31.101 | INFO     | __main__:spawn_ship:55 - 🚀 Spawned Alpha INTERCEPTOR: Mass=8.0, Thrust=285.5
+2026-02-07 21:10:31.102 | INFO     | __main__:spawn_ship:55 - 🚀 Spawned Bravo HEAVY: Mass=15.0, Thrust=100.3
+2026-02-07 21:10:31.102 | INFO     | __main__:spawn_ship:55 - 🚀 Spawned Bravo HEAVY: Mass=15.0, Thrust=249.7
+2026-02-07 21:10:31.103 | INFO     | __main__:spawn_ship:55 - 🚀 Spawned Bravo HEAVY: Mass=15.0, Thrust=231.5
+2026-02-07 21:10:31.104 | INFO     | __main__:spawn_ship:55 - 🚀 Spawned Bravo HEAVY: Mass=15.0, Thrust=145.5
+2026-02-07 21:10:31.104 | INFO     | __main__:spawn_ship:55 - 🚀 Spawned Bravo HEAVY: Mass=15.0, Thrust=136.2
+2026-02-07 21:10:31.105 | INFO     | __main__:run:114 - 🏁 Starting Simulation for 10 seconds...
+2026-02-07 21:10:32.097 | INFO     | __main__:run:130 - 📈 Performance: 59.92 FPS | Active Ships: 10
+2026-02-07 21:10:33.112 | INFO     | __main__:run:130 - 📈 Performance: 61.12 FPS | Active Ships: 10
+2026-02-07 21:10:34.126 | INFO     | __main__:run:130 - 📈 Performance: 61.16 FPS | Active Ships: 10
+2026-02-07 21:10:35.141 | INFO     | __main__:run:130 - 📈 Performance: 61.11 FPS | Active Ships: 10
+2026-02-07 21:10:36.154 | INFO     | __main__:run:130 - 📈 Performance: 61.22 FPS | Active Ships: 10
+2026-02-07 21:10:37.169 | INFO     | __main__:run:130 - 📈 Performance: 61.12 FPS | Active Ships: 10
+2026-02-07 21:10:38.182 | INFO     | __main__:run:130 - 📈 Performance: 61.22 FPS | Active Ships: 10
+2026-02-07 21:10:39.195 | INFO     | __main__:run:130 - 📈 Performance: 61.27 FPS | Active Ships: 10
+2026-02-07 21:10:40.210 | INFO     | __main__:run:130 - 📈 Performance: 61.08 FPS | Active Ships: 10

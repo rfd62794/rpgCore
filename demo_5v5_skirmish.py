@@ -98,7 +98,7 @@ class SkirmishSimulator:
             # Apply physics
             ship.thrust_x = thrust_x
             ship.thrust_y = thrust_y
-            self.physics_engine.update_ship(ship, dt)
+            self.physics_engine.update(ship, dt=dt)
             
             # Bounds check (wrap)
             if ship.x < 0: ship.x = 100
