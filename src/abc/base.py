@@ -12,7 +12,7 @@ from typing import Optional, Dict, Any, List, Tuple
 from dataclasses import dataclass
 import time
 
-from ..interfaces.protocols import Result, ValidationResult
+from ..common.types import Result, ValidationResult
 
 
 @dataclass
