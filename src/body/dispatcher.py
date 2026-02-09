@@ -26,6 +26,9 @@ except ImportError as e:
     try:
         from src.foundation.types import Result
         from src.foundation.interfaces.protocols import RenderProtocol
+        from enum import Enum
+        from dataclasses import dataclass, field
+        from typing import Any, Dict, List, Optional
     except ImportError:
         # Fallback definitions for compatibility
         from enum import Enum
