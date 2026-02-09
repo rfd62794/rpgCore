@@ -22,3 +22,6 @@
 2026-02-08 22:29:09 | ERROR | src.dgt_core.utils.fix_assets:<module>:61 | ❌ File not found: chest_0_0.yaml
 2026-02-08 22:29:09 | ERROR | src.dgt_core.utils.fix_assets:<module>:61 | ❌ File not found: voyager_0_0.yaml
 2026-02-08 22:29:09 | ERROR | src.dgt_core.utils.fix_assets:<module>:61 | ❌ File not found: tree_0_2.yaml
+2026-02-08 22:29:21 | ERROR | src.dgt_core.utils.fix_assets:<module>:61 | ❌ File not found: chest_0_0.yaml
+2026-02-08 22:29:21 | ERROR | src.dgt_core.utils.fix_assets:<module>:61 | ❌ File not found: voyager_0_0.yaml
+2026-02-08 22:29:21 | ERROR | src.dgt_core.utils.fix_assets:<module>:61 | ❌ File not found: tree_0_2.yaml
