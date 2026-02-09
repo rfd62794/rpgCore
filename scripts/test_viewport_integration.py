@@ -57,6 +57,7 @@ class FallbackViewportManager:
             ppu_scale: int
             focus_mode: bool
             mode: str
+            success: bool = True
         
         # Simple fallback logic
         if window_width < 640 or window_height < 480:
@@ -248,7 +249,7 @@ class ViewportIntegrationTester:
                     results["all_passed"] = False
                     
             except Exception as e:
-                logger.error(f"💥 {name}: Test error - {e}")
+                print(f"💥 {name}: Test error - {e}")
                 results["test_cases"].append({
                     "resolution": f"{width}x{height}",
                     "name": name,
