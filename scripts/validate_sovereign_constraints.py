@@ -14,17 +14,35 @@ from pathlib import Path
 from typing import Dict, List, Tuple, Any, Optional
 import traceback
 
-# Add src to path
-sys.path.append(str(Path(__file__).parent.parent / "src"))
+# Add src to path for imports
+project_root = Path(__file__).parent.parent
+sys.path.insert(0, str(project_root))
+sys.path.insert(0, str(project_root / "src"))
 
-from loguru import logger
-from src.interfaces.protocols import PPUProtocol, Result
-from src.dgt_core.engines.body.unified_ppu import (
-    UnifiedPPU, PPUMode, PPUConfig, 
-    MiyooStrategy, PhosphorStrategy, GameBoyStrategy,
-    EnhancedStrategy, HardwareBurnStrategy
-)
-from src.exceptions.core import PPUException
+try:
+    from src.interfaces.protocols import PPUProtocol, Result
+    from src.dgt_core.engines.body.unified_ppu import (
+        UnifiedPPU, PPUMode, PPUConfig, 
+        MiyooStrategy, PhosphorStrategy, GameBoyStrategy,
+        EnhancedStrategy, HardwareBurnStrategy
+    )
+    from src.exceptions.core import PPUException
+except ImportError as e:
+    print(f"❌ Import Error: {e}")
+    print("🔧 Attempting fallback validation...")
+    
+    # Fallback validation without imports
+    class MockResult:
+        def __init__(self, success: bool, value=None, error=None):
+            self.success = success
+            self.value = value
+            self.error = error
+    
+    class MockPPUConfig:
+        def __init__(self, mode, width, height):
+            self.mode = mode
+            self.width = width
+            self.height = height
 
 
 class SovereignConstraintValidator:
