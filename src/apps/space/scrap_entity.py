@@ -22,6 +22,8 @@ from typing import Optional, Dict, Any
 from dataclasses import dataclass
 import random
 import json
+import math
+import time
 from pathlib import Path
 
 from .entities.space_entity import SpaceEntity, EntityType
@@ -231,7 +233,8 @@ class ScrapLocker:
                 }
                 self._save_locker()
         except Exception as e:
-            print(f"⚠️ Failed to load locker: {e}")
+            from loguru import logger
+            logger.error(f"Failed to load locker: {e}")
             # Initialize with default data
             self.locker_data = {
                 'scrap_counts': {'common': 0, 'rare': 0, 'epic': 0},
@@ -247,7 +250,8 @@ class ScrapLocker:
             with open(self.locker_path, 'w') as f:
                 json.dump(self.locker_data, f, indent=2)
         except Exception as e:
-            print(f"⚠️ Failed to save locker: {e}")
+            from loguru import logger
+            logger.error(f"Failed to save locker: {e}")
     
     def add_scrap(self, scrap_type: str, amount: int = 1) -> Dict[str, Any]:
         """Add scrap to locker and return notification data"""
