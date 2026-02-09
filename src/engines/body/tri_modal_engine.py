@@ -18,8 +18,8 @@ from foundation.types import Result
 
 # Import tri-modal components
 try:
-    # Use relative imports to avoid circular dependencies
-    from .dispatcher import DisplayDispatcher, DisplayMode, RenderPacket
+    # Use body.dispatcher for the main dispatcher
+    from body.dispatcher import DisplayDispatcher, DisplayMode, RenderPacket
     from .terminal import create_terminal_body
     from .cockpit import create_cockpit_body
     from .ppu import create_ppu_body
