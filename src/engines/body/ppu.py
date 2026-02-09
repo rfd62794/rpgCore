@@ -37,10 +37,28 @@ except ImportError as e:
         UI = 4
     
     @dataclass
+    class CanvasEntity:
+        position: Tuple[int, int]
+        size: Tuple[int, int]
+        color: str = "#00FF00"
+    
+    @dataclass
     class RenderEntity:
-        """Fallback entity data for rendering"""
-        world_pos: Tuple[int, int]
-        sprite_id: str
+        entity_id: str
+        canvas_entity: CanvasEntity
+        layer: RenderLayer = RenderLayer.ACTORS
+    
+    class NativeTkinterPPU:
+        def __init__(self):
+            pass
+    
+    class DitheringEngine:
+        def __init__(self):
+            pass
+    
+    class TemplateGenerator:
+        def __init__(self):
+            pass
     
     PPU_AVAILABLE = False
 
