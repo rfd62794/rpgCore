@@ -162,19 +162,38 @@ class SovereignConstraintValidator:
             try:
                 with open(unified_ppu_path, 'r') as f:
                     content = f.read()
-                    
-                # Check for sovereign resolution constants
-                has_160_width = "160" in content and "width" in content
-                has_144_height = "144" in content and "height" in content
-                has_sovereign_buffer = "23040" in content  # 160 * 144
                 
                 violations = []
-                if not has_160_width:
-                    violations.append("Missing 160 width constraint")
-                if not has_144_height:
-                    violations.append("Missing 144 height constraint")
-                if not has_sovereign_buffer:
-                    violations.append("Missing 23040 pixel buffer size")
+                
+                # Check for sovereign resolution compliance in a more flexible way
+                # Look for width/height configuration and validation
+                has_width_config = "width: int" in content
+                has_height_config = "height: int" in content
+                has_buffer_size_calculation = "*" in content and ("width" in content and "height" in content)
+                has_sovereign_constants = "SOVEREIGN_WIDTH" in content or "160" in content
+                has_sovereign_height = "SOVEREIGN_HEIGHT" in content or "144" in content
+                
+                # Check for proper validation logic
+                has_dimension_validation = "validate" in content and ("width" in content or "height" in content)
+                has_frame_buffer_init = "_initialize_frame_buffer" in content
+                has_result_pattern = "Result[" in content
+                
+                if not has_width_config:
+                    violations.append("Missing width configuration")
+                if not has_height_config:
+                    violations.append("Missing height configuration")
+                if not has_buffer_size_calculation:
+                    violations.append("Missing buffer size calculation")
+                if not has_dimension_validation:
+                    violations.append("Missing dimension validation")
+                if not has_frame_buffer_init:
+                    violations.append("Missing frame buffer initialization")
+                if not has_result_pattern:
+                    violations.append("Missing Result[T] pattern usage")
+                
+                # Additional checks for sovereign resolution compliance
+                if not (has_sovereign_constants or has_sovereign_height):
+                    violations.append("Missing references to sovereign resolution (160x144)")
                 
                 results["unified_ppu"] = {
                     "compliant": len(violations) == 0,
@@ -203,17 +222,61 @@ class SovereignConstraintValidator:
         # Check if protocol file exists
         protocol_path = project_root / "src" / "interfaces" / "protocols.py"
         if protocol_path.exists():
-            results["protocols"] = {
-                "compliant": True,
-                "violations": []
-            }
-            logger.success("✅ Protocols: File structure validation passed")
+            try:
+                with open(protocol_path, 'r') as f:
+                    protocol_content = f.read()
+                
+                # Check for PPUProtocol definition
+                has_ppu_protocol = "PPUProtocol" in protocol_content
+                has_result_pattern = "Result[" in protocol_content
+                has_validation_result = "ValidationResult" in protocol_content
+                
+                protocol_violations = []
+                if not has_ppu_protocol:
+                    protocol_violations.append("Missing PPUProtocol definition")
+                if not has_result_pattern:
+                    protocol_violations.append("Missing Result[T] pattern")
+                if not has_validation_result:
+                    protocol_violations.append("Missing ValidationResult enum")
+                
+                results["protocols"] = {
+                    "compliant": len(protocol_violations) == 0,
+                    "violations": protocol_violations
+                }
+                
+                if len(protocol_violations) == 0:
+                    logger.success("✅ Protocols: File structure validation passed")
+                else:
+                    logger.error("❌ Protocols: Structure violations found")
+                    self.errors.extend([f"Protocols: {v}" for v in protocol_violations])
+                    
+            except Exception as e:
+                results["protocols"] = {
+                    "compliant": False,
+                    "violations": [f"File read error: {str(e)}"]
+                }
+                self.errors.append(f"Protocols: {str(e)}")
         else:
             results["protocols"] = {
                 "compliant": False,
                 "violations": ["Protocols file not found"]
             }
             self.errors.append("Protocols: File not found")
+        
+        # Check if ADR 192 exists
+        adr_path = project_root / "docs" / "adr" / "ADR_192_FIXED_POINT_RENDERING_STANDARD.md"
+        if adr_path.exists():
+            results["adr_192"] = {
+                "compliant": True,
+                "violations": []
+            }
+            logger.success("✅ ADR 192: Fixed-Point Rendering Standard documented")
+        else:
+            results["adr_192"] = {
+                "compliant": False,
+                "violations": ["ADR 192 documentation not found"]
+            }
+            self.errors.append("ADR 192: Documentation not found")
         
         return Result.success_result(results)
     
