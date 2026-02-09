@@ -299,9 +299,61 @@ class AsteroidsStrategy:
         """Reset the game"""
         return self.physics_body.reset_game()
     
+    def _render_scrap(self, scrap: ScrapEntity) -> None:
+        """Render scrap entity with pulsing glow effect"""
+        # Get render data from scrap entity
+        render_data = scrap.get_render_data()
+        
+        if not render_data['active']:
+            return
+        
+        # Render main scrap
+        self._render_scrap_pixel(render_data)
+        
+        # Render Newtonian ghosts if near boundaries
+        ghost_positions = scrap.get_wrapped_positions()
+        for ghost_pos in ghost_positions[1:]:  # Skip the main position
+            # Create ghost render data
+            ghost_render_data = render_data.copy()
+            ghost_render_data['position'] = ghost_pos
+            ghost_render_data['glow_intensity'] *= 0.5  # Reduce ghost intensity
+            self._render_scrap_pixel(ghost_render_data)
+    
+    def _render_scrap_pixel(self, render_data: Dict[str, Any]) -> None:
+        """Render scrap as pixel(s) with glow effect"""
+        if not self.frame_buffer:
+            return
+        
+        position = render_data['position']
+        size = render_data['size']
+        color = render_data['color']
+        intensity = render_data['glow_intensity']
+        
+        # Apply intensity to color (simple approach)
+        if intensity < 1.0:
+            color = int(color * intensity)
+        
+        # Render based on size
+        if size == 1:
+            # 1x1 pixel
+            self._set_pixel(int(position.x), int(position.y), color)
+        elif size == 2:
+            # 2x2 pixel block
+            for dx in range(2):
+                for dy in range(2):
+                    self._set_pixel(int(position.x + dx), int(position.y + dy), color)
+    
     def get_physics_debug_info(self) -> Dict[str, Any]:
         """Get debug information from physics system"""
         return self.physics_body.get_debug_info()
+    
+    def get_pending_notifications(self) -> List[Dict[str, Any]]:
+        """Get pending notifications for terminal handshake"""
+        return self.physics_body.get_pending_notifications()
+    
+    def get_scrap_locker_summary(self) -> Dict[str, Any]:
+        """Get scrap locker summary"""
+        return self.physics_body.get_scrap_locker().get_locker_summary()
     
     def get_render_stats(self) -> Dict[str, Any]:
         """Get rendering statistics"""
