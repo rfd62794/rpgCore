@@ -170,9 +170,10 @@ class FinalVerification:
             new_font = self.font_manager.get_font_for_energy(self.energy_level)
             
             if old_font != new_font:
-                self.font_manager.set_font(new_font)
-                self.font_label.config(text=f"Font: {new_font}")
-                logger.info(f"🔤 Font switched: {old_font} → {new_font} (Energy: {self.energy_level}%)")
+                result = self.font_manager.set_font(new_font)
+                if result:  # Only update label if successful
+                    self.font_label.config(text=f"Font: {new_font}")
+                    logger.info(f"🔤 Font switched: {old_font} → {new_font} (Energy: {self.energy_level}%)")
     
     def _start_test(self):
         """Start the energy-to-font transition test"""
