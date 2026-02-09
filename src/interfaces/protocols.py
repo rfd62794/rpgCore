@@ -11,9 +11,16 @@ from typing import Protocol, TypeVar, Optional, Dict, List, Tuple, Any, Union
 from dataclasses import dataclass
 from abc import ABC, abstractmethod
 from enum import Enum
+import sys
+from pathlib import Path
+
+# Add src to path for absolute imports
+src_path = Path(__file__).parent.parent
+if str(src_path) not in sys.path:
+    sys.path.insert(0, str(src_path))
 
 # Import common types to avoid circular dependencies
-from ..common.types import Result, ValidationResult
+from common.types import Result, ValidationResult
 
 # Generic type variables
 T = TypeVar('T')

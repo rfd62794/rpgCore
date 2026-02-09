@@ -11,8 +11,15 @@ from abc import ABC, abstractmethod
 from typing import Optional, Dict, Any, List, Tuple
 from dataclasses import dataclass
 import time
+import sys
+from pathlib import Path
 
-from ..common.types import Result, ValidationResult
+# Add src to path for absolute imports
+src_path = Path(__file__).parent.parent
+if str(src_path) not in sys.path:
+    sys.path.insert(0, str(src_path))
+
+from common.types import Result, ValidationResult
 
 
 @dataclass
