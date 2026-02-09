@@ -11,6 +11,73 @@ from pathlib import Path
 
 from pydantic import BaseModel, Field, validator, HttpUrl
 from loguru import logger
+import time
+
+
+# === ADR 182: Universal Packet Handshake ===
+# Common language for SectorManager (Producer) and TriModalEngine (Consumer)
+
+class DisplayMode(str, Enum):
+    """Three display lenses for different environmental pressures"""
+    TERMINAL = "terminal"  # Console/CLI - High-speed, low-overhead
+    COCKPIT = "cockpit"    # Glass/Grid - Modular dashboards
+    PPU = "ppu"           # Near-Gameboy - 60Hz dithered rendering
+
+
+@dataclass
+class RenderLayer:
+    """Universal render layer specification"""
+    depth: int
+    type: str  # "baked", "dynamic", "effect"
+    id: str
+    x: Optional[int] = None
+    y: Optional[int] = None
+    effect: Optional[str] = None
+    metadata: Dict[str, Any] = None
+    
+    def __post_init__(self):
+        if self.metadata is None:
+            self.metadata = {}
+
+
+@dataclass 
+class HUDData:
+    """Heads-up display data"""
+    line_1: str = ""
+    line_2: str = ""
+    line_3: str = ""
+    line_4: str = ""
+    metadata: Dict[str, Any] = None
+    
+    def __post_init__(self):
+        if self.metadata is None:
+            self.metadata = {}
+
+
+class RenderPacket(BaseModel):
+    """Universal render packet for stateless rendering - ADR 182"""
+    mode: DisplayMode
+    layers: List[RenderLayer] = Field(default_factory=list)
+    hud: HUDData = Field(default_factory=HUDData)
+    timestamp: float = Field(default_factory=time.time)
+    metadata: Dict[str, Any] = Field(default_factory=dict)
+    
+    class Config:
+        arbitrary_types_allowed = True
+    
+    @validator('layers', pre=True)
+    def validate_layers(cls, v):
+        """Ensure layers are RenderLayer objects"""
+        if isinstance(v, list):
+            return [RenderLayer(**layer) if isinstance(layer, dict) else layer for layer in v]
+        return v
+    
+    @validator('hud', pre=True)
+    def validate_hud(cls, v):
+        """Ensure HUD is HUDData object"""
+        if isinstance(v, dict):
+            return HUDData(**v)
+        return v
 
 
 class MaterialType(str, Enum):
