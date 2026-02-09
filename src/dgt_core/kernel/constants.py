@@ -40,6 +40,31 @@ INTEREST_POINT_MIN_DISTANCE = 5
 INTEREST_POINT_MAX_PER_CHUNK = 3
 INTEREST_POINT_SPAWN_CHANCE = 0.05  # 5% chance per chunk
 
+# === SOVEREIGN RESOLUTION CONSTANTS (ADR 192) ===
+
+SOVEREIGN_WIDTH = 160
+SOVEREIGN_HEIGHT = 144
+SOVEREIGN_PIXELS = SOVEREIGN_WIDTH * SOVEREIGN_HEIGHT  # 23,040
+
+# === VIEWPORT SCALING CONSTANTS (ADR 193) ===
+
+# Standard scale buckets for responsive design
+SCALE_BUCKETS = {
+    "miyoo": {"width": 320, "height": 240, "scale": 1, "mode": "focus"},
+    "hd": {"width": 1280, "height": 720, "scale": 4, "mode": "dashboard"},
+    "fhd": {"width": 1920, "height": 1080, "scale": 7, "mode": "mfd"},
+    "qhd": {"width": 2560, "height": 1440, "scale": 9, "mode": "sovereign"}
+}
+
+# Focus mode thresholds
+FOCUS_MODE_WIDTH_THRESHOLD = 640
+FOCUS_MODE_HEIGHT_THRESHOLD = 480
+
+# Wing configuration
+MIN_WING_WIDTH = 200
+MAX_PPU_SCALE = 16
+WING_ALPHA_DEFAULT = 0.8
+
 # === TILE AND RENDERING CONSTANTS ===
 
 TILE_SIZE_PIXELS = 8
