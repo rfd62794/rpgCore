@@ -71,7 +71,8 @@ class MiyooLauncher:
             return
         
         # Reset game state
-        game.game_state = game.GameState.PREPARATION
+        from survival_game_simple import GameState
+        game.game_state = GameState.PREPARATION
         game.game_time = 0.0
         game.player_physics.x = 80.0
         game.player_physics.y = 36.0
