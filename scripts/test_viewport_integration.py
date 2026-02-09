@@ -114,6 +114,9 @@ class FallbackLogger:
 # Replace STANDARD_SCALE_BUCKETS with fallback
 STANDARD_SCALE_BUCKETS = FALLBACK_SCALE_BUCKETS
 
+# Use fallback logger
+logger = FallbackLogger()
+
 
 class ViewportIntegrationTester:
     """Comprehensive viewport integration testing"""
