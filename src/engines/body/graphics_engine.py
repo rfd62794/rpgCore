@@ -66,6 +66,20 @@ except ImportError as e:
             pass
 
 
+class RenderLayer:
+    """Fallback render layer class"""
+    BACKGROUND = "background"
+    SURFACES = "surfaces"
+    FRINGE = "fringe"
+    ACTORS = "actors"
+    UI = "ui"
+    
+    def __init__(self, name: str):
+        self.name = name
+    
+    def __str__(self):
+        return self.name
+
 @dataclass
 class RenderFrame:
     """Complete frame with all layers"""

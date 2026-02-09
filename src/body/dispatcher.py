@@ -22,9 +22,15 @@ try:
 except ImportError as e:
     logger.warning(f"⚠️ Kernel models not available: {e}")
     KERNEL_MODELS_AVAILABLE = False
-    # Fallback definitions for compatibility
-    from enum import Enum
-    from dataclasses import dataclass, field
+    # Use foundation types as fallback
+    try:
+        from src.foundation.types import Result
+        from src.foundation.interfaces.protocols import RenderProtocol
+    except ImportError:
+        # Fallback definitions for compatibility
+        from enum import Enum
+        from dataclasses import dataclass, field
+        from typing import Any, Dict, List, Optional
     
     class DisplayMode(Enum):
         TERMINAL = "terminal"
