@@ -437,7 +437,7 @@ class ViewportIntegrationTester:
                 logger.error("❌ Dynamic resizing test failed")
                 
         except Exception as e:
-            logger.error(f"💥 Dynamic resizing test error: {e}")
+            print(f"💥 Dynamic resizing test error: {e}")
             results["all_passed"] = False
             results["error"] = str(e)
         
