@@ -17,7 +17,7 @@ from pathlib import Path
 
 from loguru import logger
 
-from core.state import (
+from src.dgt_core.kernel.state import (
     Tile, TileType, BiomeType, InterestPoint, InterestType, Chunk, WorldDelta, validate_position, TileData
 )
 from core.constants import (
