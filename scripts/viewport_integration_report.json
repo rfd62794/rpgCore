@@ -46,29 +46,77 @@
       {
         "resolution": "320x240",
         "name": "Miyoo",
-        "status": "error",
-        "error": "'FallbackLayout' object has no attribute 'center_anchor'"
+        "status": "passed",
+        "layout_mode": "focus",
+        "ppu_scale": 1,
+        "focus_mode": true,
+        "center_region": {
+          "x": 80,
+          "y": 48,
+          "width": 160,
+          "height": 144
+        },
+        "validation": {
+          "valid": true,
+          "errors": []
+        }
       },
       {
         "resolution": "1280x720",
         "name": "HD",
-        "status": "error",
-        "error": "'FallbackLayout' object has no attribute 'center_anchor'"
+        "status": "passed",
+        "layout_mode": "dashboard",
+        "ppu_scale": 5,
+        "focus_mode": false,
+        "center_region": {
+          "x": 240,
+          "y": 0,
+          "width": 800,
+          "height": 720
+        },
+        "validation": {
+          "valid": true,
+          "errors": []
+        }
       },
       {
         "resolution": "1920x1080",
         "name": "FHD",
-        "status": "error",
-        "error": "'FallbackLayout' object has no attribute 'center_anchor'"
+        "status": "passed",
+        "layout_mode": "dashboard",
+        "ppu_scale": 7,
+        "focus_mode": false,
+        "center_region": {
+          "x": 400,
+          "y": 36,
+          "width": 1120,
+          "height": 1008
+        },
+        "validation": {
+          "valid": true,
+          "errors": []
+        }
       },
       {
         "resolution": "2560x1440",
         "name": "QHD",
-        "status": "error",
-        "error": "'FallbackLayout' object has no attribute 'center_anchor'"
+        "status": "passed",
+        "layout_mode": "dashboard",
+        "ppu_scale": 10,
+        "focus_mode": false,
+        "center_region": {
+          "x": 480,
+          "y": 0,
+          "width": 1600,
+          "height": 1440
+        },
+        "validation": {
+          "valid": true,
+          "errors": []
+        }
       }
     ],
-    "all_passed": false
+    "all_passed": true
   },
   "unified_ppu": {
     "status": "skipped",
@@ -187,9 +235,9 @@
   },
   "summary": {
     "total_tests": 7,
-    "passed_tests": 1,
-    "failed_tests": 2,
+    "passed_tests": 2,
+    "failed_tests": 1,
     "skipped_tests": 3,
-    "overall_status": "failed"
+    "overall_status": "mixed"
   }
 }
