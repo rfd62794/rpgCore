@@ -92,14 +92,27 @@ class SpaceVoyagerEngine:
         """Apply Newtonian physics and constraints"""
         
         # Apply manual thrust (if set via thrust_input_x/y)
-        # F = ma -> a = F/m
-        
         if physics.thrust_input_x != 0 or physics.thrust_input_y != 0:
-            accel_x = (physics.thrust_input_x * physics.max_thrust) / physics.mass
-            accel_y = (physics.thrust_input_y * physics.max_thrust) / physics.mass
+            # Calculate thrust magnitude for energy drain
+            thrust_msg = math.sqrt(physics.thrust_input_x**2 + physics.thrust_input_y**2)
             
-            physics.velocity_x += accel_x * dt
-            physics.velocity_y += accel_y * dt
+            # Energy Drain: (Thrust * Rate) * (Mass / 10.0)
+            # Heavier ships drain battery significantly faster
+            mass_factor = max(1.0, physics.mass / 10.0)
+            energy_drain = thrust_msg * physics.base_drain_rate * mass_factor * dt
+            
+            if physics.energy > 0:
+                physics.energy = max(0.0, physics.energy - energy_drain)
+                
+                # Apply thrust
+                accel_x = (physics.thrust_input_x * physics.max_thrust) / physics.mass
+                accel_y = (physics.thrust_input_y * physics.max_thrust) / physics.mass
+                
+                physics.velocity_x += accel_x * dt
+                physics.velocity_y += accel_y * dt
+            else:
+                # Dead Drift: No thrust allowed
+                pass
             
             # Reset specialized input (impulse-like) if needed, 
             # but usually the input persists until changed. 

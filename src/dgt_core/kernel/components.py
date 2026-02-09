@@ -19,6 +19,11 @@ class PhysicsComponent:
     max_thrust: float = 100.0
     drag_coefficient: float = 0.98
     
+    # Energy System
+    energy: float = 100.0
+    max_energy: float = 100.0
+    base_drain_rate: float = 0.5  # Energy per second at max thrust
+
     # Input state (Vector thrust)
     thrust_input_x: float = 0.0
     thrust_input_y: float = 0.0

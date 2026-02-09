@@ -122,8 +122,26 @@ class SectorRefactorDemo:
             # 1. Logic (Input)
             self.update_input()
             
-            # 2. Sector Update (Physics + Wrap + Mass)
-            self.sector.update(FRAME_DELAY_SECONDS)
+            # 2. Sector Update (Physics + Wrap + Mass + Survival)
+            events = self.sector.update(FRAME_DELAY_SECONDS)
+            
+            # Handle Events
+            if "PORTAL_SPAWNED" in events:
+                logger.warning("⚠️ PROXIMITY ALERT: EXTRACTION PORTAL DETECTED")
+                # Register portal sprite
+                self.ppu.add_sprite(type('obj', (object,), {'sprite_id': 'portal', 'width': 8, 'height': 8, 'color': '#00FFFF', 'dither_pattern': 'solid', 'layer': 2}))
+
+            if "VICTORY" in events:
+                logger.success(f"🚀 EXTRACTION COMPLETE | NEURAL PATTERN SECURED")
+                logger.success(f"📦 CARGO TRANSFERRED: {self.player_entity.inventory.items.get('ore', 0)} Units | MASS: {self.player_entity.physics.mass:.1f}")
+                time.sleep(2)
+                break
+                
+            if "CRASH_FAIL" in events:
+                logger.error("🛑 DE-SYNC DETECTED | CRITICAL IMPACT")
+                logger.info("🏥 MED-BAY LINK ESTABLISHED... RE-SOCKETING CORE... CLONE 05 ACTIVATED")
+                time.sleep(2)
+                break
             
             # 3. Render
             render_packet = self.sector.get_render_data()
@@ -135,12 +153,19 @@ class SectorRefactorDemo:
             sleep_time = max(0, FRAME_DELAY_SECONDS - elapsed)
             time.sleep(sleep_time)
             
-            # Report every second
+            # Report every second (HUD Update)
             self.frame_count += 1
             if time.time() - self.last_report > 1.0:
                 fps = self.frame_count / (time.time() - self.last_report)
-                mass = self.player_entity.physics.mass
-                logger.info(f"📈 {fps:.2f} FPS | Entities: {len(self.sector.entities)} | Player Mass: {mass:.1f}")
+                t_minus = 60.0 - self.sector.time_elapsed
+                energy = self.player_entity.physics.energy
+                status = "DRIFTING" if energy <= 0 else "OPERATIONAL"
+                
+                if t_minus > 0:
+                    logger.info(f"⏱️ T-MINUS: {t_minus:.1f}s | 🔋 ENERGY: {energy:.1f}% [{status}]")
+                else:
+                    logger.warning(f"🚨 EXTRACTION WINDOW OPEN | GO TO PORTAL!")
+                    
                 self.frame_count = 0
                 self.last_report = time.time()
         
