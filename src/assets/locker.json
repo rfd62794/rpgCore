@@ -1,0 +1,14 @@
+{
+  "player_stats": {
+    "total_scrap_collected": 0,
+    "successful_extractions": 0,
+    "failed_attempts": 0,
+    "clone_number": 1,
+    "highest_mass_achieved": 0.0,
+    "total_distance_traveled": 0.0,
+    "credits": 0
+  },
+  "recent_extractions": [],
+  "unlocked_stories": [],
+  "med_bay_logs": []
+}
