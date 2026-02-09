@@ -37,26 +37,40 @@ class CanvasEntity:
 
 # Try to import real PPU components
 try:
-    from graphics.ppu_tk_native import NativeTkinterPPU, RenderEntity as RealRenderEntity, RenderLayer as RealRenderLayer, CanvasEntity as RealCanvasEntity
-    from tools.dithering_engine import DitheringEngine, TemplateGenerator
+    # Use absolute imports to avoid circular dependencies
+    import sys
+    import os
+    sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'graphics'))
+    
+    from ppu_tk_native import NativeTkinterPPU, RenderEntity as RealRenderEntity, RenderLayer as RealRenderLayer, CanvasEntity as RealCanvasEntity
+    
+    sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'tools'))
+    from dithering_engine import DitheringEngine, TemplateGenerator
+    
     PPU_AVAILABLE = True
     # Use real classes
     RenderEntity = RealRenderEntity
     RenderLayer = RealRenderLayer
     CanvasEntity = RealCanvasEntity
+    
+    logger.info("✅ PPU components loaded successfully")
+    
 except ImportError as e:
     logger.warning(f"⚠️ PPU components not available: {e}")
     PPU_AVAILABLE = False
     
     # Fallback classes already defined above
     class DitheringEngine:
-        pass
+        def __init__(self):
+            pass
     
     class TemplateGenerator:
-        pass
+        def __init__(self):
+            pass
     
     class NativeTkinterPPU:
-        pass
+        def __init__(self):
+            pass
 
 from .dispatcher import DisplayBody, RenderPacket, HUDData
 

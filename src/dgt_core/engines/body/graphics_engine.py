@@ -25,13 +25,44 @@ from loguru import logger
 
 # === KERNEL BRIDGE IMPORTS ===
 # Importing from the new DGT Kernel instead of legacy src.core
-from src.dgt_core.kernel.state import (
-    GameState, TileType, BiomeType, SubtitleEvent, Entity,
-    VIEWPORT_WIDTH_PIXELS, VIEWPORT_HEIGHT_PIXELS,
+try:
+    from dgt_core.kernel.state import (
+        GameState, TileType, BiomeType, SubtitleEvent, Entity,
+        VIEWPORT_WIDTH_PIXELS, VIEWPORT_HEIGHT_PIXELS,
     TILE_SIZE_PIXELS, VIEWPORT_TILES_X, VIEWPORT_TILES_Y,
     RENDER_LAYERS, COLOR_PALETTE, RenderLayer
 )
-from src.dgt_core.kernel.constants import TARGET_FPS, FRAME_DELAY_MS
+    from dgt_core.kernel.constants import TARGET_FPS, FRAME_DELAY_MS
+except ImportError as e:
+    logger.warning(f"⚠️ Could not import DGT kernel state: {e}")
+    # Fallback imports
+    try:
+        from src.dgt_core.kernel.state import (
+            GameState, TileType, BiomeType, SubtitleEvent, Entity,
+            VIEWPORT_WIDTH_PIXELS, VIEWPORT_HEIGHT_PIXELS,
+            TILE_SIZE_PIXELS, VIEWPORT_TILES_X, VIEWPORT_TILES_Y,
+            RENDER_LAYERS, COLOR_PALETTE, RenderLayer
+        )
+        from src.dgt_core.kernel.constants import TARGET_FPS, FRAME_DELAY_MS
+    except ImportError:
+        logger.error("❌ Could not import any kernel state components")
+        # Define fallback constants
+        TARGET_FPS = 60
+        FRAME_DELAY_MS = 16
+        VIEWPORT_WIDTH_PIXELS = 160
+        VIEWPORT_HEIGHT_PIXELS = 144
+        TILE_SIZE_PIXELS = 8
+        VIEWPORT_TILES_X = 20
+        VIEWPORT_TILES_Y = 18
+        
+        class GameState:
+            pass
+        class TileType:
+            pass
+        class BiomeType:
+            pass
+        class RenderLayer:
+            pass
 
 
 @dataclass

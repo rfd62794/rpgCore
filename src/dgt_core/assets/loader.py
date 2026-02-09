@@ -26,6 +26,13 @@ try:
     PIL_AVAILABLE = True
 except ImportError:
     PIL_AVAILABLE = False
+    # Create fallback classes for type hints
+    class Image:
+        @staticmethod
+        def new(size, color, mode):
+            return None
+        class Image:
+            pass
 
 from core.state import TileType, BiomeType
 from core.constants import TILE_SIZE_PIXELS, COLOR_PALETTE

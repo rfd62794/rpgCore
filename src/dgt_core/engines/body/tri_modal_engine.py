@@ -17,10 +17,11 @@ from loguru import logger
 
 # Import tri-modal components
 try:
-    from body.dispatcher import DisplayDispatcher, DisplayMode, RenderPacket
-    from body.terminal import create_terminal_body
-    from body.cockpit import create_cockpit_body
-    from body.ppu import create_ppu_body
+    # Use relative imports to avoid circular dependencies
+    from .dispatcher import DisplayDispatcher, DisplayMode, RenderPacket
+    from .terminal import create_terminal_body
+    from .cockpit import create_cockpit_body
+    from .ppu import create_ppu_body
     TRI_MODAL_AVAILABLE = True
 except ImportError as e:
     logger.warning(f"⚠️ Tri-Modal Display Suite not available: {e}")
