@@ -174,12 +174,12 @@ class ViewportIntegrationTester:
         
         for bucket in STANDARD_SCALE_BUCKETS:
             bucket_info = {
-                "resolution": bucket.resolution,
-                "width": bucket.width,
-                "height": bucket.height,
-                "layout_mode": bucket.layout_mode.value,
-                "ppu_scale": bucket.ppu_scale,
-                "wing_width": bucket.wing_width,
+                "resolution": bucket["resolution"],
+                "width": bucket["width"],
+                "height": bucket["height"],
+                "layout_mode": bucket["mode"],
+                "ppu_scale": bucket["scale"],
+                "wing_width": bucket["wing_width"],
                 "valid": self._validate_scale_bucket(bucket)
             }
             results["bucket_details"].append(bucket_info)
@@ -189,15 +189,15 @@ class ViewportIntegrationTester:
         results["all_valid"] = all_valid
         
         if all_valid:
-            logger.success("✅ All scale buckets are valid")
+            print("✅ All scale buckets are valid")
         else:
-            logger.error("❌ Some scale buckets are invalid")
+            print("❌ Some scale buckets are invalid")
         
         return results
     
     def test_responsive_scaling(self) -> Dict[str, Any]:
         """Test responsive viewport scaling"""
-        logger.info("🔍 Testing responsive viewport scaling")
+        print("🔍 Testing responsive viewport scaling")
         
         results = {
             "test_cases": [],
