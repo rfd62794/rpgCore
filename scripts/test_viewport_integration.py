@@ -58,14 +58,19 @@ class FallbackViewportManager:
             focus_mode: bool
             mode: str
             success: bool = True
+            center_anchor: Any = None
         
         # Simple fallback logic
         if window_width < 640 or window_height < 480:
             ppu_scale = min(window_width // self.SOVEREIGN_WIDTH, window_height // self.SOVEREIGN_HEIGHT)
-            return FallbackLayout(window_width, window_height, ppu_scale, True, "focus")
+            center_x = (window_width - (SOVEREIGN_WIDTH * ppu_scale)) // 2
+            center_y = (window_height - (SOVEREIGN_HEIGHT * ppu_scale)) // 2
+            return FallbackLayout(window_width, window_height, ppu_scale, True, "focus", center_anchor=(center_x, center_y))
         else:
             ppu_scale = window_height // self.SOVEREIGN_HEIGHT
-            return FallbackLayout(window_width, window_height, ppu_scale, False, "dashboard")
+            center_x = (window_width - (SOVEREIGN_WIDTH * ppu_scale)) // 2
+            center_y = (window_height - (SOVEREIGN_HEIGHT * ppu_scale)) // 2
+            return FallbackLayout(window_width, window_height, ppu_scale, False, "dashboard", center_anchor=(center_x, center_y))
     
     def get_ppu_render_region(self):
         """Fallback PPU region"""
@@ -254,8 +259,8 @@ class ViewportIntegrationTester:
                     "ppu_scale": layout.ppu_scale,
                     "focus_mode": layout.focus_mode,
                     "center_region": {
-                        "x": layout.center_anchor.x if hasattr(layout, 'center_anchor') else 0,
-                        "y": layout.center_anchor.y if hasattr(layout, 'center_anchor') else 0,
+                        "x": layout.center_anchor[0] if isinstance(layout.center_anchor, tuple) else layout.center_anchor.x if hasattr(layout.center_anchor, 'x') else 0,
+                        "y": layout.center_anchor[1] if isinstance(layout.center_anchor, tuple) else layout.center_anchor.y if hasattr(layout.center_anchor, 'y') else 0,
                         "width": SOVEREIGN_WIDTH * layout.ppu_scale,
                         "height": SOVEREIGN_HEIGHT * layout.ppu_scale
                     },
