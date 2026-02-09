@@ -37,6 +37,22 @@ class LegacyRenderState:
             self.entities = []
         if self.hud is None:
             self.hud = {}
+    
+    def get_tile(self, tile_type: str) -> np.ndarray:
+        """Get tile sprite for type"""
+        if isinstance(tile_type, str):
+            # Handle string tile types
+            tile_map = {
+                'grass': TileType.GRASS,
+                'stone': TileType.STONE,
+                'water': TileType.WATER,
+                'dirt': TileType.DIRT
+            }
+            tile_type_enum = tile_map.get(tile_type, TileType.GRASS)
+        else:
+            tile_type_enum = tile_type
+        
+        return self.tiles.get(tile_type_enum, self.tiles[TileType.GRASS])
 
 class LegacyGraphicsEngineAdapter:
     """
