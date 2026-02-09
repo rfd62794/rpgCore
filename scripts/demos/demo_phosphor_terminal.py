@@ -14,6 +14,7 @@ import asyncio
 import time
 import random
 import sys
+import tkinter as tk
 from pathlib import Path
 from typing import Dict, Any, Optional
 
@@ -75,8 +76,6 @@ class PhosphorTerminalDemo:
             return False
         
         try:
-            import tkinter as tk
-            
             # Create root window
             self.root_window = tk.Tk()
             self.root_window.title("📟 Sovereign Scout - Phosphor Terminal Demo")
