@@ -80,6 +80,9 @@ EMERGENCY_SAVE_PREFIX = 'emergency_save'
 LOG_LEVEL_DEFAULT = 'INFO'
 LOG_FORMAT = "{time:YYYY-MM-DD HH:mm:ss} | {level} | {name}:{function}:{line} | {message}"
 
+# === MIND ENGINE ===
+INTENT_COOLDOWN_MS = 1000  # 1 second cooldown between intents
+
 # === VALIDATION ===
 class ValidationResult:
     """Validation result for system operations"""

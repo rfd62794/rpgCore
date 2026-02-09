@@ -12,8 +12,8 @@ from dataclasses import dataclass
 from enum import Enum
 
 from loguru import logger
-from core.state import WorldDelta
-from utils.asset_loader import AssetDefinition
+from engines.kernel.state import WorldDelta
+from foundation.utils import AssetDefinition
 
 
 class CombatState(Enum):
