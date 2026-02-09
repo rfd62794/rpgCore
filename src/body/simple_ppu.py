@@ -129,7 +129,7 @@ class SimplePPU:
         )
     
     def _draw_triangle(self, physics: PhysicsComponent) -> None:
-        """Draw player as a triangle (Sovereign Scout) with ghosting"""
+        """Draw player as a triangle (Sovereign Scout) with Newtonian ghosting"""
         if not self.canvas:
             return
         
@@ -157,50 +157,69 @@ class SimplePPU:
             color = "#ff0000"  # Red
             ghost_color = "#440000"  # Dark red ghost
         
-        # Draw ghost if near screen edge (within 10%)
+        # === NEWTONIAN SCREEN WRAP GHOSTING ===
+        # Draw ghost images when near screen edges (within 10% of logical bounds)
         edge_threshold_x = self.LOGICAL_WIDTH * 0.1  # 16 pixels
         edge_threshold_y = self.LOGICAL_HEIGHT * 0.1  # 14.4 pixels
         
+        # Ghost on opposite edges when near boundaries
+        ghost_positions = []
+        
+        # Check horizontal wrapping
         if physics.x < edge_threshold_x:
-            # Ghost on right edge
-            ghost_px = self.PHYSICAL_WIDTH - px
-            ghost_points = [
-                ghost_px, py - size,
-                ghost_px - size, py + size,
-                ghost_px + size, py + size
-            ]
-            self.canvas.create_polygon(ghost_points, fill=ghost_color, outline="", width=1, tags="ghost")
+            # Near left edge - show ghost on right
+            ghost_px = self.PHYSICAL_WIDTH + px  # Wrap to right side
+            ghost_positions.append((ghost_px, py))
         elif physics.x > self.LOGICAL_WIDTH - edge_threshold_x:
-            # Ghost on left edge
-            ghost_px = -px
-            ghost_points = [
-                ghost_px, py - size,
-                ghost_px - size, py + size,
-                ghost_px + size, py + size
-            ]
-            self.canvas.create_polygon(ghost_points, fill=ghost_color, outline="", width=1, tags="ghost")
+            # Near right edge - show ghost on left
+            ghost_px = px - self.PHYSICAL_WIDTH  # Wrap to left side
+            ghost_positions.append((ghost_px, py))
         
+        # Check vertical wrapping
         if physics.y < edge_threshold_y:
-            # Ghost on bottom edge
-            ghost_py = self.PHYSICAL_HEIGHT - py
-            ghost_points = [
-                px, ghost_py - size,
-                px - size, ghost_py + size,
-                px + size, ghost_py + size
-            ]
-            self.canvas.create_polygon(ghost_points, fill=ghost_color, outline="", width=1, tags="ghost")
+            # Near top edge - show ghost on bottom
+            ghost_py = self.PHYSICAL_HEIGHT + py  # Wrap to bottom
+            ghost_positions.append((px, ghost_py))
         elif physics.y > self.LOGICAL_HEIGHT - edge_threshold_y:
-            # Ghost on top edge
-            ghost_py = -py
-            ghost_points = [
-                px, ghost_py - size,
-                px - size, ghost_py + size,
-                px + size, ghost_py + size
-            ]
-            self.canvas.create_polygon(ghost_points, fill=ghost_color, outline="", width=1, tags="ghost")
+            # Near bottom edge - show ghost on top
+            ghost_py = py - self.PHYSICAL_HEIGHT  # Wrap to top side
+            ghost_positions.append((px, ghost_py))
         
-        # Draw main triangle
-        self.canvas.create_polygon(points, fill=color, outline="white", width=1, tags="player")
+        # Draw ghost triangles with reduced opacity
+        for ghost_x, ghost_y in ghost_positions:
+            ghost_points = [
+                ghost_x, ghost_y - size,
+                ghost_x - size, ghost_y + size,
+                ghost_x + size, ghost_y + size
+            ]
+            self.canvas.create_polygon(
+                ghost_points, fill=ghost_color, outline="", 
+                width=1, tags="ghost", stipple="gray50"  # Reduced opacity
+            )
+        
+        # Draw main triangle (full opacity)
+        self.canvas.create_polygon(
+            points, fill=color, outline="white", 
+            width=1, tags="player"
+        )
+        
+        # Add velocity trail effect for high-speed movement
+        speed = (physics.velocity_x**2 + physics.velocity_y**2)**0.5
+        if speed > 2.0:  # Only show trail for significant movement
+            trail_length = min(speed * 2, size * 2)  # Scale trail with speed
+            trail_x = px - physics.velocity_x * trail_length / 10
+            trail_y = py - physics.velocity_y * trail_length / 10
+            
+            # Draw motion trail
+            trail_points = [
+                trail_x, trail_y - size * 0.5,
+                trail_x - size * 0.5, trail_y + size * 0.5,
+                trail_x + size * 0.5, trail_y + size * 0.5
+            ]
+            self.canvas.create_polygon(
+                trail_points, fill=ghost_color, outline="",
+                width=1, tags="trail", stipple="gray75"
+            )
     
     def _draw_asteroids(self, asteroids: List[Dict[str, Any]]) -> None:
         """Draw asteroids as circles"""
