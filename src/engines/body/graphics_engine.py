@@ -85,14 +85,15 @@ class RenderFrame:
     """Complete frame with all layers"""
     width: int
     height: int
-    layers: Dict[RenderLayer, np.ndarray]
+    layers: Dict[str, np.ndarray]
     timestamp: float = field(default_factory=time.time)
     
     def __post_init__(self):
         # Ensure all layers exist
-        for layer in RenderLayer:
-            if layer not in self.layers:
-                self.layers[layer] = np.zeros((self.height, self.width, 3), dtype=np.uint8)
+        layer_names = ["background", "surfaces", "fringe", "actors", "ui"]
+        for layer_name in layer_names:
+            if layer_name not in self.layers:
+                self.layers[layer_name] = np.zeros((self.height, self.width, 3), dtype=np.uint8)
 
 
 @dataclass
