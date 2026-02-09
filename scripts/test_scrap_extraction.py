@@ -632,7 +632,7 @@ class ScrapExtractionTester:
                 "name": "Session Statistics",
                 "has_session_stats": len(session_stats) > 0,
                 "scrap_collected_recorded": session_stats.get('scrap_collected', 0) > 0,
-                "session_start_recorded': session_stats.get('session_start', 0) > 0,
+                "session_start_recorded": session_stats.get('session_start', 0) > 0,
                 "passed": len(session_stats) > 0 and session_stats.get('scrap_collected', 0) > 0
             }
             results["test_cases"].append(test_case)
