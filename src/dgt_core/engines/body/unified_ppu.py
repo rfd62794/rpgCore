@@ -11,6 +11,8 @@ Consolidates 5 PPU variants into single implementation using strategy pattern:
 - Hardware Burn PPU (Retro effects)
 
 Implements PPUProtocol with Result[T] pattern and full type safety.
+
+Sovereign Resolution: 160x144 (ADR 192 Fixed-Point Rendering Standard)
 """
 
 from typing import Dict, List, Tuple, Optional, Any, Union
@@ -24,6 +26,12 @@ from loguru import logger
 from ....interfaces.protocols import PPUProtocol, Result, ValidationResult
 from ....abc.base import BasePPU
 from ....exceptions.core import PPUException, create_ppu_exception
+
+
+# Sovereign Resolution Constants (ADR 192)
+SOVEREIGN_WIDTH = 160
+SOVEREIGN_HEIGHT = 144
+SOVEREIGN_PIXELS = SOVEREIGN_WIDTH * SOVEREIGN_HEIGHT  # 23,040
 
 
 class PPUMode(Enum):

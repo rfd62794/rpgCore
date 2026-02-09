@@ -1,24 +1,22 @@
 # Sovereign Constraints Validation Report
-Generated: 2026-02-08 21:38:00
+Generated: 2026-02-08 21:38:25
 
 ## Summary
-- Strategies Tested: 2
-- Compliant Strategies: 1
-- Compliance Rate: 50.0%
+- Strategies Tested: 3
+- Compliant Strategies: 2
+- Compliance Rate: 66.7%
 
 ## Detailed Results
 ### unified_ppu: FAIL
 **Violations:**
-- Missing 160 width constraint
-- Missing 144 height constraint
-- Missing 23040 pixel buffer size
+- Missing references to sovereign resolution (160x144)
 
 ### protocols: PASS
 
+### adr_192: PASS
+
 ## Errors
-- UnifiedPPU: Missing 160 width constraint
-- UnifiedPPU: Missing 144 height constraint
-- UnifiedPPU: Missing 23040 pixel buffer size
+- UnifiedPPU: Missing references to sovereign resolution (160x144)
 
 ## Sovereign Constraints
 - Resolution: 160x144
