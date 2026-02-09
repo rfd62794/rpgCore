@@ -123,7 +123,7 @@ class ViewportIntegrationTester:
     
     def run_all_tests(self) -> Dict[str, Any]:
         """Run all viewport integration tests"""
-        logger.info("🚀 Starting Viewport Integration Test Suite")
+        print("🚀 Starting Viewport Integration Test Suite")
         
         results = {}
         
