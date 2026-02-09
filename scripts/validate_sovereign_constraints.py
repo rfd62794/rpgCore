@@ -76,6 +76,10 @@ except ImportError as e:
     HardwareBurnStrategy = None
     PPUException = Exception
     IMPORTS_AVAILABLE = False
+    
+    # Add class method to MockResult
+    MockResult.success_result = lambda value: MockResult(True, value)
+    MockResult.failure_result = lambda error, validation=None: MockResult(False, None, error)
 
 
 class SovereignConstraintValidator:
