@@ -18,7 +18,15 @@ from .models import (
     ViewportLayout, ViewportLayoutMode, Rectangle, Point,
     ScaleBucket, STANDARD_SCALE_BUCKETS, OverlayComponent
 )
-from ...interfaces.protocols import Result
+import sys
+from pathlib import Path
+
+# Add src to path for absolute imports
+src_path = Path(__file__).parent.parent.parent
+if str(src_path) not in sys.path:
+    sys.path.insert(0, str(src_path))
+
+from interfaces.protocols import Result
 
 
 class ViewportManager:
