@@ -1,22 +1,14 @@
 """
-Space Engines Module
-
-Newtonian Physics and Space Combat Systems
-
-This module contains the space-specific engines that implement
-the classic Asteroids-style physics within the DGT Platform's
-sovereign 160x144 resolution constraint.
+Space Engines Package
+Star-Fleet physics and genetics components
 """
 
-from .asteroids_strategy import AsteroidsStrategy
-from .physics_body import PhysicsBody
-from .space_entity import SpaceEntity, EntityType
-from .vector2 import Vector2
+from .space_voyager_engine import SpaceVoyagerEngineRunner, create_space_engine_runner
+from .space_physics import SpaceVoyagerEngine, CombatIntent
+from .ship_genetics import ShipGenome, HullType, WeaponType, EngineType
 
 __all__ = [
-    'AsteroidsStrategy',
-    'PhysicsBody', 
-    'SpaceEntity',
-    'EntityType',
-    'Vector2'
+    "SpaceVoyagerEngineRunner", "create_space_engine_runner",
+    "SpaceVoyagerEngine", "CombatIntent",
+    "ShipGenome", "HullType", "WeaponType", "EngineType"
 ]

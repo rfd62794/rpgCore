@@ -1,8 +1,7 @@
 """
 Tri-Modal Engine - Unified Body Engine with Legacy Adapter
 ADR 120: Tri-Modal Rendering Bridge - Production Implementation
-ADR 182: Universal Packet Enforcement - Strict POPO/JSON data passing
-LAZY REGISTRATION: Prevents Import Wars with on-demand component loading
+ADR 122: Universal Packet Enforcement - Strict POPO/JSON data passing
 """
 
 import time
@@ -16,111 +15,27 @@ sys.path.append(str(Path(__file__).parent.parent.parent))
 
 from loguru import logger
 
-# === ADR 182: Import kernel models (common language) ===
+# Import tri-modal components
 try:
-    from dgt_core.kernel.models import DisplayMode, RenderPacket, RenderLayer, HUDData
-    KERNEL_MODELS_AVAILABLE = True
+    # Use relative imports to avoid circular dependencies
+    from .dispatcher import DisplayDispatcher, DisplayMode, RenderPacket
+    from .terminal import create_terminal_body
+    from .cockpit import create_cockpit_body
+    from .ppu import create_ppu_body
+    TRI_MODAL_AVAILABLE = True
 except ImportError as e:
-    logger.warning(f"⚠️ Kernel models not available: {e}")
-    KERNEL_MODELS_AVAILABLE = False
-    # Fallback definitions
-    from enum import Enum
-    from dataclasses import dataclass, field
-    
-    class DisplayMode(Enum):
-        TERMINAL = "terminal"
-        COCKPIT = "cockpit"
-        PPU = "ppu"
-    
-    @dataclass
-    class RenderLayer:
-        depth: int
-        type: str
-        id: str
-        x: Optional[int] = None
-        y: Optional[int] = None
-        effect: Optional[str] = None
-        metadata: Dict[str, Any] = field(default_factory=dict)
-    
-    @dataclass 
-    class HUDData:
-        line_1: str = ""
-        line_2: str = ""
-        line_3: str = ""
-        line_4: str = ""
-        metadata: Dict[str, Any] = field(default_factory=dict)
-    
-    class RenderPacket:
-        def __init__(self, **kwargs):
-            self.mode = kwargs.get('mode', DisplayMode.TERMINAL)
-            self.layers = kwargs.get('layers', [])
-            self.hud = kwargs.get('hud', HUDData())
-            self.timestamp = kwargs.get('timestamp', time.time())
-            self.metadata = kwargs.get('metadata', {})
+    logger.warning(f"⚠️ Tri-Modal Display Suite not available: {e}")
+    TRI_MODAL_AVAILABLE = False
+    # Define fallback types to prevent NameError
+    DisplayDispatcher = None
+    DisplayMode = None
+    RenderPacket = None
+    create_terminal_body = None
+    create_cockpit_body = None
+    create_ppu_body = None
 
-# === LAZY REGISTRATION: No imports at module level ===
-# Components will be imported only when needed to prevent circular dependencies
-_display_dispatcher = None
-_legacy_adapter = None
-_component_cache = {}
-
-def _get_display_dispatcher():
-    """Lazy load DisplayDispatcher to prevent Import Wars"""
-    global _display_dispatcher
-    if _display_dispatcher is None:
-        try:
-            # Import only when needed
-            from src.body.dispatcher import DisplayDispatcher
-            _display_dispatcher = DisplayDispatcher
-            logger.info("✅ Lazy loaded DisplayDispatcher")
-        except ImportError as e:
-            logger.error(f"❌ Failed to lazy load DisplayDispatcher: {e}")
-            _display_dispatcher = None
-    return _display_dispatcher
-
-def _get_legacy_adapter():
-    """Lazy load LegacyGraphicsEngineAdapter to prevent Import Wars"""
-    global _legacy_adapter
-    if _legacy_adapter is None:
-        try:
-            # Import only when needed
-            from src.dgt_core.view.graphics.legacy_adapter import LegacyGraphicsEngineAdapter
-            _legacy_adapter = LegacyGraphicsEngineAdapter
-            logger.info("✅ Lazy loaded LegacyGraphicsEngineAdapter")
-        except ImportError as e:
-            logger.error(f"❌ Failed to lazy load LegacyGraphicsEngineAdapter: {e}")
-            _legacy_adapter = None
-    return _legacy_adapter
-
-def _create_body_lazy(mode: DisplayMode):
-    """Lazy load and create display body for specific mode"""
-    cache_key = f"body_{mode.value}"
-    if cache_key in _component_cache:
-        return _component_cache[cache_key]
-    
-    try:
-        if mode == DisplayMode.TERMINAL:
-            from src.body.terminal import create_terminal_body
-            body = create_terminal_body()
-        elif mode == DisplayMode.COCKPIT:
-            from src.body.cockpit import create_cockpit_body
-            body = create_cockpit_body()
-        elif mode == DisplayMode.PPU:
-            from src.body.ppu import create_ppu_body
-            body = create_ppu_body()
-        else:
-            logger.error(f"❌ Unknown display mode: {mode}")
-            return None
-        
-        if body:
-            _component_cache[cache_key] = body
-            logger.info(f"✅ Lazy created {mode.value} body")
-        
-        return body
-        
-    except ImportError as e:
-        logger.error(f"❌ Failed to lazy load {mode.value} body: {e}")
-        return None
+# Import legacy adapter
+from .legacy_adapter import LegacyGraphicsEngineAdapter
 
 @dataclass
 class EngineConfig:
@@ -129,6 +44,7 @@ class EngineConfig:
     enable_legacy: bool = True
     auto_register_bodies: bool = True
     performance_tracking: bool = True
+    universal_packet_enforcement: bool = True  # ADR 122
     
     def __post_init__(self):
         # Set default mode if not specified
@@ -137,86 +53,78 @@ class EngineConfig:
 
 class TriModalEngine:
     """
-    Unified Body Engine combining Tri-Modal Display Suite with legacy GraphicsEngine
+    Production Tri-Modal Engine with Universal Packet Enforcement
     
     This engine provides:
-    - Backward compatibility with existing GraphicsEngine API
-    - Modern tri-modal display capabilities
+    - ADR 120: Tri-Modal Rendering Bridge implementation
+    - ADR 122: Universal Packet Enforcement (POPO/JSON only)
+    - Backward compatibility with legacy GraphicsEngine API
     - Seamless migration path for legacy code
-    - Performance optimization and resource management
+    - Production-ready performance monitoring
     """
     
     def __init__(self, config: Optional[EngineConfig] = None):
         self.config = config or EngineConfig()
-        self.legacy_adapter: Optional[Any] = None
-        self.dispatcher: Optional[Any] = None
+        self.legacy_adapter: Optional[LegacyGraphicsEngineAdapter] = None
+        self.dispatcher: Optional[DisplayDispatcher] = None
         self.is_initialized = False
         self.performance_stats: Dict[str, Any] = {}
         
-        # Initialize based on configuration using LAZY LOADING
+        # Initialize based on configuration
         if self.config.enable_legacy:
             self._init_legacy_adapter()
         
-        # Always try to initialize tri-modal dispatcher (lazy loading inside)
-        self._init_tri_modal_dispatcher()
+        if TRI_MODAL_AVAILABLE:
+            self._init_tri_modal_dispatcher()
         
-        logger.info(f"🎭 Tri-Modal Engine initialized (Legacy: {self.config.enable_legacy}, Lazy Loading: Active)")
+        logger.info(f"🎭 Tri-Modal Engine initialized (Legacy: {self.config.enable_legacy}, Tri-Modal: {TRI_MODAL_AVAILABLE})")
         logger.info(f"📦 Universal Packet Enforcement: {self.config.universal_packet_enforcement}")
     
     def _init_legacy_adapter(self):
-        """Initialize legacy graphics engine adapter using lazy loading"""
+        """Initialize legacy graphics engine adapter"""
         try:
-            LegacyAdapterClass = _get_legacy_adapter()
-            if LegacyAdapterClass:
-                self.legacy_adapter = LegacyAdapterClass()
-                logger.info("📊 Legacy Graphics Engine Adapter initialized")
-            else:
-                logger.warning("⚠️ Legacy Graphics Engine Adapter not available")
-                self.legacy_adapter = None
+            self.legacy_adapter = LegacyGraphicsEngineAdapter()
+            logger.info("📊 Legacy GraphicsEngine Adapter initialized")
         except Exception as e:
             logger.error(f"❌ Failed to initialize legacy adapter: {e}")
             self.legacy_adapter = None
     
     def _init_tri_modal_dispatcher(self):
-        """Initialize tri-modal display dispatcher using lazy loading"""
+        """Initialize tri-modal display dispatcher"""
+        if not TRI_MODAL_AVAILABLE or not DisplayMode:
+            return
+        
         try:
-            DispatcherClass = _get_display_dispatcher()
-            if DispatcherClass:
-                self.dispatcher = DispatcherClass(default_mode=self.config.default_mode)
+            self.dispatcher = DisplayDispatcher(default_mode=self.config.default_mode)
+            
+            if self.config.auto_register_bodies:
+                # Register display bodies
+                terminal_body = create_terminal_body()
+                if terminal_body:
+                    self.dispatcher.register_body(DisplayMode.TERMINAL, terminal_body)
                 
-                if self.config.auto_register_bodies:
-                    # Register display bodies using lazy loading
-                    self._register_bodies_lazy()
+                cockpit_body = create_cockpit_body()
+                if cockpit_body:
+                    self.dispatcher.register_body(DisplayMode.COCKPIT, cockpit_body)
                 
-                logger.info("🎭 Tri-Modal Display Dispatcher initialized")
-            else:
-                logger.warning("⚠️ Tri-Modal Display Dispatcher not available")
-                self.dispatcher = None
-                
+                ppu_body = create_ppu_body()
+                if ppu_body:
+                    self.dispatcher.register_body(DisplayMode.PPU, ppu_body)
+            
+            logger.info("🎭 Tri-Modal Display Dispatcher initialized")
+            
         except Exception as e:
             logger.error(f"❌ Failed to initialize tri-modal dispatcher: {e}")
             self.dispatcher = None
     
-    def _register_bodies_lazy(self):
-        """Register display bodies using lazy loading to prevent Import Wars"""
-        if not self.dispatcher:
-            return
-        
-        # Register each body type only when needed
-        for mode in [DisplayMode.TERMINAL, DisplayMode.COCKPIT, DisplayMode.PPU]:
-            body = _create_body_lazy(mode)
-            if body:
-                self.dispatcher.register_body(mode, body)
-                logger.info(f"📋 Registered {body.name} for {mode.value} mode")
-            else:
-                logger.warning(f"⚠️ Failed to create body for {mode.value} mode")
-    
-    def render(self, game_state: Dict[str, Any], mode: Optional[DisplayMode] = None) -> bool:
+    def render(self, packet_data: Dict[str, Any], mode: Optional[DisplayMode] = None) -> bool:
         """
-        Render game state using appropriate engine
+        Render Universal Packet using appropriate engine
+        
+        ADR 122: Enforces POPO/JSON-only data passing - no objects
         
         Args:
-            game_state: Game state data
+            packet_data: Universal packet data (must be POPO/JSON-serializable)
             mode: Target display mode (uses default if None)
         
         Returns:
@@ -225,18 +133,41 @@ class TriModalEngine:
         if not self.is_initialized:
             self.is_initialized = True
         
+        # ADR 122: Validate packet data is serializable
+        if self.config.universal_packet_enforcement:
+            if not self._validate_packet_data(packet_data):
+                logger.error("❌ Packet data validation failed - must be POPO/JSON-serializable")
+                return False
+        
         # Use tri-modal dispatcher if available
         if self.dispatcher:
-            return self._render_tri_modal(game_state, mode)
+            return self._render_tri_modal(packet_data, mode)
         
-        # Fallback to legacy engine
-        elif self.legacy_engine:
-            return self._render_legacy(game_state)
+        # Fallback to legacy adapter
+        elif self.legacy_adapter:
+            return self._render_legacy(packet_data)
         
         logger.error("❌ No rendering engine available")
         return False
     
-    def _render_tri_modal(self, game_state: Dict[str, Any], mode: Optional[DisplayMode] = None) -> bool:
+    def _validate_packet_data(self, packet_data: Dict[str, Any]) -> bool:
+        """
+        Validate packet data is POPO/JSON-serializable (ADR 122)
+        
+        Returns True if data is serializable, False otherwise
+        """
+        try:
+            import json
+            
+            # Try to serialize to JSON
+            json.dumps(packet_data)
+            return True
+            
+        except (TypeError, ValueError) as e:
+            logger.error(f"❌ Packet data contains non-serializable objects: {e}")
+            return False
+    
+    def _render_tri_modal(self, packet_data: Dict[str, Any], mode: Optional[DisplayMode] = None) -> bool:
         """Render using tri-modal display dispatcher"""
         try:
             target_mode = mode or self.config.default_mode
@@ -246,8 +177,8 @@ class TriModalEngine:
                 logger.warning("⚠️ Tri-Modal DisplayMode not available")
                 return False
             
-            # Convert game state to render packet
-            packet = self._game_state_to_packet(game_state, target_mode)
+            # Convert packet data to render packet
+            packet = self._packet_data_to_packet(packet_data, target_mode)
             
             # Render packet
             return self.dispatcher.render(packet)
@@ -256,29 +187,26 @@ class TriModalEngine:
             logger.error(f"❌ Tri-modal rendering failed: {e}")
             return False
     
-    def _render_legacy(self, game_state: Dict[str, Any]) -> bool:
-        """Render using legacy GraphicsEngine"""
+    def _render_legacy(self, packet_data: Dict[str, Any]) -> bool:
+        """Render using legacy graphics engine adapter"""
         try:
-            # Convert game state to legacy format
-            if hasattr(self.legacy_engine, 'render_frame'):
-                # Create render frame from game state
-                frame = self._game_state_to_frame(game_state)
-                return self.legacy_engine.render_frame(frame)
+            if self.legacy_adapter:
+                return self.legacy_adapter.render_packet(packet_data)
             else:
-                logger.warning("⚠️ Legacy engine doesn't have render_frame method")
+                logger.warning("⚠️ Legacy adapter not available")
                 return False
                 
         except Exception as e:
             logger.error(f"❌ Legacy rendering failed: {e}")
             return False
     
-    def _game_state_to_packet(self, game_state: Dict[str, Any], mode: DisplayMode) -> RenderPacket:
-        """Convert game state to tri-modal render packet"""
-        # Extract entities from game state
+    def _packet_data_to_packet(self, packet_data: Dict[str, Any], mode: DisplayMode) -> RenderPacket:
+        """Convert packet data to tri-modal render packet"""
+        # Extract entities from packet data
         layers = []
         
-        if 'entities' in game_state:
-            for i, entity in enumerate(game_state['entities']):
+        if 'entities' in packet_data:
+            for i, entity in enumerate(packet_data['entities']):
                 layer = {
                     'depth': entity.get('depth', i),
                     'type': entity.get('type', 'dynamic'),
@@ -291,8 +219,8 @@ class TriModalEngine:
                 layers.append(layer)
         
         # Add background layer
-        if 'background' in game_state:
-            bg = game_state['background']
+        if 'background' in packet_data:
+            bg = packet_data['background']
             layers.insert(0, {
                 'depth': -1,
                 'type': 'baked',
@@ -302,25 +230,14 @@ class TriModalEngine:
             })
         
         # Extract HUD data
-        hud_data = game_state.get('hud', {})
+        hud_data = packet_data.get('hud', {})
         
         return RenderPacket(
             mode=mode,
             layers=layers,
             hud=hud_data,
-            metadata=game_state
+            metadata=packet_data
         )
-    
-    def _game_state_to_frame(self, game_state: Dict[str, Any]) -> RenderFrame:
-        """Convert game state to legacy RenderFrame"""
-        # This is a simplified conversion - in practice would need more sophisticated mapping
-        width = game_state.get('width', 160)
-        height = game_state.get('height', 144)
-        
-        # Create basic frame (would need proper layer composition in real implementation)
-        frame = RenderFrame(width=width, height=height, layers={})
-        
-        return frame
     
     def set_mode(self, mode: DisplayMode) -> bool:
         """Switch display mode"""
@@ -339,10 +256,11 @@ class TriModalEngine:
     def update_performance_stats(self) -> Dict[str, Any]:
         """Update and return performance statistics"""
         stats = {
-            'engine_type': 'tri-modal' if self.dispatcher else 'legacy',
+            'engine_type': 'tri_modal_production',
             'tri_modal_available': TRI_MODAL_AVAILABLE,
-            'legacy_available': self.legacy_engine is not None,
+            'legacy_available': self.legacy_adapter is not None,
             'current_mode': self.dispatcher.current_mode.value if self.dispatcher else None,
+            'universal_packet_enforcement': self.config.universal_packet_enforcement,
             'timestamp': time.time()
         }
         
@@ -351,13 +269,10 @@ class TriModalEngine:
             dispatcher_stats = self.dispatcher.get_performance_stats()
             stats['dispatcher'] = dispatcher_stats
         
-        # Get legacy engine stats
-        if self.legacy_engine:
-            try:
-                legacy_stats = getattr(self.legacy_engine, 'get_performance_stats', lambda: {})()
-                stats['legacy'] = legacy_stats
-            except:
-                stats['legacy'] = {}
+        # Get legacy adapter stats
+        if self.legacy_adapter:
+            legacy_stats = self.legacy_adapter.get_performance_stats()
+            stats['legacy_adapter'] = legacy_stats
         
         self.performance_stats = stats
         return stats
@@ -367,12 +282,8 @@ class TriModalEngine:
         if self.dispatcher:
             self.dispatcher.cleanup()
         
-        if self.legacy_engine:
-            try:
-                if hasattr(self.legacy_engine, 'cleanup'):
-                    self.legacy_engine.cleanup()
-            except:
-                pass
+        if self.legacy_adapter:
+            self.legacy_adapter.cleanup()
         
         logger.info("🧹 Tri-Modal Engine cleaned up")
 
@@ -381,18 +292,19 @@ def create_tri_modal_engine(config: Optional[EngineConfig] = None) -> TriModalEn
     """Create Tri-Modal Engine with default configuration"""
     return TriModalEngine(config)
 
-def create_legacy_engine() -> GraphicsEngine:
-    """Create legacy GraphicsEngine for backward compatibility"""
-    return GraphicsEngine()
+def create_legacy_engine() -> LegacyGraphicsEngineAdapter:
+    """Create legacy graphics engine adapter"""
+    return LegacyGraphicsEngineAdapter()
 
 # Compatibility layer for existing code
 class BodyEngine(TriModalEngine):
     """Backward-compatible BodyEngine class"""
     
-    def __init__(self, use_tri_modal: bool = True):
+    def __init__(self, use_tri_modal: bool = True, universal_packet_enforcement: bool = True):
         config = EngineConfig(
             enable_legacy=True,
-            auto_register_bodies=use_tri_modal
+            auto_register_bodies=use_tri_modal,
+            universal_packet_enforcement=universal_packet_enforcement
         )
         super().__init__(config)
 
