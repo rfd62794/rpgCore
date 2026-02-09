@@ -23,7 +23,7 @@ def create_tri_modal_engine(config: Optional[EngineConfig] = None) -> TriModalEn
     return TriModalEngine(config)
 
 # Legacy Graphics Engine (frozen artifact)
-from .graphics_engine import GraphicsEngine, RenderFrame, TileBank, Viewport, RenderLayer, GraphicsEngineFactory
+from .graphics_engine import GraphicsEngine, RenderFrame, TileBank, Viewport, RenderLayer, GraphicsEngineFactory, GraphicsEngineSync
 
 # Availability flag
 try:
@@ -52,7 +52,7 @@ __all__ = [
     'LegacyGraphicsEngineAdapter',
     
     # Legacy Graphics Engine (frozen artifact)
-    'GraphicsEngine', 'RenderFrame', 'TileBank', 'Viewport', 'RenderLayer',
+    'GraphicsEngine', 'RenderFrame', 'TileBank', 'Viewport', 'RenderLayer', 'GraphicsEngineFactory', 'GraphicsEngineSync',
     
     # Status
     'TRI_MODAL_AVAILABLE'
