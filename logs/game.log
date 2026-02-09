@@ -92,3 +92,16 @@
 2026-02-08 22:25:54 | ERROR | src.dgt_core.utils.fix_assets:<module>:61 | ❌ File not found: voyager_0_0.yaml
 2026-02-08 22:25:54 | ERROR | src.dgt_core.utils.fix_assets:<module>:61 | ❌ File not found: tree_0_2.yaml
 2026-02-08 22:25:54 | SUCCESS | src.dgt_core.utils.fix_assets:<module>:63 | 🎯 Manual corrections complete!
+2026-02-08 22:29:09 | INFO | utils.logger:initialize:59 | 📝 Logging system initialized
+2026-02-08 22:29:09 | INFO | src.dgt_core.engines.space.ship_genetics:__init__:353 | 🚀 Ship Genetic Registry initialized
+2026-02-08 22:29:09 | INFO | src.dgt_core.kernel.persistence:__init__:63 | 🏆 Legendary Registry initialized: roster.db
+2026-02-08 22:29:09 | INFO | src.dgt_core.tactics.graveyard_manager:_init_graveyard_table:43 | ⚰️ Graveyard table initialized
+2026-02-08 22:29:09 | INFO | src.dgt_core.kernel.universal_registry:__init__:53 | 🌍 UniversalRegistry initialized: roster.db
+2026-02-08 22:29:09 | WARNING | src.dgt_core.kernel.gatekeeper:<module>:91 | ⚠️  Warning: DGT Platform recommends Python 3.12
+2026-02-08 22:29:09 | WARNING | src.dgt_core.kernel.gatekeeper:<module>:92 | ⚠️  Current version: 3.14.0 (tags/v3.14.0:ebf955d, Oct  7 2025, 10:15:03) [MSC v.1944 64 bit (AMD64)]
+2026-02-08 22:29:09 | WARNING | src.dgt_core.kernel.gatekeeper:<module>:93 | ⚠️  Some features may not work correctly
+2026-02-08 22:29:09 | INFO | src.dgt_core.utils.fix_assets:<module>:33 | 🔧 Applying manual corrections to key assets...
+2026-02-08 22:29:09 | ERROR | src.dgt_core.utils.fix_assets:<module>:61 | ❌ File not found: chest_0_0.yaml
+2026-02-08 22:29:09 | ERROR | src.dgt_core.utils.fix_assets:<module>:61 | ❌ File not found: voyager_0_0.yaml
+2026-02-08 22:29:09 | ERROR | src.dgt_core.utils.fix_assets:<module>:61 | ❌ File not found: tree_0_2.yaml
+2026-02-08 22:29:09 | SUCCESS | src.dgt_core.utils.fix_assets:<module>:63 | 🎯 Manual corrections complete!
