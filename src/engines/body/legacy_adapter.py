@@ -13,6 +13,13 @@ from loguru import logger
 
 from .graphics_engine import GraphicsEngine, RenderFrame, TileBank, Viewport, RenderLayer
 
+# Fallback TileType class for compatibility
+class TileType:
+    GRASS = "grass"
+    STONE = "stone"
+    WATER = "water"
+    DIRT = "dirt"
+
 @dataclass
 class LegacyRenderState:
     """Legacy render state compatible with GraphicsEngine"""
@@ -65,10 +72,10 @@ class LegacyGraphicsEngineAdapter:
             water_tile = np.full((16, 16, 3), [0, 100, 200], dtype=np.uint8)  # Blue
             
             tiles = {
-                'grass': grass_tile,
-                'stone': stone_tile,
-                'water': water_tile,
-                'dirt': np.full((16, 16, 3), [139, 69, 19], dtype=np.uint8),  # Brown
+                TileType.GRASS: grass_tile,
+                TileType.STONE: stone_tile,
+                TileType.WATER: water_tile,
+                TileType.DIRT: np.full((16, 16, 3), [139, 69, 19], dtype=np.uint8),  # Brown
             }
             
             # Create tile bank
