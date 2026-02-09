@@ -1,12 +1,11 @@
 """
 Display Dispatcher - ADR 120: Tri-Modal Rendering Bridge
 Routes Universal Render Packets to appropriate display body based on mode
+ADR 182: Uses kernel models as common language to prevent circular dependencies
 """
 
 import time
 from typing import Dict, Any, Optional, Union
-from enum import Enum
-from dataclasses import dataclass, field
 from pathlib import Path
 import sys
 
@@ -14,45 +13,50 @@ import sys
 sys.path.append(str(Path(__file__).parent.parent.parent))
 sys.path.append(str(Path(__file__).parent.parent))
 
-from pydantic import BaseModel, Field
 from loguru import logger
 
-class DisplayMode(Enum):
-    """Three display lenses for different environmental pressures"""
-    TERMINAL = "terminal"  # Console/CLI - High-speed, low-overhead
-    COCKPIT = "cockpit"    # Glass/Grid - Modular dashboards
-    PPU = "ppu"           # Near-Gameboy - 60Hz dithered rendering
-
-@dataclass
-class RenderLayer:
-    """Universal render layer specification"""
-    depth: int
-    type: str  # "baked", "dynamic", "effect"
-    id: str
-    x: Optional[int] = None
-    y: Optional[int] = None
-    effect: Optional[str] = None
-    metadata: Dict[str, Any] = field(default_factory=dict)
-
-@dataclass 
-class HUDData:
-    """Heads-up display data"""
-    line_1: str = ""
-    line_2: str = ""
-    line_3: str = ""
-    line_4: str = ""
-    metadata: Dict[str, Any] = field(default_factory=dict)
-
-class RenderPacket(BaseModel):
-    """Universal render packet for stateless rendering"""
-    mode: DisplayMode
-    layers: list[RenderLayer] = Field(default_factory=list)
-    hud: HUDData = Field(default_factory=HUDData)
-    timestamp: float = Field(default_factory=time.time)
-    metadata: Dict[str, Any] = Field(default_factory=dict)
+# === ADR 182: Import from kernel models (common language) ===
+try:
+    from dgt_core.kernel.models import DisplayMode, RenderPacket, RenderLayer, HUDData
+    KERNEL_MODELS_AVAILABLE = True
+except ImportError as e:
+    logger.warning(f"⚠️ Kernel models not available: {e}")
+    KERNEL_MODELS_AVAILABLE = False
+    # Fallback definitions for compatibility
+    from enum import Enum
+    from dataclasses import dataclass, field
     
-    class Config:
-        arbitrary_types_allowed = True
+    class DisplayMode(Enum):
+        TERMINAL = "terminal"
+        COCKPIT = "cockpit"
+        PPU = "ppu"
+    
+    @dataclass
+    class RenderLayer:
+        depth: int
+        type: str
+        id: str
+        x: Optional[int] = None
+        y: Optional[int] = None
+        effect: Optional[str] = None
+        metadata: Dict[str, Any] = field(default_factory=dict)
+    
+    @dataclass 
+    class HUDData:
+        line_1: str = ""
+        line_2: str = ""
+        line_3: str = ""
+        line_4: str = ""
+        metadata: Dict[str, Any] = field(default_factory=dict)
+    
+    # Mock RenderPacket for fallback
+    class RenderPacket:
+        def __init__(self, **kwargs):
+            self.mode = kwargs.get('mode', DisplayMode.TERMINAL)
+            self.layers = kwargs.get('layers', [])
+            self.hud = kwargs.get('hud', HUDData())
+            self.timestamp = kwargs.get('timestamp', time.time())
+            self.metadata = kwargs.get('metadata', {})
 
 class DisplayBody:
     """Abstract base class for all display bodies"""
