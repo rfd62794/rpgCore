@@ -482,7 +482,7 @@ class ViewportIntegrationTester:
         
         try:
             # Test small screens (should trigger focus mode)
-            small_screens = [(320, 240), (640, 480)]
+            small_screens = [(320, 240), (640, 480)]  # Include boundary case
             for width, height in small_screens:
                 layout_result = self.viewport_manager.calculate_optimal_layout(width, height)
                 
@@ -493,7 +493,7 @@ class ViewportIntegrationTester:
                         "expected_focus": True,
                         "actual_focus": layout.focus_mode,
                         "layout_mode": layout.mode,
-                        "passed": layout.focus_mode and layout.mode == ViewportLayoutMode.FOCUS
+                        "passed": layout.focus_mode and layout.mode == "focus"
                     }
                     
                     results["small_screen_tests"].append(test_result)
