@@ -1,22 +1,17 @@
 # Sovereign Constraints Validation Report
-Generated: 2026-02-08 21:38:25
+Generated: 2026-02-08 21:38:39
 
 ## Summary
 - Strategies Tested: 3
-- Compliant Strategies: 2
-- Compliance Rate: 66.7%
+- Compliant Strategies: 3
+- Compliance Rate: 100.0%
 
 ## Detailed Results
-### unified_ppu: FAIL
-**Violations:**
-- Missing references to sovereign resolution (160x144)
+### unified_ppu: PASS
 
 ### protocols: PASS
 
 ### adr_192: PASS
-
-## Errors
-- UnifiedPPU: Missing references to sovereign resolution (160x144)
 
 ## Sovereign Constraints
 - Resolution: 160x144
