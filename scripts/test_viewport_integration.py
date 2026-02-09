@@ -383,7 +383,7 @@ class ViewportIntegrationTester:
     
     def test_dynamic_resizing(self) -> Dict[str, Any]:
         """Test dynamic window resizing"""
-        logger.info("🔍 Testing dynamic window resizing")
+        print("🔍 Testing dynamic window resizing")
         
         results = {
             "resize_sequence": [],
