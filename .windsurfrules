@@ -95,7 +95,23 @@ def process_intent(self, intent: Intent) -> Result[GameState]:
 
 ---
 
-## 🌌 PERFORMANCE & QUALITY GUARDRAILS
+## 🌌 FIXED-POINT RENDERING STANDARD (ADR 192)
+
+### Sovereign Resolution Mandate
+- **RULE**: All rendering strategies must output to 160×144 logical buffer
+- **Location**: `src/dgt_core/engines/body/unified_ppu.py` implements standard
+- **Validation**: `scripts/validate_sovereign_constraints.py` enforces compliance
+- **Violation**: Any rendering outside sovereign resolution
+
+### Constraint-Driven Engineering
+- **Miyoo Mini**: Hardware parity forces clean code optimization
+- **Game Boy Style**: 1-bit/2-bit logic focuses attention on physics and narrative
+- **Fixed-Point Reality**: Mathematical parity across all deployment targets
+
+### Physical Upscaling
+- **UnifiedPPU**: Handles physical scaling (1x for handheld, 4x for desktop)
+- **Deterministic Behavior**: Collision detection identical across platforms
+- **Performance**: If it runs on 1.2GHz ARM, it's optimized on i9
 
 ### Type Safety Requirements
 - **RULE**: 100% type hint coverage on all public APIs
@@ -179,8 +195,9 @@ def process_intent(self, intent: Intent) -> Result[GameState]:
 ### Violation Categories:
 - **P0**: Tier architecture violations
 - **P1**: Missing Protocol definitions
-- **P2**: Type safety violations  
-- **P3**: Performance regressions
+- **P2**: Sovereign resolution violations (160×144 constraint)
+- **P3**: Type safety violations  
+- **P4**: Performance regressions
 
 ---
 
@@ -190,9 +207,10 @@ By proceeding with any work in this repository, you acknowledge that:
 1. These rules are the absolute authority for development
 2. Violations will halt work and require formal resolution
 3. The Three-Tier Architecture is immutable
-4. Phase 1 Interface Definition is the current priority
-5. The Skeptical Auditor mode governs all code quality decisions
+4. The 160×144 Sovereign Resolution is non-negotiable
+5. Phase 2 Component Consolidation is the current priority
+6. The Skeptical Auditor mode governs all code quality decisions
 
-**Last Updated**: 2026-02-08 (Phase 1 Initialization)
-**Next Review**: After Protocol Definitions completion
+**Last Updated**: 2026-02-08 (Phase 2 - Fixed-Point Standard)  
+**Next Review**: After PPU Consolidation completion  
 **Authority**: DGT Platform Lead Architect
