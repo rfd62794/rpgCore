@@ -5,7 +5,7 @@ Enterprise-grade tooling for handling 2048 token context limits.
 Strips GameState down to narrative-essential information for the Chronicler.
 
 Usage:
-    from src.utils.context_manager import ContextManager
+    from foundation.utils import ContextManager
     compact = ContextManager.minify_context(game_state, intent_id)
 
 ROI: Reduces 1,500-token JSON blocks to 200-token narrative prompts.
