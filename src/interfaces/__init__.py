@@ -18,7 +18,7 @@ from .protocols import (
     PPUProtocol,
 )
 
-from .abc_base import (
+from ..abc.base import (
     BaseEngine,
     BaseRenderer,
     BaseStateManager,
