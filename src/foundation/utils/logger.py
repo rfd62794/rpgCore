@@ -20,10 +20,8 @@ from loguru import logger
 from rich.console import Console
 from rich.logging import RichHandler
 
-from core.constants import (
-    LOG_LEVEL_DEFAULT, LOG_FORMAT, LOG_ROTATION, LOG_RETENTION,
-    LOG_FILE_GAME, LOG_FILE_PERFORMANCE, LOG_FILE_ERRORS, LOG_FILE_LLM,
-    get_logs_path, get_environment, is_debug_mode
+from foundation.constants import (
+    LOG_LEVEL_DEFAULT, LOG_FORMAT
 )
 
 

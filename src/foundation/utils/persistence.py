@@ -24,8 +24,8 @@ from datetime import datetime
 
 from loguru import logger
 
-from core.state import GameState, WorldDelta, InterestPoint
-from dgt_core.kernel.constants import (
+from engines.kernel.state import GameState, WorldDelta, InterestPoint
+from foundation.constants import (
     PERSISTENCE_FORMAT, PERSISTENCE_COMPRESSION, PERSISTENCE_INTERVAL_TURNS,
     BACKUP_INTERVAL_TURNS, MAX_BACKUP_FILES, PERSISTENCE_FILE, BACKUP_DIRECTORY,
     EMERGENCY_SAVE_PREFIX
