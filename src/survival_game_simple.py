@@ -189,22 +189,13 @@ class SurvivalGameSimple:
         self._render_via_direct_line()
     
     def _constrain_to_bounds(self, physics: PhysicsComponent) -> None:
-        """Keep entity within 160x144 grid"""
-        margin = 5.0
+        """Newtonian Screen Wrap - ADR 178: Infinite Loop Protocol"""
+        # Apply seamless modulo wrap for infinite space
+        physics.x = physics.x % 160.0
+        physics.y = physics.y % 144.0
         
-        if physics.x < margin:
-            physics.x = margin
-            physics.velocity_x = abs(physics.velocity_x) * 0.5
-        elif physics.x > 160.0 - margin:
-            physics.x = 160.0 - margin
-            physics.velocity_x = -abs(physics.velocity_x) * 0.5
-        
-        if physics.y < margin:
-            physics.y = margin
-            physics.velocity_y = abs(physics.velocity_y) * 0.5
-        elif physics.y > 144.0 - margin:
-            physics.y = 144.0 - margin
-            physics.velocity_y = -abs(physics.velocity_y) * 0.5
+        # No velocity loss - maintain Newtonian momentum through wrap
+        # This creates the "Slingshot" effect for heavy ships
     
     def _update_asteroids(self, dt: float) -> None:
         """Update asteroid positions"""
