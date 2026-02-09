@@ -16,6 +16,10 @@ from .protocols import (
     StateProtocol,
     DIProtocol,
     PPUProtocol,
+    PhysicsProtocol,
+    SpaceEntityProtocol,
+    ScrapProtocol,
+    TerminalHandshakeProtocol,
 )
 
 from ..dgt_core.foundation.base import (
@@ -31,6 +35,10 @@ __all__ = [
     "StateProtocol",
     "DIProtocol",
     "PPUProtocol",
+    "PhysicsProtocol",
+    "SpaceEntityProtocol",
+    "ScrapProtocol",
+    "TerminalHandshakeProtocol",
     
     # Abstract Base Classes
     "BaseEngine",

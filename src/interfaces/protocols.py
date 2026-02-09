@@ -263,6 +263,115 @@ class LoggerProtocol(Protocol):
         ...
 
 
+class PhysicsProtocol(Protocol):
+    """Interface for physics simulation systems"""
+    
+    def update(self, dt: float) -> Result[None]:
+        """Update physics simulation by time step"""
+        ...
+    
+    def add_entity(self, entity: 'SpaceEntityProtocol') -> Result[None]:
+        """Add entity to physics simulation"""
+        ...
+    
+    def remove_entity(self, entity_id: str) -> Result[None]:
+        """Remove entity from physics simulation"""
+        ...
+    
+    def check_collisions(self) -> Result[List[Tuple['SpaceEntityProtocol', 'SpaceEntityProtocol']]]:
+        """Check and return all collision pairs"""
+        ...
+    
+    def get_entities_in_radius(self, position: Coordinate, radius: float) -> Result[List['SpaceEntityProtocol']]:
+        """Get all entities within specified radius"""
+        ...
+
+
+class SpaceEntityProtocol(Protocol):
+    """Interface for space entities with Newtonian physics"""
+    
+    @property
+    def entity_id(self) -> str:
+        """Unique entity identifier"""
+        ...
+    
+    @property
+    def entity_type(self) -> str:
+        """Entity type (ship, asteroid, bullet, scrap)"""
+        ...
+    
+    @property
+    def position(self) -> Coordinate:
+        """Current position"""
+        ...
+    
+    @property
+    def velocity(self) -> Coordinate:
+        """Current velocity vector"""
+        ...
+    
+    @property
+    def active(self) -> bool:
+        """Whether entity is active"""
+        ...
+    
+    def update(self, dt: float) -> Result[None]:
+        """Update entity physics"""
+        ...
+    
+    def apply_force(self, force: Coordinate) -> Result[None]:
+        """Apply force to entity"""
+        ...
+    
+    def check_collision(self, other: 'SpaceEntityProtocol') -> bool:
+        """Check collision with another entity"""
+        ...
+    
+    def get_state_dict(self) -> Dict[str, Any]:
+        """Get entity state for serialization"""
+        ...
+
+
+class ScrapProtocol(Protocol):
+    """Interface for scrap collection system"""
+    
+    def spawn_scrap(self, position: Coordinate, scrap_type: str) -> Result[Optional['SpaceEntityProtocol']]:
+        """Spawn scrap entity at position"""
+        ...
+    
+    def collect_scrap(self, scrap: 'SpaceEntityProtocol') -> Result[Dict[str, Any]]:
+        """Process scrap collection and return rewards"""
+        ...
+    
+    def get_scrap_counts(self) -> Dict[str, int]:
+        """Get current scrap inventory counts"""
+        ...
+    
+    def persist_inventory(self) -> Result[None]:
+        """Persist inventory to storage"""
+        ...
+
+
+class TerminalHandshakeProtocol(Protocol):
+    """Interface for terminal notification system"""
+    
+    def send_notification(self, message: str, notification_type: str) -> Result[None]:
+        """Send notification to terminal"""
+        ...
+    
+    def get_recent_messages(self, count: int) -> List[str]:
+        """Get recent terminal messages"""
+        ...
+    
+    def update(self) -> Result[Dict[str, Any]]:
+        """Update terminal system"""
+        ...
+    
+    def get_system_status(self) -> str:
+        """Get formatted system status"""
+        ...
+
+
 # Protocol Collections for Easy Registration
 CORE_PROTOCOLS = [
     EngineProtocol,
@@ -284,4 +393,11 @@ SUPPORT_PROTOCOLS = [
     LoggerProtocol,
 ]
 
-ALL_PROTOCOLS = CORE_PROTOCOLS + UI_PROTOCOLS + SUPPORT_PROTOCOLS
+SPACE_PROTOCOLS = [
+    PhysicsProtocol,
+    SpaceEntityProtocol,
+    ScrapProtocol,
+    TerminalHandshakeProtocol,
+]
+
+ALL_PROTOCOLS = CORE_PROTOCOLS + UI_PROTOCOLS + SUPPORT_PROTOCOLS + SPACE_PROTOCOLS
