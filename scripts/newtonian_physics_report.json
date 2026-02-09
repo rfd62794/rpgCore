@@ -37,8 +37,7 @@
         "passed": true
       }
     ],
-    "all_passed": false,
-    "error": "cannot access local variable 'v1' where it is not associated with a value"
+    "all_passed": true
   },
   "entity_physics": {
     "status": "skipped",
@@ -66,9 +65,9 @@
   },
   "summary": {
     "total_tests": 7,
-    "passed_tests": 0,
-    "failed_tests": 1,
+    "passed_tests": 1,
+    "failed_tests": 0,
     "skipped_tests": 6,
-    "overall_status": "failed"
+    "overall_status": "success"
   }
 }
