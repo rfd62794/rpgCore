@@ -441,13 +441,43 @@ class UnifiedPPU(BasePPU):
         self.viewport_manager = ViewportManager()
         self.current_viewport: Optional[ViewportLayout] = None
         
+        # Sidecar components (ADR 193)
+        self.phosphor_terminal: Optional[Any] = None
+        self.glass_cockpit: Optional[Any] = None
+        
         # Initialize all strategies
         self._initialize_strategies()
         
         logger.info(f"🎯 Unified PPU initialized with viewport management and sovereign resolution {SOVEREIGN_WIDTH}x{SOVEREIGN_HEIGHT}")
     
+    def initialize_sidecars(self) -> Result[bool]:
+        """Initialize sidecar components for wing rendering"""
+        try:
+            # Import sidecar components
+            from ...interface.renderers import PhosphorTerminal, GlassCockpit
+            
+            # Initialize sidecars
+            self.phosphor_terminal = PhosphorTerminal()
+            self.glass_cockpit = GlassCockpit()
+            
+            # Initialize both components
+            phosphor_init = self.phosphor_terminal.initialize()
+            if not phosphor_init.success:
+                return Result.failure_result(f"Failed to initialize PhosphorTerminal: {phosphor_init.error}")
+            
+            cockpit_init = self.glass_cockpit.initialize()
+            if not cockpit_init.success:
+                return Result.failure_result(f"Failed to initialize GlassCockpit: {cockpit_init.error}")
+            
+            logger.success("🎯 Sidecar components initialized successfully")
+            return Result.success_result(True)
+            
+        except Exception as e:
+            logger.error(f"❌ Failed to initialize sidecars: {e}")
+            return Result.failure_result(f"Sidecar initialization error: {str(e)}")
+    
     def render_with_viewport(self, game_state: GameState, window_width: int, window_height: int) -> Result[bytes]:
-        """Render with viewport-aware scaling (ADR 193)"""
+        """Render with viewport-aware scaling and sidecar components (ADR 193)"""
         try:
             # Calculate optimal layout
             viewport_result = self.viewport_manager.calculate_optimal_layout(window_width, window_height)
@@ -456,8 +486,11 @@ class UnifiedPPU(BasePPU):
             
             self.current_viewport = viewport_result.value
             
-            # Get PPU render region
+            # Get render regions
             ppu_region = self.viewport_manager.get_ppu_render_region()
+            left_wing = self.viewport_manager.get_left_wing_region()
+            right_wing = self.viewport_manager.get_right_wing_region()
+            
             if not ppu_region:
                 return Result.failure_result("No PPU render region available")
             
@@ -471,13 +504,44 @@ class UnifiedPPU(BasePPU):
             if not scaled_result.success:
                 return scaled_result
             
+            # Render sidecars if not in focus mode
+            if not self.current_viewport.focus_mode:
+                self._render_sidecars(left_wing, right_wing)
+            
+            # Composite final frame
+            final_result = self._composite_viewport_frame(scaled_result.value, left_wing, right_wing)
+            
             logger.info(f"🖥️ Rendered with viewport: {window_width}x{window_height}, scale: {self.current_viewport.ppu_scale}")
             
-            return Result.success_result(scaled_result.value)
+            return Result.success_result(final_result)
             
         except Exception as e:
             logger.error(f"❌ Viewport rendering failed: {e}")
             return Result.failure_result(f"Viewport rendering error: {str(e)}")
+    
+    def _render_sidecars(self, left_wing: Optional[Rectangle], right_wing: Optional[Rectangle]) -> None:
+        """Render sidecar components to their respective wings"""
+        try:
+            # Render left wing (PhosphorTerminal)
+            if left_wing and self.phosphor_terminal:
+                left_result = self.phosphor_terminal.render_to_wing(left_wing)
+                if not left_result.success:
+                    logger.error(f"❌ Failed to render left wing: {left_result.error}")
+            
+            # Render right wing (GlassCockpit)
+            if right_wing and self.glass_cockpit:
+                right_result = self.glass_cockpit.render_to_wing(right_wing)
+                if not right_result.success:
+                    logger.error(f"❌ Failed to render right wing: {right_result.error}")
+                    
+        except Exception as e:
+            logger.error(f"❌ Sidecar rendering error: {e}")
+    
+    def _composite_viewport_frame(self, center_frame: bytes, left_wing: Optional[Rectangle], right_wing: Optional[Rectangle]) -> bytes:
+        """Composite center frame with sidecar frames"""
+        # In a real implementation, this would composite the three frames
+        # For now, return the center frame
+        return center_frame
     
     def _scale_to_viewport(self, frame_data: bytes, viewport_region: Rectangle) -> Result[bytes]:
         """Scale frame data to viewport region dimensions"""
@@ -501,7 +565,20 @@ class UnifiedPPU(BasePPU):
                 "y": self.current_viewport.center_anchor.y,
                 "width": SOVEREIGN_WIDTH * self.current_viewport.ppu_scale,
                 "height": SOVEREIGN_HEIGHT * self.current_viewport.ppu_scale
-            }
+            },
+            "left_wing": {
+                "x": self.current_viewport.left_wing.x,
+                "y": self.current_viewport.left_wing.y,
+                "width": self.current_viewport.left_wing.width,
+                "height": self.current_viewport.left_wing.height
+            } if not self.current_viewport.focus_mode else None,
+            "right_wing": {
+                "x": self.current_viewport.right_wing.x,
+                "y": self.current_viewport.right_wing.y,
+                "width": self.current_viewport.right_wing.width,
+                "height": self.current_viewport.right_wing.height
+            } if not self.current_viewport.focus_mode else None,
+            "sidecars_initialized": self.phosphor_terminal is not None and self.glass_cockpit is not None
         }
     
     def initialize(self, width: int, height: int) -> Result[bool]:
