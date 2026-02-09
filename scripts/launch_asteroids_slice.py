@@ -20,8 +20,9 @@ from typing import Optional
 
 # Add src to path for absolute imports
 src_path = Path(__file__).parent.parent / "src"
-if str(src_path) not in sys.path:
-    sys.path.insert(0, str(src_path))
+sys_path = str(src_path.resolve())
+if sys_path not in sys.path:
+    sys.path.insert(0, sys_path)
 
 from src.apps.space.physics_body import PhysicsBody
 from src.apps.space.asteroids_strategy import AsteroidsStrategy
