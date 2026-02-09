@@ -197,6 +197,15 @@ class PhysicsBody:
                     bullet.active = False
                     asteroid.active = False
                     
+                    # Record asteroid destruction
+                    self.scrap_locker.record_asteroid_destroyed(asteroid.entity_type.value)
+                    
+                    # Check for scrap spawn (ADR 196 - 5% chance)
+                    if random.random() < self.scrap_spawn_chance:
+                        scrap_entity = self._spawn_scrap(asteroid.position)
+                        if scrap_entity:
+                            self.entities.append(scrap_entity)
+                    
                     # Split asteroid if applicable
                     new_asteroids = asteroid.split_asteroid()
                     self.entities.extend(new_asteroids)
@@ -219,6 +228,46 @@ class PhysicsBody:
                     self.ship_entity.active = False
                     self.game_active = False
                     break
+        
+        # Check ship-scrap collisions (collection trigger)
+        if self.ship_entity and self.ship_entity.active:
+            for scrap in [e for e in self.entities if e.entity_type == EntityType.SCRAP and e.active]:
+                if self.ship_entity.check_collision(scrap):
+                    # Collect scrap
+                    collection_data = scrap.collect()
+                    if collection_data:
+                        # Update locker
+                        notification = self.scrap_locker.add_scrap(
+                            collection_data['scrap_type'], 
+                            collection_data['scrap_value']
+                        )
+                        
+                        # Store notification for terminal handshake
+                        if not hasattr(self, 'pending_notifications'):
+                            self.pending_notifications = []
+                        self.pending_notifications.append(notification)
+    
+    def _spawn_scrap(self, position: Vector2) -> Optional[ScrapEntity]:
+        """Spawn scrap entity at given position"""
+        try:
+            # Add small random offset to prevent overlap
+            offset_x = random.uniform(-5, 5)
+            offset_y = random.uniform(-5, 5)
+            scrap_position = position + Vector2(offset_x, offset_y)
+            
+            # Create scrap entity
+            scrap = ScrapEntity(scrap_position)
+            
+            # Add small random velocity for visual interest
+            drift_angle = random.uniform(0, 2 * math.pi)
+            drift_speed = random.uniform(5, 15)
+            scrap.velocity = Vector2.from_angle(drift_angle, drift_speed)
+            
+            return scrap
+            
+        except Exception as e:
+            print(f"⚠️ Failed to spawn scrap: {e}")
+            return None
     
     def _update_energy(self, dt: float) -> None:
         """Update energy based on thrust usage"""
