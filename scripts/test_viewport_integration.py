@@ -219,7 +219,7 @@ class ViewportIntegrationTester:
                     results["all_passed"] = False
                     continue
                 
-                layout = layout_result.value
+                layout = layout_result
                 
                 # Validate layout
                 validation = self._validate_layout(layout, width, height)
@@ -415,7 +415,7 @@ class ViewportIntegrationTester:
                     results["all_passed"] = False
                     continue
                 
-                layout = layout_result.value
+                layout = layout_result
                 
                 resize_test = {
                     "step": i,
@@ -460,7 +460,7 @@ class ViewportIntegrationTester:
                 layout_result = self.viewport_manager.calculate_optimal_layout(width, height)
                 
                 if layout_result.success:
-                    layout = layout_result.value
+                    layout = layout_result
                     test_result = {
                         "resolution": f"{width}x{height}",
                         "expected_focus": True,
@@ -481,7 +481,7 @@ class ViewportIntegrationTester:
                 layout_result = self.viewport_manager.calculate_optimal_layout(width, height)
                 
                 if layout_result.success:
-                    layout = layout_result.value
+                    layout = layout_result
                     test_result = {
                         "resolution": f"{width}x{height}",
                         "expected_focus": False,
