@@ -193,7 +193,7 @@ class PPUBody(DisplayBody):
         except Exception as e:
             logger.error(f"❌ Failed to create sprite {config.sprite_id}: {e}")
     
-    def _render_packet(self, packet: RenderPacket):
+    def _render_packet(self, packet: List[Any]):
         """Render packet to PPU display"""
         if not self.ppu or not self.root:
             return
@@ -207,58 +207,45 @@ class PPUBody(DisplayBody):
         # Clear previous packet entities
         self._clear_packet_entities()
         
-        # Process layers
-        for layer in packet.layers:
-            self._render_layer(layer)
-        
-        # Update HUD
-        self._update_hud(packet.hud)
+        # Process RenderDTOs
+        # packet is now a list of RenderDTOs or dicts (from SectorManager)
+        for item in packet:
+            self._render_dto(item)
         
         # Update display
         if self.ppu.canvas:
             self.ppu.canvas.update()
     
-    def _render_layer(self, layer):
-        """Render a single layer"""
-        if layer.type == "baked":
-            # Render background/static element
-            self._render_baked_layer(layer)
-        elif layer.type == "dynamic":
-            # Render dynamic entity
-            self._render_dynamic_layer(layer)
-        elif layer.type == "effect":
-            # Render effect
-            self._render_effect_layer(layer)
-    
-    def _render_baked_layer(self, layer):
-        """Render baked/static layer"""
-        # Create static entity at position
-        if layer.x is not None and layer.y is not None:
-            entity = RenderEntity(
-                world_pos=(layer.x, layer.y),
-                sprite_id=layer.id,
-                layer=RenderLayer.BACKGROUND
-            )
-            
-            canvas_id = self.ppu.add_entity(entity)
-            self.packet_entities[layer.id] = entity
-    
-    def _render_dynamic_layer(self, layer):
-        """Render dynamic layer"""
+    def _render_dto(self, item: Any):
+        """Render a single DTO item"""
+        # Handle both dict (from SectorManager) and RenderDTO object
+        if isinstance(item, dict):
+            # Dict access
+            x = item.get('x')
+            y = item.get('y')
+            sprite_id = item.get('sprite_id')
+            layer_id = item.get('layer', 1)
+        else:
+            # Object access (RenderDTO)
+            x = getattr(item, 'x', None)
+            y = getattr(item, 'y', None)
+            sprite_id = getattr(item, 'sprite_id', None)
+            layer_id = getattr(item, 'layer', 1)
+
         # Create dynamic entity
-        if layer.x is not None and layer.y is not None:
+        if x is not None and y is not None:
+            # Scale up for display
+            display_x = x * DISPLAY_SCALE
+            display_y = y * DISPLAY_SCALE
+            
             entity = RenderEntity(
-                world_pos=(layer.x, layer.y),
-                sprite_id=layer.id,
-                layer=RenderLayer.FRINGE
+                world_pos=(display_x, display_y),
+                sprite_id=sprite_id,
+                layer=RenderLayer(layer_id) if isinstance(layer_id, int) else RenderLayer.FRINGE
             )
             
             canvas_id = self.ppu.add_entity(entity)
-            self.packet_entities[layer.id] = entity
-            
-            # Apply effect if specified
-            if layer.effect:
-                self._apply_effect(entity, layer.effect)
+            self.packet_entities[sprite_id] = entity
     
     def _render_effect_layer(self, layer):
         """Render effect layer"""
