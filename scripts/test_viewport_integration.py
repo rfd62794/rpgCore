@@ -574,11 +574,11 @@ class ViewportIntegrationTester:
     def _validate_scale_bucket(self, bucket) -> bool:
         """Validate scale bucket configuration"""
         return (
-            bucket.width > 0 and
-            bucket.height > 0 and
-            bucket.ppu_scale >= 1 and
-            bucket.wing_width >= 0 and
-            bucket.layout_mode in ViewportLayoutMode
+            bucket["width"] > 0 and
+            bucket["height"] > 0 and
+            bucket["scale"] >= 1 and
+            bucket["wing_width"] >= 0 and
+            bucket["mode"] in ["focus", "dashboard", "mfd", "sovereign"]
         )
     
     def _validate_layout(self, layout, expected_width: int, expected_height: int) -> Dict[str, Any]:
