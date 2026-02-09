@@ -21,9 +21,9 @@ from typing import List, Dict, Any, Optional, Tuple
 from dataclasses import dataclass
 import math
 
-from ....interfaces.protocols import RenderProtocol, Result
-from ....abc.base import BasePPU
-from ....kernel.constants import SOVEREIGN_WIDTH, SOVEREIGN_HEIGHT, SOVEREIGN_PIXELS
+from ...dgt_core.interfaces.protocols import RenderProtocol, Result
+from ...dgt_core.foundation.base import BasePPU
+from ...dgt_core.kernel.constants import SOVEREIGN_WIDTH, SOVEREIGN_HEIGHT, SOVEREIGN_PIXELS
 from .physics_body import PhysicsBody, PhysicsState
 from .space_entity import SpaceEntity, EntityType
 from .vector2 import Vector2
