@@ -126,7 +126,7 @@ class PhosphorTerminalDemo:
             bg='#1a1a1a',
             fg='#00FF00',
             troughcolor='#003300',
-            activebackground='#00FF00',
+            highlightthickness=0,
             command=self._on_energy_change
         )
         self.energy_slider.set(100)
