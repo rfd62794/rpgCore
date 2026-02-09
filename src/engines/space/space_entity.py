@@ -29,6 +29,7 @@ if str(src_path) not in sys.path:
 
 from engines.space.vector2 import Vector2
 from dgt_core.kernel.constants import SOVEREIGN_WIDTH, SOVEREIGN_HEIGHT
+from dgt_core.foundation.types import Result, ValidationResult
 
 
 class EntityType(Enum):
@@ -152,38 +153,48 @@ class SpaceEntity:
         speed = 300.0  # Fast bullet speed
         self.velocity = Vector2.from_angle(self.heading, speed)
     
-    def update(self, dt: float) -> None:
+    def update(self, dt: float) -> Result[None]:
         """Update entity physics (60Hz main loop)"""
-        if not self.active:
-            return
-        
-        # Update age
-        self.age += dt
-        
-        # Check lifetime (for bullets)
-        if self.lifetime is not None and self.age >= self.lifetime:
-            self.active = False
-            return
-        
-        # Apply thrust (for ship)
-        if self.entity_type == EntityType.SHIP and self.thrust_force > 0:
-            thrust_vector = Vector2.from_angle(self.heading, self.thrust_force * dt)
-            self.velocity = self.velocity + thrust_vector
-        
-        # Update position (Newtonian momentum - no friction)
-        self.position = self.position + (self.velocity * dt)
-        
-        # Update heading (for rotating entities)
-        if self.angular_velocity != 0:
-            self.heading = self.heading + (self.angular_velocity * dt)
-            # Normalize heading to [0, 2π]
-            self.heading = self.heading % (2 * math.pi)
-        
-        # Apply toroidal wrap (160x144 boundaries)
-        self._apply_toroidal_wrap()
+        try:
+            if not self.active:
+                return Result.success_result(None)
+            
+            # Update age
+            self.age += dt
+            
+            # Check lifetime (for bullets)
+            if self.lifetime is not None and self.age >= self.lifetime:
+                self.active = False
+                return Result.success_result(None)
+            
+            # Apply thrust (for ship)
+            if self.entity_type == EntityType.SHIP and self.thrust_force > 0:
+                thrust_vector = Vector2.from_angle(self.heading, self.thrust_force * dt)
+                self.velocity = self.velocity + thrust_vector
+            
+            # Update position (Newtonian momentum - no friction)
+            self.position = self.position + (self.velocity * dt)
+            
+            # Update heading (for rotating entities)
+            if self.angular_velocity != 0:
+                self.heading = self.heading + (self.angular_velocity * dt)
+                # Normalize heading to [0, 2π]
+                self.heading = self.heading % (2 * math.pi)
+            
+            # Apply toroidal wrap (160x144 boundaries)
+            self._apply_toroidal_wrap()
+            
+            return Result.success_result(None)
+            
+        except Exception as e:
+            return Result.failure_result(f"Physics update failed: {str(e)}")
     
-    def _apply_toroidal_wrap(self):
-        """Apply toroidal screen wrapping at sovereign boundaries"""
+    def _apply_toroidal_wrap(self) -> None:
+        """Apply toroidal screen wrapping at sovereign boundaries
+        
+        Ensures entities wrap around 160x144 boundaries for continuous
+        Newtonian physics simulation
+        """
         # Wrap X coordinate
         if self.position.x < 0:
             self.position.x = self.position.x + SOVEREIGN_WIDTH
@@ -197,8 +208,12 @@ class SpaceEntity:
             self.position.y = self.position.y - SOVEREIGN_HEIGHT
     
     def get_wrapped_positions(self) -> List[Vector2]:
-        """Get all positions for Newtonian ghosting effect"""
-        positions = [self.position]
+        """Get all positions for Newtonian ghosting effect
+        
+        Returns:
+            List of positions including ghosts for toroidal wrapping
+        """
+        positions: List[Vector2] = [self.position]
         
         # Check if near boundaries and add ghost positions
         margin = self.radius + 5  # Ghost margin
@@ -228,11 +243,15 @@ class SpaceEntity:
         return positions
     
     def get_world_vertices(self) -> List[Vector2]:
-        """Get vertices transformed to world position"""
+        """Get vertices transformed to world position
+        
+        Returns:
+            List of world-space vertex positions for rendering
+        """
         if not self.vertices:
             return []
         
-        world_vertices = []
+        world_vertices: List[Vector2] = []
         cos_h = math.cos(self.heading)
         sin_h = math.sin(self.heading)
         
@@ -250,71 +269,99 @@ class SpaceEntity:
         
         return world_vertices
     
-    def check_collision(self, other: 'SpaceEntity') -> bool:
+    def check_collision(self, other: 'SpaceEntity') -> Result[bool]:
         """Check circular collision with another entity"""
-        if not self.active or not other.active:
-            return False
-        
-        distance = self.position.distance_to(other.position)
-        return distance < (self.radius + other.radius)
+        try:
+            if not self.active or not other.active:
+                return Result.success_result(False)
+            
+            distance = self.position.distance_to(other.position)
+            collision = distance < (self.radius + other.radius)
+            return Result.success_result(collision)
+            
+        except Exception as e:
+            return Result.failure_result(f"Collision check failed: {str(e)}")
     
-    def split_asteroid(self) -> List['SpaceEntity']:
+    def split_asteroid(self) -> Result[List['SpaceEntity']]:
         """Split asteroid into smaller pieces (entity splitting pillar)"""
-        if self.entity_type == EntityType.LARGE_ASTEROID:
-            # Create 2 medium asteroids
-            return [
-                SpaceEntity(
-                    entity_type=EntityType.MEDIUM_ASTEROID,
-                    position=self.position + Vector2(5, 0),
-                    velocity=Vector2.from_angle(0.5, 30),
-                    heading=0.0
-                ),
-                SpaceEntity(
-                    entity_type=EntityType.MEDIUM_ASTEROID,
-                    position=self.position - Vector2(5, 0),
-                    velocity=Vector2.from_angle(-0.5, 30),
-                    heading=0.0
-                )
-            ]
-        elif self.entity_type == EntityType.MEDIUM_ASTEROID:
-            # Create 2 small asteroids
-            return [
-                SpaceEntity(
-                    entity_type=EntityType.SMALL_ASTEROID,
-                    position=self.position + Vector2(3, 0),
-                    velocity=Vector2.from_angle(0.8, 40),
-                    heading=0.0
-                ),
-                SpaceEntity(
-                    entity_type=EntityType.SMALL_ASTEROID,
-                    position=self.position - Vector2(3, 0),
-                    velocity=Vector2.from_angle(-0.8, 40),
-                    heading=0.0
-                )
-            ]
-        
-        return []  # Small asteroids don't split
+        try:
+            if self.entity_type == EntityType.LARGE_ASTEROID:
+                # Create 2 medium asteroids
+                medium_asteroids = [
+                    SpaceEntity(
+                        entity_type=EntityType.MEDIUM_ASTEROID,
+                        position=self.position + Vector2(5, 0),
+                        velocity=Vector2.from_angle(0.5, 30),
+                        heading=0.0
+                    ),
+                    SpaceEntity(
+                        entity_type=EntityType.MEDIUM_ASTEROID,
+                        position=self.position - Vector2(5, 0),
+                        velocity=Vector2.from_angle(-0.5, 30),
+                        heading=0.0
+                    )
+                ]
+                return Result.success_result(medium_asteroids)
+                
+            elif self.entity_type == EntityType.MEDIUM_ASTEROID:
+                # Create 2 small asteroids
+                small_asteroids = [
+                    SpaceEntity(
+                        entity_type=EntityType.SMALL_ASTEROID,
+                        position=self.position + Vector2(3, 0),
+                        velocity=Vector2.from_angle(0.8, 40),
+                        heading=0.0
+                    ),
+                    SpaceEntity(
+                        entity_type=EntityType.SMALL_ASTEROID,
+                        position=self.position - Vector2(3, 0),
+                        velocity=Vector2.from_angle(-0.8, 40),
+                        heading=0.0
+                    )
+                ]
+                return Result.success_result(small_asteroids)
+            
+            # Small asteroids don't split
+            return Result.success_result([])
+            
+        except Exception as e:
+            return Result.failure_result(f"Asteroid split failed: {str(e)}")
     
-    def apply_thrust(self, thrust_magnitude: float) -> None:
+    def apply_thrust(self, thrust_magnitude: float) -> Result[None]:
         """Apply thrust force (for ship)"""
-        if self.entity_type == EntityType.SHIP:
-            self.thrust_force = thrust_magnitude
-        else:
-            self.thrust_force = 0.0
+        try:
+            if self.entity_type == EntityType.SHIP:
+                self.thrust_force = thrust_magnitude
+            else:
+                self.thrust_force = 0.0
+            return Result.success_result(None)
+            
+        except Exception as e:
+            return Result.failure_result(f"Thrust application failed: {str(e)}")
     
-    def rotate(self, angular_velocity: float) -> None:
+    def rotate(self, angular_velocity: float) -> Result[None]:
         """Set angular velocity for rotation"""
-        if self.entity_type == EntityType.SHIP:
-            self.angular_velocity = angular_velocity
+        try:
+            if self.entity_type == EntityType.SHIP:
+                self.angular_velocity = angular_velocity
+            return Result.success_result(None)
+            
+        except Exception as e:
+            return Result.failure_result(f"Rotation failed: {str(e)}")
     
-    def get_state_dict(self) -> Dict[str, Any]:
+    def get_state_dict(self) -> Result[Dict[str, Any]]:
         """Get entity state for serialization"""
-        return {
-            'type': self.entity_type.value,
-            'position': self.position.to_tuple(),
-            'velocity': self.velocity.to_tuple(),
-            'heading': self.heading,
-            'radius': self.radius,
-            'active': self.active,
-            'age': self.age
-        }
+        try:
+            state = {
+                'type': self.entity_type.value,
+                'position': self.position.to_tuple(),
+                'velocity': self.velocity.to_tuple(),
+                'heading': self.heading,
+                'radius': self.radius,
+                'active': self.active,
+                'age': self.age
+            }
+            return Result.success_result(state)
+            
+        except Exception as e:
+            return Result.failure_result(f"State serialization failed: {str(e)}")
