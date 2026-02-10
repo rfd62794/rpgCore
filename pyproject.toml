@@ -43,7 +43,7 @@ dev = [
 ]
 
 [tool.maturin]
-python-source = "python"
+python-source = "src"
 module-name = "dgt_harvest_rust._dgt_harvest_rust"
 features = ["pyo3/extension-module"]
 
