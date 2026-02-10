@@ -84,7 +84,7 @@ class SpaceEngineContainer:
     def _tuple_to_vector(self, coord_tuple: tuple) -> 'Vector2':
         """Convert tuple to Vector2 (simplified for DI)"""
         # Import here to avoid circular dependency
-        from engines.space.vector2 import Vector2
+        from foundation.vector import Vector2
         return Vector2(coord_tuple[0], coord_tuple[1])
     
     def _get_space_config(self) -> Dict[str, Any]:

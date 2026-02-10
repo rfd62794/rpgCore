@@ -24,7 +24,7 @@ import math
 import time
 
 from .entities.space_entity import SpaceEntity, EntityType
-from .entities.vector2 import Vector2
+from foundation.vector import Vector2
 from .scrap_entity import ScrapEntity, ScrapLocker
 from foundation.constants import SOVEREIGN_WIDTH, SOVEREIGN_HEIGHT
 from foundation.types import Result

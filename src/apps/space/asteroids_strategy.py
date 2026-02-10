@@ -27,7 +27,7 @@ from foundation.constants import SOVEREIGN_WIDTH, SOVEREIGN_HEIGHT, SOVEREIGN_PI
 from engines.body.animation import SpriteAnimator, NewtonianGhostRenderer
 from .physics_body import PhysicsBody, PhysicsState
 from .entities.space_entity import SpaceEntity, EntityType
-from .entities.vector2 import Vector2
+from foundation.vector import Vector2
 from .scrap_entity import ScrapEntity
 
 

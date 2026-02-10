@@ -27,7 +27,7 @@ import time
 from pathlib import Path
 
 from .entities.space_entity import SpaceEntity, EntityType
-from .entities.vector2 import Vector2
+from foundation.vector import Vector2
 from foundation.constants import SOVEREIGN_WIDTH, SOVEREIGN_HEIGHT
 
 
