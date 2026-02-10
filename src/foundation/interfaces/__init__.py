@@ -22,6 +22,16 @@ from .protocols import (
     TerminalHandshakeProtocol,
 )
 
+from .entity_protocol import (
+    EntityProtocol,
+    RenderableProtocol,
+    CollectableProtocol,
+    PhysicsProtocol as EntityPhysicsProtocol,
+    ScrapEntityProtocol,
+    ShipEntityProtocol,
+    AsteroidEntityProtocol,
+)
+
 from foundation.base import (
     BaseEngine,
     BaseRenderer,
@@ -29,7 +39,7 @@ from foundation.base import (
 )
 
 __all__ = [
-    # Protocol Definitions
+    # Engine-level Protocols
     "EngineProtocol",
     "RenderProtocol", 
     "StateProtocol",
@@ -40,8 +50,18 @@ __all__ = [
     "ScrapProtocol",
     "TerminalHandshakeProtocol",
     
+    # Entity-level Protocols
+    "EntityProtocol",
+    "RenderableProtocol",
+    "CollectableProtocol",
+    "EntityPhysicsProtocol",
+    "ScrapEntityProtocol",
+    "ShipEntityProtocol",
+    "AsteroidEntityProtocol",
+    
     # Abstract Base Classes
     "BaseEngine",
     "BaseRenderer",
     "BaseStateManager",
 ]
+

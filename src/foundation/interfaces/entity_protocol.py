@@ -7,12 +7,15 @@ Defines formal protocols for entity behavior, ensuring
 proper dependency inversion and testability.
 """
 
+from __future__ import annotations
+
 from abc import ABC, abstractmethod
-from typing import List, Optional, Dict, Any, Tuple
-from dataclasses import dataclass
+from typing import List, Optional, Dict, Any, Tuple, TYPE_CHECKING
 
 from foundation.types import Result
-from .vector2 import Vector2
+
+if TYPE_CHECKING:
+    from apps.space.entities.vector2 import Vector2
 
 
 class EntityProtocol(ABC):

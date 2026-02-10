@@ -1,26 +1,10 @@
 """
-Interfaces Module - Protocol Definitions
+COMPATIBILITY SHIM — interfaces → foundation.interfaces
 
-This module contains formal protocol definitions for the DGT Platform,
-ensuring proper dependency inversion and interface segregation.
+This module re-exports from foundation.interfaces for backward compatibility.
+All new code should import from foundation.interfaces directly.
 """
 
-from .entity_protocol import (
-    EntityProtocol,
-    RenderableProtocol,
-    CollectableProtocol,
-    PhysicsProtocol,
-    ScrapEntityProtocol,
-    ShipEntityProtocol,
-    AsteroidEntityProtocol
-)
-
-__all__ = [
-    'EntityProtocol',
-    'RenderableProtocol', 
-    'CollectableProtocol',
-    'PhysicsProtocol',
-    'ScrapEntityProtocol',
-    'ShipEntityProtocol',
-    'AsteroidEntityProtocol'
-]
+from foundation.interfaces import *  # noqa: F401,F403
+from foundation.interfaces.protocols import *  # noqa: F401,F403
+from foundation.interfaces.entity_protocol import *  # noqa: F401,F403
