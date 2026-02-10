@@ -147,7 +147,7 @@ class GameState:
 
 @dataclass
 class MovementIntent:
-    """Voyager's movement request to D&D Engine"""
+    """AIController's movement request to D&D Engine"""
     intent_type: str = IntentType.MOVEMENT.value
     target_position: Tuple[int, int] = (0, 0)
     path: List[Tuple[int, int]] = field(default_factory=list)
@@ -157,7 +157,7 @@ class MovementIntent:
 
 @dataclass
 class InteractionIntent:
-    """Voyager's interaction request to D&D Engine"""
+    """AIController's interaction request to D&D Engine"""
     intent_type: str = IntentType.INTERACTION.value
     target_entity: str = ""
     interaction_type: str = ""
