@@ -23,10 +23,10 @@ import random
 
 from loguru import logger
 
-from core.state import (
+from engines.kernel.state import (
     GameState, InterestPoint, validate_position, BiomeType, InterestType
 )
-from src.dgt_core.kernel.config import ChronosConfig, SystemConfig
+from dgt_core.kernel.config import ChronosConfig, SystemConfig
 from narrative.persona import PersonaEngine, FactionType
 
 

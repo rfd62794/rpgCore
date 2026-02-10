@@ -26,7 +26,7 @@ from collections import defaultdict
 
 from loguru import logger
 
-from core.state import validate_position
+from engines.kernel.state import validate_position
 
 
 class PersonalityTrait(Enum):
