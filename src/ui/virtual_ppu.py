@@ -8,13 +8,14 @@ Virtual Picture Processing Unit that mimics Game Boy's three-layer rendering.
 from typing import Dict, List, Tuple, Optional, Any
 from dataclasses import dataclass
 from enum import Enum
+import time
 
 from loguru import logger
 
 from ui.pixel_renderer import PixelRenderer, Pixel
 from ui.tile_bank import TileBank, TileType
 from models.metasprite import Metasprite, MetaspriteConfig, CharacterRole
-from logic.animator import KineticSpriteController, AnimationState
+from foundation.interfaces.visuals import AnimationState, SpriteCoordinate
 from ui.palette_manager import PaletteManager, PaletteType
 
 
@@ -34,13 +35,7 @@ class TileMapCoordinate:
     animation_frame: int = 0
 
 
-@dataclass
-class SpriteCoordinate:
-    """Coordinate for a sprite in the object layer."""
-    x: int
-    y: int
-    metasprite: Metasprite
-    priority: int = 0  # Lower priority renders on top
+# SpriteCoordinate is imported from foundation.interfaces.visuals
 
 
 @dataclass
@@ -61,13 +56,14 @@ class VirtualPPU:
     Implements three-layer rendering: Background (BG), Window (WIN), and Objects (OBJ).
     """
     
-    def __init__(self, width: int = 160, height: int = 144):
+    def __init__(self, width: int = 160, height: int = 144, kinetic_controller=None):
         """
         Initialize the Virtual PPU.
         
         Args:
             width: Width in pixels (Game Boy: 160)
             height: Height in pixels (Game Boy: 144)
+            kinetic_controller: Optional KineticSpriteController (injected via DI)
         """
         self.width = width
         self.height = height
@@ -81,8 +77,8 @@ class VirtualPPU:
         self.tile_bank = TileBank()
         self.pixel_renderer = PixelRenderer(width, height)
         
-        # Initialize kinetic systems
-        self.kinetic_controller = KineticSpriteController()
+        # Kinetic controller injected via DI (breaks circular dep with logic.animator)
+        self.kinetic_controller = kinetic_controller
         self.palette_manager = PaletteManager()
         
         # Game Boy VRAM limitations
@@ -95,7 +91,8 @@ class VirtualPPU:
         self.animation_update_interval = 0.1  # 10 FPS for animations
         
         logger.info(f"VirtualPPU initialized: {width}x{height} pixels ({width // 8}x{height // 8} tiles)")
-        logger.info(f"Kinetic systems: {self.kinetic_controller.get_sprite_info()}")
+        if self.kinetic_controller:
+            logger.info(f"Kinetic systems: {self.kinetic_controller.get_sprite_info()}")
         logger.info(f"Palette manager: {self.palette_manager.get_palette_info()}")
     
     def set_tile(self, x: int, y: int, tile_key: str, animation_frame: int = 0) -> None:

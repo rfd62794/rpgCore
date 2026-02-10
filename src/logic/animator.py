@@ -14,19 +14,10 @@ from loguru import logger
 
 from models.metasprite import Metasprite, MetaspriteConfig, CharacterRole
 from ui.tile_bank import TileBank, TileType
-from ui.virtual_ppu import VirtualPPU, SpriteCoordinate
+from foundation.interfaces.visuals import AnimationState, SpriteCoordinate
 
 
-class AnimationState(Enum):
-    """Animation states for kinetic sprites."""
-    IDLE = "idle"
-    WALKING = "walking"
-    RUNNING = "running"
-    COMBAT = "combat"
-    CASTING = "casting"
-    STEALTH = "stealth"
-    SLEEPING = "sleeping"
-    TALKING = "talking"
+# AnimationState is imported from foundation.interfaces.visuals
 
 
 class EquipmentType(Enum):
@@ -457,6 +448,7 @@ class KineticSpriteController:
 
 # Export for use by other modules
 __all__ = [
-    "KineticSpriteController", "AnimationState", "EquipmentType", "PaletteType",
+    "KineticSpriteController", "AnimationState", "SpriteCoordinate",
+    "EquipmentType", "PaletteType",
     "AnimationFrame", "AnimationSequence", "KineticSpriteConfig"
 ]
