@@ -467,17 +467,31 @@ def create_asset_registry(assets_dir: Optional[str] = None) -> AssetRegistry:
 
 
 # Global instance
-try:
-    asset_registry = create_asset_registry()
-except Exception as e:
-    logger.error(f"❌ Failed to initialize AssetRegistry: {e}")
-    # Fallback to prevent import crash, allowing script to proceed and hopefully log more details
-    class MockRegistry:
-        def __init__(self): self.assets_dir = Path(".")
-        def get_material(self, *args): return None
-        def get_blueprint(self, *args): return None
-        def get_story(self, *args): return None
-    asset_registry = MockRegistry()
+_asset_registry: Optional[AssetRegistry] = None
+
+def get_asset_registry() -> AssetRegistry:
+    """Get or create the global AssetRegistry instance (Lazy Singleton)."""
+    global _asset_registry
+    if _asset_registry is None:
+        try:
+            _asset_registry = create_asset_registry()
+        except Exception as e:
+            logger.error(f"❌ Failed to initialize AssetRegistry: {e}")
+            # Fallback to prevent import crash
+            class MockRegistry:
+                def __init__(self): self.assets_dir = Path(".")
+                def get_material(self, *args): return None
+                def get_blueprint(self, *args): return None
+                def get_story(self, *args): return None
+            _asset_registry = MockRegistry()
+    return _asset_registry
+
+# Backward compatibility proxy
+class AssetRegistryProxy:
+    def __getattr__(self, name):
+        return getattr(get_asset_registry(), name)
+
+asset_registry = AssetRegistryProxy()
 
 
 # === ADR 193: Sovereign Viewport Protocol ===
