@@ -9,6 +9,9 @@ state. Physics (inertia, drag, toroidal wrapping) are delegated to
 the Tier-2 Kinetic Core rather than managed ad-hoc.
 """
 
+print("DEBUG: Entered space_voyager_engine.py (Top)")
+import sys; sys.stdout.flush()
+
 import math
 import random
 from typing import Dict, List, Optional, Tuple, Any
@@ -19,8 +22,6 @@ from engines.body.kinetics import KineticEntity
 from foundation.vector import Vector2
 from .ship_genetics import ShipGenome, HullType, WeaponType, EngineType
 
-print("DEBUG: Importing apps.space.space_voyager_engine")
-import sys; sys.stdout.flush()
 
 
 # ---------------------------------------------------------------------------
