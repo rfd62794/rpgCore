@@ -91,9 +91,23 @@ class AsteroidsSlice:
             wrap_bounds=(WIDTH, HEIGHT),
         )
         
+        # --- Entities ---
+        ship_kinetics = KineticEntity(
+            position=Vector2(WIDTH / 2, HEIGHT / 2),
+            velocity=Vector2.zero(),
+            wrap_bounds=(WIDTH, HEIGHT),
+        )
+        
         print("DEBUG: Creating ShipGenome...")
         sys.stdout.flush()
-        genome = ShipGenome()
+        try:
+            # Try to get from registry first (if it works)
+            from apps.space.ship_genetics import ship_genetic_registry
+            genome = ship_genetic_registry.generate_random_ship()
+        except Exception as e:
+            print(f"⚠️ Registry failed ({e}), using default genome")
+            genome = ShipGenome()
+            
         print("DEBUG: ShipGenome created")
         sys.stdout.flush()
 
