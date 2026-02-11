@@ -17,7 +17,7 @@ import math
 import random
 import time
 from pathlib import Path
-from typing import Dict, List, Tuple, Any, Optional
+from typing import Dict, List, Tuple, Any, Optional, TYPE_CHECKING
 from dataclasses import dataclass, field
 
 # Ensure src/ is importable (The Launcher Fix)
