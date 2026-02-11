@@ -7,11 +7,12 @@ dependency between logic.animator and ui.virtual_ppu.
 Both modules import from here instead of from each other.
 """
 
-from typing import Dict, List, Tuple, Optional, Any
+from typing import Dict, List, Tuple, Optional, Any, TYPE_CHECKING
 from dataclasses import dataclass
 from enum import Enum
 
-from models.metasprite import Metasprite
+if TYPE_CHECKING:
+    from models.metasprite import Metasprite
 
 
 # ---------------------------------------------------------------------------
@@ -39,5 +40,5 @@ class SpriteCoordinate:
     """Coordinate for a sprite in the object layer."""
     x: int
     y: int
-    metasprite: Metasprite
+    metasprite: "Metasprite"
     priority: int = 0  # Lower priority renders on top
