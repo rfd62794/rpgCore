@@ -71,36 +71,17 @@ class AsteroidsSlice:
         import sys
         print("DEBUG: AsteroidsSlice.__init__ start")
         sys.stdout.flush()
+    def __init__(self, asteroid_count: int = 50) -> None:
+        import sys
+        print("DEBUG: AsteroidsSlice.__init__ start")
+        sys.stdout.flush()
         
         self.asteroid_count = asteroid_count
 
-        # BYPASS: Stubbed SpaceShip to avoid heavy import chains
-        # from apps.space.space_voyager_engine import SpaceShip
-        # from apps.space.ship_genetics import ShipGenome
-        
-        @dataclass
-        class ShipGenome:
-            pass
-
-        @dataclass
-        class SpaceShip:
-            ship_id: str
-            genome: Any
-            kinetics: KineticEntity
-            health: float = 100.0
-            max_health: float = 100.0
-            def is_alive(self): return self.health > 0
-            def set_thrust(self, amount): self.kinetics.set_thrust(amount)
-            @property
-            def position(self): return self.kinetics.position
-            @property
-            def velocity(self): return self.kinetics.velocity
-            @property
-            def heading(self): return self.kinetics.heading
-            @heading.setter
-            def heading(self, v): self.kinetics.heading = v
-
-        print("DEBUG: Local stubs created")
+        # Import SpaceShip lazily to avoid heavy import chains at module level
+        from apps.space.space_voyager_engine import SpaceShip
+        from apps.space.ship_genetics import ShipGenome
+        print("DEBUG: Lazy imports done")
         sys.stdout.flush()
 
         # --- Entities ---
@@ -110,12 +91,18 @@ class AsteroidsSlice:
             wrap_bounds=(WIDTH, HEIGHT),
         )
         
+        print("DEBUG: Creating ShipGenome...")
+        sys.stdout.flush()
+        genome = ShipGenome()
+        print("DEBUG: ShipGenome created")
+        sys.stdout.flush()
+
         self.ship: SpaceShip = SpaceShip(
             ship_id="player_001",
-            genome=ShipGenome(),
+            genome=genome,
             kinetics=ship_kinetics,
         )
-        print("DEBUG: SpaceShip created (Stub)")
+        print("DEBUG: SpaceShip created")
         sys.stdout.flush()
         
         self.asteroids: List[Asteroid] = []
