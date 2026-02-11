@@ -1,5 +1,6 @@
+print("DEBUG: Loaded asteroids_slice.py (Line 1)", flush=True)
 """
-Asteroids Stress Test — Headless Simulation Slice
+Asteroids Slice - Stress Test & AI Benchmarkdless Simulation Slice
 
 ADR 195: Kinetic Alignment Verification
 
