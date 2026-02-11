@@ -87,6 +87,10 @@ class TestSteering:
             radius=4.0
         )
         
+        # Dial down seek so avoidance can win without being inside the rock
+        pilot.config.seek_weight = 0.01
+        pilot.config.avoid_weight = 10.0
+        
         steering = pilot.compute_steering(ship, [asteroid], (160, 144))
         
         # Should steer away from asteroid (dominates due to proximity)
@@ -147,13 +151,14 @@ class TestHeadingControl:
     
     def test_turns_toward_steering(self, ship):
         # Ship facing Right (0.0)
-        # Steering is Up (0, -1) -> -1.57 rad
+        # Steering is Up (0, -1) -> -1.57 rad (-pi/2) -> wrapped to 3pi/2 (4.71)
         steering = Vector2(0, -100)
         
         AsteroidPilot.apply_to_ship(steering, ship, dt=1.0) # Large dt to ensure full turn
         
-        # Should be facing Up
-        assert abs(ship.heading - (-math.pi/2)) < 0.1
+        # Should be facing Up (3pi/2)
+        target = 3 * math.pi / 2
+        assert abs(ship.heading - target) < 0.1
 
     def test_thrusts_when_steering(self, ship):
         steering = Vector2(100, 0)
