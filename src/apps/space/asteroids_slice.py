@@ -579,6 +579,7 @@ def run_ai_headless(frames: int = 3600) -> None:
     try:
         sim = AsteroidsSlice(asteroid_count=50)
         sim.spawn_asteroid_field()
+        print(f"DEBUG: Spawned {len(sim.asteroids)} asteroids.")
         sim.wire_exhaust()
         
         pilot = AsteroidPilot()
