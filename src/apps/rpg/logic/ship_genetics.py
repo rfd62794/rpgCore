@@ -16,6 +16,9 @@ import hashlib
 from pydantic import BaseModel, Field, validator
 from loguru import logger
 
+print("DEBUG: Importing apps.rpg.logic.ship_genetics")
+import sys; sys.stdout.flush()
+
 
 class HullType(str, Enum):
     """Ship hull classification"""
