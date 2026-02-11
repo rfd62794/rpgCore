@@ -467,7 +467,17 @@ def create_asset_registry(assets_dir: Optional[str] = None) -> AssetRegistry:
 
 
 # Global instance
-asset_registry = create_asset_registry()
+try:
+    asset_registry = create_asset_registry()
+except Exception as e:
+    logger.error(f"❌ Failed to initialize AssetRegistry: {e}")
+    # Fallback to prevent import crash, allowing script to proceed and hopefully log more details
+    class MockRegistry:
+        def __init__(self): self.assets_dir = Path(".")
+        def get_material(self, *args): return None
+        def get_blueprint(self, *args): return None
+        def get_story(self, *args): return None
+    asset_registry = MockRegistry()
 
 
 # === ADR 193: Sovereign Viewport Protocol ===
