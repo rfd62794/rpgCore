@@ -27,8 +27,15 @@ if str(_src) not in sys.path:
     sys.path.insert(0, str(_src))
 
 from foundation.vector import Vector2
+from foundation.constants import SOVEREIGN_WIDTH as WIDTH, SOVEREIGN_HEIGHT as HEIGHT
 from engines.body.kinetics import KineticEntity
 from engines.graphics.fx.exhaust_system import ExhaustSystem
+# from engines.kernel.models import asset_registry # Use lazy getter instead if needed or local import
+
+if TYPE_CHECKING:
+    from entities.asteroid import Asteroid
+    from actors.asteroid_pilot import AsteroidPilot
+    from engines.graphics.fx.exhaust_system import ExhaustSystem
 
 from foundation.utils.performance_monitor import (
     PerformanceMonitor,
@@ -412,13 +419,10 @@ PALETTE = {
 SCALE = 4  # 160×144 → 640×576
 
 
-from actors.asteroid_pilot import AsteroidPilot, SurvivalLog
-
-
 class VisualRunner:
     """Wraps AsteroidsSlice with a tkinter game loop and key input."""
 
-    def __init__(self, slice_sim: AsteroidsSlice, pilot: Optional[AsteroidPilot] = None) -> None:
+    def __init__(self, slice_sim: AsteroidsSlice, pilot: Optional["AsteroidPilot"] = None) -> None:
         self.sim = slice_sim
         self.dt = 1.0 / 60.0
         self.pilot = pilot  # If set, AI is in control
@@ -495,6 +499,8 @@ class VisualRunner:
 
     def _tick(self) -> None:
         """One frame: input → physics → render → blit."""
+        from actors.asteroid_pilot import AsteroidPilot
+        
         t0 = time.time()
 
         is_thrusting = False
@@ -614,6 +620,8 @@ def run_ai_headless(frames: int = 3600) -> None:
     """Run a 60-second headless AI survival benchmark."""
     import sys
     from actors.asteroid_pilot import AsteroidPilot
+    from entities.asteroid import Asteroid
+    from engines.graphics.fx.exhaust_system import ExhaustSystem
     
     print(f"🤖 AI AUTOPILOT ENGAGED — Surviving {frames} frames ({frames/60:.1f}s)...", flush=True)
     
