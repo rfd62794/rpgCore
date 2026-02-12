@@ -313,12 +313,36 @@ class SimpleVisualAsteroids:
         """Draw asteroids"""
         for asteroid in self.asteroids:
             color = self.colors[asteroid['color']]
+            
+            # Draw asteroid circle
             pygame.draw.circle(self.game_surface, color, 
                              (int(asteroid['x']), int(asteroid['y'])), 
                              int(asteroid['radius']))
+            
+            # Draw outline
             pygame.draw.circle(self.game_surface, self.colors['white'], 
                              (int(asteroid['x']), int(asteroid['y'])), 
                              int(asteroid['radius']), 1)
+            
+            # Draw health indicator
+            if asteroid['health'] > 1:
+                health_color = self.colors['green'] if asteroid['health'] > 2 else self.colors['yellow']
+                pygame.draw.circle(self.game_surface, health_color,
+                                 (int(asteroid['x']), int(asteroid['y'])), 
+                                 int(asteroid['radius']) // 2)
+    
+    def _draw_bullets(self) -> None:
+        """Draw bullets"""
+        for bullet in self.bullets:
+            # Draw bullet as small circle
+            pygame.draw.circle(self.game_surface, self.colors['yellow'],
+                             (int(bullet['x']), int(bullet['y'])), 
+                             bullet['radius'])
+            
+            # Add glow effect
+            pygame.draw.circle(self.game_surface, self.colors['white'],
+                             (int(bullet['x']), int(bullet['y'])), 
+                             bullet['radius'] + 1, 1)
     
     def _draw_hud(self) -> None:
         """Draw HUD information"""
