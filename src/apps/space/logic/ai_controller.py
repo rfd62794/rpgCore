@@ -199,12 +199,85 @@ class AsteroidPilot(BaseController):
             self.thrust = max(-1.0, min(1.0, self.thrust))
             self.rotation = max(-2.0, min(2.0, self.rotation))
     
+    def _apply_shared_knowledge_bias(self) -> None:
+        """Apply bias from shared knowledge library"""
+        if not self.use_neural_network or not self.use_shared_knowledge:
+            return
+        
+        # Query knowledge library periodically
+        current_time = self.survival_time
+        if current_time - self.last_technique_query_time < self.technique_query_interval:
+            return
+        
+        self.last_technique_query_time = current_time
+        
+        # Get current neural inputs
+        asteroids = world_data.get('asteroids', [])
+        scrap_entities = world_data.get('scrap', [])
+        
+        # Prepare inputs for library query
+        current_inputs = self._prepare_neural_inputs(entity_state, asteroids, scrap_entities)
+        
+        # Get matching technique from library
+        technique = self.knowledge_library.get_technique_for_situation(current_inputs)
+        
+        if technique:
+            # Apply technique bias to controls
+            bias = self._technique_to_bias(technique)
+            
+            # Blend bias with current controls
+            blend_factor = 0.3  # 30% influence from shared knowledge
+            self.thrust = self.thrust * (1 - blend_factor) + bias['thrust'] * blend_factor
+            self.rotation = self.rotation * (1 - blend_factor) + bias['rotation'] * blend_factor
+            
+            # Clamp to valid ranges
+            self.thrust = max(-1.0, min(1.0, self.thrust))
+            self.rotation = max(-2.0, min(2.0, self.rotation))
+            
+            logger.debug(f"📚 Applied shared knowledge bias: {technique.name}")
+    
+    def _technique_to_bias(self, technique: TechniqueTemplate) -> Dict[str, float]:
+        """Convert technique to control bias"""
+        bias = {'thrust': 0.0, 'rotation': 0.0, 'fire_weapon': 0.0}
+        
+        if technique.output_action:
+            if 'thrust' in technique.output_action:
+                bias['thrust'] = technique.output_action['thrust'].get('avg', 0.0)
+            if 'rotation' in technique.output_action:
+                bias['rotation'] = technique.output_action['rotation'].get('avg', 0.0)
+            if 'fire_weapon' in technique.output_action:
+                bias['fire_weapon'] = technique.output_action['fire_weapon'].get('avg', 0.0)
+        
+        return bias
+    
+    def _add_experience_to_library(self, entity_state: Dict[str, Any], world_data: Dict[str, Any]) -> None:
+        """Add current experience to knowledge library for potential extraction"""
+        # Get current neural inputs and outputs
+        asteroids = world_data.get('asteroids', [])
+        scrap_entities = world_data.get('scrap', [])
+        
+        current_inputs = self._prepare_neural_inputs(entity_state, asteroids, scrap_entities)
+        current_outputs = [self.thrust, self.rotation, 1.0 if self.fire_weapon else 0.0]
+        
+        # Calculate current fitness (simplified)
+        current_fitness = self.survival_time + (self.scrap_collected * 25)
+        
+        # Get current stress level
+        current_stress = self.get_stress_level()
+        
+        # Add to knowledge library
+        self.knowledge_library.add_experience_frame(
+            timestamp=self.survival_time,
+            inputs=current_inputs,
+            outputs=current_outputs,
+            fitness=current_fitness,
+            stress_level=current_stress
+        )
+    
     def _get_nearest_threat_distance(self) -> float:
         """Get distance to nearest threat"""
         # This would be populated from world_data in actual implementation
         return float('inf')  # Placeholder
-    
-    def _update_memory(self, dt: float, entity_state: Dict[str, Any], world_data: Dict[str, Any]) -> None:
         """Update short-term memory with current frame"""
         # Get threat distance
         threat_distance = self._get_nearest_threat_distance()
