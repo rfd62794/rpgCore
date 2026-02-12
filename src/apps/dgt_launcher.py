@@ -214,6 +214,8 @@ class DGTPlatformLauncher:
                 return self._launch_deployment()
             elif self.config.mode == ApplicationMode.WORKSPACE:
                 return self._launch_workspace()
+            elif self.config.mode == ApplicationMode.LARGE_WORKSPACE:
+                return self._launch_large_workspace()
             else:
                 return Result(success=False, error=f"Unknown mode: {self.config.mode}")
         
@@ -598,7 +600,7 @@ class DGTPlatformLauncher:
         
         while True:
             try:
-                choice = input("Enter choice (1-6): ").strip()
+                choice = input("Enter choice (1-7): ").strip()
                 
                 if choice == "1":
                     return ApplicationMode.THEATER
@@ -612,8 +614,10 @@ class DGTPlatformLauncher:
                     return ApplicationMode.DEPLOYMENT
                 elif choice == "6":
                     return ApplicationMode.WORKSPACE
+                elif choice == "7":
+                    return ApplicationMode.LARGE_WORKSPACE
                 else:
-                    print("Invalid choice. Please enter 1-6.")
+                    print("Invalid choice. Please enter 1-7.")
             except KeyboardInterrupt:
                 print("\n👋 Exiting...")
                 sys.exit(0)
