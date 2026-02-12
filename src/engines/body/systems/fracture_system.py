@@ -1,25 +1,28 @@
 """
-FractureSystem - Asteroid Splitting Logic with Cascading Cleanup
-SRP: Handles 1 -> 2 -> 4 rock splitting logic and debris generation
+FractureSystem - Genetic Asteroid Splitting Logic with Cascading Cleanup
+SRP: Handles 1 -> 2 -> 4 rock splitting logic with genetic inheritance
 """
 
 import math
 import random
 from typing import List, Dict, Any, Optional, Tuple
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from foundation.types import Result
 from engines.body.components.kinetic_body import KineticBody, create_asteroid
+from engines.body.components.genetic_component import GeneticComponent, create_random_asteroid_genetics
 
 
 @dataclass
 class AsteroidFragment:
-    """Represents a piece of a fractured asteroid"""
+    """Represents a genetically-enhanced asteroid fragment"""
     kinetic_body: KineticBody
     size: int  # 1 = small, 2 = medium, 3 = large
     health: int
     radius: float
     color: Tuple[int, int, int]
     point_value: int
+    genetic_component: Optional[GeneticComponent] = None
+    genetic_id: str = ""
     
     def get_position(self) -> Tuple[float, float]:
         """Get current position"""
@@ -29,16 +32,36 @@ class AsteroidFragment:
         """Apply damage and return True if destroyed"""
         self.health -= damage
         return self.health <= 0
+    
+    def get_genetic_info(self) -> Dict[str, Any]:
+        """Get genetic information for display"""
+        if self.genetic_component:
+            return self.genetic_component.get_genetic_info()
+        return {'genetic_id': self.genetic_id, 'traits': 'None'}
+    
+    def apply_genetic_modifiers(self) -> Result[Dict[str, float]]:
+        """Apply genetic modifications to kinetic body"""
+        if not self.genetic_component:
+            return Result(success=True, value={})
+        
+        return self.genetic_component.apply_to_kinetic_body(self.kinetic_body)
 
 
 class FractureSystem:
     """
-    Handles asteroid splitting with cascading cleanup logic.
-    Implements the classic 1->2->4 fracture pattern.
+    Handles asteroid splitting with genetic inheritance and cascading cleanup logic.
+    Implements the classic 1->2->4 fracture pattern with genetic evolution.
     """
     
-    def __init__(self):
-        """Initialize fracture system with size configurations"""
+    def __init__(self, enable_genetics: bool = True):
+        """
+        Initialize fracture system with size configurations
+        
+        Args:
+            enable_genetics: Whether to enable genetic inheritance
+        """
+        self.enable_genetics = enable_genetics
+        
         # Size configurations: size -> (radius, health, points, color)
         self.size_configs = {
             3: {  # Large asteroid
@@ -71,11 +94,15 @@ class FractureSystem:
         self.fragment_speed_range = (15.0, 40.0)  # Speed range for new fragments
         self.scatter_angle_range = math.pi / 3  # 60 degree scatter cone
         
+        # Genetic tracking
+        self.discovered_genetic_patterns: Dict[str, GeneticComponent] = {}
+        self.genetic_lineage: Dict[str, List[str]] = {}  # parent -> children mapping
+        
     def fracture_asteroid(self, 
                           asteroid: AsteroidFragment,
                           impact_angle: Optional[float] = None) -> Result[List[AsteroidFragment]]:
         """
-        Fracture an asteroid into smaller pieces
+        Fracture an asteroid into smaller pieces with genetic inheritance
         
         Args:
             asteroid: The asteroid to fracture
@@ -94,6 +121,9 @@ class FractureSystem:
         fragments = []
         parent_pos = asteroid.get_position()
         parent_velocity = asteroid.kinetic_body.state.velocity
+        
+        # Track genetic lineage
+        parent_genetic_id = asteroid.genetic_id
         
         # Determine scatter direction
         if impact_angle is not None:
@@ -118,13 +148,32 @@ class FractureSystem:
             final_velocity_x = fragment_velocity.x + scatter_velocity_x
             final_velocity_y = fragment_velocity.y + scatter_velocity_y
             
+            # Handle genetic inheritance
+            fragment_genetic_component = None
+            fragment_genetic_id = f"{parent_genetic_id}_frag{i+1}"
+            
+            if self.enable_genetics and asteroid.genetic_component:
+                # Evolve genetics for fragment
+                fragment_genetic_component = asteroid.genetic_component.evolve()
+                fragment_genetic_id = fragment_genetic_component.genetic_code.genetic_id
+                
+                # Track lineage
+                if parent_genetic_id not in self.genetic_lineage:
+                    self.genetic_lineage[parent_genetic_id] = []
+                self.genetic_lineage[parent_genetic_id].append(fragment_genetic_id)
+                
+                # Store discovered pattern
+                self.discovered_genetic_patterns[fragment_genetic_id] = fragment_genetic_component
+            
             # Create fragment
             fragment = self._create_fragment(
                 size=config['split_into_size'],
                 x=parent_pos[0],
                 y=parent_pos[1],
                 vx=final_velocity_x,
-                vy=final_velocity_y
+                vy=final_velocity_y,
+                genetic_component=fragment_genetic_component,
+                genetic_id=fragment_genetic_id
             )
             
             fragments.append(fragment)
