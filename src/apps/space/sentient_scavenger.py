@@ -273,7 +273,6 @@ class SentientScavenger:
         # Game entities
         self.asteroids = []
         self.scrap_entities = []
-        self._spawn_entities()
         
         # Environmental noise
         self.noise_factor = 0.1
@@ -281,6 +280,9 @@ class SentientScavenger:
         # Learning metrics
         self.collision_count = 0
         self.learning_events = []
+        
+        # Spawn entities after initialization
+        self._spawn_entities()
         
         logger.info("🧠 Sentient Scavenger initialized")
     
