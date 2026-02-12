@@ -16,7 +16,7 @@ from foundation.types import Result
 class NeuralNetwork:
     """Simple feed-forward neural network for AI pilot"""
     
-    def __init__(self, num_inputs: int = 5, num_hidden: int = 8, num_outputs: int = 3):
+    def __init__(self, num_inputs: int = 6, num_hidden: int = 8, num_outputs: int = 3):
         self.num_inputs = num_inputs
         self.num_hidden = num_hidden
         self.num_outputs = num_outputs
