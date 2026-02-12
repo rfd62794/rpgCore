@@ -68,6 +68,7 @@ class AdaptiveViewport:
         # Performance tracking
         self.fps_history = []
         self.last_frame_time = 0
+        self.max_fps = 60
         
         logger.info(f"🖥️ AdaptiveViewport initialized at {self.world_width}x{self.world_height} with {self.scale_factor}x scaling")
     
