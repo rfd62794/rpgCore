@@ -32,7 +32,8 @@ class ApplicationMode(Enum):
     RPG_LAB = "rpg_lab"
     VALIDATION = "validation"
     DEPLOYMENT = "deployment"
-    WORKSPACE = "workspace"  # NEW: Flexible layout mode
+    WORKSPACE = "workspace"  # Flexible layout mode
+    LARGE_WORKSPACE = "large_workspace"  # 1280x720 professional IDE
 
 
 @dataclass
@@ -592,6 +593,7 @@ class DGTPlatformLauncher:
         print("4. 🔍 Validation - Run Production Validation")
         print("5. 📦 Deployment - Build Production Package")
         print("6. 🏛️ Workspace - Flexible Layout Dashboard")
+        print("7. 🖥️ Large Workspace - 1280x720 Professional IDE")
         print()
         
         while True:
