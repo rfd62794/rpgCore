@@ -375,7 +375,7 @@ class AsteroidPilot:
         }
 
 
-class HumanController:
+class HumanController(BaseController):
     """
     Human controller for keyboard/miyoo input
     Complements the AI Controller for dual-track gameplay
