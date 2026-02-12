@@ -524,8 +524,8 @@ class AdaptiveWorkspace:
         right_frame.pack(side=tk.RIGHT, fill=tk.BOTH, padx=(10, 0))
         right_frame.pack_propagate(False)
         
-        # Size control widget (top)
-        self.size_control_widget = create_size_control_widget(right_frame, self.viewport, self._on_size_change)
+        # Create size control widget (top)
+        self.size_control_widget = create_size_control_widget(right_frame, self.viewport.render_panel, self._on_size_change)
         
         # Manual control widget
         self.control_widget = ControlWidget(right_frame, self.viewport)
