@@ -287,19 +287,30 @@ class CombatantPilot:
             del scrap_entities[scrap_idx]
     
     def update_fitness(self) -> None:
-        """Update pilot fitness with combat bonuses"""
+        """Update pilot fitness with combat bonuses and aggression incentives"""
         # Base fitness
         base_fitness = self.survival_time + (self.asteroids_destroyed * 10) + (self.scrap_collected * 25)
         
         # Combat bonus
         combat_bonus = self.asteroids_destroyed * 15  # Additional bonus for destruction
         
+        # Aggression incentive - reward for firing bullets
+        aggression_bonus = min(self.shots_fired * 2, 50.0)  # Cap at 50 points
+        
         # Efficiency bonus
         efficiency_bonus = 0.0
         if self.shots_fired > 0:
             efficiency_bonus = self.combat_efficiency * 20.0  # Bonus for accuracy
         
-        self.fitness = base_fitness + combat_bonus + efficiency_bonus
+        # Curiosity bias - penalty for staying still
+        curiosity_penalty = 0.0
+        if self.survival_time > 5.0:  # After 5 seconds
+            # Check if pilot is moving (simple velocity check)
+            total_movement = abs(self.visual_x - (SOVEREIGN_WIDTH // 2)) + abs(self.visual_y - (SOVEREIGN_HEIGHT // 2))
+            if total_movement < 20:  # Haven't moved much
+                curiosity_penalty = (self.survival_time - 5.0) * 0.5  # Penalty for inactivity
+        
+        self.fitness = base_fitness + combat_bonus + aggression_bonus + efficiency_bonus - curiosity_penalty
     
     def get_combat_stats(self) -> Dict[str, Any]:
         """Get combat statistics"""
