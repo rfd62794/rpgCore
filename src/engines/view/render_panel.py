@@ -19,22 +19,39 @@ from loguru import logger
 
 
 class RenderPanel:
-    """Sovereign viewport with integer scaling and pixel-perfect rendering"""
+    """Sovereign viewport with integer scaling and size options"""
     
-    def __init__(self, parent_widget: tk.Widget, width: int = 400, height: int = 400):
+    def __init__(self, parent_widget: tk.Widget, width: int = 400, height: int = 400, 
+                 size_option: str = "standard"):
         self.parent_widget = parent_widget
         self.available_width = width
         self.available_height = height
+        self.size_option = size_option
         
-        # Sovereign surface (always 160x144)
-        self.sovereign_surface = pygame.Surface((SOVEREIGN_WIDTH, SOVEREIGN_HEIGHT))
+        # Size configurations
+        self.size_configs = {
+            "standard": {"world_width": 160, "world_height": 144, "name": "Standard (160x144)"},
+            "adaptive": {"world_width": 320, "world_height": 240, "name": "Adaptive (320x240)"},
+            "large": {"world_width": 480, "world_height": 360, "name": "Large (480x360)"},
+            "huge": {"world_width": 640, "world_height": 480, "name": "Huge (640x480)"},
+            "massive": {"world_width": 800, "world_height": 600, "name": "Massive (800x600)"}
+        }
+        
+        # Get current size configuration
+        config = self.size_configs.get(size_option, self.size_configs["standard"])
+        self.world_width = config["world_width"]
+        self.world_height = config["world_height"]
+        self.size_name = config["name"]
+        
+        # Sovereign surface (always at configured size)
+        self.sovereign_surface = pygame.Surface((self.world_width, self.world_height))
         self.sovereign_surface.fill((0, 0, 0))
         
         # Display surface (scaled for display)
         self.display_surface = None
         self.scale_factor = 1
-        self.display_width = SOVEREIGN_WIDTH
-        self.display_height = SOVEREIGN_HEIGHT
+        self.display_width = self.world_width
+        self.display_height = self.world_height
         
         # Tkinter canvas
         self.canvas = tk.Canvas(
@@ -54,19 +71,19 @@ class RenderPanel:
         # PhotoImage reference (prevent garbage collection)
         self.photo_image = None
         
-        logger.info(f"🎮 RenderPanel initialized ({width}x{height})")
+        logger.info(f"🎮 RenderPanel initialized ({self.size_name}) with {width}x{height} available")
     
     def calculate_optimal_scaling(self, available_width: int, available_height: int) -> int:
         """Calculate optimal integer scaling factor using nearest-neighbor"""
         # Calculate maximum integer scale that fits
-        width_scale = available_width // SOVEREIGN_WIDTH
-        height_scale = available_height // SOVEREIGN_HEIGHT
+        width_scale = available_width // self.world_width
+        height_scale = available_height // self.world_height
         
         # Use the smaller scale to ensure full visibility
         optimal_scale = min(width_scale, height_scale)
         
         # Cap at reasonable maximum for performance
-        optimal_scale = min(optimal_scale, 6)
+        optimal_scale = min(optimal_scale, 6)  # Cap at 6x
         
         # Ensure minimum scale of 1
         return max(1, optimal_scale)
