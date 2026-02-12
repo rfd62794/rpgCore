@@ -12,6 +12,7 @@ from loguru import logger
 
 from foundation.types import Result
 from foundation.constants import SOVEREIGN_WIDTH, SOVEREIGN_HEIGHT
+from foundation.system_clock import SystemClock
 
 
 class EventType(Enum):
@@ -50,7 +51,7 @@ class MovieSequence:
 class MovieEngine:
     """Core cinematic engine without UI dependencies"""
     
-    def __init__(self, seed: str = "FOREST_GATE_001"):
+    def __init__(self, seed: str = "FOREST_GATE_001", target_fps: float = 60.0):
         self.seed = seed
         self.current_sequence: Optional[MovieSequence] = None
         self.current_event_index: int = 0
@@ -62,7 +63,10 @@ class MovieEngine:
         self.world_size = (50, 50)
         self.current_position = (25, 25)  # Center of world
         
-        logger.info(f"🎬 MovieEngine initialized with seed: {seed}")
+        # System clock for steady 60Hz timing
+        self.system_clock = SystemClock(target_fps=target_fps, max_cpu_usage=80.0)
+        
+        logger.info(f"🎬 MovieEngine initialized with seed: {seed} at {target_fps} FPS")
     
     def load_sequence(self, sequence_data: Dict[str, Any]) -> Result[MovieSequence]:
         """Load a movie sequence from data"""

@@ -12,6 +12,7 @@ from enum import Enum
 
 from loguru import logger
 from engines.kernel.components import PhysicsComponent
+from foundation.system_clock import SystemClock
 
 class CombatIntent(str, Enum):
     """AI combat intent states"""
@@ -57,7 +58,7 @@ class PIDController:
 class SpaceVoyagerEngine:
     """Newtonian physics engine with PID-controlled navigation"""
     
-    def __init__(self, thrust_power: float = 0.5, rotation_speed: float = 5.0):
+    def __init__(self, thrust_power: float = 0.5, rotation_speed: float = 5.0, target_fps: float = 60.0):
         self.thrust_power = thrust_power
         self.rotation_speed = rotation_speed
         
@@ -73,7 +74,10 @@ class SpaceVoyagerEngine:
         self.target_position: Optional[Tuple[float, float]] = None
         self.command_confidence: float = 1.0
         
-        logger.debug(f"🚀 SpaceVoyagerEngine initialized (Component-Lite)")
+        # System clock for consistent timing
+        self.system_clock = SystemClock(target_fps=target_fps, max_cpu_usage=75.0)
+        
+        logger.debug(f"🚀 SpaceVoyagerEngine initialized (Component-Lite) at {target_fps} FPS")
     
     def update(self, physics: PhysicsComponent, dt: float = 0.016) -> Dict[str, Any]:
         """Update physics component with Newtonian mechanics"""
