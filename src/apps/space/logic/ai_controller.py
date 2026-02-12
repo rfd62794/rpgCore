@@ -97,13 +97,22 @@ class AsteroidPilot(BaseController):
         # Mental vector for debugging
         self.mental_vector = {'x': 0.0, 'y': 0.0, 'target': None, 'type': None}
         
+        # Active learning components
+        self.short_term_memory = create_short_term_memory()
+        self.is_blackout = False
+        self.blackout_end_time = 0.0
+        self.collision_penalty_applied = False
+        
+        # Adaptive bias from learning
+        self.adaptive_bias = {'thrust': 0.0, 'rotation': 0.0, 'fire_weapon': 0.0}
+        
         if self.use_neural_network and self.neural_network:
             logger.info(f"🧠 AI Pilot initialized with neural network: {controller_id}")
         else:
             logger.info(f"🤖 AI Pilot initialized (rule-based): {controller_id}")
     
     def update(self, dt: float, entity_state: Dict[str, Any], world_data: Dict[str, Any]) -> Result[ControlInput]:
-        """Update AI pilot decision making"""
+        """Update AI pilot decision making with active learning"""
         try:
             # Update internal state
             self.position = Vector2(entity_state.get('x', 0), entity_state.get('y', 0))
@@ -111,16 +120,37 @@ class AsteroidPilot(BaseController):
             self.angle = entity_state.get('angle', 0)
             self.survival_time += dt
             
+            # Update blackout state
+            if self.is_blackout and self.survival_time >= self.blackout_end_time:
+                self.is_blackout = False
+                logger.debug(f"🔆 AI Pilot {self.pilot_id} blackout ended")
+            
             # Reset controls
             self.thrust = 0.0
             self.rotation = 0.0
             self.fire_weapon = False
+            
+            # Skip control during blackout
+            if self.is_blackout:
+                control_input = ControlInput(
+                    thrust=0.0,
+                    rotation=0.0,
+                    fire_weapon=False,
+                    special_action=None
+                )
+                return Result(success=True, value=control_input)
             
             # Choose control method
             if self.use_neural_network and self.neural_network:
                 self._neural_network_control(entity_state, world_data)
             else:
                 self._rule_based_control(world_data)
+            
+            # Apply adaptive bias from learning
+            self._apply_adaptive_bias()
+            
+            # Update short-term memory
+            self._update_memory(dt, entity_state, world_data)
             
             # Create control input
             control_input = ControlInput(
@@ -134,6 +164,95 @@ class AsteroidPilot(BaseController):
             
         except Exception as e:
             return Result(success=False, error=f"AI Pilot update failed: {e}")
+    
+    def _apply_adaptive_bias(self) -> None:
+        """Apply adaptive bias from short-term learning"""
+        if self.use_neural_network:
+            # Get adaptive bias based on recent experiences
+            current_threat_distance = self._get_nearest_threat_distance()
+            
+            bias = self.short_term_memory.get_adaptive_bias(
+                (self.velocity.x, self.velocity.y),
+                current_threat_distance
+            )
+            
+            # Apply bias to controls
+            self.thrust += bias['thrust']
+            self.rotation += bias['rotation']
+            
+            # Clamp to valid ranges
+            self.thrust = max(-1.0, min(1.0, self.thrust))
+            self.rotation = max(-2.0, min(2.0, self.rotation))
+    
+    def _get_nearest_threat_distance(self) -> float:
+        """Get distance to nearest threat"""
+        # This would be populated from world_data in actual implementation
+        return float('inf')  # Placeholder
+    
+    def _update_memory(self, dt: float, entity_state: Dict[str, Any], world_data: Dict[str, Any]) -> None:
+        """Update short-term memory with current frame"""
+        # Get threat distance
+        threat_distance = self._get_nearest_threat_distance()
+        
+        # Get target information
+        target_distance = float('inf')
+        target_angle = 0.0
+        
+        if self.target_asteroid:
+            dx = self.target_asteroid['x'] - entity_state['x']
+            dy = self.target_asteroid['y'] - entity_state['y']
+            target_distance = math.sqrt(dx**2 + dy**2)
+            target_angle = math.atan2(dy, dx)
+        elif self.target_scrap:
+            dx = self.target_scrap['x'] - entity_state['x']
+            dy = self.target_scrap['y'] - entity_state['y']
+            target_distance = math.sqrt(dx**2 + dy**2)
+            target_angle = math.atan2(dy, dx)
+        
+        # Add frame to memory
+        self.short_term_memory.add_frame(
+            timestamp=self.survival_time,
+            ship_velocity=(self.velocity.x, self.velocity.y),
+            ship_position=(entity_state['x'], entity_state['y']),
+            ship_angle=self.angle,
+            target_distance=target_distance,
+            target_angle=target_angle,
+            control_inputs={
+                'thrust': self.thrust,
+                'rotation': self.rotation,
+                'fire_weapon': self.fire_weapon
+            },
+            threat_distance=threat_distance
+        )
+        
+        # Decay stress
+        self.short_term_memory.decay_stress(dt)
+        
+        # Clean old frames
+        self.short_term_memory.clear_old_frames(self.survival_time)
+    
+    def trigger_blackout(self, duration: float = 2.0) -> None:
+        """Trigger neural blackout penalty"""
+        self.is_blackout = True
+        self.blackout_end_time = self.survival_time + duration
+        
+        # Record collision in memory
+        self.short_term_memory.record_collision(self.survival_time)
+        
+        # Apply collision penalty if not already applied
+        if not self.collision_penalty_applied:
+            self.collision_penalty_applied = True
+            # This would be handled by the fitness calculator
+        
+        logger.info(f"⚫ AI Pilot {self.pilot_id} blackout triggered for {duration}s")
+    
+    def get_stress_level(self) -> float:
+        """Get current stress level from short-term memory"""
+        return self.short_term_memory.get_stress_level()
+    
+    def get_memory_summary(self) -> Dict[str, Any]:
+        """Get summary of memory state"""
+        return self.short_term_memory.get_memory_summary()
     
     def _neural_network_control(self, entity_state: Dict[str, Any], world_data: Dict[str, Any]) -> None:
         """Control using neural network"""
