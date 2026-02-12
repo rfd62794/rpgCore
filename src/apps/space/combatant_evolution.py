@@ -368,13 +368,15 @@ class CombatantEvolution:
         # Game entities
         self.asteroids = []
         self.scrap_entities = []
-        self._spawn_entities()
         
         # Environmental noise
         self.noise_factor = 0.1
         
         # Combat metrics
         self.generation_history = []
+        
+        # Spawn entities after initialization
+        self._spawn_entities()
         
         logger.info("🔫 Combatant Evolution initialized")
     
