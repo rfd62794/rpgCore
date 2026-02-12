@@ -80,19 +80,24 @@ class AsteroidPilot(BaseController):
         
         # Target tracking
         self.target_asteroid: Optional[Dict] = None
+        self.target_scrap: Optional[Dict] = None
         self.threats: List[Dict] = []
         
         # Performance metrics
         self.survival_time = 0.0
         self.asteroids_collected = 0
+        self.scrap_collected = 0
         self.threats_evaded = 0
         
         # NEAT neural network support
         self.use_neural_network = use_neural_network
         self.neural_network = neural_network
         
+        # Mental vector for debugging
+        self.mental_vector = {'x': 0.0, 'y': 0.0, 'target': None, 'type': None}
+        
         if self.use_neural_network and self.neural_network:
-            logger.info(f"� AI Pilot initialized with neural network: {controller_id}")
+            logger.info(f"🧠 AI Pilot initialized with neural network: {controller_id}")
         else:
             logger.info(f"🤖 AI Pilot initialized (rule-based): {controller_id}")
     
@@ -134,9 +139,11 @@ class AsteroidPilot(BaseController):
         if not self.neural_network:
             return
         
-        # Prepare neural network inputs
+        # Prepare neural network inputs with scrap awareness
         asteroids = world_data.get('asteroids', [])
-        inputs = self._prepare_neural_inputs(entity_state, asteroids)
+        scrap_entities = world_data.get('scrap', [])
+        
+        inputs = self._prepare_neural_inputs(entity_state, asteroids, scrap_entities)
         
         # Forward pass through neural network
         outputs = self.neural_network.forward(inputs)
@@ -149,36 +156,78 @@ class AsteroidPilot(BaseController):
         self.rotation = controls['rotation']
         self.fire_weapon = controls['fire_weapon']
     
-    def _prepare_neural_inputs(self, entity_state: Dict[str, Any], asteroids: List[Dict]) -> List[float]:
-        """Prepare inputs for neural network"""
+    def _prepare_neural_inputs(self, entity_state: Dict[str, Any], asteroids: List[Dict], 
+                            scrap_entities: List[Dict] = None) -> List[float]:
+        """Prepare inputs for neural network with scrap awareness"""
         # Find nearest asteroid
         nearest_asteroid = None
-        min_distance = float('inf')
+        min_asteroid_distance = float('inf')
         
         for asteroid in asteroids:
             distance = math.sqrt((entity_state['x'] - asteroid['x'])**2 + 
                                (entity_state['y'] - asteroid['y'])**2)
-            if distance < min_distance:
-                min_distance = distance
+            if distance < min_asteroid_distance:
+                min_asteroid_distance = distance
                 nearest_asteroid = asteroid
         
-        if nearest_asteroid is None:
-            # No asteroids, return neutral inputs
-            return [0.0, 0.0, entity_state.get('vx', 0) / 100.0, 
-                   entity_state.get('vy', 0) / 100.0, math.sin(entity_state.get('angle', 0))]
+        # Find nearest scrap
+        nearest_scrap = None
+        min_scrap_distance = float('inf')
+        
+        if scrap_entities:
+            for scrap in scrap_entities:
+                distance = math.sqrt((entity_state['x'] - scrap['x'])**2 + 
+                                   (entity_state['y'] - scrap['y'])**2)
+                if distance < min_scrap_distance:
+                    min_scrap_distance = distance
+                    nearest_scrap = scrap
+        
+        # Update mental vector for debugging
+        if nearest_asteroid and (min_asteroid_distance < min_scrap_distance or not nearest_scrap):
+            self.mental_vector = {
+                'x': nearest_asteroid['x'] - entity_state['x'],
+                'y': nearest_asteroid['y'] - entity_state['y'],
+                'target': 'asteroid',
+                'type': 'threat'
+            }
+        elif nearest_scrap:
+            self.mental_vector = {
+                'x': nearest_scrap['x'] - entity_state['x'],
+                'y': nearest_scrap['y'] - entity_state['y'],
+                'target': 'scrap',
+                'type': 'resource'
+            }
+        else:
+            self.mental_vector = {'x': 0, 'y': 0, 'target': None, 'type': None}
         
         # Calculate inputs
-        dx = nearest_asteroid['x'] - entity_state['x']
-        dy = nearest_asteroid['y'] - entity_state['y']
-        distance = math.sqrt(dx**2 + dy**2)
+        if nearest_asteroid is None and nearest_scrap is None:
+            # No targets, return neutral inputs
+            return [0.0, 0.0, entity_state.get('vx', 0) / 100.0, 
+                   entity_state.get('vy', 0) / 100.0, math.sin(entity_state.get('angle', 0)), 0.0]
+        
+        # Determine primary target
+        if nearest_asteroid and (min_asteroid_distance < min_scrap_distance or not nearest_scrap):
+            # Asteroid is primary target
+            dx = nearest_asteroid['x'] - entity_state['x']
+            dy = nearest_asteroid['y'] - entity_state['y']
+            distance = min_asteroid_distance
+            scrap_distance_normalized = min_scrap_distance / 100.0 if nearest_scrap else 0.0
+        else:
+            # Scrap is primary target
+            dx = nearest_scrap['x'] - entity_state['x']
+            dy = nearest_scrap['y'] - entity_state['y']
+            distance = min_scrap_distance
+            scrap_distance_normalized = min_scrap_distance / 100.0
+            min_asteroid_distance = min_asteroid_distance if nearest_asteroid else 100.0
         
         # Normalize inputs
-        # Input 1: Distance to nearest asteroid (normalized)
+        # Input 1: Distance to primary target (normalized)
         distance_input = min(distance / 100.0, 1.0)
         
-        # Input 2: Angle to nearest asteroid (normalized to -1 to 1)
-        angle_to_asteroid = math.atan2(dy, dx)
-        angle_input = math.sin(angle_to_asteroid - entity_state.get('angle', 0))
+        # Input 2: Angle to primary target (normalized to -1 to 1)
+        angle_to_target = math.atan2(dy, dx)
+        angle_input = math.sin(angle_to_target - entity_state.get('angle', 0))
         
         # Input 3: Ship velocity X (normalized)
         vx_input = entity_state.get('vx', 0) / 100.0
@@ -189,7 +238,10 @@ class AsteroidPilot(BaseController):
         # Input 5: Ship heading (normalized)
         heading_input = math.sin(entity_state.get('angle', 0))
         
-        return [distance_input, angle_input, vx_input, vy_input, heading_input]
+        # Input 6: Distance to nearest scrap (normalized) - NEW!
+        scrap_input = scrap_distance_normalized
+        
+        return [distance_input, angle_input, vx_input, vy_input, heading_input, scrap_input]
     
     def _interpret_neural_outputs(self, outputs: List[float]) -> Dict[str, Any]:
         """Interpret neural network outputs as control inputs"""
@@ -447,12 +499,18 @@ class AsteroidPilot(BaseController):
             'position': {'x': self.position.x, 'y': self.position.y},
             'survival_time': self.survival_time,
             'asteroids_collected': self.asteroids_collected,
+            'scrap_collected': self.scrap_collected,
             'threats_evaded': self.threats_evaded,
             'current_target': self.target_asteroid['id'] if self.target_asteroid else None,
             'active_threats': len(self.threats),
             'use_neural_network': self.use_neural_network,
-            'neural_network_active': self.neural_network is not None
+            'neural_network_active': self.neural_network is not None,
+            'mental_vector': self.mental_vector
         }
+    
+    def get_mental_vector(self) -> Dict[str, Any]:
+        """Get the AI's current mental vector for debugging"""
+        return self.mental_vector.copy()
     
     def set_neural_network(self, network: NeuralNetwork) -> None:
         """Set or update the neural network"""
