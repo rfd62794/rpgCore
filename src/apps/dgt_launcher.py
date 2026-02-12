@@ -591,11 +591,12 @@ class DGTPlatformLauncher:
         print("3. 🧪 RPG Lab - Character Creation Demo")
         print("4. 🔍 Validation - Run Production Validation")
         print("5. 📦 Deployment - Build Production Package")
+        print("6. 🏛️ Workspace - Flexible Layout Dashboard")
         print()
         
         while True:
             try:
-                choice = input("Enter choice (1-5): ").strip()
+                choice = input("Enter choice (1-6): ").strip()
                 
                 if choice == "1":
                     return ApplicationMode.THEATER
@@ -607,8 +608,10 @@ class DGTPlatformLauncher:
                     return ApplicationMode.VALIDATION
                 elif choice == "5":
                     return ApplicationMode.DEPLOYMENT
+                elif choice == "6":
+                    return ApplicationMode.WORKSPACE
                 else:
-                    print("Invalid choice. Please enter 1-5.")
+                    print("Invalid choice. Please enter 1-6.")
             except KeyboardInterrupt:
                 print("\n👋 Exiting...")
                 sys.exit(0)
