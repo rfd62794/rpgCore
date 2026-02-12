@@ -122,6 +122,146 @@ class AsteroidsStrategy:
         if self.frame_buffer:
             self.frame_buffer[:] = bytes([self.clear_color]) * len(self.frame_buffer)
     
+    def set_controller(self, controller: BaseController) -> Result[bool]:
+        """Set the active controller for the game"""
+        try:
+            register_result = self.controller_manager.register_controller(controller)
+            if not register_result.success:
+                return register_result
+            
+            set_result = self.controller_manager.set_active_controller(controller.controller_id)
+            return set_result
+            
+        except Exception as e:
+            return Result(success=False, error=f"Failed to set controller: {e}")
+    
+    def update_game_state(self, dt: float, world_data: Dict[str, Any]) -> Result[Dict[str, Any]]:
+        """Update game state with controller input"""
+        try:
+            if self.game_over:
+                return Result(success=True, value={'game_over': True, 'lives': self.lives, 'score': self.score})
+            
+            # Get controller input
+            entity_state = {
+                'x': self.physics_body.position.x,
+                'y': self.physics_body.position.y,
+                'vx': self.physics_body.velocity.x,
+                'vy': self.physics_body.velocity.y,
+                'angle': self.physics_body.angle,
+                'energy': self.energy_level,
+                'invulnerable': self.invulnerable_time > 0
+            }
+            
+            control_result = self.controller_manager.update_active_controller(dt, entity_state, world_data)
+            if not control_result.success:
+                return Result(success=False, error=f"Controller update failed: {control_result.error}")
+            
+            control_input = control_result.value
+            
+            # Apply control input to physics
+            self._apply_control_input(control_input, dt)
+            
+            # Update invulnerability
+            if self.invulnerable_time > 0:
+                self.invulnerable_time -= dt
+            
+            # Update physics
+            self.physics_body.update(dt)
+            
+            # Check collisions
+            collision_result = self._check_collisions(world_data)
+            
+            # Return game state
+            game_state = {
+                'position': {'x': self.physics_body.position.x, 'y': self.physics_body.position.y},
+                'velocity': {'x': self.physics_body.velocity.x, 'y': self.physics_body.velocity.y},
+                'angle': self.physics_body.angle,
+                'lives': self.lives,
+                'score': self.score,
+                'energy': self.energy_level,
+                'invulnerable': self.invulnerable_time > 0,
+                'game_over': self.game_over,
+                'controller_info': self.controller_manager.get_controller_status()
+            }
+            
+            return Result(success=True, value=game_state)
+            
+        except Exception as e:
+            return Result(success=False, error=f"Game state update failed: {e}")
+    
+    def _apply_control_input(self, control_input: ControlInput, dt: float) -> None:
+        """Apply controller input to physics body"""
+        # Apply thrust
+        if control_input.thrust != 0:
+            thrust_magnitude = control_input.thrust * 50.0  # Max thrust of 50 units
+            thrust_x = thrust_magnitude * math.cos(self.physics_body.angle)
+            thrust_y = thrust_magnitude * math.sin(self.physics_body.angle)
+            
+            self.physics_body.apply_force(thrust_x, thrust_y)
+            
+            # Drain energy for thrust
+            self.energy_level = max(0, self.energy_level - abs(control_input.thrust) * dt * 10)
+        
+        # Apply rotation
+        if control_input.rotation != 0:
+            rotation_speed = control_input.rotation * 3.0  # Max 3 radians per second
+            self.physics_body.angle += rotation_speed * dt
+            self.physics_body.angle = self.physics_body.angle % (2 * math.pi)
+        
+        # Handle weapon fire
+        if control_input.fire_weapon:
+            self._fire_weapon()
+    
+    def _fire_weapon(self) -> None:
+        """Fire weapon (create bullet)"""
+        if self.energy_level >= 5:  # Cost 5 energy per shot
+            self.energy_level -= 5
+            # Bullet creation would be handled by the game manager
+            # For now, just deduct energy
+    
+    def _check_collisions(self, world_data: Dict[str, Any]) -> Result[Dict[str, Any]]:
+        """Check for collisions with asteroids and handle game logic"""
+        try:
+            asteroids = world_data.get('asteroids', [])
+            
+            for asteroid in asteroids:
+                asteroid_pos = Vector2(asteroid['x'], asteroid['y'])
+                distance = self.physics_body.position.distance_to(asteroid_pos)
+                
+                # Check collision (ship radius ~5, asteroid radius varies)
+                collision_distance = 5.0 + asteroid.get('radius', 10.0)
+                
+                if distance < collision_distance:
+                    if self.invulnerable_time <= 0:
+                        # Ship hit!
+                        self.lives -= 1
+                        self.invulnerable_time = 3.0  # 3 seconds of invulnerability
+                        
+                        if self.lives <= 0:
+                            self.game_over = True
+                        
+                        return Result(success=True, value={
+                            'collision': True,
+                            'lives_remaining': self.lives,
+                            'invulnerable': True
+                        })
+            
+            return Result(success=True, value={'collision': False})
+            
+        except Exception as e:
+            return Result(success=False, error=f"Collision check failed: {e}")
+    
+    def get_hud_data(self) -> Dict[str, Any]:
+        """Get HUD data for display"""
+        return {
+            'lives': self.lives,
+            'score': self.score,
+            'energy': self.energy_level,
+            'invulnerable': self.invulnerable_time > 0,
+            'position': {'x': self.physics_body.position.x, 'y': self.physics_body.position.y},
+            'velocity': math.sqrt(self.physics_body.velocity.x ** 2 + self.physics_body.velocity.y ** 2)
+        }
+    
     def _render_entities(self, entities: List[SpaceEntity]) -> None:
         """Render all entities with Newtonian ghosting"""
         for entity in entities:
