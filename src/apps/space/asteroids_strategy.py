@@ -25,6 +25,7 @@ from foundation.interfaces.protocols import RenderProtocol, Result
 from foundation.base import BasePPU
 from foundation.constants import SOVEREIGN_WIDTH, SOVEREIGN_HEIGHT, SOVEREIGN_PIXELS
 from engines.body.animation import SpriteAnimator, NewtonianGhostRenderer
+from engines.kernel.controller import BaseController, ControlInput, ControllerManager
 from .physics_body import PhysicsBody, PhysicsState
 from .entities.space_entity import SpaceEntity, EntityType
 from foundation.vector import Vector2
