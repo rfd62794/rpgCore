@@ -250,7 +250,7 @@ class EntityManager:
 
 # Specialized entity types for asteroids game
 class ShipEntity(Entity):
-    """Ship entity with player control"""
+    """Ship entity with player control and paced combat"""
     
     def __init__(self):
         super().__init__()
@@ -260,6 +260,11 @@ class ShipEntity(Entity):
         self.lives = 3
         self.invulnerable_time = 0.0
         self.radius = 3.0  # Tight hit-box for high-stakes navigation
+        
+        # Weapon pacing system
+        self.fire_cooldown = 0.0
+        self.fire_cooldown_max = 0.15  # 150ms between shots (human rhythm)
+        self.last_fire_time = 0.0
     
     def update(self, dt: float) -> None:
         super().update(dt)

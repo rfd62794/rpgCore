@@ -99,6 +99,11 @@ class SystemConfig:
         self.height = SOVEREIGN_HEIGHT
         self.target_fps = TARGET_FPS
         self.debug = False
+        # Debug and development flags
+        self.DEBUG_MODE = False
+        self.DEBUG_INFINITE_ENERGY = True  # Disable energy constraints for AI training
+        self.DEBUG_NO_COLLISION = False
+        self.DEBUG_GOD_MODE = False
         
     def validate(self) -> ValidationResult:
         """Validate system configuration"""
