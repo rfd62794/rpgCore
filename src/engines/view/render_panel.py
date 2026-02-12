@@ -99,18 +99,63 @@ class RenderPanel:
             
             if new_scale != self.scale_factor:
                 self.scale_factor = new_scale
-                self.display_width = SOVEREIGN_WIDTH * self.scale_factor
-                self.display_height = SOVEREIGN_HEIGHT * self.scale_factor
+                self.display_width = self.world_width * self.scale_factor
+                self.display_height = self.world_height * self.scale_factor
                 
                 # Update canvas size
                 self.canvas.config(width=self.display_width, height=self.display_height)
                 
-                logger.info(f"📐 RenderPanel scaled to {self.scale_factor}x ({self.display_width}x{self.display_height})")
+                logger.info(f"📐 RenderPanel ({self.size_name}) scaled to {self.scale_factor}x ({self.display_width}x{self.display_height})")
             
             return Result.success_result(True)
             
         except Exception as e:
             return Result.failure_result(f"Layout update failed: {e}")
+    
+    def change_size(self, size_option: str) -> Result[bool]:
+        """Change render panel size configuration"""
+        try:
+            if size_option not in self.size_configs:
+                return Result.failure_result(f"Unknown size option: {size_option}")
+            
+            # Get new configuration
+            config = self.size_configs[size_option]
+            old_size = self.size_name
+            
+            # Update configuration
+            self.size_option = size_option
+            self.world_width = config["world_width"]
+            self.world_height = config["world_height"]
+            self.size_name = config["name"]
+            
+            # Recreate surface with new size
+            self.sovereign_surface = pygame.Surface((self.world_width, self.world_height))
+            self.sovereign_surface.fill((0, 0, 0))
+            
+            # Recalculate scaling
+            self.update_layout(self.available_width, self.available_height)
+            
+            logger.info(f"🔄 RenderPanel changed from {old_size} to {self.size_name}")
+            return Result.success_result(True)
+            
+        except Exception as e:
+            return Result.failure_result(f"Size change failed: {e}")
+    
+    def get_available_sizes(self) -> List[str]:
+        """Get list of available size options"""
+        return list(self.size_configs.keys())
+    
+    def get_current_size_info(self) -> Dict[str, Any]:
+        """Get current size configuration information"""
+        return {
+            'size_option': self.size_option,
+            'world_width': self.world_width,
+            'world_height': self.world_height,
+            'size_name': self.size_name,
+            'scale_factor': self.scale_factor,
+            'display_width': self.display_width,
+            'display_height': self.display_height
+        }
     
     def clear_sovereign_surface(self, color: Tuple[int, int, int] = (0, 0, 0)) -> None:
         """Clear the sovereign surface with specified color"""
