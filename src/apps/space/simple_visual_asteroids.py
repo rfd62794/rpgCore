@@ -184,10 +184,11 @@ class SimpleVisualAsteroids:
             logger.info(f"🔫 Weapon fired! Total bullets: {len(self.bullets)}")
     
     def _check_collisions(self) -> None:
-        """Check for collisions with asteroids"""
+        """Check for collisions with asteroids and bullets"""
         if self.invulnerable_time > 0:
             return
         
+        # Check ship-asteroid collisions
         for asteroid in self.asteroids:
             distance = math.sqrt((self.ship_x - asteroid['x'])**2 + (self.ship_y - asteroid['y'])**2)
             collision_distance = 5.0 + asteroid['radius']
@@ -202,6 +203,71 @@ class SimpleVisualAsteroids:
                     self.running = False
                 
                 break
+        
+        # Check bullet-asteroid collisions
+        bullets_to_remove = []
+        asteroids_to_remove = []
+        
+        for bullet_idx, bullet in enumerate(self.bullets):
+            bullet_hit = False
+            
+            for asteroid_idx, asteroid in enumerate(self.asteroids):
+                distance = math.sqrt((bullet['x'] - asteroid['x'])**2 + (bullet['y'] - asteroid['y'])**2)
+                collision_distance = bullet['radius'] + asteroid['radius']
+                
+                if distance < collision_distance:
+                    # Bullet hit asteroid!
+                    bullet_hit = True
+                    bullets_to_remove.append(bullet_idx)
+                    
+                    # Damage asteroid
+                    asteroid['health'] -= 1
+                    
+                    if asteroid['health'] <= 0:
+                        # Asteroid destroyed
+                        asteroids_to_remove.append(asteroid_idx)
+                        self.ship_score += asteroid['size'] * 10
+                        logger.info(f"💥 Asteroid destroyed! Score: {self.ship_score}")
+                        
+                        # Create smaller asteroids if large enough
+                        if asteroid['size'] > 1:
+                            self._split_asteroid(asteroid)
+                    
+                    break
+            
+            if bullet_hit:
+                break
+        
+        # Remove hit bullets
+        for bullet_idx in sorted(bullets_to_remove, reverse=True):
+            del self.bullets[bullet_idx]
+        
+        # Remove destroyed asteroids
+        for asteroid_idx in sorted(asteroids_to_remove, reverse=True):
+            del self.asteroids[aster_idx]
+    
+    def _split_asteroid(self, asteroid: Dict) -> None:
+        """Split asteroid into smaller pieces"""
+        if asteroid['size'] <= 1:
+            return
+        
+        # Create 2 smaller asteroids
+        for i in range(2):
+            # Random velocity change
+            angle = math.atan2(asteroid['vy'], asteroid['vx']) + (i - 0.5) * math.pi / 2
+            speed = math.sqrt(asteroid['vx']**2 + asteroid['vy']**2) * 1.2
+            
+            new_asteroid = {
+                'x': asteroid['x'],
+                'y': asteroid['y'],
+                'vx': speed * math.cos(angle),
+                'vy': speed * math.sin(angle),
+                'radius': asteroid['radius'] * 0.7,
+                'size': asteroid['size'] - 1,
+                'color': asteroid['color'],
+                'health': asteroid['size'] - 1
+            }
+            self.asteroids.append(new_asteroid)
     
     def render_game(self) -> None:
         """Render the game"""
@@ -213,6 +279,9 @@ class SimpleVisualAsteroids:
         
         # Draw asteroids
         self._draw_asteroids()
+        
+        # Draw bullets
+        self._draw_bullets()
         
         # Draw HUD
         self._draw_hud()
