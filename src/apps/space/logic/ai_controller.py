@@ -14,6 +14,7 @@ from foundation.types import Result
 from foundation.constants import SOVEREIGN_WIDTH, SOVEREIGN_HEIGHT, DEBUG_INFINITE_ENERGY
 from engines.kernel.controller import BaseController, ControlInput
 from engines.mind.neat.neat_engine import NeuralNetwork
+from .short_term_memory import create_short_term_memory
 
 
 class PilotState(Enum):
