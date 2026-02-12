@@ -125,6 +125,37 @@ class PhysicsBody:
         self.game_active = True
         self.game_start_time = time.time()
     
+    def update(self, dt: float) -> None:
+        """Simple update for controller-based physics"""
+        # Update position based on velocity
+        self.position.x += self.velocity.x * dt
+        self.position.y += self.velocity.y * dt
+        
+        # Toroidal wrap
+        self.position.x = self.position.x % SOVEREIGN_WIDTH
+        self.position.y = self.position.y % SOVEREIGN_HEIGHT
+        
+        # Apply drag (minimal for space)
+        self.velocity.x *= 0.999
+        self.velocity.y *= 0.999
+    
+    def apply_force(self, force_x: float, force_y: float) -> None:
+        """Apply force to the physics body"""
+        # F = ma, so a = F/m
+        accel_x = force_x / self.mass
+        accel_y = force_y / self.mass
+        
+        # Update velocity
+        self.velocity.x += accel_x * self.dt
+        self.velocity.y += accel_y * self.dt
+        
+        # Limit maximum speed
+        speed = math.sqrt(self.velocity.x ** 2 + self.velocity.y ** 2)
+        if speed > self.max_ship_speed:
+            scale = self.max_ship_speed / speed
+            self.velocity.x *= scale
+            self.velocity.y *= scale
+    
     def update(self, current_time: float) -> Result[PhysicsState]:
         """Main physics update loop (60Hz)"""
         try:
