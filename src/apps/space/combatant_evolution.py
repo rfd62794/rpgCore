@@ -361,6 +361,11 @@ class CombatantEvolution:
         self.current_generation = 0
         self.generation_duration = 30.0  # 30 seconds per generation
         
+        # Phosphor green and high-contrast colors
+        self.ship_color = (0, 255, 0)  # Phosphor green for ships
+        self.asteroid_color = (170, 170, 170)  # Grey for asteroids
+        self.bullet_color = (255, 255, 255)  # White for bullets
+        
         # Colors
         self.colors = {
             'black': (0, 0, 0),

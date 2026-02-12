@@ -408,6 +408,63 @@ class WorldState:
         
         return nearest_entity
     
+    def resize_world(self, new_width: int, new_height: int, clear_entities: bool = True) -> Result[bool]:
+        """Resize world boundaries and handle entity repositioning"""
+        try:
+            old_width = self.width
+            old_height = self.height
+            
+            # Update world boundaries
+            self.width = new_width
+            self.height = new_height
+            
+            logger.info(f"🌍 World resized from {old_width}x{old_height} to {new_width}x{new_height}")
+            
+            if clear_entities:
+                # Clear all entities for fresh start
+                self.entities.clear()
+                self.entity_types = {key: set() for key in self.entity_types}
+                logger.info("🧹 Entities cleared for fresh start")
+            else:
+                # Reposition existing entities to fit new bounds
+                self._reposition_entities(old_width, old_height)
+            
+            return Result.success_result(True)
+            
+        except Exception as e:
+            return Result.failure_result(f"World resize failed: {e}")
+    
+    def _reposition_entities(self, old_width: int, old_height: int) -> None:
+        """Reposition entities to fit new world boundaries"""
+        try:
+            # Calculate scaling factors
+            width_scale = self.width / old_width
+            height_scale = self.height / old_height
+            
+            repositioned_count = 0
+            for entity in self.entities.values():
+                if not entity.active:
+                    continue
+                
+                # Scale position
+                entity.position.x *= width_scale
+                entity.position.y *= height_scale
+                
+                # Ensure within new bounds
+                entity.position.x = max(0, min(entity.position.x, self.width - 1))
+                entity.position.y = max(0, min(entity.position.y, self.height - 1))
+                
+                # Scale velocity proportionally
+                entity.velocity.x *= width_scale
+                entity.velocity.y *= height_scale
+                
+                repositioned_count += 1
+            
+            logger.info(f"📐 Repositioned {repositioned_count} entities for new world size")
+            
+        except Exception as e:
+            logger.error(f"Entity repositioning failed: {e}")
+    
     def get_world_statistics(self) -> Dict[str, Any]:
         """Get world state statistics"""
         entity_counts = {}
