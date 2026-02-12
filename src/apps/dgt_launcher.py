@@ -442,6 +442,24 @@ class DGTPlatformLauncher:
         except Exception as e:
             return Result(success=False, error=f"Flexible Workspace launch failed: {str(e)}")
     
+    def _launch_large_workspace(self) -> Result[bool]:
+        """Launch 1280x720 professional workspace"""
+        logger.info("🖥️ Launching Large Workspace (1280x720)")
+        
+        try:
+            # Import the large workspace
+            from apps.interface.large_workspace import LargeWorkspace
+            
+            # Create and run workspace
+            workspace = LargeWorkspace()
+            workspace.run()
+            
+            logger.info("✅ Large Workspace completed successfully")
+            return Result(success=True, value=True)
+            
+        except Exception as e:
+            return Result(success=False, error=f"Large Workspace launch failed: {str(e)}")
+    
     def _launch_deployment(self) -> Result[bool]:
         """Launch deployment tools"""
         logger.info("📦 Launching Deployment Tools")
