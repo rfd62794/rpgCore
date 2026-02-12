@@ -251,7 +251,9 @@ class RenderPanel:
                 'max_fps': 0.0,
                 'scale_factor': self.scale_factor,
                 'render_count': self.render_count,
-                'display_size': (self.display_width, self.display_height)
+                'display_size': (self.display_width, self.display_height),
+                'world_size': (self.world_width, self.world_height),
+                'size_name': self.size_name
             }
         
         return {
@@ -260,7 +262,9 @@ class RenderPanel:
             'max_fps': max(self.fps_history),
             'scale_factor': self.scale_factor,
             'render_count': self.render_count,
-            'display_size': (self.display_width, self.display_height)
+            'display_size': (self.display_width, self.display_height),
+            'world_size': (self.world_width, self.world_height),
+            'size_name': self.size_name
         }
     
     def pack(self, **kwargs) -> None:
@@ -287,9 +291,10 @@ class RenderPanelFactory:
     """Factory for creating render panels with different configurations"""
     
     @staticmethod
-    def create_sovereign_viewport(parent_widget: tk.Widget, width: int = 400, height: int = 400) -> RenderPanel:
+    def create_sovereign_viewport(parent_widget: tk.Widget, width: int = 400, height: int = 400, 
+                               size_option: str = "standard") -> RenderPanel:
         """Create a standard sovereign viewport"""
-        panel = RenderPanel(parent_widget, width, height)
+        panel = RenderPanel(parent_widget, width, height, size_option)
         logger.info("🏛️ Sovereign viewport created")
         return panel
     
