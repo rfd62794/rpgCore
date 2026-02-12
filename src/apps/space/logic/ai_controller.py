@@ -104,6 +104,11 @@ class AsteroidPilot(BaseController):
         self.blackout_end_time = 0.0
         self.collision_penalty_applied = False
         
+        # Safe respawn system
+        self.safe_respawn_position = None
+        self.ghost_phase_end_time = 0.0
+        self.is_ghost_phase = False
+        
         # Adaptive bias from learning
         self.adaptive_bias = {'thrust': 0.0, 'rotation': 0.0, 'fire_weapon': 0.0}
         
