@@ -1,20 +1,6 @@
 """
-Asteroids Strategy - UnifiedPPU Rendering Strategy
-
-ADR 195: The Newtonian Vector Core
-
-Rendering strategy for the "Ur-Asteroids" game slice that implements
-the RenderProtocol and integrates with the hardened UnifiedPPU system.
-
-This strategy renders the Newtonian physics entities within the
-sovereign 160x144 resolution grid with toroidal ghosting effects.
-
-Key Features:
-- Newtonian ghosting for smooth toroidal wrap
-- Pixel-perfect triangle ship rendering
-- Circular asteroid rendering with rotation
-- Energy-based color intensity
-- 60Hz frame synchronization
+Asteroids Strategy - Lean Orchestrator
+Refactored to use component-based architecture with EntityManager, Spawner, and Collision systems
 """
 
 from typing import List, Dict, Any, Optional, Tuple
@@ -26,6 +12,10 @@ from foundation.base import BasePPU
 from foundation.constants import SOVEREIGN_WIDTH, SOVEREIGN_HEIGHT, SOVEREIGN_PIXELS
 from engines.body.animation import SpriteAnimator, NewtonianGhostRenderer
 from engines.kernel.controller import BaseController, ControlInput, ControllerManager
+from engines.body.systems.entity_manager import EntityManager, ShipEntity, AsteroidEntity, BulletEntity
+from engines.body.systems.spawner import EntitySpawner, create_asteroid_spawn_config, create_wave_configs
+from engines.body.systems.collision import CollisionSystem, create_asteroids_collision_groups, setup_asteroids_collision_handlers
+from engines.body.systems.status_manager import StatusManager, setup_asteroids_status_manager
 from .physics_body import PhysicsBody, PhysicsState
 from .entities.space_entity import SpaceEntity, EntityType
 from foundation.vector import Vector2
@@ -33,60 +23,88 @@ from .scrap_entity import ScrapEntity
 
 
 class AsteroidsStrategy:
-    """Rendering strategy for Newtonian asteroids physics"""
+    """Lean orchestrator for asteroids game using component systems"""
     
     def __init__(self):
-        self.physics_body = PhysicsBody()
-        self.frame_buffer: Optional[bytearray] = None
-        self.width = SOVEREIGN_WIDTH
-        self.height = SOVEREIGN_HEIGHT
-        
-        # Animation systems
-        self.sprite_animator = SpriteAnimator()
-        self.ghost_renderer = NewtonianGhostRenderer(self.width, self.height)
+        # Core systems
+        self.entity_manager = EntityManager()
+        self.spawner = EntitySpawner(self.entity_manager)
+        self.collision_system = CollisionSystem()
+        self.status_manager = setup_asteroids_status_manager()
         
         # Controller system
         self.controller_manager = ControllerManager()
         
+        # Rendering (legacy support)
+        self.frame_buffer: Optional[bytearray] = None
+        self.width = SOVEREIGN_WIDTH
+        self.height = SOVEREIGN_HEIGHT
+        
+        # Animation systems (legacy)
+        self.sprite_animator = SpriteAnimator()
+        self.ghost_renderer = NewtonianGhostRenderer(self.width, self.height)
+        
         # Game state
-        self.lives = 3
-        self.score = 0
-        self.invulnerable_time = 0.0
         self.game_over = False
+        self.game_time = 0.0
         
         # Rendering properties
         self.clear_color = 0  # Black background
         self.ship_color = 1   # White ship
         self.asteroid_color = 2  # Gray asteroids
-        self.bullet_color = 1    # White bullets
         
-        # Energy-based rendering
-        self.energy_level = 100.0
+        # Initialize systems
+        self._initialize_systems()
         
-        # Performance tracking
-        self.render_count = 0
-        self.last_render_time = 0.0
+        logger.info("🎮 AsteroidsStrategy initialized with component systems")
     
-    def initialize(self, width: int, height: int) -> Result[bool]:
-        """Initialize the asteroids rendering strategy"""
-        try:
-            self.width = width
-            self.height = height
-            
-            # Initialize frame buffer
-            buffer_size = width * height
-            self.frame_buffer = bytearray(buffer_size)
-            
-            # Clear frame buffer
-            self._clear_frame_buffer()
-            
-            # Reset physics
-            self.physics_body.reset_game()
-            
-            return Result.success_result(True)
-            
-        except Exception as e:
-            return Result.failure_result(f"Failed to initialize AsteroidsStrategy: {str(e)}")
+    def _initialize_systems(self) -> None:
+        """Initialize all component systems"""
+        # Register entity types
+        self.entity_manager.register_entity_type("ship", ShipEntity, pool_size=1)
+        self.entity_manager.register_entity_type("asteroid", AsteroidEntity, pool_size=20)
+        self.entity_manager.register_entity_type("bullet", BulletEntity, pool_size=30)
+        
+        # Setup spawn configurations
+        asteroid_config = create_asteroid_spawn_config()
+        self.spawner.register_spawn_type("asteroids", asteroid_config)
+        
+        wave_configs = create_wave_configs()
+        self.spawner.register_wave_config("asteroids", wave_configs["asteroid"])
+        
+        # Setup collision system
+        collision_groups = create_asteroids_collision_groups()
+        for group in collision_groups.values():
+            self.collision_system.register_collision_group(group)
+        
+        setup_asteroids_collision_handlers(self.collision_system)
+        
+        # Spawn initial entities
+        self._spawn_initial_entities()
+        
+        logger.info("✅ Component systems initialized")
+    
+    def _spawn_initial_entities(self) -> None:
+        """Spawn initial game entities"""
+        # Spawn player ship
+        ship_result = self.entity_manager.spawn_entity(
+            "ship",
+            x=SOVEREIGN_WIDTH // 2,
+            y=SOVEREIGN_HEIGHT // 2,
+            angle=0.0,
+            energy=100.0,
+            lives=3
+        )
+        
+        if ship_result.success:
+            logger.info("🚀 Player ship spawned")
+        else:
+            logger.error(f"Failed to spawn ship: {ship_result.error}")
+        
+        # Spawn initial asteroids
+        self.spawner.spawn_wave("asteroids", wave_number=1)
+        
+        logger.info("☄️ Initial asteroids spawned")
     
     def render_state(self, game_state: Any) -> Result[bytes]:
         """Render a complete frame from physics state"""
