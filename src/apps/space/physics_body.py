@@ -126,14 +126,21 @@ class PhysicsBody:
         self.game_start_time = time.time()
     
     def update(self, dt: float) -> None:
-        """Simple update for controller-based physics"""
+        """Simple update for controller-based physics with strict boundary enforcement"""
         # Update position based on velocity
         self.position.x += self.velocity.x * dt
         self.position.y += self.velocity.y * dt
         
-        # Toroidal wrap
-        self.position.x = self.position.x % SOVEREIGN_WIDTH
-        self.position.y = self.position.y % SOVEREIGN_HEIGHT
+        # Strict toroidal wrapping at engine level
+        if self.position.x < 0:
+            self.position.x = SOVEREIGN_WIDTH
+        elif self.position.x >= SOVEREIGN_WIDTH:
+            self.position.x = 0
+        
+        if self.position.y < 0:
+            self.position.y = SOVEREIGN_HEIGHT
+        elif self.position.y >= SOVEREIGN_HEIGHT:
+            self.position.y = 0
         
         # Apply drag (minimal for space)
         self.velocity.x *= 0.999

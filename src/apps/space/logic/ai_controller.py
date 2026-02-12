@@ -179,6 +179,10 @@ class AsteroidPilot(BaseController):
             if self.use_neural_network:
                 self._add_experience_to_library(entity_state, world_data)
             
+            # Calculate "Aggressor Drive" fitness bonus
+            if self.use_neural_network:
+                self._calculate_aggressor_drive(world_data)
+            
             # Create control input
             control_input = ControlInput(
                 thrust=self.thrust,
@@ -285,6 +289,51 @@ class AsteroidPilot(BaseController):
             fitness=current_fitness,
             stress_level=current_stress
         )
+    
+    def _calculate_aggressor_drive(self, world_data: Dict[str, Any]) -> None:
+        """Calculate aggressor drive bonus for facing targets"""
+        asteroids = world_data.get('asteroids', [])
+        
+        if not asteroids:
+            return
+        
+        # Find nearest asteroid
+        nearest_asteroid = None
+        min_distance = float('inf')
+        
+        for asteroid in asteroids:
+            distance = math.sqrt((self.position.x - asteroid['x'])**2 + 
+                               (self.position.y - asteroid['y'])**2)
+            if distance < min_distance:
+                min_distance = distance
+                nearest_asteroid = asteroid
+        
+        if nearest_asteroid and min_distance < 80.0:  # Within range
+            # Calculate angle to asteroid
+            dx = nearest_asteroid['x'] - self.position.x
+            dy = nearest_asteroid['y'] - self.position.y
+            angle_to_asteroid = math.atan2(dy, dx)
+            
+            # Calculate how well ship is facing the asteroid
+            angle_diff = abs(angle_to_asteroid - self.angle)
+            
+            # Normalize angle difference
+            while angle_diff > math.pi:
+                angle_diff = abs(angle_diff - 2 * math.pi)
+            
+            # Bonus for facing target (smaller angle = bigger bonus)
+            if angle_diff < math.pi / 4:  # Within 45 degrees
+                facing_bonus = (1.0 - angle_diff / (math.pi / 4)) * 0.1
+                # This would be added to fitness by the fitness calculator
+                self.aggressor_drive_bonus = facing_bonus
+            else:
+                self.aggressor_drive_bonus = 0.0
+        else:
+            self.aggressor_drive_bonus = 0.0
+    
+    def get_aggressor_drive_bonus(self) -> float:
+        """Get current aggressor drive bonus"""
+        return getattr(self, 'aggressor_drive_bonus', 0.0)
     
     def _get_nearest_threat_distance(self) -> float:
         """Get distance to nearest threat"""
