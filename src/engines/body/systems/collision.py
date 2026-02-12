@@ -160,8 +160,39 @@ class CollisionSystem:
     
     def _check_entity_collision(self, entity_a: Entity, entity_b: Entity, 
                               current_time: float) -> Optional[CollisionInfo]:
-        """Check collision between two entities"""
-        # Circle-based collision (most common for asteroids)
+        """Check collision between two entities with precision sweep for bullets"""
+        # Special handling for bullet-asteroid collisions (sweep test)
+        if (entity_a.entity_type == "bullet" and entity_b.entity_type == "asteroid") or \
+           (entity_a.entity_type == "asteroid" and entity_b.entity_type == "bullet"):
+            
+            bullet = entity_a if entity_a.entity_type == "bullet" else entity_b
+            asteroid = entity_b if entity_b.entity_type == "asteroid" else entity_a
+            
+            # Sweep test for bullet - check if bullet path intersects asteroid
+            if self._sweep_collision_test(bullet, asteroid, current_time):
+                penetration_depth = (bullet.radius + asteroid.radius) - math.sqrt(
+                    (bullet.x - asteroid.x)**2 + (bullet.y - asteroid.y)**2
+                )
+                
+                # Calculate collision normal
+                distance = math.sqrt((bullet.x - asteroid.x)**2 + (bullet.y - asteroid.y)**2)
+                if distance > 0:
+                    normal_x = (asteroid.x - bullet.x) / distance
+                    normal_y = (asteroid.y - bullet.y) / distance
+                else:
+                    normal_x, normal_y = 1.0, 0.0
+                
+                return CollisionInfo(
+                    entity_a=entity_a,
+                    entity_b=entity_b,
+                    collision_type=CollisionType.CIRCLE,
+                    distance=distance,
+                    penetration_depth=penetration_depth,
+                    collision_normal=(normal_x, normal_y),
+                    timestamp=current_time
+                )
+        
+        # Standard circle collision for other cases
         distance = math.sqrt(
             (entity_a.x - entity_b.x)**2 + 
             (entity_a.y - entity_b.y)**2
@@ -192,6 +223,58 @@ class CollisionSystem:
             )
         
         return None
+    
+    def _sweep_collision_test(self, bullet: Entity, asteroid: Entity, current_time: float) -> bool:
+        """Continuous collision detection for bullets - checks if bullet path intersects asteroid"""
+        # Get bullet's previous position (estimate based on velocity)
+        dt = 1.0 / 60.0  # Assume 60 FPS
+        prev_x = bullet.x - bullet.vx * dt
+        prev_y = bullet.y - bullet.vy * dt
+        
+        # Line segment from previous to current position
+        line_start_x, line_start_y = prev_x, prev_y
+        line_end_x, line_end_y = bullet.x, bullet.y
+        
+        # Check if line segment intersects asteroid circle
+        return self._line_circle_intersection(
+            line_start_x, line_start_y,
+            line_end_x, line_end_y,
+            asteroid.x, asteroid.y,
+            asteroid.radius + bullet.radius
+        )
+    
+    def _line_circle_intersection(self, x1: float, y1: float, x2: float, y2: float,
+                                cx: float, cy: float, radius: float) -> bool:
+        """Check if line segment intersects circle"""
+        # Vector from line start to circle center
+        dx = cx - x1
+        dy = cy - y1
+        
+        # Line direction vector
+        lx = x2 - x1
+        ly = y2 - y1
+        
+        # Line length squared
+        line_length_sq = lx * lx + ly * ly
+        
+        if line_length_sq == 0:
+            # Line is a point
+            distance_sq = dx * dx + dy * dy
+            return distance_sq <= radius * radius
+        
+        # Project circle center onto line
+        t = max(0, min(1, (dx * lx + dy * ly) / line_length_sq))
+        
+        # Closest point on line segment to circle center
+        closest_x = x1 + t * lx
+        closest_y = y1 + t * ly
+        
+        # Distance from closest point to circle center
+        dist_x = cx - closest_x
+        dist_y = cy - closest_y
+        distance_sq = dist_x * dist_x + dist_y * dist_y
+        
+        return distance_sq <= radius * radius
     
     def _handle_collisions(self) -> None:
         """Handle all active collisions"""
