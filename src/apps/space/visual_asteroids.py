@@ -50,12 +50,18 @@ class VisualAsteroids:
         # Set controller
         if ai_mode:
             ai_controller = create_ai_controller("AI_PILOT")
-            self.asteroids_strategy.set_controller(ai_controller)
-            logger.info("🤖 AI Controller activated")
+            set_result = self.asteroids_strategy.set_controller(ai_controller)
+            if set_result.success:
+                logger.info("🤖 AI Controller activated")
+            else:
+                logger.error(f"❌ AI Controller activation failed: {set_result.error}")
         else:
             human_controller = create_human_controller("HUMAN_PLAYER")
-            self.asteroids_strategy.set_controller(human_controller)
-            logger.info("👤 Human Controller activated")
+            set_result = self.asteroids_strategy.set_controller(human_controller)
+            if set_result.success:
+                logger.info("👤 Human Controller activated")
+            else:
+                logger.error(f"❌ Human Controller activation failed: {set_result.error}")
         
         # Game state
         self.game_time = 0.0
