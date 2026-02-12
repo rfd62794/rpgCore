@@ -142,6 +142,10 @@ class Genome:
     def mutate(self, mutation_rate: float = 0.1, mutation_strength: float = 0.5) -> None:
         """Mutate the genome's neural network"""
         self.network.mutate(mutation_rate, mutation_strength)
+    
+    def copy(self) -> 'Genome':
+        """Create a deep copy of the genome"""
+        return Genome(self.network.copy(), self.fitness)
 
 
 class NEATEngine:
