@@ -191,24 +191,45 @@ class EntitySpawner:
         return positions
     
     def _spawn_random(self, config: SpawnConfig) -> List[tuple]:
-        """Random spawn pattern"""
+        """Random spawn pattern with ship safety zone"""
         positions = []
         
+        # Get ship position for safety zone
+        ship_x = SOVEREIGN_WIDTH // 2
+        ship_y = SOVEREIGN_HEIGHT // 2
+        safety_radius = 30.0
+        
         for _ in range(config.wave_size):
-            # Random position avoiding center
-            while True:
+            attempts = 0
+            max_attempts = 50
+            
+            while attempts < max_attempts:
+                # Random position avoiding center
                 x = math.random.uniform(20, SOVEREIGN_WIDTH - 20)
                 y = math.random.uniform(20, SOVEREIGN_HEIGHT - 20)
                 
-                # Check distance from center
+                # Check distance from ship (safety zone)
+                dist_from_ship = math.sqrt(
+                    (x - ship_x)**2 + (y - ship_y)**2
+                )
+                
+                # Check distance from spawn center
                 dist_from_center = math.sqrt(
                     (x - config.spawn_center_x)**2 + 
                     (y - config.spawn_center_y)**2
                 )
                 
-                if dist_from_center > config.spawn_radius:
+                if dist_from_ship > safety_radius and dist_from_center > config.spawn_radius:
                     positions.append((x, y))
                     break
+                
+                attempts += 1
+            
+            # If we couldn't find a safe position, spawn anyway (fallback)
+            if attempts >= max_attempts:
+                x = math.random.uniform(20, SOVEREIGN_WIDTH - 20)
+                y = math.random.uniform(20, SOVEREIGN_HEIGHT - 20)
+                positions.append((x, y))
         
         return positions
     
