@@ -49,21 +49,22 @@ class TestTurboGenomeValidation:
         assert genome.shell_size_modifier == 1.0
         
         # Body genetics
-        assert genome.body_base_color == (139, 69, 19)  # Saddle brown
+        assert genome.body_base_color == (107, 142, 35)  # Olive green
         assert genome.body_pattern_type == BodyPatternType.SOLID
-        assert genome.body_pattern_color == (255, 255, 255)
-        assert genome.body_size_modifier == 1.0
+        assert genome.body_pattern_color == (85, 107, 47)  # Dark olive green
+        assert genome.body_pattern_density == 0.3
         
-        # Limb genetics
-        assert genome.limb_shape_type == LimbShapeType.FEET
-        assert genome.limb_color == (255, 255, 255)
-        assert genome.limb_size_modifier == 1.0
+        # Head genetics
+        assert genome.head_size_modifier == 1.0
+        assert genome.head_color == (139, 90, 43)  # Brown
         
-        # Performance genetics
-        assert genome.speed_modifier == 1.0
-        assert genome.stamina_modifier == 1.0
-        assert genome.stealth_modifier == 0.5
-        assert genome.intelligence_modifier == 0.5
+        # Leg genetics
+        assert genome.leg_length == 1.0
+        assert genome.limb_shape == LimbShapeType.FLIPPERS
+        assert genome.leg_thickness_modifier == 1.0
+        assert genome.leg_color == (101, 67, 33)  # Brown
+        assert genome.eye_color == (0, 0, 0)  # Black
+        assert genome.eye_size_modifier == 1.0
     
     @given(st.tuples(st.integers(0, 255), st.integers(0, 255), st.integers(0, 255)))
     def test_valid_rgb_colors(self, rgb: Tuple[int, int, int]) -> None:
@@ -73,7 +74,9 @@ class TestTurboGenomeValidation:
             shell_pattern_color=rgb,
             body_base_color=rgb,
             body_pattern_color=rgb,
-            limb_color=rgb
+            head_color=rgb,
+            leg_color=rgb,
+            eye_color=rgb
         )
         assert genome.shell_base_color == rgb
     
@@ -89,17 +92,16 @@ class TestTurboGenomeValidation:
     def test_valid_modifier_ranges(self, modifier: float) -> None:
         """Test that valid modifier values are accepted"""
         genome = TurboGenome(
-            shell_pattern_intensity=modifier,
+            shell_pattern_density=modifier,
+            shell_pattern_opacity=modifier,
             shell_size_modifier=modifier,
-            shell_thickness_modifier=modifier,
-            body_size_modifier=modifier,
-            limb_size_modifier=modifier,
-            speed_modifier=modifier,
-            stamina_modifier=modifier,
-            stealth_modifier=modifier,
-            intelligence_modifier=modifier
+            body_pattern_density=modifier,
+            head_size_modifier=modifier,
+            leg_length=modifier,
+            leg_thickness_modifier=modifier,
+            eye_size_modifier=modifier
         )
-        assert genome.shell_pattern_intensity == modifier
+        assert genome.shell_pattern_density == modifier
     
     @given(st.floats(min_value=-1.0, max_value=3.0))
     def test_invalid_modifier_ranges(self, modifier: float) -> None:
@@ -107,7 +109,7 @@ class TestTurboGenomeValidation:
         # Only test if value is out of valid range (0.0 to 2.0)
         if modifier < 0.0 or modifier > 2.0:
             with pytest.raises(ValidationError):
-                TurboGenome(shell_pattern_intensity=modifier)
+                TurboGenome(shell_pattern_density=modifier)
     
     def test_enum_pattern_types(self) -> None:
         """Test that pattern type enums work correctly"""
