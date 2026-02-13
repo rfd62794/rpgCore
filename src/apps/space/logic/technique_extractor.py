@@ -389,7 +389,10 @@ class TechniqueExtractor:
                 similarities.append(similarity)
             else:
                 # Compare scalar values
-                if 'avg' in val1 and 'avg' in val2:
+                if isinstance(val1, (int, float)) and isinstance(val2, (int, float)):
+                    similarity = 1.0 - min(abs(val1 - val2), 1.0)
+                    similarities.append(similarity)
+                elif hasattr(val1, '__contains__') and 'avg' in val1 and hasattr(val2, '__contains__') and 'avg' in val2:
                     similarity = 1.0 - abs(val1['avg'] - val2['avg'])  # Inverse difference
                     similarities.append(max(0.0, similarity))
         
