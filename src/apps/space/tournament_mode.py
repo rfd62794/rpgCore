@@ -22,6 +22,25 @@ from apps.space.logic.ai_controller import create_ai_controller
 from apps.space.arcade_visual_asteroids import ArcadeVisualAsteroids
 
 
+class Bullet:
+    """Projectile fired by pilot"""
+    def __init__(self, x: float, y: float, angle: float, owner_id: str):
+        self.x = x
+        self.y = y
+        self.vx = math.cos(angle) * 400.0  # Fast bullet
+        self.vy = math.sin(angle) * 400.0
+        self.owner_id = owner_id
+        self.lifetime = 1.0  # 1 second lifetime
+        self.active = True
+
+    def update(self, dt: float) -> None:
+        self.x += self.vx * dt
+        self.y += self.vy * dt
+        self.lifetime -= dt
+        if self.lifetime <= 0:
+            self.active = False
+
+
 class TournamentPilot:
     """Individual AI pilot for tournament mode"""
     
@@ -30,6 +49,11 @@ class TournamentPilot:
         self.pilot_id = pilot_id
         self.color = color
         self.generation = generation
+        
+        # Combat state
+        self.bullets: List[Bullet] = []
+        self.last_fire_time = 0.0
+        self.fire_cooldown = 0.25  # 4 shots per second
         
         # Create AI controller
         neural_network = None
@@ -244,6 +268,15 @@ class TournamentMode:
         # Update each pilot
         for pilot in self.pilots:
             self._update_pilot(pilot)
+            
+            # Update bullets
+            for bullet in pilot.bullets[:]:
+                bullet.update(self.dt)
+                # Wrap bullet position
+                bullet.x = bullet.x % SOVEREIGN_WIDTH
+                bullet.y = bullet.y % SOVEREIGN_HEIGHT
+                if not bullet.active:
+                    pilot.bullets.remove(bullet)
         
         # Check collisions
         self._check_collisions()
@@ -292,13 +325,24 @@ class TournamentMode:
             if pilot.last_controls.rotation != 0:
                 pilot.visual_angle += pilot.last_controls.rotation * 3.0 * self.dt
                 pilot.visual_angle = pilot.visual_angle % (2 * math.pi)
+                
+            # Handle firing
+            if pilot.last_controls.fire_weapon:
+                current_time = self.game_time
+                if current_time - pilot.last_fire_time >= pilot.fire_cooldown:
+                    pilot.last_fire_time = current_time
+                    # Spawn bullet from nose of ship
+                    nose_x = pilot.visual_x + 10 * math.cos(pilot.visual_angle)
+                    nose_y = pilot.visual_y + 10 * math.sin(pilot.visual_angle)
+                    new_bullet = Bullet(nose_x, nose_y, pilot.visual_angle, pilot.pilot_id)
+                    pilot.bullets.append(new_bullet)
             
             # Wrap position
             pilot.visual_x = pilot.visual_x % SOVEREIGN_WIDTH
             pilot.visual_y = pilot.visual_y % SOVEREIGN_HEIGHT
             
             # Update fitness
-            pilot.update_fitness(self.game_time, 0, 0)  # Simplified for tournament
+            pilot.update_fitness(self.game_time, pilot.asteroids_destroyed, pilot.scrap_collected)
     
     def _check_collisions(self) -> None:
         """Check collisions for all pilots"""
