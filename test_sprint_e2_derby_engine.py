@@ -80,6 +80,7 @@ def test_physics_handshake():
         from apps.tycoon.entities.turtle import create_fast_turtle, create_heavy_turtle
         from foundation.registry import DGTRegistry
         from foundation.vector import Vector2
+        from engines.body.systems.terrain_engine import TerrainType
         
         print("✅ Physics handshake imports successful")
         
