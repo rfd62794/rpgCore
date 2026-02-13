@@ -263,7 +263,7 @@ def test_terrain_visualization():
         traceback.print_exc()
         return False
 
-if __name__name__ == "__main__":
+if __name__ == "__main__":
     print("🔧 Testing Sprint E2: The Derby Engine...")
     
     tests = [
