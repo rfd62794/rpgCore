@@ -96,7 +96,7 @@ def test_universal_scaling_system():
     
     try:
         from dgt_core.engines.viewport.logical_viewport import LogicalViewport
-        from engines.kernel.viewport_manager import ViewportManager
+        from src.engines.kernel.viewport_manager import ViewportManager
         from dgt_core.engines.viewport.adaptive_renderer import AdaptiveRenderer
         
         # Create the complete system
@@ -279,7 +279,7 @@ def test_rendering_pipeline():
     
     try:
         from dgt_core.engines.viewport.logical_viewport import LogicalViewport
-        from engines.kernel.viewport_manager import ViewportManager
+        from src.engines.kernel.viewport_manager import ViewportManager
         from dgt_core.engines.viewport.adaptive_renderer import AdaptiveRenderer
         from dgt_core.compat.pygame_shim import create_legacy_context
         
