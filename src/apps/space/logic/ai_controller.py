@@ -455,72 +455,81 @@ class AsteroidPilot(BaseController):
         self.rotation = controls['rotation']
         self.fire_weapon = controls['fire_weapon']
     
+    def _get_toroidal_vector(self, x1, y1, x2, y2) -> Tuple[float, float, float]:
+        """Calculate shortest vector from p1 to p2 in a toroidal world"""
+        dx = x2 - x1
+        dy = y2 - y1
+        
+        # Wrap DX
+        if abs(dx) > SOVEREIGN_WIDTH / 2:
+            dx = dx - math.copysign(SOVEREIGN_WIDTH, dx)
+            
+        # Wrap DY
+        if abs(dy) > SOVEREIGN_HEIGHT / 2:
+            dy = dy - math.copysign(SOVEREIGN_HEIGHT, dy)
+            
+        dist = math.sqrt(dx**2 + dy**2)
+        return dx, dy, dist
+
     def _prepare_neural_inputs(self, entity_state: Dict[str, Any], asteroids: List[Dict], 
-                            scrap_entities: List[Dict] = None) -> List[float]:
-        """Prepare inputs for neural network with combat awareness"""
-        # Find nearest asteroid
+                             scrap_entities: List[Dict] = None) -> List[float]:
+        """Prepare inputs for neural network with toroidal combat awareness"""
+        ship_x, ship_y = entity_state['x'], entity_state['y']
+        
+        # Find nearest asteroid (Toroidal)
         nearest_asteroid = None
         min_asteroid_distance = float('inf')
+        best_ast_dx, best_ast_dy = 0.0, 0.0
         
         for asteroid in asteroids:
-            distance = math.sqrt((entity_state['x'] - asteroid['x'])**2 + 
-                               (entity_state['y'] - asteroid['y'])**2)
-            if distance < min_asteroid_distance:
-                min_asteroid_distance = distance
+            dx, dy, dist = self._get_toroidal_vector(ship_x, ship_y, asteroid['x'], asteroid['y'])
+            if dist < min_asteroid_distance:
+                min_asteroid_distance = dist
                 nearest_asteroid = asteroid
+                best_ast_dx, best_ast_dy = dx, dy
         
-        # Find nearest scrap
+        # Find nearest scrap (Toroidal)
         nearest_scrap = None
         min_scrap_distance = float('inf')
+        best_scrap_dx, best_scrap_dy = 0.0, 0.0
         
         if scrap_entities:
             for scrap in scrap_entities:
-                distance = math.sqrt((entity_state['x'] - scrap['x'])**2 + 
-                                   (entity_state['y'] - scrap['y'])**2)
-                if distance < min_scrap_distance:
-                    min_scrap_distance = distance
+                dx, dy, dist = self._get_toroidal_vector(ship_x, ship_y, scrap['x'], scrap['y'])
+                if dist < min_scrap_distance:
+                    min_scrap_distance = dist
                     nearest_scrap = scrap
+                    best_scrap_dx, best_scrap_dy = dx, dy
         
-        # Check for asteroid in crosshair (NEW INPUT)
+        # Relative Angle to Asteroid
         asteroid_in_crosshair = 0.0
         angle_to_asteroid_normalized = 0.0
         
         if nearest_asteroid:
-            # Calculate angle to asteroid
-            dx = nearest_asteroid['x'] - entity_state['x']
-            dy = nearest_asteroid['y'] - entity_state['y']
-            angle_to_asteroid = math.atan2(dy, dx)
+            angle_to_asteroid = math.atan2(best_ast_dy, best_ast_dx)
             
-            # Check if asteroid is in front (within 45 degrees of ship heading)
             ship_heading = entity_state.get('angle', 0)
             angle_diff = angle_to_asteroid - ship_heading
             
-            # Normalize angle difference to [-π, π]
-            while angle_diff > math.pi:
-                angle_diff -= 2 * math.pi
-            while angle_diff < -math.pi:
-                angle_diff += 2 * math.pi
+            # Normalize to [-π, π]
+            while angle_diff > math.pi: angle_diff -= 2 * math.pi
+            while angle_diff < -math.pi: angle_diff += 2 * math.pi
                 
-            angle_to_asteroid_normalized = angle_diff / math.pi  # -1.0 to 1.0
+            angle_to_asteroid_normalized = angle_diff / math.pi
             
-            # Check if within crosshair cone (45 degrees = π/4 radians)
             if abs(angle_diff) < math.pi / 4 and min_asteroid_distance < 60.0:
                 asteroid_in_crosshair = 1.0
 
-        # Calculate angle to scrap
+        # Relative Angle to Scrap
         angle_to_scrap_normalized = 0.0
         if nearest_scrap:
-            dx = nearest_scrap['x'] - entity_state['x']
-            dy = nearest_scrap['y'] - entity_state['y']
-            angle_to_scrap = math.atan2(dy, dx)
+            angle_to_scrap = math.atan2(best_scrap_dy, best_scrap_dx)
             
             ship_heading = entity_state.get('angle', 0)
             angle_diff = angle_to_scrap - ship_heading
             
-            while angle_diff > math.pi:
-                angle_diff -= 2 * math.pi
-            while angle_diff < -math.pi:
-                angle_diff += 2 * math.pi
+            while angle_diff > math.pi: angle_diff -= 2 * math.pi
+            while angle_diff < -math.pi: angle_diff += 2 * math.pi
                 
             angle_to_scrap_normalized = angle_diff / math.pi
             
