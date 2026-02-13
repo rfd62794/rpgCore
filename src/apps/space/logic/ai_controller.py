@@ -5,7 +5,7 @@ Tier 3 Application Logic - Autonomous ship control
 
 import math
 import random
-from typing import Dict, List, Optional, Tuple
+from typing import Dict, List, Optional, Tuple, Any
 from dataclasses import dataclass
 from enum import Enum
 from loguru import logger
@@ -16,6 +16,7 @@ from rpg_core.systems.kernel.controller import BaseController, ControlInput
 from rpg_core.systems.mind.neat.neat_engine import NeuralNetwork
 from .short_term_memory import create_short_term_memory
 from .knowledge_library import create_knowledge_library
+from .technique_extractor import TechniqueTemplate
 
 
 class PilotState(Enum):
