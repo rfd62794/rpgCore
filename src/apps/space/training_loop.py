@@ -63,11 +63,11 @@ class TrainingLoop:
             # Get performance metrics
             metrics = result.value
             
-            # Return survival time and asteroids destroyed for fitness calculation
+            # Return survival time, asteroids destroyed, and scrap collected for fitness calculation
             # Apply camping penalty and engagement penalty to survival score
             total_penalty = metrics['camping_penalty'] + metrics.get('engagement_penalty', 0.0)
             effective_survival = max(0.0, metrics['survival_time'] - total_penalty)
-            return Result(success=True, value=(effective_survival, metrics['asteroids_destroyed']))
+            return Result(success=True, value=(effective_survival, metrics['asteroids_destroyed'], metrics.get('scrap_collected', 0)))
             
         except Exception as e:
             return Result(success=False, error=f"Genome evaluation failed: {e}")
@@ -201,6 +201,7 @@ class HighSpeedSimulation:
         # Performance metrics
         self.survival_time = 0.0
         self.asteroids_destroyed = 0
+        self.scrap_collected = 0
         self.bullets_fired = 0
         self.shots_hit = 0
         self.near_misses = 0
@@ -223,8 +224,7 @@ class HighSpeedSimulation:
         self.camping_penalty = 0.0
         self.camping_anchor = (self.ship_x, self.ship_y)
         self.camping_timer = 0.0
-        self.camping_radius = 100.0
-        self.camping_radius = 100.0
+        self.camping_radius = 20.0  # Tightened from 100.0 to prevent safe circling
         self.max_camping_time = 3.0
         
         # Engagement tracking
@@ -233,8 +233,9 @@ class HighSpeedSimulation:
         self.max_idle_time = 5.0  # Time before penalty kicks in
         self.engagement_penalty = 0.0
         
-        # Simplified asteroids
+        # Simplified entities
         self.asteroids = []
+        self.scrap_entities = []
         self._spawn_test_asteroids()
         
         logger.debug("🚀 HighSpeedSimulation initialized")
@@ -261,6 +262,7 @@ class HighSpeedSimulation:
             # Reset metrics
             self.survival_time = 0.0
             self.asteroids_destroyed = 0
+            self.scrap_collected = 0
             self.bullets_fired = 0
             self.shots_hit = 0
             self.near_misses = 0
@@ -283,8 +285,9 @@ class HighSpeedSimulation:
             self.time_since_hit = 0.0
             self.engagement_penalty = 0.0
             
-            # Reset asteroids
+            # Reset entities
             self.asteroids = []
+            self.scrap_entities = []
             self._spawn_test_asteroids()
             
             # Simulation loop
@@ -296,7 +299,8 @@ class HighSpeedSimulation:
                     'vx': self.ship_vx,
                     'vy': self.ship_vy,
                     'angle': self.ship_angle,
-                    'energy': self.ship_energy
+                    'energy': self.ship_energy,
+                    'scrap': self.scrap_entities
                 }
                 
                 world_data = {
@@ -329,6 +333,7 @@ class HighSpeedSimulation:
                 'camping_penalty': self.camping_penalty,
                 'engagement_penalty': self.engagement_penalty,
                 'asteroids_destroyed': self.asteroids_destroyed,
+                'scrap_collected': self.scrap_collected,
                 'bullets_fired': self.bullets_fired,
                 'shots_hit': self.shots_hit,
                 'near_misses': self.near_misses,
@@ -406,6 +411,16 @@ class HighSpeedSimulation:
             self.shots_hit += 1
             self.time_since_hit = 0.0
             self.asteroids_destroyed += 1
+            
+            # Spawn scrap where asteroid was
+            new_scrap = {
+                'x': hit_asteroid['x'],
+                'y': hit_asteroid['y'],
+                'value': random.randint(5, 15),
+                'radius': 3.0
+            }
+            self.scrap_entities.append(new_scrap)
+            
             self.asteroids.remove(hit_asteroid)
             self._spawn_single_asteroid()
             
@@ -447,7 +462,7 @@ class HighSpeedSimulation:
             self.camping_timer += dt
             if self.camping_timer > self.max_camping_time:
                 # Apply penalty for camping
-                self.camping_penalty += 50.0 * dt  # -50 fitness per second
+                self.camping_penalty += 0.5 * dt  # Reduced from 50.0
         else:
             # Moved enough, reset anchor
             self.camping_timer = 0.0
@@ -458,10 +473,10 @@ class HighSpeedSimulation:
         self.time_since_hit += dt
         
         if self.time_since_scrap > self.max_idle_time:
-            self.engagement_penalty += 10.0 * dt  # -10 fitness per second for no scrap
+            self.engagement_penalty += 0.2 * dt  # Reduced from 10.0
             
         if self.time_since_hit > self.max_idle_time:
-            self.engagement_penalty += 5.0 * dt   # -5 fitness per second for no combat
+            self.engagement_penalty += 0.1 * dt   # Reduced from 5.0
         
         # Apply drag
         self.ship_vx *= 0.999
@@ -475,6 +490,18 @@ class HighSpeedSimulation:
             # Wrap around screen
             asteroid['x'] = asteroid['x'] % SOVEREIGN_WIDTH
             asteroid['y'] = asteroid['y'] % SOVEREIGN_HEIGHT
+            
+        # Update scrap and check collection
+        collected_scrap = []
+        for scrap in self.scrap_entities:
+            dx, dy, dist = self._get_toroidal_vector(self.ship_x, self.ship_y, scrap['x'], scrap['y'])
+            if dist < 6.0:  # Ship radius 3 + Scrap radius 3
+                self.scrap_collected += 1
+                self.time_since_scrap = 0.0
+                collected_scrap.append(scrap)
+        
+        for scrap in collected_scrap:
+            self.scrap_entities.remove(scrap)
     
     def _check_collisions(self) -> None:
         """Check collisions (Toroidal awareness)"""

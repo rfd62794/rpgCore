@@ -169,10 +169,10 @@ class Genome:
         self.fitness = fitness
         self.generation = 0
     
-    def calculate_fitness(self, survival_time: float, asteroids_destroyed: int) -> None:
+    def calculate_fitness(self, survival_time: float, asteroids_destroyed: int, scrap_collected: int = 0) -> None:
         """Calculate fitness based on performance metrics"""
-        # Fitness = (SurvivalTime × 1.0) + (RocksDestroyed × 10.0)
-        self.fitness = survival_time + (asteroids_destroyed * 10.0)
+        # Fitness = (SurvivalTime × 1.0) + (RocksDestroyed × 10.0) + (Scrap × 20.0)
+        self.fitness = survival_time + (asteroids_destroyed * 10.0) + (scrap_collected * 20.0)
     
     def mutate(self, mutation_rate: float = 0.1, mutation_strength: float = 0.5) -> None:
         """Mutate the genome's neural network (parameters + structure)"""
@@ -231,12 +231,12 @@ class NEATEngine:
             fitness_scores = []
             
             for genome in self.population:
-                # Run fitness function (should return survival_time, asteroids_destroyed)
+                # Run fitness function (should return survival_time, asteroids_destroyed, scrap_collected)
                 result = fitness_function(genome.network)
                 
                 if result.success:
-                    survival_time, asteroids_destroyed = result.value
-                    genome.calculate_fitness(survival_time, asteroids_destroyed)
+                    survival_time, asteroids_destroyed, scrap_collected = result.value
+                    genome.calculate_fitness(survival_time, asteroids_destroyed, scrap_collected)
                     fitness_scores.append(genome.fitness)
                 else:
                     genome.fitness = 0.0

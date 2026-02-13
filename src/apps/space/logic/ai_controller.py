@@ -549,7 +549,25 @@ class AsteroidPilot(BaseController):
         
         speed = math.sqrt(entity_state.get('vx', 0)**2 + entity_state.get('vy', 0)**2) / 100.0
         ang_vel = entity_state.get('va', 0) / 5.0
-
+        
+        # Update mental vector for debugging
+        if nearest_asteroid and (min_asteroid_distance < min_scrap_distance or not nearest_scrap):
+            self.mental_vector = {
+                'x': nearest_asteroid['x'] - ship_x,
+                'y': nearest_asteroid['y'] - ship_y,
+                'target': 'asteroid',
+                'type': 'threat'
+            }
+        elif nearest_scrap:
+            self.mental_vector = {
+                'x': nearest_scrap['x'] - ship_x,
+                'y': nearest_scrap['y'] - ship_y,
+                'target': 'scrap',
+                'type': 'resource'
+            }
+        else:
+            self.mental_vector = {'x': 0, 'y': 0, 'target': None, 'type': None}
+        
         return [
             1.0, 
             norm_ast_dist,
@@ -560,70 +578,6 @@ class AsteroidPilot(BaseController):
             min(speed, 1.0),
             max(min(ang_vel, 1.0), -1.0)
         ]
-        
-        # Update mental vector for debugging
-        if nearest_asteroid and (min_asteroid_distance < min_scrap_distance or not nearest_scrap):
-            self.mental_vector = {
-                'x': nearest_asteroid['x'] - entity_state['x'],
-                'y': nearest_asteroid['y'] - entity_state['y'],
-                'target': 'asteroid',
-                'type': 'threat'
-            }
-        elif nearest_scrap:
-            self.mental_vector = {
-                'x': nearest_scrap['x'] - entity_state['x'],
-                'y': nearest_scrap['y'] - entity_state['y'],
-                'target': 'scrap',
-                'type': 'resource'
-            }
-        else:
-            self.mental_vector = {'x': 0, 'y': 0, 'target': None, 'type': None}
-        
-        # Calculate inputs
-        if nearest_asteroid is None and nearest_scrap is None:
-            # No targets, return neutral inputs
-            return [0.0, 0.0, entity_state.get('vx', 0) / 100.0, 
-                   entity_state.get('vy', 0) / 100.0, math.sin(entity_state.get('angle', 0)), 0.0, 0.0]
-        
-        # Determine primary target
-        if nearest_asteroid and (min_asteroid_distance < min_scrap_distance or not nearest_scrap):
-            # Asteroid is primary target
-            dx = nearest_asteroid['x'] - entity_state['x']
-            dy = nearest_asteroid['y'] - entity_state['y']
-            distance = min_asteroid_distance
-            scrap_distance_normalized = min_scrap_distance / 100.0 if nearest_scrap else 0.0
-        else:
-            # Scrap is primary target
-            dx = nearest_scrap['x'] - entity_state['x']
-            dy = nearest_scrap['y'] - entity_state['y']
-            distance = min_scrap_distance
-            scrap_distance_normalized = min_scrap_distance / 100.0
-            min_asteroid_distance = min_asteroid_distance if nearest_asteroid else 100.0
-        
-        # Normalize inputs
-        # Input 1: Distance to primary target (normalized)
-        distance_input = min(distance / 100.0, 1.0)
-        
-        # Input 2: Angle to primary target (normalized to -1 to 1)
-        angle_to_target = math.atan2(dy, dx)
-        angle_input = math.sin(angle_to_target - entity_state.get('angle', 0))
-        
-        # Input 3: Ship velocity X (normalized)
-        vx_input = entity_state.get('vx', 0) / 100.0
-        
-        # Input 4: Ship velocity Y (normalized)
-        vy_input = entity_state.get('vy', 0) / 100.0
-        
-        # Input 5: Ship heading (normalized)
-        heading_input = math.sin(entity_state.get('angle', 0))
-        
-        # Input 6: Distance to nearest scrap (normalized)
-        scrap_input = scrap_distance_normalized
-        
-        # Input 7: Asteroid in crosshair (NEW!) - 1.0 if in crosshair, 0.0 otherwise
-        crosshair_input = asteroid_in_crosshair
-        
-        return [distance_input, angle_input, vx_input, vy_input, heading_input, scrap_input, crosshair_input]
     
     def _interpret_neural_outputs(self, outputs: List[float]) -> Dict[str, Any]:
         """Interpret neural network outputs as control inputs"""
