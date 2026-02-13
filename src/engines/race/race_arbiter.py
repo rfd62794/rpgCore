@@ -9,7 +9,7 @@ This is the "Referee" - ensures fair play and tracks race progress.
 
 from typing import Dict, List, Optional, Any, Callable
 from dataclasses import dataclass
-from enum import Enum
+from enum import Enum, StrEnum
 import time
 
 from engines.base import BaseSystem, SystemConfig
@@ -18,10 +18,11 @@ from foundation.types.race import (
     TurtleState, RaceSnapshot, RaceResult, TurtleStatus,
     TerrainType, create_turtle_state
 )
+from pydantic import BaseModel
 
 
-class ArbiterEvent(str, Enum):
-    """Events that the arbiter can emit"""
+class RaceEventType(str, StrEnum):
+    """Event types that the arbiter can emit"""
     RACE_STARTED = "race_started"
     RACE_FINISHED = "race_finished"
     TURTLE_FINISHED = "turtle_finished"
@@ -32,10 +33,9 @@ class ArbiterEvent(str, Enum):
     LEADER_CHANGED = "leader_changed"
 
 
-@dataclass
-class ArbiterEvent:
+class ArbiterEvent(BaseModel):
     """Event emitted by the race arbiter"""
-    event_type: ArbiterEvent
+    event_type: RaceEventType
     timestamp: float
     turtle_id: Optional[str] = None
     data: Optional[Dict[str, Any]] = None
@@ -118,18 +118,8 @@ class RaceArbiter(BaseSystem):
         
         # Event callbacks
         self.event_callbacks: Dict[str, List[Callable]] = {}
-        event_types = [
-            "race_started",
-            "race_finished", 
-            "turtle_finished",
-            "turtle_exhausted",
-            "turtle_recovered",
-            "checkpoint_passed",
-            "energy_warning",
-            "leader_changed"
-        ]
-        for event_type in event_types:
-            self.event_callbacks[event_type] = []
+        for event_type in RaceEventType:
+            self.event_callbacks[event_type.value] = []
         
         # Previous state tracking
         self.previous_states: Dict[str, TurtleState] = {}
@@ -424,7 +414,7 @@ class RaceArbiter(BaseSystem):
                    turtle_id: Optional[str] = None) -> None:
         """Emit an arbiter event"""
         event = ArbiterEvent(
-            event_type=event_type,
+            event_type=RaceEventType(event_type),
             timestamp=time.perf_counter(),
             turtle_id=turtle_id,
             data=data
@@ -444,7 +434,8 @@ class RaceArbiter(BaseSystem):
                                callback: Callable) -> Result[None]:
         """Register a callback for specific events"""
         try:
-            event_enum = ArbiterEvent(event_type)
+            # Validate event type
+            RaceEventType(event_type)
             self.event_callbacks[event_type].append(callback)
             
             self._get_logger().debug(f"Registered callback for {event_type}")
