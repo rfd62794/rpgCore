@@ -40,7 +40,7 @@ except ImportError as e:
     # Use foundation constants as fallback
     try:
         try:
-            from src.foundation.constants import SOVEREIGN_WIDTH, SOVEREIGN_HEIGHT
+            from rpg_core.foundation.constants import SOVEREIGN_WIDTH, SOVEREIGN_HEIGHT
         except ImportError:
             from foundation.constants import SOVEREIGN_WIDTH, SOVEREIGN_HEIGHT
         TARGET_FPS = 60
@@ -61,14 +61,18 @@ except ImportError as e:
         VIEWPORT_TILES_X = 20
         VIEWPORT_TILES_Y = 18
         
-        class GameState:
-            pass
-        class TileType:
-            pass
-        class BiomeType:
-            pass
-        class RenderLayer:
-            pass
+    class GameState:
+        pass
+    class TileType:
+        pass
+    class BiomeType:
+        pass
+    class RenderLayer:
+        pass
+    @dataclass
+    class SubtitleEvent:
+        text: str
+        duration: float = 3.0
 
 
 class RenderLayer:
