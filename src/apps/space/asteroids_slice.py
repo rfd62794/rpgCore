@@ -28,13 +28,9 @@ if str(_src) not in sys.path:
     sys.path.insert(0, str(_src))
 
 from rpg_core.foundation.vector import Vector2
-print("DEBUG: Imported Vector2")
 from rpg_core.foundation.constants import SOVEREIGN_WIDTH as WIDTH, SOVEREIGN_HEIGHT as HEIGHT
-print("DEBUG: Imported constants")
 from rpg_core.systems.body.kinetics import KineticEntity
-print("DEBUG: Imported KineticEntity")
 from rpg_core.systems.graphics.fx.exhaust_system import ExhaustSystem
-print("DEBUG: Imported ExhaustSystem")
 
 if TYPE_CHECKING:
     from rpg_core.game.entities.asteroid import Asteroid
@@ -46,10 +42,8 @@ from rpg_core.foundation.utils.performance_monitor import (
     initialize_performance_monitor,
     get_performance_monitor,
 )
-print("DEBUG: Imported PerformanceMonitor")
 
 from loguru import logger
-print("DEBUG: Imported logger")
 
 # Sovereign resolution
 WIDTH = 160
@@ -757,3 +751,6 @@ def main() -> None:
         else:
             print(f"  WARN - avg {report['avg_frame_time_ms']:.3f} ms exceeds {budget_ms:.1f} ms budget")
         print()
+
+if __name__ == "__main__":
+    main()
