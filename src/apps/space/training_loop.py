@@ -64,7 +64,9 @@ class TrainingLoop:
             metrics = result.value
             
             # Return survival time and asteroids destroyed for fitness calculation
-            return Result(success=True, value=(metrics['survival_time'], metrics['asteroids_destroyed']))
+            # Apply camping penalty to survival score
+            effective_survival = max(0.0, metrics['survival_time'] - metrics['camping_penalty'])
+            return Result(success=True, value=(effective_survival, metrics['asteroids_destroyed']))
             
         except Exception as e:
             return Result(success=False, error=f"Genome evaluation failed: {e}")
@@ -216,6 +218,13 @@ class HighSpeedSimulation:
         self.ship_last_fire_time = -10.0
         self.ship_fire_cooldown = 1.0
         
+        # Camping Penalty Logic
+        self.camping_penalty = 0.0
+        self.camping_anchor = (self.ship_x, self.ship_y)
+        self.camping_timer = 0.0
+        self.camping_radius = 100.0
+        self.max_camping_time = 3.0
+        
         # Simplified asteroids
         self.asteroids = []
         self._spawn_test_asteroids()
@@ -257,6 +266,10 @@ class HighSpeedSimulation:
             self.ship_energy = 100.0
             self.ship_lives = 3
             self.ship_last_fire_time = -10.0
+            
+            self.camping_penalty = 0.0
+            self.camping_anchor = (self.ship_x, self.ship_y)
+            self.camping_timer = 0.0
             
             # Reset asteroids
             self.asteroids = []
@@ -301,6 +314,7 @@ class HighSpeedSimulation:
             # Return performance metrics
             metrics = {
                 'survival_time': self.survival_time,
+                'camping_penalty': self.camping_penalty,
                 'asteroids_destroyed': self.asteroids_destroyed,
                 'bullets_fired': self.bullets_fired,
                 'shots_hit': self.shots_hit,
@@ -419,6 +433,20 @@ class HighSpeedSimulation:
         # Toroidal wrap
         self.ship_x = self.ship_x % SOVEREIGN_WIDTH
         self.ship_y = self.ship_y % SOVEREIGN_HEIGHT
+        
+        # Check camping
+        dist_from_anchor = math.sqrt((self.ship_x - self.camping_anchor[0])**2 + 
+                                   (self.ship_y - self.camping_anchor[1])**2)
+                                   
+        if dist_from_anchor < self.camping_radius:
+            self.camping_timer += dt
+            if self.camping_timer > self.max_camping_time:
+                # Apply penalty for camping
+                self.camping_penalty += 50.0 * dt  # -50 fitness per second
+        else:
+            # Moved enough, reset anchor
+            self.camping_timer = 0.0
+            self.camping_anchor = (self.ship_x, self.ship_y)
         
         # Apply drag
         self.ship_vx *= 0.999
