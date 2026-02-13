@@ -52,8 +52,8 @@ class TournamentPilot:
         
         # Combat state
         self.bullets: List[Bullet] = []
-        self.last_fire_time = 0.0
-        self.fire_cooldown = 0.25  # 4 shots per second
+        self.last_fire_time = -10.0  # Allow immediate first shot
+        self.fire_cooldown = 1.0  # 1.0s cooldown (Slower firing)
         
         # Create AI controller
         neural_network = None
@@ -373,6 +373,15 @@ class TournamentMode:
                         asteroid['health'] -= 1
                         if asteroid['health'] <= 0:
                             if asteroid in self.asteroids:
+                                # Spawn scrap from destroyed asteroid
+                                new_scrap = {
+                                    'x': asteroid['x'],
+                                    'y': asteroid['y'],
+                                    'value': asteroid['size'] * 5,  # Value based on size
+                                    'radius': max(3, asteroid['radius'] / 2)
+                                }
+                                self.scrap_entities.append(new_scrap)
+                                
                                 self.asteroids.remove(asteroid)
                                 pilot.asteroids_destroyed += 1
                         break  # Bullet hit something, stop checking other asteroids
@@ -458,6 +467,25 @@ class TournamentMode:
             
             pygame.draw.polygon(self.game_surface, pilot.color, ship_points)
             pygame.draw.polygon(self.game_surface, self.colors['white'], ship_points, 1)
+            
+            # Draw reload bar
+            time_since_fire = self.game_time - pilot.last_fire_time
+            recharge_pct = min(1.0, time_since_fire / pilot.fire_cooldown)
+            
+            if recharge_pct < 1.0:
+                bar_width = 12
+                bar_height = 2
+                bar_x = pilot.visual_x - bar_width // 2
+                bar_y = pilot.visual_y - 10
+                
+                # Background
+                pygame.draw.rect(self.game_surface, self.colors['dark_gray'], 
+                               (int(bar_x), int(bar_y), bar_width, bar_height))
+                
+                # Progress (Yellow)
+                fill_width = int(bar_width * recharge_pct)
+                pygame.draw.rect(self.game_surface, self.colors['yellow'], 
+                               (int(bar_x), int(bar_y), fill_width, bar_height))
     
     def _draw_mental_vectors(self) -> None:
         """Draw mental vectors for debugging"""

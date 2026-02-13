@@ -208,8 +208,13 @@ class HighSpeedSimulation:
         self.ship_vx = 0.0
         self.ship_vy = 0.0
         self.ship_angle = 0.0
+        self.ship_angle = 0.0
         self.ship_energy = 100.0
         self.ship_lives = 3
+        
+        # Combat settings
+        self.ship_last_fire_time = -10.0
+        self.ship_fire_cooldown = 1.0
         
         # Simplified asteroids
         self.asteroids = []
@@ -251,6 +256,7 @@ class HighSpeedSimulation:
             self.ship_angle = 0.0
             self.ship_energy = 100.0
             self.ship_lives = 3
+            self.ship_last_fire_time = -10.0
             
             # Reset asteroids
             self.asteroids = []
@@ -334,7 +340,9 @@ class HighSpeedSimulation:
         
         # Handle weapon fire
         if fire_weapon:
-            self._fire_bullet()
+            if self.survival_time - self.ship_last_fire_time >= self.ship_fire_cooldown:
+                self.ship_last_fire_time = self.survival_time
+                self._fire_bullet()
     
     def _fire_bullet(self) -> None:
         """Fire bullet with raycast/cone check for training accuracy without full physics"""
