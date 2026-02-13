@@ -40,8 +40,8 @@ class TechniqueExtractor:
     def __init__(self):
         self.techniques: List[TechniqueTemplate] = []
         self.extraction_buffer: List[Dict[str, Any]] = []
-        self.min_frames_for_extraction = 15  # Minimum frames for technique extraction (Lowered for debug)
-        self.fitness_threshold = 10.0  # Minimum fitness for technique extraction (Lowered for debug)
+        self.min_frames_for_extraction = 60  # Minimum frames for technique extraction
+        self.fitness_threshold = 50.0  # Minimum fitness for technique extraction
         
         # Pattern matching parameters
         self.input_similarity_threshold = 0.8  # How similar inputs must be

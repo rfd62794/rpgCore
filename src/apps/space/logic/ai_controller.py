@@ -195,8 +195,6 @@ class AsteroidPilot(BaseController):
             return Result(success=True, value=control_input)
             
         except Exception as e:
-            import traceback
-            traceback.print_exc()
             return Result(success=False, error=f"AI Pilot update failed: {e}")
     
     def _apply_adaptive_bias(self) -> None:

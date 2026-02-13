@@ -275,18 +275,22 @@ class TournamentMode:
         
         # Update controller
         control_result = pilot.controller.update(self.dt, entity_state, world_data)
-        
         if control_result.success:
-            controls = control_result.value
+            pilot.last_controls = control_result.value
+            
+            # Apply controls to physics
+            # This part of the code was incomplete in the instruction,
+            # so I'm keeping the original logic for visual updates.
+            # If _apply_pilot_controls is a new method, it would need to be defined.
             
             # Update visual position based on controls
-            if controls.thrust != 0:
-                thrust_magnitude = controls.thrust * 50.0
+            if pilot.last_controls.thrust != 0:
+                thrust_magnitude = pilot.last_controls.thrust * 50.0
                 pilot.visual_x += thrust_magnitude * math.cos(pilot.visual_angle) * self.dt
                 pilot.visual_y += thrust_magnitude * math.sin(pilot.visual_angle) * self.dt
             
-            if controls.rotation != 0:
-                pilot.visual_angle += controls.rotation * 3.0 * self.dt
+            if pilot.last_controls.rotation != 0:
+                pilot.visual_angle += pilot.last_controls.rotation * 3.0 * self.dt
                 pilot.visual_angle = pilot.visual_angle % (2 * math.pi)
             
             # Wrap position
