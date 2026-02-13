@@ -297,7 +297,7 @@ class TestGenomeEngineIntegration:
         genome = TurboGenome(
             shell_base_color=(255, 128, 64),
             shell_pattern_type=ShellPatternType.STRIPES,
-            speed_modifier=1.2
+            shell_size_modifier=1.2
         )
         
         # Register genome
@@ -312,7 +312,7 @@ class TestGenomeEngineIntegration:
         assert retrieved_genome is not None
         assert retrieved_genome.shell_base_color == (255, 128, 64)
         assert retrieved_genome.shell_pattern_type == ShellPatternType.STRIPES
-        assert retrieved_genome.speed_modifier == 1.2
+        assert retrieved_genome.shell_size_modifier == 1.2
     
     def test_genome_registry_validation(self) -> None:
         """Test that registry validates genome integrity"""
