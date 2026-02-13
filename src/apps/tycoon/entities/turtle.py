@@ -73,11 +73,9 @@ class SovereignTurtle:
         
         # Note: Registration handled by WorldState orchestrator to prevent double-counting
     
-    def _auto_register(self) -> None:
-        """Automatically register turtle with DGTRegistry"""
+    def register_with_registry(self, registry: 'DGTRegistry') -> Result[None]:
+        """Register turtle with DGTRegistry (called by orchestrator)"""
         try:
-            registry = DGTRegistry()
-            
             # Register genome
             genome_result = registry.register(
                 f"genome_{self.turtle_id}",
@@ -108,12 +106,13 @@ class SovereignTurtle:
             )
             
             if genome_result.success and entity_result.success:
-                self._get_logger().info(f"✅ Turtle {self.turtle_id} auto-registered")
+                self._get_logger().info(f"✅ Turtle {self.turtle_id} registered")
+                return Result.success_result(None)
             else:
-                self._get_logger().error(f"❌ Turtle {self.turtle_id} registration failed")
+                return Result.failure_result(f"Turtle {self.turtle_id} registration failed")
                 
         except Exception as e:
-            self._get_logger().error(f"❌ Turtle {self.turtle_id} auto-registration error: {e}")
+            return Result.failure_result(f"Turtle {self.turtle_id} registration error: {str(e)}")
     
     def _derive_stats_from_genome(self) -> TurtleStats:
         """
