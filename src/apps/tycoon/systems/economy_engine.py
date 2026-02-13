@@ -14,7 +14,7 @@ import time
 
 from foundation.types import Result
 from foundation.registry import DGTRegistry, RegistryType
-from ...base import BaseSystem, SystemConfig
+from engines.base import BaseSystem, SystemConfig
 
 
 @dataclass
