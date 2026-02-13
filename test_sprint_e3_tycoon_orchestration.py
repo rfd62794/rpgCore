@@ -22,6 +22,12 @@ def test_daily_cycle_manager():
         
         print("✅ Daily Cycle Manager imports successful")
         
+        # Clean up save file for fresh test
+        import os
+        save_file = "data/tycoon_save.json"
+        if os.path.exists(save_file):
+            os.remove(save_file)
+        
         # Create cycle manager
         cycle_manager = create_cycle_manager()
         init_result = cycle_manager.initialize()
@@ -48,6 +54,9 @@ def test_daily_cycle_manager():
         day2_state = state_result.value
         assert day2_state['day'] == 2
         print(f"✅ Day 2 state: {len(day2_state['wild_turtles'])} wild turtles available")
+        
+        # Shutdown
+        cycle_manager.shutdown()
         
         return True
         
