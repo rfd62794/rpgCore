@@ -32,9 +32,9 @@ try:
         create_turtle_state, create_race_snapshot
     )
     from foundation.types import Result
-    from engines.race.physics_engine import RacePhysicsEngine, create_race_physics_engine
-    from engines.race.terrain_system import TerrainSystem, create_terrain_system
-    from engines.race.race_arbiter import RaceArbiter, create_race_arbiter
+    from engines.race import RacePhysicsEngine, create_race_physics_engine
+    from engines.race import TerrainSystem, create_terrain_system
+    from engines.race import RaceArbiter, create_race_arbiter
 except ImportError as e:
     print(f"❌ Import failed: {e}")
     print("Ensure race engine modules are properly installed")
