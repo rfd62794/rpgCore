@@ -275,6 +275,7 @@ class HighSpeedSimulation:
                 control_result = self.ai_controller.update(dt, entity_state, world_data)
                 
                 if not control_result.success:
+                    print(f"DEBUG: Controller failed: {control_result.error}")
                     break
                 
                 controls = control_result.value
