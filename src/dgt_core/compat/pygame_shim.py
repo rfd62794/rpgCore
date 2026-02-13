@@ -39,6 +39,9 @@ class LegacyUITheme:
     CARD_HEADER_GRADIENT_TOP = (80, 80, 120)
     CARD_HEADER_GRADIENT_BOTTOM = (40, 40, 60)
     
+    # Additional colors for testing
+    BUTTON_TEXT_COLOR = (255, 255, 255)
+    
     # Font sizes (legacy pixel sizes)
     FONT_SMALL = 8
     FONT_MEDIUM = 12
