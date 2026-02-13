@@ -16,16 +16,17 @@ from enum import Enum
 
 from loguru import logger
 
-from engines.kernel.state import (
-    GameState, VoyagerState, MovementIntent, InteractionIntent, PonderIntent,
-    InterestPoint, validate_position, DIRECTION_VECTORS
-)
-from engines.kernel.constants import (
+from rpg_core.systems.kernel.state.models import GameState, InterestPoint
+from rpg_core.systems.kernel.state.enums import AIState as VoyagerState
+from rpg_core.systems.kernel.state.intents import MovementIntent, InteractionIntent, PonderIntent
+from rpg_core.systems.kernel.state.validation import validate_position
+from rpg_core.systems.kernel.state.constants import DIRECTION_VECTORS
+from rpg_core.systems.kernel.constants import (
     MOVEMENT_RANGE_TILES, INTENT_COOLDOWN_MS, PERSISTENCE_INTERVAL_TURNS,
     PATHFINDING_MAX_ITERATIONS, VOYAGER_INTERACTION_RANGE
 )
-from engines.kernel.config import VoyagerConfig
-from narrative.chronos import ChronosEngine, ChronosEngineFactory
+from rpg_core.systems.kernel.config import VoyagerConfig
+from rpg_core.narrative.chronos import ChronosEngine, ChronosEngineFactory
 
 # Body — pathfinding and navigation primitives
 from actors.pawn_navigation import (

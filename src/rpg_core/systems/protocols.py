@@ -14,7 +14,7 @@ from dataclasses import dataclass
 from enum import Enum
 
 # Import Foundation protocols
-from foundation.protocols import (
+from rpg_core.foundation.protocols import (
     WorldStateSnapshot, EntityStateProtocol, Vector2Protocol,
     EventCallbackProtocol, RenderCallbackProtocol
 )

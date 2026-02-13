@@ -8,7 +8,7 @@ from typing import Dict, List, Optional, Any
 from loguru import logger
 
 from .asset_loader import AssetLoader, AssetMetadata
-from foundation.types import Result
+from rpg_core.foundation.types import Result
 
 
 class BuildingRegistry:
