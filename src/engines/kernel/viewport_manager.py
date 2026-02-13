@@ -14,13 +14,6 @@ import math
 
 from loguru import logger
 
-from foundation.interfaces.protocols import Result
-from foundation.protocols import Vector2Protocol
-from ..protocols import (
-    ViewportLayoutProtocol, ScaleBucket, STANDARD_SCALE_BUCKETS,
-    OverlayComponent, CallbackRegistry
-)
-
 
 class ViewportManager:
     """Manages responsive viewport scaling and layout"""
