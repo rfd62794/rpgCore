@@ -307,7 +307,7 @@ def _update_checkpoints(self, participant: RaceState) -> None:
                 
                 self._get_logger().debug(f"🏁 {participant.participant_id} passed checkpoint {participant.checkpoints_passed}")
     
-    def _check_race_completion(self) -> None:
+def _check_race_completion(self) -> None:
         """Check if any participant has finished the race"""
         for participant_id, participant in self.participants.items():
             if participant.distance_traveled >= self.race_config.track_length:
@@ -322,7 +322,7 @@ def _update_checkpoints(self, participant: RaceState) -> None:
                     self.stop_race()
                     break
     
-    def _update_participant_in_registry(self, participant_id: str, participant: RaceState) -> None:
+def _update_participant_in_registry(self, participant_id: str, participant: RaceState) -> None:
         """Update participant state in registry"""
         try:
             registry = DGTRegistry()
@@ -350,7 +350,7 @@ def _update_checkpoints(self, participant: RaceState) -> None:
         except Exception as e:
             self._get_logger().error(f"Failed to update participant in registry: {e}")
     
-    def _update_registry_snapshot(self) -> None:
+def _update_registry_snapshot(self) -> None:
         """Update registry with current race state snapshot"""
         try:
             registry = DGTRegistry()
@@ -363,7 +363,7 @@ def _update_checkpoints(self, participant: RaceState) -> None:
                     entity_type=EntityType.SHIP,
                     position=participant.position,
                     velocity=participant.velocity,
-                    radius=5.0,
+                    radius=getattr(participant, 'radius', 5.0),
                     active=self.race_active,
                     metadata={
                         'system': 'race_runner',
@@ -402,7 +402,7 @@ def _update_checkpoints(self, participant: RaceState) -> None:
         except Exception as e:
             self._get_logger().error(f"Failed to update registry snapshot: {e}")
     
-    def get_race_state(self) -> Dict[str, Any]:
+def get_race_state(self) -> Dict[str, Any]:
         """Get current race state"""
         return {
             'race_active': self.race_active,
