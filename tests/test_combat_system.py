@@ -18,10 +18,10 @@ from typing import Optional
 # Add src to path
 sys.path.append(os.path.join(os.path.dirname(__file__), 'src'))
 
-from core.system_config import create_default_config
-from engines.mind import DDEngine, DDEngineFactory
-from engines.mind.combat_resolver import CombatResolver
-from utils.asset_loader import AssetLoader
+from rpg_core.systems.kernel.config import create_default_config
+from rpg_core.game_engine import DDEngine, DDEngineFactory
+from rpg_core.game_engine.combat_resolver import CombatResolver
+from rpg_core.systems.body.pipeline.asset_loader import AssetLoader
 
 class CombatTestSession:
     """Test session for the Tag-Based Auto-Combat System"""
@@ -121,9 +121,9 @@ class CombatTestSession:
         
         return resolver
     
-    def _create_mock_voyager(self) -> AssetDefinition:
+    def _create_mock_voyager(self) -> 'AssetDefinition':
         """Create a mock voyager for testing"""
-        from utils.asset_loader import AssetDefinition, AssetType, ObjectCharacteristics
+        from rpg_core.systems.body.pipeline.asset_loader import AssetDefinition, AssetType, ObjectCharacteristics
         
         return AssetDefinition(
             asset_id="voyager",

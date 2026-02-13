@@ -23,7 +23,7 @@ _ENGINE_EXPORTS = {
     "CombatResolver", "Combatant", "CombatState", "CombatRound",
     
     # From dd_engine.py
-    "DDEngine", "CommandStatus", "CommandQueue",
+    "DDEngine", "DDEngineFactory", "CommandStatus", "CommandQueue",
     
     # From survival_game.py
     "SurvivalGame",
@@ -51,7 +51,7 @@ def __getattr__(name: str) -> Any:
             from . import world_engine as _mod
         elif name in {"CombatResolver", "Combatant", "CombatState", "CombatRound"}:
             from . import combat_resolver as _mod
-        elif name in {"DDEngine", "CommandStatus", "CommandQueue"}:
+        elif name in {"DDEngine", "DDEngineFactory", "CommandStatus", "CommandQueue"}:
             from . import dd_engine as _mod
         elif name == "SurvivalGame":
             from . import survival_game as _mod

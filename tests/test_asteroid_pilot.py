@@ -14,9 +14,9 @@ _src = Path(__file__).resolve().parent.parent / "src"
 if str(_src) not in sys.path:
     sys.path.insert(0, str(_src))
 
-from foundation.vector import Vector2
-from engines.body.kinetics import KineticEntity
-from actors.asteroid_pilot import AsteroidPilot, SteeringConfig, SurvivalLog
+from rpg_core.foundation.vector import Vector2
+from rpg_core.systems.body.kinetics import KineticEntity
+from rpg_core.game_engine.actors.asteroid_pilot import AsteroidPilot
 from apps.space.asteroids_slice import Asteroid
 
 
