@@ -589,8 +589,10 @@ class VisualRunner:
             text=status,
         )
 
-        # Schedule next frame (16ms ≈ 60Hz)
-        self.root.after(16, self._tick)
+        # Schedule next frame to maintain target 60 FPS
+        # We subtract elapsed time from target frame time (16ms)
+        delay_ms = max(1, int(16 - elapsed_ms))
+        self.root.after(delay_ms, self._tick)
 
     def _blit_frame(self) -> None:
         """Convert palette-indexed frame_buffer to PPM and update PhotoImage."""
