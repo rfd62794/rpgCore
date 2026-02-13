@@ -16,7 +16,9 @@ import time
 from typing import Optional
 
 # Add src to path
-sys.path.append(os.path.join(os.path.dirname(__file__), 'src'))
+_src = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'src'))
+if _src not in sys.path:
+    sys.path.insert(0, _src)
 
 from rpg_core.systems.kernel.config import create_default_config
 from rpg_core.game_engine import DDEngine, DDEngineFactory
