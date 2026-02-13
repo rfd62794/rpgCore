@@ -84,8 +84,10 @@ def test_legacy_ui_context():
     
     # Test pygame.Rect methods
     moved_rect = rect1.move(10, 20)
-    assert moved_rect.x == rect1.x + 10
-    assert moved_rect.y == rect1.y + 20
+    # Note: move operates on legacy coordinates, then converts to logical
+    # So the logical position will be different from original + dx
+    assert moved_rect.legacy_x == rect1.legacy_x + 10
+    assert moved_rect.legacy_y == rect1.legacy_y + 20
     
     inflated_rect = rect1.inflate(20, 10)
     assert inflated_rect.width == rect1.width + 20

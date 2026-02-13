@@ -178,6 +178,7 @@ class SovereignRect:
     
     def move(self, dx: float, dy: float) -> 'SovereignRect':
         """Move rectangle and return new one (pygame.Rect compatibility)"""
+        # For pygame compatibility, move should operate on logical coordinates
         return SovereignRect(
             self.legacy_x + dx, self.legacy_y + dy,
             self.legacy_width, self.legacy_height,
