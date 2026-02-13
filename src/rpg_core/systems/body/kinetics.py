@@ -18,8 +18,8 @@ from typing import Tuple, Optional, List
 from dataclasses import dataclass, field
 import math
 
-from foundation.vector import Vector2
-from foundation.interfaces.visuals import SpriteCoordinate
+from ...foundation.vector import Vector2
+from ...foundation.interfaces.visuals import SpriteCoordinate
 
 
 @dataclass

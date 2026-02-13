@@ -42,7 +42,8 @@ except ImportError as e:
         try:
             from rpg_core.foundation.constants import SOVEREIGN_WIDTH, SOVEREIGN_HEIGHT
         except ImportError:
-            from foundation.constants import SOVEREIGN_WIDTH, SOVEREIGN_HEIGHT
+            # Fallback to relative import if package is not in path
+            from ...foundation.constants import SOVEREIGN_WIDTH, SOVEREIGN_HEIGHT
         TARGET_FPS = 60
         FRAME_DELAY_MS = 16
         VIEWPORT_WIDTH_PIXELS = SOVEREIGN_WIDTH
