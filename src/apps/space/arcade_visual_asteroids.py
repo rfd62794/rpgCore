@@ -5,6 +5,7 @@ Arcade-scale entities with precision collision and visual effects
 
 import pygame
 import sys
+import random
 import math
 from typing import Dict, List, Any
 from pathlib import Path
@@ -106,8 +107,8 @@ class ArcadeVisualAsteroids:
                 if dist_from_ship > 30.0:  # 30px safety zone
                     break
                 # Move to random safe position
-                config['x'] = math.random.uniform(20, SOVEREIGN_WIDTH - 20)
-                config['y'] = math.random.uniform(20, SOVEREIGN_HEIGHT - 20)
+                config['x'] = random.uniform(20, SOVEREIGN_WIDTH - 20)
+                config['y'] = random.uniform(20, SOVEREIGN_HEIGHT - 20)
             
             self.asteroids.append(config.copy())
     
