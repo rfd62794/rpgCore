@@ -20,11 +20,11 @@ import sys
 from pathlib import Path
 sys.path.append(str(Path(__file__).parent.parent.parent / "src"))
 
-from apps.space.physics_body import PhysicsBody, PhysicsState
-from apps.space.entities.space_entity import SpaceEntity, EntityType
-from foundation.vector import Vector2
-from foundation.constants import SOVEREIGN_WIDTH, SOVEREIGN_HEIGHT
-from foundation.types import Result
+from src.apps.space.physics_body import PhysicsBody, PhysicsState
+from src.apps.space.entities.space_entity import SpaceEntity, EntityType
+from src.foundation.vector import Vector2
+from src.foundation.constants import SOVEREIGN_WIDTH, SOVEREIGN_HEIGHT
+from src.foundation.types import Result
 
 
 class TestPhysicsBody:
@@ -413,7 +413,7 @@ class TestPhysicsEngineIntegration:
     
     def test_physics_with_registry(self) -> None:
         """Test physics entities can be registered in DGT registry"""
-        from foundation.registry import register_entity, get_entity, RegistryType
+        from src.foundation.registry import register_entity, get_entity, RegistryType
         
         # Create physics entity
         entity = SpaceEntity(
