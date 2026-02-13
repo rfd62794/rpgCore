@@ -17,9 +17,8 @@ sys.path.append(str(Path(__file__).parent.parent.parent))
 
 from rpg_core.foundation.types import Result
 from rpg_core.foundation.constants import SOVEREIGN_WIDTH, SOVEREIGN_HEIGHT, DEBUG_INFINITE_ENERGY
-from rpg_core.systems.mind.neat.neat_engine import NeuralNetwork
-from apps.space.logic.ai_controller import create_ai_controller
-from apps.space.arcade_visual_asteroids import ArcadeVisualAsteroids
+from rpg_core.game_engine import TriBrain, create_tri_brain, ShipGenetics
+from rpg_core.systems.body import UnifiedPPU, create_unified_ppu, RenderPacket
 
 
 class Bullet:
@@ -86,15 +85,11 @@ class TournamentPilot:
         self.fire_cooldown = 1.0  # 1.0s cooldown (Slower firing)
         
         # Create AI controller
-        neural_network = None
         if network_file and Path(network_file).exists():
             neural_network = self._load_network(network_file)
         
-        self.controller = create_ai_controller(
-            controller_id=pilot_id,
-            use_neural_network=(neural_network is not None),
-            neural_network=neural_network
-        )
+        # Use TriBrain for advanced pilots
+        self.controller = create_tri_brain(pilot_id)
         
         # Performance metrics
         self.survival_time = 0.0
