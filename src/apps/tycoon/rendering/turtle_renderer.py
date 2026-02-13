@@ -17,7 +17,7 @@ import math
 from foundation.types import Result
 from foundation.protocols import Vector2Protocol
 from foundation.vector import Vector2
-from foundation.registry import DGTRegistry
+from foundation.registry import DGTRegistry, RegistryType
 from ..entities.turtle import SovereignTurtle
 
 
@@ -106,13 +106,13 @@ class TurtleRenderer:
             render_data_list = []
             
             # Get all entities from registry
-            entities_result = self.registry.list_items(self.registry.RegistryType.ENTITY)
+            entities_result = self.registry.list_items(RegistryType.ENTITY)
             if not entities_result.success:
                 return Result.failure_result(f"Failed to list entities: {entities_result.error}")
             
             # Filter for turtle entities
             for entity_id in entities_result.value:
-                entity_result = self.registry.get(entity_id, self.registry.RegistryType.ENTITY)
+                entity_result = self.registry.get(entity_id, RegistryType.ENTITY)
                 if entity_result.success:
                     entity = entity_result.value
                     
