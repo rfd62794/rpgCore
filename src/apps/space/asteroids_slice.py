@@ -596,47 +596,42 @@ class VisualRunner:
 
     def _blit_frame(self) -> None:
         """Convert palette-indexed frame_buffer to PPM and update PhotoImage."""
-        # Build PPM P6 (binary RGB) data
+        # Build RGB data using numpy
         fb = self.sim.frame_buffer
         
-        # Optimized rendering using numpy if available
         try:
             import numpy as np
+            from PIL import Image, ImageTk
             
-            # Create palette array (one-time setup would be better, but this is fast enough)
+            # Create palette array (lazy init)
             if not hasattr(self, '_palette_arr'):
-                # Map 256 colors (safe upper bound)
                 p = np.zeros((256, 3), dtype=np.uint8)
                 for idx, color in PALETTE.items():
                     p[idx] = color
                 self._palette_arr = p
                 
-            # Convert frame buffer to numpy array
-            fb_arr = np.array(fb, dtype=np.uint8)
-            
-            # Vectorized lookup! 100x faster than loop
+            # Convert indices to RGB array (H, W, 3)
+            # Reshape frame buffer to (Height, Width) first for correct indexing
+            fb_arr = np.array(fb, dtype=np.uint8).reshape((HEIGHT, WIDTH))
             pixels_arr = self._palette_arr[fb_arr]
             
-            # Scale up using numpy kron (much faster than Tkinter zoom)
-            # We repeat rows and cols by SCALE
-            # Note: repeat is faster than kron for simple scaling
-            pixels_scaled = pixels_arr.repeat(SCALE, axis=0).repeat(SCALE, axis=1)
+            # Create PIL Image from numpy array
+            image = Image.fromarray(pixels_arr, 'RGB')
             
-            ppm_body = pixels_scaled.tobytes()
+            # Scale up using Nearest Neighbor (maintains pixel art look)
+            scaled_w, scaled_h = WIDTH * SCALE, HEIGHT * SCALE
+            image = image.resize((scaled_w, scaled_h), Image.NEAREST)
             
-            # Update header for scaled size
-            scaled_w = WIDTH * SCALE
-            scaled_h = HEIGHT * SCALE
-            header = f"P6 {scaled_w} {scaled_h} 255\n".encode()
-            ppm_data = header + ppm_body
+            # Create ImageTk.PhotoImage
+            self._photo = ImageTk.PhotoImage(image)
             
-            import tkinter as tk
-            # Create PhotoImage directly at scaled size
-            self._photo = tk.PhotoImage(width=scaled_w, height=scaled_h, data=ppm_data)
+            # Update canvas
             self.canvas.itemconfig(self._canvas_img, image=self._photo)
             
-        except ImportError:
-            # Fallback to slow loop & slow zoom
+        except ImportError as e:
+            # Fallback for missing PIL or numpy
+            sys.stderr.write(f"Render Error: {e}\n")
+             # Fallback to slow loop
             pixels = bytearray(WIDTH * HEIGHT * 3)
             for i, idx in enumerate(fb):
                 r, g, b = PALETTE.get(idx, (0, 0, 0))
