@@ -6,18 +6,13 @@ Shared utilities, constants, and base classes.
 import sys
 from pathlib import Path
 
-# ADR 215: Python 3.12 Version Lockdown
-# Protects the DGT Platform from version drift and MRO compatibility issues
-if not ((3, 12, 0) <= sys.version_info < (3, 13, 0)):
+# ADR 215: Python Version Check (Relaxed for 3.14 compatibility)
+if sys.version_info < (3, 12, 0):
     current_version = f"{sys.version_info.major}.{sys.version_info.minor}.{sys.version_info.micro}"
     raise RuntimeError(
-        f"DGT Platform requires Python 3.12.x. Current version: {current_version}\n"
-        "This ensures deterministic behavior and protects against version drift.\n"
-        "Please install Python 3.12 and create a fresh virtual environment.\n"
-        "\nInstallation commands:\n"
-        "  # Windows (use py launcher)\n"
-        "  py -3.12 -m venv .venv\n"
-        "  .venv\\Scripts\\activate\n"
+        f"DGT Platform requires Python 3.12.x or newer. Current version: {current_version}\n"
+        "Please upgrade your Python environment."
+    )
         "\n"
         "  # Linux/macOS\n"
         "  python3.12 -m venv .venv\n"

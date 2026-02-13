@@ -154,7 +154,7 @@ class MaterialAsset(BaseModel):
     density: float = Field(default=1.0, ge=0.0, le=10.0, description="Material density")
     durability: float = Field(default=100.0, ge=0.0, le=1000.0, description="Durability points")
     reflectivity: float = Field(default=0.0, ge=0.0, le=1.0, description="Reflectivity coefficient")
-    emissivity: float = Field(default=0.0, ge=0.0, e=1.0, description="Emissivity coefficient")
+    emissivity: float = Field(default=0.0, ge=0.0, le=1.0, description="Emissivity coefficient")
     
     # Procedural properties
     noise_scale: float = Field(default=1.0, ge=0.1, le=10.0, description="Procedural noise scale")
