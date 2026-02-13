@@ -142,7 +142,7 @@ class SovereignTurtle:
         
         # Charisma from color traits (brightness and pattern)
         shell_brightness = sum(self.genome.shell_base_color) / (3 * 255)  # 0-1 normalized
-        pattern_complexity = 1.0 if self.genome.shell_pattern_type != ShellPatternType.SOLID else 0.5
+        pattern_complexity = 1.0 if self.genome.shell_pattern_type != ShellPatternType.HEX else 0.5
         base_charisma = (shell_brightness * 20.0) + (pattern_complexity * 10.0)
         
         # Agility from limb shape
