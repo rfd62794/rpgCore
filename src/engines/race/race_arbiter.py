@@ -400,7 +400,7 @@ class RaceArbiter(BaseSystem):
             self.race_metrics.leader_changes += 1
             
             # Emit leader change event
-            self._emit_event(ArbiterEvent.LEADER_CHANGED, {
+            self._emit_event("leader_changed", {
                 'new_leader': leader_id,
                 'old_leader': old_leader,
                 'leader_distance': leader.x,
@@ -419,7 +419,7 @@ class RaceArbiter(BaseSystem):
             self.race_finished = True
             self.stop_monitoring()
     
-    def _emit_event(self, event_type: ArbiterEvent, 
+    def _emit_event(self, event_type: str, 
                    data: Optional[Dict[str, Any]] = None,
                    turtle_id: Optional[str] = None) -> None:
         """Emit an arbiter event"""
@@ -434,7 +434,7 @@ class RaceArbiter(BaseSystem):
         self.event_history.append(event)
         
         # Call registered callbacks
-        for callback in self.event_callbacks[event_type.value]:
+        for callback in self.event_callbacks[event_type]:
             try:
                 callback(event)
             except Exception as e:
