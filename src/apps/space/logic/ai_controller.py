@@ -244,14 +244,25 @@ class AsteroidPilot(BaseController):
             
             # Blend bias with current controls
             blend_factor = 0.3  # 30% influence from shared knowledge
-            self.thrust = self.thrust * (1 - blend_factor) + bias['thrust'] * blend_factor
-            self.rotation = self.rotation * (1 - blend_factor) + bias['rotation'] * blend_factor
             
+            try:
+                new_thrust = self.thrust * (1 - blend_factor) + bias['thrust'] * blend_factor
+                new_rotation = self.rotation * (1 - blend_factor) + bias['rotation'] * blend_factor
+                
+                # Check for NaN or Infinite values
+                if not math.isfinite(new_thrust) or not math.isfinite(new_rotation):
+                     logger.warning(f"⚠️ Invalid control bias from technique {technique.name}: thrust={new_thrust}, rotation={new_rotation}")
+                else:
+                    self.thrust = new_thrust
+                    self.rotation = new_rotation
+            except Exception as e:
+                logger.error(f"Error applying technique bias: {e}")
+
             # Clamp to valid ranges
             self.thrust = max(-1.0, min(1.0, self.thrust))
             self.rotation = max(-2.0, min(2.0, self.rotation))
             
-            logger.debug(f"📚 Applied shared knowledge bias: {technique.name}")
+            # logger.debug(f"📚 Applied shared knowledge bias: {technique.name}")
     
     def _technique_to_bias(self, technique: TechniqueTemplate) -> Dict[str, float]:
         """Convert technique to control bias"""
