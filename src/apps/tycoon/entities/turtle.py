@@ -71,8 +71,7 @@ class SovereignTurtle:
         self.experience = 0
         self.level = 1
         
-        # Auto-register with registry
-        self._auto_register()
+        # Note: Registration handled by WorldState orchestrator to prevent double-counting
     
     def _auto_register(self) -> None:
         """Automatically register turtle with DGTRegistry"""
