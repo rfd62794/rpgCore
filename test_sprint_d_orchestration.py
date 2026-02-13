@@ -188,8 +188,8 @@ def test_mock_race_simulation():
 def test_system_metrics():
     """Test system metrics and registry integration"""
     try:
-        from engines.base import BaseSystem, SystemConfig
-        from foundation.registry import DGTRegistry
+        from src.engines.base import BaseSystem, SystemConfig
+        from src.foundation.registry import DGTRegistry
         
         # Create test system
         config = SystemConfig(
