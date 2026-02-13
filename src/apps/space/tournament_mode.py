@@ -178,9 +178,9 @@ class TournamentMode:
     def _initialize_pilots(self) -> None:
         """Initialize tournament pilots"""
         pilot_configs = [
-            ("GEN_0_PILOT", self.pilot_colors[0], 0, None),  # Rule-based
-            ("GEN_25_PILOT", self.pilot_colors[1], 25, None),  # Would load trained network
-            ("GEN_50_PILOT", self.pilot_colors[2], 50, "best_pilot_network.json"),  # Load best network
+            #("GEN_0_PILOT", self.pilot_colors[0], 0, None),  # Rule-based
+            ("GEN_25_PILOT", self.pilot_colors[1], 25, "best_pilot_network.json"),  # Load best network for Green
+            #("GEN_50_PILOT", self.pilot_colors[2], 50, "best_pilot_network.json"),  # Load best network
         ]
         
         for pilot_id, color, generation, network_file in pilot_configs:
@@ -503,7 +503,7 @@ def main():
     print("🏆 DGT Platform - AI Tournament Mode")
     print("=" * 45)
     print("Live Evolution Spectator")
-    print("Gen 0 (Red) vs Gen 25 (Green) vs Gen 50 (Blue)")
+    print("Single Pilot Mode: Gen 25 (Green)")
     print("Scrap collection prioritized over survival")
     print()
     
