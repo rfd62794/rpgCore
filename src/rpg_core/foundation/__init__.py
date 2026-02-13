@@ -13,14 +13,26 @@ if sys.version_info < (3, 12, 0):
         f"DGT Platform requires Python 3.12.x or newer. Current version: {current_version}\n"
         "Please upgrade your Python environment."
     )
-        "\n"
-        "  # Linux/macOS\n"
-        "  python3.12 -m venv .venv\n"
-        "  source .venv/bin/activate"
-    )
 
-# Import version manager for advanced usage
-from ..tools.python_version_manager import PythonVersionManager, enforce_python_312
+# Lazy loading of foundation components
+_FOUNDATION_EXPORTS = {
+    "Vector2", "Result", "Direction", "CollisionType",
+}
 
-# Export convenience function
-__all__ = ["PythonVersionManager", "enforce_python_312"]
+__all__ = sorted(_FOUNDATION_EXPORTS)
+
+def __getattr__(name: str):
+    """Lazy-load foundation submodules."""
+    if name == "Vector2":
+        from .vector import Vector2
+        return Vector2
+    
+    if name in {"Result"}:
+        from .types import Result
+        return Result
+        
+    if name in {"Direction", "CollisionType"}:
+        from .constants import Direction, CollisionType
+        return getattr(sys.modules[__name__], name) # Fallback for now
+        
+    raise AttributeError(f"module 'rpg_core.foundation' has no attribute {name!r}")
