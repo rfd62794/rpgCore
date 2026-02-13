@@ -254,7 +254,7 @@ class RaceArbiter(BaseSystem):
             self.race_metrics.end_time = time.perf_counter()
             
             # Emit race finished event
-            self._emit_event(ArbiterEvent.RACE_FINISHED, {
+            self._emit_event("race_finished", {
                 'duration': self.race_metrics.duration(),
                 'total_ticks': self.race_metrics.total_ticks,
                 'finish_order': self.finish_order
@@ -307,7 +307,7 @@ class RaceArbiter(BaseSystem):
         # Check for energy warnings
         elif energy_percentage <= self.energy_thresholds.WARNING_THRESHOLD:
             if not previous_state or previous_state.energy_percentage() > self.energy_thresholds.WARNING_THRESHOLD:
-                self._emit_event(ArbiterEvent.ENERGY_WARNING, {
+                self._emit_event("energy_warning", {
                     'turtle_id': turtle_id,
                     'energy_level': energy_percentage,
                     'status': 'warning'
@@ -316,7 +316,7 @@ class RaceArbiter(BaseSystem):
         # Check for critical energy
         elif energy_percentage <= self.energy_thresholds.CRITICAL_THRESHOLD:
             if not previous_state or previous_state.energy_percentage() > self.energy_thresholds.CRITICAL_THRESHOLD:
-                self._emit_event(ArbiterEvent.ENERGY_WARNING, {
+                self._emit_event("energy_warning", {
                     'turtle_id': turtle_id,
                     'energy_level': energy_percentage,
                     'status': 'critical'
@@ -334,7 +334,7 @@ class RaceArbiter(BaseSystem):
                 current_state.checkpoints_passed += 1
                 self.race_metrics.checkpoint_passes += 1
                 
-                self._emit_event(ArbiterEvent.CHECKPOINT_PASSED, {
+                self._emit_event("checkpoint_passed", {
                     'checkpoint_position': checkpoint_pos,
                     'total_checkpoints': current_state.checkpoints_passed,
                     'distance': current_state.x
@@ -350,7 +350,7 @@ class RaceArbiter(BaseSystem):
             turtle_state.rank = len(self.finish_order)
         
         # Emit finish event
-        self._emit_event(ArbiterEvent.TURTLE_FINISHED, {
+        self._emit_event("turtle_finished", {
             'rank': turtle_state.rank,
             'finish_time': turtle_state.race_time,
             'total_distance': turtle_state.x
@@ -365,7 +365,7 @@ class RaceArbiter(BaseSystem):
         self.race_metrics.exhaustion_events += 1
         
         # Emit exhaustion event
-        self._emit_event(ArbiterEvent.TURTLE_EXHAUSTED, {
+        self._emit_event("turtle_exhausted", {
             'energy_level': turtle_state.energy_percentage(),
             'distance': turtle_state.x,
             'race_time': turtle_state.race_time
@@ -378,7 +378,7 @@ class RaceArbiter(BaseSystem):
         self.race_metrics.recovery_events += 1
         
         # Emit recovery event
-        self._emit_event(ArbiterEvent.TURTLE_RECOVERED, {
+        self._emit_event("turtle_recovered", {
             'energy_level': turtle_state.energy_percentage(),
             'distance': turtle_state.x,
             'race_time': turtle_state.race_time
