@@ -30,7 +30,7 @@ class Bullet:
         self.vx = math.cos(angle) * 400.0  # Fast bullet
         self.vy = math.sin(angle) * 400.0
         self.owner_id = owner_id
-        self.lifetime = 1.0  # 1 second lifetime
+        self.lifetime = 2.0  # 2.0 second lifetime
         self.active = True
 
     def update(self, dt: float) -> None:
@@ -39,6 +39,36 @@ class Bullet:
         self.lifetime -= dt
         if self.lifetime <= 0:
             self.active = False
+
+
+class Explosion:
+    """Visual particle effect for impacts"""
+    def __init__(self, x: float, y: float, color: Tuple[int, int, int]):
+        self.x = x
+        self.y = y
+        self.color = color
+        self.radius = 2.0
+        self.lifetime = 0.5  # 0.5 second lifetime
+        self.max_lifetime = 0.5
+        self.active = True
+
+    def update(self, dt: float) -> None:
+        self.lifetime -= dt
+        self.radius += 30.0 * dt  # Expand
+        if self.lifetime <= 0:
+            self.active = False
+
+    def draw(self, surface: pygame.Surface) -> None:
+        alpha = int(255 * (self.lifetime / self.max_lifetime))
+        # Pygame doesn't easily support alpha on simple shapes without surfaces
+        # We'll just draw a circle with decreasing radius or color intensity
+        color_intensity = max(0, int(255 * (self.lifetime / self.max_lifetime)))
+        fade_color = (
+            min(255, self.color[0] + (255 - self.color[0]) * (1.0 - self.lifetime/self.max_lifetime)),
+            min(255, self.color[1] + (255 - self.color[1]) * (1.0 - self.lifetime/self.max_lifetime)),
+            min(255, self.color[2] + (255 - self.color[2]) * (1.0 - self.lifetime/self.max_lifetime))
+        )
+        pygame.draw.circle(surface, self.color, (int(self.x), int(self.y)), int(self.radius), 1)
 
 
 class TournamentPilot:
