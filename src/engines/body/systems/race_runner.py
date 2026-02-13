@@ -285,39 +285,9 @@ class RaceRunnerSystem(BaseSystem):
             return Result.success_result(None)
             
         except Exception as e:
-            return Result.failure_result(f"Failed to stop race: {str(e)}")
-    
-    def activate_turbo_boost(self, participant_id: str) -> Result[None]:
-        """Activate turbo boost for a participant"""
-        try:
-            if participant_id not in self.participants:
-                return Result.failure_result(f"Participant {participant_id} not found")
-            
-            participant = self.participants[participant_id]
-            
-            if participant.turbo_energy <= 0:
-                return Result.failure_result(f"No turbo energy for {participant_id}")
-            
-            participant.is_turbo_active = True
-            participant.turbo_energy -= 25.0  # Cost per boost
-            
-            self._get_logger().info(f"🚀 Turbo boost activated for {participant_id}")
-            return Result.success_result(None)
-            
-        except Exception as e:
-            return Result.failure_result(f"Failed to activate turbo for {participant_id}: {str(e)}")
-    
-    def _update_participants(self, dt: float) -> None:
-        """Update all participant positions and states"""
-        for participant_id, participant in self.participants.items():
-            if not self.race_active:
-                continue
-            
-            # Apply physics
-            self._update_participant_physics(participant, dt)
             
             # Update position history
-            participant.position_history.append((participant.position.x, participant.y))
+            participant.position_history.append((entity.position.x, entity.position.y))
             
             # Keep history limited
             if len(participant.position_history) > 1000:
@@ -325,56 +295,17 @@ class RaceRunnerSystem(BaseSystem):
             
             # Update registry with new position
             self._update_participant_in_registry(participant_id, participant)
-    
-    def _update_participant_physics(self, participant: RaceState, dt: float) -> None:
-        """Update individual participant physics"""
-        # Calculate target velocity based on race progress
-        target_speed = self.race_config.max_speed
-        
-        # Apply turbo boost if active
-        if participant.is_turbo_active:
-            target_speed *= self.race_config.turbo_boost_multiplier
-            participant.turbo_energy -= dt * 10.0  # Energy drain
-            if participant.turbo_energy <= 0:
-                participant.is_turbo_active = False
-        
-        # Simple acceleration model
-        speed_diff = target_speed - participant.velocity.magnitude()
-        if speed_diff > 0:
-            acceleration = min(self.race_config.acceleration, speed_diff / dt)
-        else:
-            acceleration = -min(self.race_config.deceleration, -speed_diff / dt)
-        
-        # Update velocity
-        if participant.velocity.magnitude() > 0:
-            acceleration_vector = participant.velocity.normalize() * acceleration
-        else:
-            acceleration_vector = Vector2(math.cos(participant.heading), math.sin(participant.heading)) * acceleration
-        
-        participant.velocity = participant.velocity + acceleration_vector * dt
-        
-        # Apply speed limit
-        if participant.velocity.magnitude() > target_speed:
-            participant.velocity = participant.velocity.normalize() * target_speed
-        
-        # Update position
-        participant.position = participant.position + participant.velocity * dt
-        
-        # Update distance traveled
-        participant.distance_traveled += participant.velocity.magnitude() * dt
-        
-        # Update checkpoints
-        self._update_checkpoints(participant)
-    
-    def _update_checkpoints(self, participant: RaceState) -> None:
-        """Update checkpoint progress for participant"""
-        target_checkpoint = (participant.distance_traveled // self.race_config.checkpoint_interval) * self.race_config.checkpoint_interval
-        
-        if target_checkpoint > participant.current_checkpoint:
-            participant.current_checkpoint = target_checkpoint
-            participant.checkpoints_passed += 1
+
+def _update_checkpoints(self, participant: RaceState) -> None:
+            """Update checkpoint progress for participant"""
+            current_checkpoint = (participant.distance_traveled // self.race_config.checkpoint_interval) * self.race_config.checkpoint_interval
+            target_checkpoint = (participant.distance_traveled // self.race_config.checkpoint_interval) * self.race_config.checkpoint_interval
             
-            self._get_logger().debug(f"🏁 {participant.participant_id} passed checkpoint {participant.checkpoints_passed}")
+            if target_checkpoint > participant.current_checkpoint:
+                participant.current_checkpoint = target_checkpoint
+                participant.checkpoints_passed += 1
+                
+                self._get_logger().debug(f"🏁 {participant.participant_id} passed checkpoint {participant.checkpoints_passed}")
     
     def _check_race_completion(self) -> None:
         """Check if any participant has finished the race"""
@@ -401,15 +332,15 @@ class RaceRunnerSystem(BaseSystem):
                 entity_type=EntityType.SHIP,
                 position=participant.position,
                 velocity=participant.velocity,
-                radius=5.0,
-                active=True,
+                radius=getattr(participant, 'radius', 5.0),
+                active=self.race_active,
                 metadata={
                     'system': 'race_runner',
                     'participant_type': 'race_runner',
                     'distance_traveled': participant.distance_traveled,
                     'checkpoints_passed': participant.checkpoints_passed,
-                    'is_turbo_active': participant.is_turbo_active,
-                    'turbo_energy': participant.turbo_energy,
+                    'is_turbo_active': getattr(participant, 'is_turbo_active', False),
+                    'turbo_energy': getattr(participant, 'turbo_energy', 100.0),
                     'finish_time': participant.finish_time
                 }
             )
