@@ -337,17 +337,70 @@ class HighSpeedSimulation:
             self._fire_bullet()
     
     def _fire_bullet(self) -> None:
-        """Fire bullet (simplified for training)"""
+        """Fire bullet with raycast/cone check for training accuracy without full physics"""
         self.bullets_fired += 1
-        # In training, we simulate bullet hits probabilistically
-        # This speeds up evaluation significantly
-        if self.asteroids and random.random() < 0.3:  # 30% hit chance
+        
+        # Raycast/Cone check
+        # We check if any asteroid is within a narrow cone in front of the ship
+        shoot_range = 300.0  # Max shooting range
+        cone_angle = 0.1  # ~5.7 degrees tolerance
+        
+        hit_asteroid = None
+        min_dist = float('inf')
+        
+        for asteroid in self.asteroids:
+            # Vector to asteroid
+            dx = asteroid['x'] - self.ship_x
+            dy = asteroid['y'] - self.ship_y
+            
+            # Distance check
+            dist = math.sqrt(dx*dx + dy*dy)
+            if dist > shoot_range:
+                continue
+                
+            # Angle check
+            angle_to_target = math.atan2(dy, dx)
+            angle_diff = abs(angle_to_target - self.ship_angle)
+            
+            # Normalize angle difference
+            while angle_diff > math.pi:
+                angle_diff = abs(angle_diff - 2 * math.pi)
+            
+            # Check if within cone
+            if angle_diff < cone_angle:
+                # We hit something! Find the closest one
+                if dist < min_dist:
+                    min_dist = dist
+                    hit_asteroid = asteroid
+        
+        if hit_asteroid:
             self.shots_hit += 1
-            # Destroy a random asteroid
-            if self.asteroids:
-                target = random.choice(self.asteroids)
-                self.asteroids.remove(target)
-                self.asteroids_destroyed += 1
+            self.asteroids_destroyed += 1
+            self.asteroids.remove(hit_asteroid)
+            
+            # Respawn asteroid to keep the field populated
+            # This ensures constant target availability
+            self._spawn_single_asteroid()
+            
+    def _spawn_single_asteroid(self) -> None:
+        """Spawn a single new asteroid at edge of screen"""
+        side = random.randint(0, 3)
+        if side == 0: # Top
+            x, y = random.uniform(0, SOVEREIGN_WIDTH), 0
+        elif side == 1: # Right
+            x, y = SOVEREIGN_WIDTH, random.uniform(0, SOVEREIGN_HEIGHT)
+        elif side == 2: # Bottom
+            x, y = random.uniform(0, SOVEREIGN_WIDTH), SOVEREIGN_HEIGHT
+        else: # Left
+            x, y = 0, random.uniform(0, SOVEREIGN_HEIGHT)
+            
+        new_asteroid = {
+            'x': x, 'y': y,
+            'vx': random.uniform(-20, 20),
+            'vy': random.uniform(-20, 20),
+            'size': 2, 'radius': 4.0, 'health': 1
+        }
+        self.asteroids.append(new_asteroid)
     
     def _update_physics(self, dt: float) -> None:
         """Update physics simulation"""
