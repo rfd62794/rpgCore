@@ -15,6 +15,85 @@ import math
 from loguru import logger
 
 
+# Stub classes for missing dependencies
+@dataclass
+class Result[T]:
+    success: bool
+    value: Optional[T] = None
+    error: Optional[str] = None
+    
+    @classmethod
+    def success_result(cls, value: T) -> 'Result[T]':
+        return cls(success=True, value=value)
+    
+    @classmethod
+    def failure_result(cls, error: str) -> 'Result[T]':
+        return cls(success=False, error=error)
+
+
+@dataclass
+class Point:
+    x: int
+    y: int
+
+
+@dataclass
+class Rectangle:
+    x: int
+    y: int
+    width: int
+    height: int
+
+
+class ViewportLayoutMode(Enum):
+    FOCUS = "focus"
+    DASHBOARD = "dashboard"
+    MULTI_PANEL = "multi_panel"
+
+
+@dataclass
+class ScaleBucket:
+    width: int
+    height: int
+    layout_mode: ViewportLayoutMode
+
+
+@dataclass
+class ViewportLayout:
+    window_width: int
+    window_height: int
+    center_anchor: Point
+    left_wing: Rectangle
+    right_wing: Rectangle
+    ppu_scale: int
+    wing_scale: float
+    layout_mode: ViewportLayoutMode
+    focus_mode: bool
+    
+    def validate(self) -> bool:
+        return True
+
+
+@dataclass
+class OverlayComponent:
+    name: str
+    alpha: float
+    z_index: int
+    slide_animation: bool
+    visible: bool
+
+
+# Standard scale buckets
+STANDARD_SCALE_BUCKETS = [
+    ScaleBucket(160, 144, ViewportLayoutMode.FOCUS),
+    ScaleBucket(800, 600, ViewportLayoutMode.DASHBOARD),
+    ScaleBucket(1920, 1080, ViewportLayoutMode.MULTI_PANEL),
+]
+
+class CallbackRegistry:
+    pass
+
+
 class ViewportManager:
     """Manages responsive viewport scaling and layout"""
     
