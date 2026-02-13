@@ -616,10 +616,27 @@ class VisualRunner:
             
             # Vectorized lookup! 100x faster than loop
             pixels_arr = self._palette_arr[fb_arr]
-            ppm_body = pixels_arr.tobytes()
+            
+            # Scale up using numpy kron (much faster than Tkinter zoom)
+            # We repeat rows and cols by SCALE
+            # Note: repeat is faster than kron for simple scaling
+            pixels_scaled = pixels_arr.repeat(SCALE, axis=0).repeat(SCALE, axis=1)
+            
+            ppm_body = pixels_scaled.tobytes()
+            
+            # Update header for scaled size
+            scaled_w = WIDTH * SCALE
+            scaled_h = HEIGHT * SCALE
+            header = f"P6 {scaled_w} {scaled_h} 255\n".encode()
+            ppm_data = header + ppm_body
+            
+            import tkinter as tk
+            # Create PhotoImage directly at scaled size
+            self._photo = tk.PhotoImage(width=scaled_w, height=scaled_h, data=ppm_data)
+            self.canvas.itemconfig(self._canvas_img, image=self._photo)
             
         except ImportError:
-            # Fallback to slow loop
+            # Fallback to slow loop & slow zoom
             pixels = bytearray(WIDTH * HEIGHT * 3)
             for i, idx in enumerate(fb):
                 r, g, b = PALETTE.get(idx, (0, 0, 0))
@@ -627,15 +644,14 @@ class VisualRunner:
                 pixels[off] = r
                 pixels[off + 1] = g
                 pixels[off + 2] = b
-            ppm_body = bytes(pixels)
 
-        header = f"P6 {WIDTH} {HEIGHT} 255\n".encode()
-        ppm_data = header + ppm_body
+            header = f"P6 {WIDTH} {HEIGHT} 255\n".encode()
+            ppm_data = header + bytes(pixels)
 
-        import tkinter as tk
-        self._photo = tk.PhotoImage(width=WIDTH, height=HEIGHT, data=ppm_data)
-        self._photo_scaled = self._photo.zoom(SCALE, SCALE)
-        self.canvas.itemconfig(self._canvas_img, image=self._photo_scaled)
+            import tkinter as tk
+            self._photo = tk.PhotoImage(width=WIDTH, height=HEIGHT, data=ppm_data)
+            self._photo_scaled = self._photo.zoom(SCALE, SCALE)
+            self.canvas.itemconfig(self._canvas_img, image=self._photo_scaled)
 
 
 # ---------------------------------------------------------------------------
