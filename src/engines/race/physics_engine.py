@@ -13,13 +13,13 @@ from dataclasses import dataclass
 import math
 import time
 
-from engines.base import BaseSystem, SystemConfig
-from foundation.types import Result
-from foundation.types.race import (
+from ..base import BaseSystem, SystemConfig
+from ...foundation.types import Result
+from ...foundation.types.race import (
     TurtleState, RaceSnapshot, RaceConfig, TerrainSegment, 
     TurtleStatus, TerrainType, create_race_snapshot
 )
-from foundation.genetics.schema import TurboGenome, LimbShape
+from ...foundation.genetics.schema import TurboGenome, LimbShape
 
 
 @dataclass
