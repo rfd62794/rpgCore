@@ -12,7 +12,8 @@ from dataclasses import dataclass
 from enum import Enum
 import time
 
-from ...foundation.base import BaseSystem, ComponentConfig
+from ...foundation.base import ComponentConfig
+from ...systems.base import BaseSystem, SystemConfig
 from ...foundation.types import Result
 from ...foundation.types.race import (
     TurtleState, RaceSnapshot, RaceResult, TurtleStatus,
