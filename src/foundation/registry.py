@@ -344,22 +344,50 @@ class DGTRegistry:
                 entities_registry = self._registries.get(RegistryType.ENTITY, {})
                 
                 for entity_id, entry in entities_registry.items():
-                    if hasattr(entry.item, 'position') and hasattr(entry.item, 'velocity'):
-                        # Convert entity to snapshot
-                        entity_type = EntityType.SHIP  # Default, should be determined from entity
-                        if hasattr(entry.item, 'entity_type'):
-                            entity_type = EntityType(entry.item.entity_type)
+                    entity_item = entry.item
+                    
+                    # Handle different entity formats
+                    if isinstance(entity_item, EntityStateSnapshot):
+                        # Direct EntityStateSnapshot - use as-is
+                        snapshot = entity_item
+                    elif hasattr(entity_item, 'position') and hasattr(entity_item, 'velocity'):
+                        # Entity object with position/velocity attributes
+                        entity_type = EntityType.SHIP  # Default
+                        if hasattr(entity_item, 'entity_type'):
+                            entity_type = EntityType(entity_item.entity_type)
+                        elif hasattr(entity_item, 'type'):
+                            entity_type = EntityType(entity_item.type)
+                        
+                        # Extract position and velocity
+                        pos = entity_item.position
+                        vel = entity_item.velocity
+                        
+                        # Handle Vector2 objects or tuples
+                        if hasattr(pos, 'x') and hasattr(pos, 'y'):
+                            position = Vector2(pos.x, pos.y)
+                        else:
+                            position = Vector2(pos[0], pos[1])
+                        
+                        if hasattr(vel, 'x') and hasattr(vel, 'y'):
+                            velocity = Vector2(vel.x, vel.y)
+                        else:
+                            velocity = Vector2(vel[0], vel[1])
                         
                         snapshot = EntityStateSnapshot(
                             entity_id=entity_id,
                             entity_type=entity_type,
-                            position=Vector2(entry.item.position.x, entry.item.position.y),
-                            velocity=Vector2(entry.item.velocity.x, entry.item.velocity.y),
-                            radius=getattr(entry.item, 'radius', 5.0),
-                            active=getattr(entry.item, 'active', True),
+                            position=position,
+                            velocity=velocity,
+                            radius=getattr(entity_item, 'radius', 5.0),
+                            active=getattr(entity_item, 'active', True),
                             metadata=entry.metadata.copy()
                         )
-                        entity_snapshots.append(snapshot)
+                    else:
+                        # Fallback for unknown entity formats
+                        self._get_logger().warning(f"Unknown entity format for {entity_id}: {type(entity_item)}")
+                        continue
+                    
+                    entity_snapshots.append(snapshot)
                 
                 # Create world snapshot
                 world_snapshot = WorldStateSnapshot(
