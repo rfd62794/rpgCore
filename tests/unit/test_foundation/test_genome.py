@@ -125,8 +125,8 @@ class TestTurboGenomeValidation:
         
         # Test all limb shape types
         for limb_type in LimbShapeType:
-            genome = TurboGenome(limb_shape_type=limb_type)
-            assert genome.limb_shape_type == limb_type
+            genome = TurboGenome(limb_shape=limb_type)
+            assert genome.limb_shape == limb_type
     
     def test_invalid_pattern_type(self) -> None:
         """Test that invalid pattern types raise ValidationError"""
