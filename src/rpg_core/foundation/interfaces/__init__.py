@@ -37,7 +37,7 @@ from .visuals import (
     SpriteCoordinate,
 )
 
-from foundation.base import (
+from ..base import (
     BaseEngine,
     BaseRenderer,
     BaseStateManager,
