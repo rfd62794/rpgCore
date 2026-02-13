@@ -17,6 +17,7 @@ from pathlib import Path
 from .types import Result, ValidationResult
 from .base import ComponentConfig
 from .protocols import WorldStateSnapshot, EntityStateSnapshot, EntityType
+from .vector import Vector2
 
 T = TypeVar('T')
 
@@ -326,6 +327,123 @@ class DGTRegistry:
                 )
             
             return Result.success_result(ValidationResult.VALID)
+    
+    def get_world_snapshot(self) -> Result[WorldStateSnapshot]:
+        """
+        Get complete world state snapshot for UI rendering.
+        
+        Returns:
+            Result containing immutable world state snapshot
+        """
+        with self._lock:
+            self._total_operations += 1
+            
+            try:
+                # Convert entities to snapshots
+                entity_snapshots = []
+                entities_registry = self._registries.get(RegistryType.ENTITY, {})
+                
+                for entity_id, entry in entities_registry.items():
+                    if hasattr(entry.item, 'position') and hasattr(entry.item, 'velocity'):
+                        # Convert entity to snapshot
+                        entity_type = EntityType.SHIP  # Default, should be determined from entity
+                        if hasattr(entry.item, 'entity_type'):
+                            entity_type = EntityType(entry.item.entity_type)
+                        
+                        snapshot = EntityStateSnapshot(
+                            entity_id=entity_id,
+                            entity_type=entity_type,
+                            position=Vector2(entry.item.position.x, entry.item.position.y),
+                            velocity=Vector2(entry.item.velocity.x, entry.item.velocity.y),
+                            radius=getattr(entry.item, 'radius', 5.0),
+                            active=getattr(entry.item, 'active', True),
+                            metadata=entry.metadata.copy()
+                        )
+                        entity_snapshots.append(snapshot)
+                
+                # Create world snapshot
+                world_snapshot = WorldStateSnapshot(
+                    timestamp=time.time(),
+                    frame_count=self._total_operations,
+                    entities=entity_snapshots,
+                    player_entity_id=None,  # Should be determined from game state
+                    score=0,  # Should be determined from game state
+                    energy=100.0,  # Should be determined from game state
+                    game_active=True  # Should be determined from game state
+                )
+                
+                return Result.success_result(world_snapshot)
+                
+            except Exception as e:
+                return Result.failure_result(f"Failed to create world snapshot: {str(e)}")
+    
+    def restore_from_snapshot(self, snapshot: WorldStateSnapshot) -> Result[None]:
+        """
+        Restore world state from snapshot.
+        
+        Args:
+            snapshot: World state snapshot to restore
+            
+        Returns:
+            Result indicating success or failure
+        """
+        with self._lock:
+            self._total_operations += 1
+            
+            try:
+                # Clear existing entities
+                entities_registry = self._registries[RegistryType.ENTITY]
+                entities_registry.clear()
+                
+                # Restore entities from snapshot
+                for entity_snapshot in snapshot.entities:
+                    # Create entity from snapshot (simplified - actual implementation would use factory)
+                    entity_data = {
+                        'position': entity_snapshot.position,
+                        'velocity': entity_snapshot.velocity,
+                        'radius': entity_snapshot.radius,
+                        'active': entity_snapshot.active,
+                        **entity_snapshot.metadata
+                    }
+                    
+                    # Register restored entity
+                    entry = RegistryEntry(
+                        item=entity_data,  # Simplified - should be actual entity object
+                        registry_type=RegistryType.ENTITY,
+                        metadata=entity_snapshot.metadata.copy()
+                    )
+                    entities_registry[entity_snapshot.entity_id] = entry
+                
+                self._get_logger().info(f"Restored world state with {len(snapshot.entities)} entities")
+                return Result.success_result(None)
+                
+            except Exception as e:
+                return Result.failure_result(f"Failed to restore from snapshot: {str(e)}")
+    
+    def register_entity_state(self, entity_id: str, entity_state: EntityStateSnapshot) -> Result[None]:
+        """
+        Register entity state directly from snapshot.
+        
+        Args:
+            entity_id: Unique entity identifier
+            entity_state: Entity state snapshot
+            
+        Returns:
+            Result indicating success or failure
+        """
+        with self._lock:
+            self._total_operations += 1
+            
+            entry = RegistryEntry(
+                item=entity_state,
+                registry_type=RegistryType.ENTITY,
+                metadata=entity_state.metadata.copy()
+            )
+            
+            self._registries[RegistryType.ENTITY][entity_id] = entry
+            self._get_logger().debug(f"Registered entity state: {entity_id}")
+            
+            return Result.success_result(None)
 
 
 # === GLOBAL REGISTRY ACCESS ===
