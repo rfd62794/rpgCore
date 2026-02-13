@@ -26,6 +26,9 @@ class AssetMetadata:
     loaded_at: Optional[str] = None
     validated: bool = False
 
+# Alias for backward compatibility
+AssetDefinition = AssetMetadata
+
 
 class AssetLoader:
     """Professional asset loading and validation system"""
