@@ -94,6 +94,10 @@ class AsteroidPilot(BaseController):
         self.config = SteeringConfig()
         self.log = SurvivalLog()
         
+        # Steering state
+        self._current_waypoint = None
+        self.steering = Vector2(0, 0)
+        
         # Performance metrics (legacy compatibility)
         self.survival_time = 0.0
         self.asteroids_collected = 0
@@ -204,6 +208,40 @@ class AsteroidPilot(BaseController):
             
         except Exception as e:
             return Result(success=False, error=f"AI Pilot update failed: {e}")
+            
+    def compute_steering(self, ship, obstacles, world_size) -> Vector2:
+        """Compute steering vector (for test compliance)"""
+        # Simple seek to waypoint if set
+        if self._current_waypoint:
+            dx = self._current_waypoint.x - ship.position.x
+            dy = self._current_waypoint.y - ship.position.y
+            steering = Vector2(dx, dy).normalize()
+            
+            # Simple avoidance
+            for obstacle in obstacles:
+                ox, oy = obstacle.position.x, obstacle.position.y
+                dist = ship.position.distance_to(obstacle.position)
+                if dist < 30.0:
+                    avoid = Vector2(ship.position.x - ox, ship.position.y - oy).normalize()
+                    steering.x += avoid.x * 2.0
+                    steering.y += avoid.y * 2.0
+            
+            self.steering = steering.normalize()
+            return self.steering
+        return Vector2(0, 0)
+        
+    def apply_to_ship(self, ship, steering_vector, dt):
+        """Apply steering to ship (for test compliance)"""
+        if not steering_vector:
+            return
+            
+        # Rotate ship toward steering vector
+        target_angle = math.atan2(steering_vector.y, steering_vector.x)
+        ship.angle = target_angle
+        
+        # Apply thrust
+        ship.velocity.x += steering_vector.x * 100.0 * dt
+        ship.velocity.y += steering_vector.y * 100.0 * dt
     
     def _apply_adaptive_bias(self) -> None:
         """Apply adaptive bias from short-term learning"""
