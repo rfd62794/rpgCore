@@ -12,7 +12,7 @@ from typing import Dict, List, Optional, Tuple, Any
 from dataclasses import dataclass
 import math
 
-from ..base import BaseSystem, SystemConfig
+from ...foundation.base import BaseSystem, ComponentConfig
 from ...foundation.types import Result
 from ...foundation.types.race import (
     TurtleState, RaceConfig, TerrainSegment, TerrainType
