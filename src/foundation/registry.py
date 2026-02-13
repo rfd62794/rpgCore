@@ -14,9 +14,8 @@ import threading
 import time
 from pathlib import Path
 
-from .types import Result, ValidationResult
-from .base import ComponentConfig
-from .utils.logger import get_logger_manager
+from ..types import Result, ValidationResult
+from ..base import ComponentConfig
 
 T = TypeVar('T')
 
