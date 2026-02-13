@@ -88,7 +88,7 @@ class TerrainEngine(BaseSystem):
         
         # Terrain grid (160x144 sovereign resolution)
         self.width = 160
-        height = 144
+        self.height = 144
         self.terrain_grid: List[List[TerrainCell]] = []
         
         # Terrain generation parameters
