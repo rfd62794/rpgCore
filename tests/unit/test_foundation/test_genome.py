@@ -44,9 +44,9 @@ class TestTurboGenomeValidation:
         assert genome.shell_base_color == (34, 139, 34)  # Forest green
         assert genome.shell_pattern_type == ShellPatternType.HEX
         assert genome.shell_pattern_color == (255, 255, 255)  # White
-        assert genome.shell_pattern_intensity == 0.5
+        assert genome.shell_pattern_density == 0.5
+        assert genome.shell_pattern_opacity == 0.8
         assert genome.shell_size_modifier == 1.0
-        assert genome.shell_thickness_modifier == 1.0
         
         # Body genetics
         assert genome.body_base_color == (139, 69, 19)  # Saddle brown
