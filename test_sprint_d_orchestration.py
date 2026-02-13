@@ -12,8 +12,8 @@ sys.path.append(str(Path(__file__).parent.parent.parent / "src"))
 def test_base_system_orchestration():
     """Test BaseSystem orchestration patterns"""
     try:
-        from engines.base import BaseSystem, SystemConfig, SystemStatus
-        from foundation.registry import DGTRegistry, RegistryType
+        from src.engines.base import BaseSystem, SystemConfig, SystemStatus
+        from src.foundation.registry import DGTRegistry, RegistryType
         
         print("✅ Imports successful")
         
@@ -74,8 +74,8 @@ def test_base_system_orchestration():
 def test_race_runner_system():
     """Test RaceRunner system functionality"""
     try:
-        from engines.body.systems.race_runner import RaceRunnerSystem, create_race_runner_system, start_mock_race
-        from foundation.registry import DGTRegistry
+        from src.engines.body.systems.race_runner import RaceRunnerSystem, create_race_runner_system, start_mock_race
+        from src.foundation.registry import DGTRegistry
         
         print("✅ RaceRunner imports successful")
         
