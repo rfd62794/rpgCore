@@ -9,7 +9,7 @@ from enum import Enum
 import time
 from loguru import logger
 
-from foundation.types import Result
+from rpg_core.foundation.types import Result
 
 
 class StatType(Enum):

@@ -9,8 +9,8 @@ from abc import ABC, abstractmethod
 import uuid
 from loguru import logger
 
-from foundation.types import Result
-from foundation.constants import SOVEREIGN_WIDTH, SOVEREIGN_HEIGHT
+from rpg_core.foundation.types import Result
+from rpg_core.foundation.constants import SOVEREIGN_WIDTH, SOVEREIGN_HEIGHT
 
 
 class EntityProtocol(Protocol):
