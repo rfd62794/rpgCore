@@ -13,7 +13,8 @@ from dataclasses import dataclass
 import math
 import time
 
-from ...foundation.base import BaseSystem, ComponentConfig
+from ...foundation.base import ComponentConfig
+from ...systems.base import BaseSystem, SystemConfig
 from ...foundation.types import Result
 from ...foundation.types.race import (
     TurtleState, RaceSnapshot, RaceConfig, TerrainSegment, 
