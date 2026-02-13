@@ -17,11 +17,11 @@ from collections import deque
 
 from loguru import logger
 
-from engines.kernel.state import (
+from rpg_core.systems.kernel.state.models import (
     GameState, IntentType, Command, CommandResult, IntentValidation
 )
-from foundation.constants import INTENT_COOLDOWN_MS
-from foundation.utils import AssetLoader
+from rpg_core.foundation.constants import INTENT_COOLDOWN_MS
+from rpg_core.systems.body.pipeline.asset_loader import AssetLoader
 from .combat_resolver import CombatResolver
 
 
@@ -93,7 +93,7 @@ class DDEngine:
         
         # Object DNA integration
         self.asset_loader = AssetLoader()
-        from utils.asset_loader import ObjectRegistry
+        from rpg_core.systems.body.pipeline.asset_loader import ObjectRegistry
         self.object_registry = ObjectRegistry(self.asset_loader)
         
         # Combat system

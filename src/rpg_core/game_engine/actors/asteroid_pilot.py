@@ -53,7 +53,27 @@ class Vector2:
         dx = other.x - self.x
         dy = other.y - other.y
         return math.atan2(dy, dx)
+@dataclass
+class SteeringConfig:
+    """Configuration for steering behaviors"""
+    seek_weight: float = 0.5
+    avoid_weight: float = 1.0
+    scan_radius: float = 80.0
+    approach_distance: float = 40.0
+    collect_distance: float = 15.0
+    evade_distance: float = 25.0
+    maneuver_cooldown: float = 0.5
 
+@dataclass
+class SurvivalLog:
+    """Telemetery for AI pilot survival"""
+    waypoints_reached: int = 0
+    avoidance_maneuvers: int = 0
+    closest_call_distance: float = 1000.0
+    total_survival_time: float = 0.0
+    asteroids_destroyed: int = 0
+    scrap_collected: int = 0
+    last_maneuver_time: float = 0.0
 
 class AsteroidPilot(BaseController):
     """
@@ -70,23 +90,11 @@ class AsteroidPilot(BaseController):
         self.velocity = Vector2(0, 0)
         self.angle = 0.0
         
-        # AI Parameters
-        self.scan_radius = 80.0
-        self.approach_distance = 40.0
-        self.collect_distance = 15.0
-        self.evade_distance = 25.0
+        # AI Components
+        self.config = SteeringConfig()
+        self.log = SurvivalLog()
         
-        # Control outputs
-        self.thrust = 0.0
-        self.rotation = 0.0
-        self.fire_weapon = False
-        
-        # Target tracking
-        self.target_asteroid: Optional[Dict] = None
-        self.target_scrap: Optional[Dict] = None
-        self.threats: List[Dict] = []
-        
-        # Performance metrics
+        # Performance metrics (legacy compatibility)
         self.survival_time = 0.0
         self.asteroids_collected = 0
         self.scrap_collected = 0
