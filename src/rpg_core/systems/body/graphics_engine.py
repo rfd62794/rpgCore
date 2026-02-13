@@ -24,57 +24,36 @@ except ImportError:
 from loguru import logger
 
 # === KERNEL BRIDGE IMPORTS ===
-# Importing from the new DGT Kernel instead of legacy src.core
+# Importing from the new DGT Kernel
 try:
-    # Modern Architecture (Tier 2/3)
-    # Modern Architecture (Tier 2/3)
-# from engines.kernel.state import (
-    #     GameState, TileType, BiomeType, SubtitleEvent, Entity,
-    #     VIEWPORT_WIDTH_PIXELS, VIEWPORT_HEIGHT_PIXELS,
-    #     TILE_SIZE_PIXELS, VIEWPORT_TILES_X, VIEWPORT_TILES_Y,
-    #     RENDER_LAYERS, COLOR_PALETTE, RenderLayer,
-    #     TARGET_FPS, FRAME_DELAY_MS
-    # )
-    raise ImportError("Legacy kernel not found")
-except ImportError as e:
-    logger.warning(f"⚠️ Could not import DGT kernel state: {e}")
-    # Use foundation constants as fallback
-    try:
-        try:
-            from rpg_core.foundation.constants import SOVEREIGN_WIDTH, SOVEREIGN_HEIGHT
-        except ImportError:
-            # Fallback to relative import if package is not in path
-            from ...foundation.constants import SOVEREIGN_WIDTH, SOVEREIGN_HEIGHT
-        TARGET_FPS = 60
-        FRAME_DELAY_MS = 16
-        VIEWPORT_WIDTH_PIXELS = SOVEREIGN_WIDTH
-        VIEWPORT_HEIGHT_PIXELS = SOVEREIGN_HEIGHT
-        TILE_SIZE_PIXELS = 8
-        VIEWPORT_TILES_X = VIEWPORT_WIDTH_PIXELS // TILE_SIZE_PIXELS
-        VIEWPORT_TILES_Y = VIEWPORT_HEIGHT_PIXELS // TILE_SIZE_PIXELS
-    except ImportError:
-        logger.error("❌ Could not import foundation constants")
-        # Define fallback constants
-        TARGET_FPS = 60
-        FRAME_DELAY_MS = 16
-        VIEWPORT_WIDTH_PIXELS = 160
-        VIEWPORT_HEIGHT_PIXELS = 144
-        TILE_SIZE_PIXELS = 8
-        VIEWPORT_TILES_X = 20
-        VIEWPORT_TILES_Y = 18
-        
-    class GameState:
-        pass
-    class TileType:
-        pass
-    class BiomeType:
-        pass
-    class RenderLayer:
-        pass
-    @dataclass
-    class SubtitleEvent:
-        text: str
-        duration: float = 3.0
+    from rpg_core.foundation.constants import SOVEREIGN_WIDTH, SOVEREIGN_HEIGHT
+except ImportError:
+    # Fallback to relative import if package is not in path
+    from ...foundation.constants import SOVEREIGN_WIDTH, SOVEREIGN_HEIGHT
+
+TARGET_FPS = 60
+FRAME_DELAY_MS = 16
+VIEWPORT_WIDTH_PIXELS = SOVEREIGN_WIDTH
+VIEWPORT_HEIGHT_PIXELS = SOVEREIGN_HEIGHT
+TILE_SIZE_PIXELS = 8
+VIEWPORT_TILES_X = VIEWPORT_WIDTH_PIXELS // TILE_SIZE_PIXELS
+VIEWPORT_TILES_Y = VIEWPORT_HEIGHT_PIXELS // TILE_SIZE_PIXELS
+
+@dataclass
+class GameState:
+    pass
+
+class TileType:
+    pass
+
+class BiomeType:
+    pass
+
+@dataclass
+class SubtitleEvent:
+    text: str
+    duration: float = 3.0
+
 
 
 class RenderLayer:

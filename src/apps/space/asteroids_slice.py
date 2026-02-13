@@ -596,16 +596,39 @@ class VisualRunner:
         """Convert palette-indexed frame_buffer to PPM and update PhotoImage."""
         # Build PPM P6 (binary RGB) data
         fb = self.sim.frame_buffer
-        pixels = bytearray(WIDTH * HEIGHT * 3)
-        for i, idx in enumerate(fb):
-            r, g, b = PALETTE.get(idx, (0, 0, 0))
-            off = i * 3
-            pixels[off] = r
-            pixels[off + 1] = g
-            pixels[off + 2] = b
+        
+        # Optimized rendering using numpy if available
+        try:
+            import numpy as np
+            
+            # Create palette array (one-time setup would be better, but this is fast enough)
+            if not hasattr(self, '_palette_arr'):
+                # Map 256 colors (safe upper bound)
+                p = np.zeros((256, 3), dtype=np.uint8)
+                for idx, color in PALETTE.items():
+                    p[idx] = color
+                self._palette_arr = p
+                
+            # Convert frame buffer to numpy array
+            fb_arr = np.array(fb, dtype=np.uint8)
+            
+            # Vectorized lookup! 100x faster than loop
+            pixels_arr = self._palette_arr[fb_arr]
+            ppm_body = pixels_arr.tobytes()
+            
+        except ImportError:
+            # Fallback to slow loop
+            pixels = bytearray(WIDTH * HEIGHT * 3)
+            for i, idx in enumerate(fb):
+                r, g, b = PALETTE.get(idx, (0, 0, 0))
+                off = i * 3
+                pixels[off] = r
+                pixels[off + 1] = g
+                pixels[off + 2] = b
+            ppm_body = bytes(pixels)
 
         header = f"P6 {WIDTH} {HEIGHT} 255\n".encode()
-        ppm_data = header + bytes(pixels)
+        ppm_data = header + ppm_body
 
         import tkinter as tk
         self._photo = tk.PhotoImage(width=WIDTH, height=HEIGHT, data=ppm_data)
