@@ -224,7 +224,7 @@ class TurtleRenderer:
                 self.registry.register(
                     f"entity_{render_data.entity_id}",
                     None,  # We're just updating metadata
-                    self.registry.RegistryType.ENTITY,
+                    RegistryType.ENTITY,
                     {
                         'entity_type': 'turtle',
                         'turtle_id': render_data.entity_id,
