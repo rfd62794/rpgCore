@@ -31,7 +31,7 @@ class TrainingLoop:
         self.max_generations = max_generations
         
         # NEAT components
-        self.neat_engine = create_neat_engine(population_size)
+        self.neat_engine = create_neat_engine(population_size, num_inputs=8)
         self.fitness_calculator = create_fitness_calculator()
         
         # Training statistics

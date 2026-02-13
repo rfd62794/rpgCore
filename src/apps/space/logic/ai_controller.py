@@ -483,6 +483,8 @@ class AsteroidPilot(BaseController):
         
         # Check for asteroid in crosshair (NEW INPUT)
         asteroid_in_crosshair = 0.0
+        angle_to_asteroid_normalized = 0.0
+        
         if nearest_asteroid:
             # Calculate angle to asteroid
             dx = nearest_asteroid['x'] - entity_state['x']
@@ -491,15 +493,64 @@ class AsteroidPilot(BaseController):
             
             # Check if asteroid is in front (within 45 degrees of ship heading)
             ship_heading = entity_state.get('angle', 0)
-            angle_diff = abs(angle_to_asteroid - ship_heading)
+            angle_diff = angle_to_asteroid - ship_heading
             
-            # Normalize angle difference to [0, π]
+            # Normalize angle difference to [-π, π]
             while angle_diff > math.pi:
-                angle_diff = abs(angle_diff - 2 * math.pi)
+                angle_diff -= 2 * math.pi
+            while angle_diff < -math.pi:
+                angle_diff += 2 * math.pi
+                
+            angle_to_asteroid_normalized = angle_diff / math.pi  # -1.0 to 1.0
             
             # Check if within crosshair cone (45 degrees = π/4 radians)
-            if angle_diff < math.pi / 4 and min_asteroid_distance < 60.0:
+            if abs(angle_diff) < math.pi / 4 and min_asteroid_distance < 60.0:
                 asteroid_in_crosshair = 1.0
+
+        # Calculate angle to scrap
+        angle_to_scrap_normalized = 0.0
+        if nearest_scrap:
+            dx = nearest_scrap['x'] - entity_state['x']
+            dy = nearest_scrap['y'] - entity_state['y']
+            angle_to_scrap = math.atan2(dy, dx)
+            
+            ship_heading = entity_state.get('angle', 0)
+            angle_diff = angle_to_scrap - ship_heading
+            
+            while angle_diff > math.pi:
+                angle_diff -= 2 * math.pi
+            while angle_diff < -math.pi:
+                angle_diff += 2 * math.pi
+                
+            angle_to_scrap_normalized = angle_diff / math.pi
+            
+        # Neural Inputs:
+        # 1. 1.0 (Bias)
+        # 2. Normalized distance to nearest asteroid (0-1)
+        # 3. Normalized angle to nearest asteroid (-1 to 1)
+        # 4. Asteroid in crosshair (0 or 1)
+        # 5. Normalized distance to nearest scrap (0-1)
+        # 6. Normalized angle to nearest scrap (-1 to 1)
+        # 7. Ship linear velocity magnitude (normalized)
+        # 8. Ship angular velocity (normalized)
+        
+        # Normalize distance (assuming max view distance ~400)
+        norm_ast_dist = min(min_asteroid_distance / 400.0, 1.0)
+        norm_scrap_dist = min(min_scrap_distance / 400.0, 1.0)
+        
+        speed = math.sqrt(entity_state.get('vx', 0)**2 + entity_state.get('vy', 0)**2) / 100.0
+        ang_vel = entity_state.get('va', 0) / 5.0
+
+        return [
+            1.0, 
+            norm_ast_dist,
+            angle_to_asteroid_normalized,
+            asteroid_in_crosshair,
+            norm_scrap_dist,
+            angle_to_scrap_normalized,
+            min(speed, 1.0),
+            max(min(ang_vel, 1.0), -1.0)
+        ]
         
         # Update mental vector for debugging
         if nearest_asteroid and (min_asteroid_distance < min_scrap_distance or not nearest_scrap):
