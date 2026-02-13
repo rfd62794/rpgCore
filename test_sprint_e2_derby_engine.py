@@ -233,8 +233,9 @@ def test_registry_lifecycle_fix():
         
         # Should have exactly 5 entities (turtles)
         actual_count = len(snapshot_result.value.entities)
+        entity_ids = [entity.entity_id for entity in snapshot_result.value.entities]
         print(f"📊 Actual entity count: {actual_count}")
-        print(f"📊 Entity IDs: {[e.entity_id for e in snapshot_result.value.entities]}")
+        print(f"📊 Entity IDs: {entity_ids}")
         
         # Check if we have at least our 5 turtles (systems may also be registered)
         turtle_entity_ids = [eid for eid in entity_ids if eid.startswith('entity_turtle_')]
