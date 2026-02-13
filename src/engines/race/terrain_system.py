@@ -10,12 +10,14 @@ their genetic traits (limb shape, shell size, etc.).
 
 from typing import Dict, List, Optional, Tuple, Any
 from dataclasses import dataclass
-from enum import Enum
 import math
 
-from foundation.types import Result
-from foundation.types.race import TerrainType, TerrainSegment
-from foundation.genetics.schema import TurboGenome, LimbShape
+from ..base import BaseSystem, SystemConfig
+from ...foundation.types import Result
+from ...foundation.types.race import (
+    TurtleState, RaceConfig, TerrainSegment, TerrainType
+)
+from ...foundation.genetics.schema import TurboGenome, LimbShape
 
 
 @dataclass
