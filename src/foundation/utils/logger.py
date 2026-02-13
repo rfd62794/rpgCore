@@ -24,6 +24,48 @@ from foundation.constants import (
     LOG_LEVEL_DEFAULT, LOG_FORMAT
 )
 
+# === LOGGING CONSTANTS ===
+LOG_ROTATION = "10 MB"
+LOG_RETENTION = "30 days"
+LOG_FILE_GAME = "game.log"
+LOG_FILE_PERFORMANCE = "performance.log"
+LOG_FILE_ERRORS = "errors.log"
+LOG_FILE_LLM = "llm.log"
+
+
+def is_debug_mode() -> bool:
+    """Check if debug mode is enabled"""
+    import os
+    return os.getenv("DGT_DEBUG", "false").lower() == "true"
+
+
+def is_development() -> bool:
+    """Check if running in development environment"""
+    import os
+    return os.getenv("DGT_ENV", "development") == "development"
+
+
+def is_testing() -> bool:
+    """Check if running in testing environment"""
+    import os
+    return os.getenv("DGT_ENV", "development") == "testing"
+
+
+def get_environment() -> str:
+    """Get current environment"""
+    import os
+    return os.getenv("DGT_ENV", "development")
+
+
+def get_logs_path(subpath: str) -> Path:
+    """Get logs directory path"""
+    from pathlib import Path
+    import os
+    
+    logs_dir = Path(os.getenv("DGT_LOGS_DIR", "logs"))
+    logs_dir.mkdir(exist_ok=True)
+    return logs_dir / subpath if subpath else logs_dir
+
 
 class LoggerManager:
     """Centralized logging management with Loguru and Rich"""
@@ -212,9 +254,6 @@ def initialize_logging(log_level: Optional[str] = None,
     return _logger_manager
 
 
-def is_testing() -> bool:
-    """Check if running in testing environment"""
-    return get_environment() == "testing"
 
 
 # === COMPONENT LOGGERS ===
@@ -324,11 +363,7 @@ def auto_initialize() -> None:
     """Auto-initialize logging system"""
     try:
         # Check if we're in development environment
-        try:
-            dev_mode = is_development()
-        except NameError:
-            dev_mode = True  # Default to development if function not available
-        
+        dev_mode = is_development()
         initialize_logging(enable_rich=dev_mode)
     except Exception as e:
         # Fallback to basic logging
