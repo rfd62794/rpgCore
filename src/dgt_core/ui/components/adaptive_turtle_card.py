@@ -7,8 +7,8 @@ from typing import Dict, Any, Optional, Tuple
 from dataclasses import dataclass
 from enum import Enum
 
-from ..viewport.logical_viewport import LogicalViewport
-from ..proportional_layout import ProportionalLayout, AnchorPoint, NormalizedRect
+from ...engines.viewport.logical_viewport import LogicalViewport
+from ...ui.proportional_layout import ProportionalLayout, AnchorPoint, NormalizedRect
 
 
 class DisplayMode(Enum):

@@ -8,9 +8,9 @@ from dataclasses import dataclass
 import logging
 
 from ..components.adaptive_turtle_card import AdaptiveTurtleCard, TurtleDisplayData, DisplayMode
-from ..viewport.logical_viewport import LogicalViewport
-from ..proportional_layout import ProportionalLayout, AnchorPoint, NormalizedRect
-from ...registry.dgt_registry import DGTRegistry
+from ...engines.viewport.logical_viewport import LogicalViewport
+from ...ui.proportional_layout import ProportionalLayout, AnchorPoint, NormalizedRect
+from ....registry.dgt_registry import DGTRegistry
 
 
 @dataclass
