@@ -132,7 +132,7 @@ def test_registry_centralization():
         
         # Register all entities
         for entity in entities:
-            registry.register_entity_state(entity.entity_id, entity)
+            registry.register(entity.entity_id, entity, registry.RegistryType.ENTITY, {})
         
         print("✅ Multiple entities registered")
         
