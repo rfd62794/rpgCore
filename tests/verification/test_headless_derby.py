@@ -210,6 +210,7 @@ class HeadlessDerby:
             self._log_event("RACE_START", {'start_time': start_time})
             
             # Race loop
+            tick_count = 0
             while time.perf_counter() - start_time < max_duration:
                 # Update physics engine
                 physics_result = self.physics_engine.update(1.0 / 60.0)  # 60Hz update
@@ -226,6 +227,7 @@ class HeadlessDerby:
                 snapshot_result = self.physics_engine.get_race_snapshot()
                 if snapshot_result.success:
                     snapshot = snapshot_result.value
+                    tick_count = snapshot.tick
                     
                     # Log snapshot every 30 ticks
                     if snapshot.tick - last_snapshot_tick >= 30:
@@ -240,6 +242,11 @@ class HeadlessDerby:
                         break
                 else:
                     self._log_event("SNAPSHOT_ERROR", {'error': snapshot_result.error})
+                
+                # Force progress if no ticks are happening
+                if tick_count == snapshot.tick and tick_count > 100:
+                    self._log_event("SIMULATION_STUCK", {'tick': tick_count})
+                    break
                 
                 # Small delay to prevent excessive CPU usage
                 time.sleep(0.001)
