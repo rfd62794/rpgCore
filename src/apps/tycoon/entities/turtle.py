@@ -10,17 +10,35 @@ composition rather than inheritance. This entity demonstrates the
 Plug-and-Play architecture built in Sprints A-D.
 """
 
-from typing import Dict, Any, Optional, Tuple
+from typing import Dict, Any, List, Tuple, Optional
 from dataclasses import dataclass
 import math
 import time
 
 from foundation.types import Result
-from foundation.protocols import EntityStateProtocol, Vector2Protocol
+from foundation.protocols import Vector2Protocol
 from foundation.vector import Vector2
 from foundation.registry import DGTRegistry, RegistryType
 from foundation.genetics.genome_engine import TurboGenome, ShellPatternType, BodyPatternType, LimbShapeType
 from ..components.kinetic_body import KineticBody, PhysicsStats, KineticState
+
+
+@dataclass
+class RaceStats:
+    """Race statistics for tracking performance"""
+    finish_time: Optional[float] = None
+    distance_covered: float = 0.0
+    checkpoints_passed: int = 0
+    terrain_bonuses: Dict[str, float] = None
+    total_energy_used: float = 0.0
+    average_speed: float = 0.0
+    position_history: List[Tuple[float, float]] = None
+    
+    def __post_init__(self):
+        if self.terrain_bonuses is None:
+            self.terrain_bonuses = {}
+        if self.position_history is None:
+            self.position_history = []
 
 
 @dataclass
@@ -70,6 +88,9 @@ class SovereignTurtle:
         self.energy = 100.0
         self.experience = 0
         self.level = 1
+        
+        # Race statistics
+        self.race_stats = RaceStats()
         
         # Note: Registration handled by WorldState orchestrator to prevent double-counting
     
@@ -260,6 +281,62 @@ class SovereignTurtle:
         except Exception as e:
             return Result.failure_result(f"Turtle rest failed: {str(e)}")
     
+    def teleport(self, position: Vector2) -> Result[None]:
+        """
+        Teleport turtle to new position.
+        
+        Args:
+            position: New position for turtle
+            
+        Returns:
+            Result indicating success
+        """
+        try:
+            # Update kinetic body position directly
+            self.kinetic_body.state.position = position.copy()
+            self.kinetic_body.state.velocity = Vector2(0, 0)  # Stop movement on teleport
+            
+            # Update position history
+            self.race_stats.position_history.append((position.x, position.y))
+            
+            # Keep history limited
+            if len(self.race_stats.position_history) > 1000:
+                self.race_stats.position_history.pop(0)
+            
+            return Result.success_result(None)
+            
+        except Exception as e:
+            return Result.failure_result(f"Turtle teleport failed: {str(e)}")
+    
+    def update_race_stats(self, dt: float) -> None:
+        """Update race statistics"""
+        try:
+            # Update distance covered
+            if self.kinetic_body.is_moving():
+                distance = self.kinetic_body.state.velocity.magnitude() * dt
+                self.race_stats.distance_covered += distance
+            
+            # Update average speed
+            if self.race_stats.distance_covered > 0:
+                # Calculate based on race time if available
+                if self.race_stats.finish_time is not None:
+                    race_time = self.race_stats.finish_time - self.creation_time
+                    if race_time > 0:
+                        self.race_stats.average_speed = self.race_stats.distance_covered / race_time
+                else:
+                    # Fallback to recent speed
+                    self.race_stats.average_speed = self.kinetic_body.get_speed()
+            
+            # Update position history
+            self.race_stats.position_history.append((self.position.x, self.position.y))
+            
+            # Keep history limited
+            if len(self.race_stats.position_history) > 1000:
+                self.race_stats.position_history.pop(0)
+            
+        except Exception as e:
+            self._get_logger().error(f"Failed to update race stats: {e}")
+    
     def get_state_dict(self) -> Dict[str, Any]:
         """Get complete turtle state"""
         return {
@@ -273,6 +350,15 @@ class SovereignTurtle:
             'level': self.level,
             'experience': self.experience,
             'creation_time': self.creation_time,
+            'race_stats': {
+                'finish_time': self.race_stats.finish_time,
+                'distance_covered': self.race_stats.distance_covered,
+                'checkpoints_passed': self.race_stats.checkpoints_passed,
+                'terrain_bonuses': self.race_stats.terrain_bonuses,
+                'total_energy_used': self.race_stats.total_energy_used,
+                'average_speed': self.race_stats.average_speed,
+                'position_history': self.race_stats.position_history
+            },
             'genome': {
                 'shell_base_color': self.genome.shell_base_color,
                 'shell_pattern_type': self.genome.shell_pattern_type.value,
