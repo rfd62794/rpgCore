@@ -234,7 +234,7 @@ class AsteroidPilot:
         vec_to_wp = self._get_toroidal_vector(ship.position, self._current_waypoint, bounds)
         dist_to_wp = vec_to_wp.magnitude()
             
-        if dist_to_wp < self.config.waypoint_tolerance:
+        if dist_to_wp < self.config.arrival_radius:
             self.log.waypoints_reached += 1
             self._select_new_waypoint(ship.position, asteroids, bounds)
             
@@ -281,43 +281,7 @@ class AsteroidPilot:
 
     # -- Avoid behavior ------------------------------------------------------
 
-    def _avoid(
-        self,
-        ship: KineticEntity,
-        asteroids: List,
-    ) -> Tuple[Vector2, float, bool]:
-        """Compute repulsion from nearby asteroids.
 
-        Returns: (avoidance_force, nearest_distance, is_actively_dodging)
-        """
-        avoid = Vector2.zero()
-        nearest_dist = float("inf")
-        is_dodging = False
-        detection = self.config.avoid_radius
-
-        for asteroid in asteroids:
-            if not asteroid.active:
-                continue
-            ast_pos = asteroid.kinetics.position
-            offset = ship.position - ast_pos
-            dist = offset.magnitude()
-
-            # Account for asteroid radius
-            surface_dist = dist - asteroid.radius
-            if surface_dist < 0.1:
-                surface_dist = 0.1  # Prevent division by zero
-
-            if surface_dist < nearest_dist:
-                nearest_dist = surface_dist
-
-            if surface_dist < detection:
-                # Repulsion: stronger the closer we are (inverse power)
-                strength = 1.0 / (surface_dist ** self.config.avoid_urgency_power)
-                repulsion = offset.normalize() * strength * 100
-                avoid = avoid + repulsion
-                is_dodging = True
-
-        return avoid, nearest_dist, is_dodging
 
     # -- Waypoint generation -------------------------------------------------
 
