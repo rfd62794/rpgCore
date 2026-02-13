@@ -266,7 +266,7 @@ class ViewportManager:
         
         return {
             "window_size": f"{self.current_config.window_width}x{self.current_config.window_height}",
-            "layout_mode": self.current_config.mode.value,
+            "layout_mode": self.current_config.layout_mode.value,
             "ppu_scale": self.current_config.ppu_scale,
             "wing_scale": self.current_config.wing_scale,
             "focus_mode": self.current_config.focus_mode,
