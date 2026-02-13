@@ -24,10 +24,10 @@ import math
 import time
 
 from .entities.space_entity import SpaceEntity, EntityType
-from foundation.vector import Vector2
+from rpg_core.foundation.vector import Vector2
 from .scrap_entity import ScrapEntity, ScrapLocker
-from foundation.constants import SOVEREIGN_WIDTH, SOVEREIGN_HEIGHT
-from foundation.types import Result
+from rpg_core.foundation.constants import SOVEREIGN_WIDTH, SOVEREIGN_HEIGHT
+from rpg_core.foundation.types import Result
 
 
 @dataclass

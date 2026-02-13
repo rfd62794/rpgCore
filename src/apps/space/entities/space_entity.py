@@ -27,9 +27,9 @@ src_path = Path(__file__).parent.parent.parent
 if str(src_path) not in sys.path:
     sys.path.insert(0, str(src_path))
 
-from foundation.vector import Vector2
-from foundation.constants import SOVEREIGN_WIDTH, SOVEREIGN_HEIGHT
-from foundation.types import Result, ValidationResult
+from rpg_core.foundation.vector import Vector2
+from rpg_core.foundation.constants import SOVEREIGN_WIDTH, SOVEREIGN_HEIGHT
+from rpg_core.foundation.types import Result, ValidationResult
 
 
 class EntityType(Enum):

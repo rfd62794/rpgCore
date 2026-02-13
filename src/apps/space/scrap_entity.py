@@ -27,8 +27,8 @@ import time
 from pathlib import Path
 
 from .entities.space_entity import SpaceEntity, EntityType
-from foundation.vector import Vector2
-from foundation.constants import SOVEREIGN_WIDTH, SOVEREIGN_HEIGHT
+from rpg_core.foundation.vector import Vector2
+from rpg_core.foundation.constants import SOVEREIGN_WIDTH, SOVEREIGN_HEIGHT
 
 
 class ScrapType:
