@@ -117,8 +117,8 @@ class RaceArbiter(BaseSystem):
         self.current_leader: Optional[str] = None
         
         # Event callbacks
-        self.event_callbacks: Dict[ArbiterEvent, List[Callable]] = {
-            event_type: [] for event_type in ArbiterEvent
+        self.event_callbacks: Dict[str, List[Callable]] = {
+            event_type.value: [] for event_type in ArbiterEvent
         }
         
         # Previous state tracking
@@ -424,7 +424,7 @@ class RaceArbiter(BaseSystem):
         self.event_history.append(event)
         
         # Call registered callbacks
-        for callback in self.event_callbacks[event_type]:
+        for callback in self.event_callbacks[event_type.value]:
             try:
                 callback(event)
             except Exception as e:
