@@ -119,17 +119,17 @@ class RaceArbiter(BaseSystem):
         # Event callbacks
         self.event_callbacks: Dict[str, List[Callable]] = {}
         event_types = [
-            ArbiterEvent.RACE_STARTED,
-            ArbiterEvent.RACE_FINISHED,
-            ArbiterEvent.TURTLE_FINISHED,
-            ArbiterEvent.TURTLE_EXHAUSTED,
-            ArbiterEvent.TURTLE_RECOVERED,
-            ArbiterEvent.CHECKPOINT_PASSED,
-            ArbiterEvent.ENERGY_WARNING,
-            ArbiterEvent.LEADER_CHANGED
+            "race_started",
+            "race_finished", 
+            "turtle_finished",
+            "turtle_exhausted",
+            "turtle_recovered",
+            "checkpoint_passed",
+            "energy_warning",
+            "leader_changed"
         ]
         for event_type in event_types:
-            self.event_callbacks[event_type.value] = []
+            self.event_callbacks[event_type] = []
         
         # Previous state tracking
         self.previous_states: Dict[str, TurtleState] = {}
