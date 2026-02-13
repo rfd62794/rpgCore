@@ -7,7 +7,8 @@ from typing import List, Dict, Any, Optional, Tuple
 from dataclasses import dataclass
 import math
 
-from foundation.interfaces.protocols import RenderProtocol, Result
+from rpg_core.foundation.interfaces.protocols import RenderProtocol
+from rpg_core.foundation.types import Result
 from foundation.base import BasePPU
 from foundation.constants import SOVEREIGN_WIDTH, SOVEREIGN_HEIGHT, SOVEREIGN_PIXELS
 from engines.body.animation import SpriteAnimator, NewtonianGhostRenderer
