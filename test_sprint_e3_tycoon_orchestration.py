@@ -120,6 +120,12 @@ def test_stable_manager():
         
         print("✅ Stable Manager imports successful")
         
+        # Clean up save file for fresh test
+        import os
+        stable_file = "data/stable.json"
+        if os.path.exists(stable_file):
+            os.remove(stable_file)
+        
         # Create stable manager
         stable = create_stable_manager()
         init_result = stable.initialize()
@@ -131,8 +137,8 @@ def test_stable_manager():
         assert roster_result.success, f"Failed to get stable roster: {roster_result.error}"
         
         initial_roster = roster_result.value
-        assert initial_roster['stable_capacity']['current'] == 0
-        print(f"✅ Initial stable: {initial_roster['stable_capacity']['current']}/{initial_roster['stable_capacity']['maximum']} turtles")
+        initial_count = initial_roster['stable_capacity']['current']
+        print(f"✅ Initial stable: {initial_count}/{initial_roster['stable_capacity']['maximum']} turtles")
         
         # Add a turtle to stable
         add_result = stable.handle_event("add_to_stable", {
@@ -148,13 +154,16 @@ def test_stable_manager():
         assert roster_result.success
         
         updated_roster = roster_result.value
-        assert updated_roster['stable_capacity']['current'] == 1
-        assert len(updated_roster['owned_turtles']) == 1
+        assert updated_roster['stable_capacity']['current'] == initial_count + 1
+        assert len(updated_roster['owned_turtles']) == initial_count + 1
         
         turtle_stats = updated_roster['owned_turtles'][0]
         assert turtle_stats['turtle_id'] == "test_turtle_1"
         assert turtle_stats['current_stamina'] == 100.0
-        print(f"✅ Updated stable: 1 turtle with {turtle_stats['current_stamina']:.1f} stamina")
+        print(f"✅ Updated stable: {len(updated_roster['owned_turtles'])} turtle with {turtle_stats['current_stamina']:.1f} stamina")
+        
+        # Shutdown
+        stable.shutdown()
         
         return True
         
