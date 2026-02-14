@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using rpgCore.Godot.Models;
 
 namespace rpgCore.Godot.Input {
     /// <summary>

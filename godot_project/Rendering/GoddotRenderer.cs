@@ -1,6 +1,7 @@
 using Godot;
 using System;
 using System.Collections.Generic;
+using rpgCore.Godot.Models;
 
 namespace rpgCore.Godot.Rendering {
     /// <summary>
@@ -48,7 +49,7 @@ namespace rpgCore.Godot.Rendering {
         }
 
         /// <summary>Render a complete frame from game state.</summary>
-        public void RenderFrame(FrameDataDTO frameData) {
+        public void RenderFrame(FrameUpdateMessage frameData) {
             if (frameData == null || frameData.Entities == null) {
                 return;
             }

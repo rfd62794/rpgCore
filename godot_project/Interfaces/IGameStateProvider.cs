@@ -1,4 +1,5 @@
 using System;
+using rpgCore.Godot.Models;
 
 namespace rpgCore.Godot.GameLogic {
     /// <summary>
