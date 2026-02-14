@@ -1,18 +1,18 @@
 """
-DGT Graphics Engine — Backward Compatibility Layer
+DGT Graphics Engine — Visual Effects & Rendering Pipeline
 
-DEPRECATED: This module is maintained for backward compatibility only.
-New code should import from `game_engine.systems.graphics` instead.
-
-Provides all graphics systems (PixelRenderer, TileBank, FXSystem, ParticleEffects, ExhaustSystem)
-with backward-compatible imports for legacy code.
-
-Example:
-    # Old (still works, but deprecated):
-    from dgt_engine.systems.graphics import PixelRenderer
-
-    # New (preferred):
-    from game_engine.systems.graphics import PixelRenderer
+Tier 2 Engine responsible for all visual output:
+  • fx/    — Particle effects, exhaust systems, pixel VFX
+  • (future: shaders, sprite compositors, PPU integration)
 """
 
-from .__compat__ import *  # noqa: F401, F403
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from .fx.particle_effects import ParticleEffectsSystem
+    from .fx.exhaust_system import ExhaustSystem
+
+__all__ = [
+    "ParticleEffectsSystem",
+    "ExhaustSystem",
+]

@@ -118,5 +118,3 @@
 2026-02-08 22:29:21 | ERROR | src.dgt_core.utils.fix_assets:<module>:61 | ❌ File not found: voyager_0_0.yaml
 2026-02-08 22:29:21 | ERROR | src.dgt_core.utils.fix_assets:<module>:61 | ❌ File not found: tree_0_2.yaml
 2026-02-08 22:29:21 | SUCCESS | src.dgt_core.utils.fix_assets:<module>:63 | 🎯 Manual corrections complete!
-2026-02-13 22:09:56 | INFO | dgt_engine.foundation.utils.logger:initialize:99 | 📝 Logging system initialized
-2026-02-13 22:10:17 | INFO | __main__:signal_handler:191 | 🛑 Received signal 2, shutting down...

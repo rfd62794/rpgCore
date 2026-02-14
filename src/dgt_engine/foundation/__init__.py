@@ -22,49 +22,17 @@ _FOUNDATION_EXPORTS = {
 __all__ = sorted(_FOUNDATION_EXPORTS)
 
 def __getattr__(name: str):
-    """Lazy-load foundation submodules and redirect to new structure."""
-
-    # === NEW STRUCTURE REDIRECTS (Phase B Migration) ===
-    # Redirect new foundation classes to game_engine.foundation
-    new_foundation_mapping = {
-        "BaseSystem": "base_system",
-        "BaseComponent": "base_system",
-        "SystemConfig": "base_system",
-        "SystemStatus": "base_system",
-        "PerformanceMetrics": "base_system",
-        "Vector2Protocol": "protocols",
-        "Vector3Protocol": "protocols",
-        "EntityProtocol": "protocols",
-        "GameStateProtocol": "protocols",
-        "ClockProtocol": "protocols",
-        "RenderPacketProtocol": "protocols",
-        "ConfigProtocol": "protocols",
-        "DGTRegistry": "registry",
-        "RegistryType": "registry",
-        "RegistryEntry": "registry",
-    }
-
-    if name in new_foundation_mapping:
-        # Import from new game_engine.foundation structure
-        module_name = new_foundation_mapping[name]
-        import importlib
-        try:
-            mod = importlib.import_module(f"game_engine.foundation.{module_name}")
-            return getattr(mod, name)
-        except ImportError:
-            pass  # Fall through to old structure
-
-    # === OLD STRUCTURE IMPORTS (Legacy Support) ===
+    """Lazy-load foundation submodules."""
     if name == "Vector2":
         from .vector import Vector2
         return Vector2
-
+    
     if name in {"Result"}:
         from .types import Result
         return Result
-
+        
     if name in {"Direction", "CollisionType"}:
         from .constants import Direction, CollisionType
         return getattr(sys.modules[__name__], name) # Fallback for now
-
-    raise AttributeError(f"module 'dgt_engine.foundation' has no attribute {name!r}")
+        
+    raise AttributeError(f"module 'rpg_core.foundation' has no attribute {name!r}")
