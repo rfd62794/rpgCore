@@ -164,9 +164,13 @@ namespace rpgCore.Godot.Server
         /// <summary>
         /// Receive messages from Python engine.
         /// </summary>
+        /// <summary>
+        /// Receive messages from Python engine.
+        /// </summary>
         private void ReceiveLoop()
         {
-            byte[] buffer = new byte[4096];
+            byte[] buffer = new byte[65536]; // 64KB buffer
+            StringBuilder messageBuffer = new StringBuilder();
 
             while (_isRunning && _isConnected && _stream != null)
             {
@@ -181,21 +185,32 @@ namespace rpgCore.Godot.Server
                         break;
                     }
 
-                    string data = Encoding.UTF8.GetString(buffer, 0, bytesRead);
+                    string chunk = Encoding.UTF8.GetString(buffer, 0, bytesRead);
+                    messageBuffer.Append(chunk);
 
-                    // Messages are newline-delimited
-                    string[] messages = data.Split('\n', StringSplitOptions.RemoveEmptyEntries);
+                    // Process complete messages
+                    string content = messageBuffer.ToString();
+                    int newlineIndex;
 
-                    foreach (string message in messages)
+                    while ((newlineIndex = content.IndexOf('\n')) != -1)
                     {
-                        if (string.IsNullOrWhiteSpace(message))
-                            continue;
-
-                        lock (_receiveLock)
+                        string message = content.Substring(0, newlineIndex);
+                        
+                        if (!string.IsNullOrWhiteSpace(message))
                         {
-                            _receiveQueue.Enqueue(message);
+                            lock (_receiveLock)
+                            {
+                                _receiveQueue.Enqueue(message);
+                            }
                         }
+
+                        // Update content to remaining part
+                        content = content.Substring(newlineIndex + 1);
                     }
+
+                    // Keep incomplete fragment in buffer
+                    messageBuffer.Clear();
+                    messageBuffer.Append(content);
                 }
                 catch (Exception e)
                 {
