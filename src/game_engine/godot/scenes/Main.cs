@@ -1,4 +1,4 @@
-"""
+/*
 Main Game Scene Orchestrator
 Entry point for Godot application
 Coordinates: Server, Renderer, Input handling
@@ -7,7 +7,7 @@ SOLID Principle: Single Responsibility
 - Only responsible for scene lifecycle and top-level coordination
 - Delegates to GameServer for IPC
 - Delegates to GameEntityRenderer for rendering
-"""
+/*
 
 using Godot;
 using System;
@@ -17,7 +17,7 @@ using rpgCore.Godot.Models;
 
 namespace rpgCore.Godot.Scenes
 {
-    public class Main : Node
+    public partial class Main : Node
     {
         private GameServer? _gameServer;
         private GameEntityRenderer? _gameRenderer;
