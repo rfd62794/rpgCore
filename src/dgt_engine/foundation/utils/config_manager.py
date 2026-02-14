@@ -14,7 +14,7 @@ from dataclasses import dataclass, field, asdict
 from abc import ABC, abstractmethod
 
 import yaml
-from pydantic.v2 import BaseModel, Field, validator
+from pydantic import BaseModel, Field, validator
 from loguru import logger
 
 T = TypeVar('T', bound=BaseModel)
