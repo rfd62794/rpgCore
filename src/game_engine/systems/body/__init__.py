@@ -40,6 +40,16 @@ from game_engine.systems.body.projectile_system import (
     create_rapid_fire_system,
     create_heavy_weapon_system,
 )
+from game_engine.systems.body.status_manager import (
+    StatusManager,
+    StatusEffect,
+    EffectType,
+    StackingMode,
+    create_damage_buff,
+    create_slow_debuff,
+    create_poison_dot,
+    create_stun_cc,
+)
 
 __all__ = [
     # Core ECS
@@ -64,4 +74,13 @@ __all__ = [
     "create_arcade_projectile_system",
     "create_rapid_fire_system",
     "create_heavy_weapon_system",
+    # Status Manager
+    "StatusManager",
+    "StatusEffect",
+    "EffectType",
+    "StackingMode",
+    "create_damage_buff",
+    "create_slow_debuff",
+    "create_poison_dot",
+    "create_stun_cc",
 ]
