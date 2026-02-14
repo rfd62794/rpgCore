@@ -50,6 +50,20 @@ from game_engine.systems.body.status_manager import (
     create_poison_dot,
     create_stun_cc,
 )
+from game_engine.systems.body.fracture_system import (
+    FractureSystem,
+    AsteroidFragment,
+    GeneticTraits,
+    create_classic_fracture_system,
+    create_genetic_fracture_system,
+    create_hard_fracture_system,
+)
+from game_engine.systems.body.wave_spawner import (
+    WaveSpawner,
+    WaveConfig,
+    create_arcade_wave_spawner,
+    create_survival_wave_spawner,
+)
 
 __all__ = [
     # Core ECS
@@ -83,4 +97,16 @@ __all__ = [
     "create_slow_debuff",
     "create_poison_dot",
     "create_stun_cc",
+    # Fracture System
+    "FractureSystem",
+    "AsteroidFragment",
+    "GeneticTraits",
+    "create_classic_fracture_system",
+    "create_genetic_fracture_system",
+    "create_hard_fracture_system",
+    # Wave Spawner
+    "WaveSpawner",
+    "WaveConfig",
+    "create_arcade_wave_spawner",
+    "create_survival_wave_spawner",
 ]
