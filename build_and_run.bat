@@ -14,7 +14,7 @@ call "%~dp0godot_project\build.bat"
 
 echo.
 echo [Step 2/3] Starting Godot game window...
-"%GODOT_PATH%" --path "%PROJECT_PATH%" &
+start "" "%GODOT_PATH%" --path "%PROJECT_PATH%"
 
 echo [Waiting 5 seconds for Godot to start server...]
 ping 127.0.0.1 -n 6 >nul
