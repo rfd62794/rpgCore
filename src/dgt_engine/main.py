@@ -65,6 +65,9 @@ from dgt_engine.utils.performance_monitor import (
     PerformanceMonitor
 )
 
+# Import system clock
+from dgt_engine.foundation.system_clock import get_system_clock, SystemClock
+
 # Import developer console
 try:
     from dgt_engine.tools.developer_console import DeveloperConsole
@@ -129,7 +132,11 @@ class DGTSystem:
         self.circuit_manager: Optional[CircuitBreakerManager] = None
         
         # Performance monitoring
+        # Performance monitoring
         self.performance_monitor: Optional[PerformanceMonitor] = None
+        
+        # System Clock
+        self.system_clock: Optional[SystemClock] = None
         
         # Configuration
         self.config = self._load_config()
@@ -236,6 +243,12 @@ class DGTSystem:
             self.circuit_manager = get_circuit_manager()
             logger.info("🔌 Circuit Breaker Manager initialized")
             
+            # Initialize System Clock
+            self.system_clock = get_system_clock()
+            self.system_clock.target_fps = config.get("target_fps", 60)
+            self.system_clock.target_frame_time = 1.0 / self.system_clock.target_fps
+            logger.info(f"🕐 System Clock configured for {self.system_clock.target_fps} FPS")
+
             # Initialize Performance Monitor
             self.performance_monitor = initialize_performance_monitor(
                 target_fps=config.get("target_fps", 60)
@@ -375,7 +388,7 @@ class DGTSystem:
         logger.info("🔄 Running simple autonomous loop")
         
         while self.running:
-            frame_start = time.time()
+            frame_start = time.perf_counter()
             
             # Start frame monitoring
             if self.performance_monitor:
@@ -424,16 +437,23 @@ class DGTSystem:
                 if self.performance_monitor:
                     self.performance_monitor.end_frame()
                 
-                # Calculate sleep time to maintain target FPS
-                frame_time = time.time() - frame_start
-                target_frame_time = 1.0 / self.config.get("target_fps", 60)
-                sleep_time = max(0, target_frame_time - frame_time)
+                # End frame monitoring
+                if self.performance_monitor:
+                    self.performance_monitor.end_frame()
                 
-                if sleep_time > 0:
-                    await asyncio.sleep(sleep_time)
+                # Update System Clock metrics and sleep
+                if self.system_clock:
+                    frame_end = time.perf_counter()
+                    self.system_clock.record_frame(frame_start, frame_end)
+                    
+                    sleep_time = self.system_clock.get_sleep_time(frame_start)
+                    if sleep_time > 0:
+                        await asyncio.sleep(sleep_time)
+                    else:
+                        logger.warning(f"⚠️ Frame overrun: {(frame_end - frame_start)*1000:.1f}ms")
                 else:
-                    # Frame took too long
-                    logger.warning(f"⚠️ Frame overrun: {frame_time*1000:.1f}ms")
+                    # Fallback if no system clock (shouldn't happen)
+                    await asyncio.sleep(0.016)
                 
             except Exception as e:
                 logger.error(f"💥 Loop error: {e}")

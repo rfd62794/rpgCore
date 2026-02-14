@@ -1,5 +1,5 @@
 {
-  "validation_timestamp": "2026-02-13 21:55:58",
+  "validation_timestamp": "2026-02-13 21:58:25",
   "wave": "3_production_hardening",
   "architecture": "three_tier",
   "total_checks": 9,
@@ -55,7 +55,7 @@
       "metrics": {
         "target_fps": 45.0,
         "max_cpu_usage": 80.0,
-        "actual_fps": 58.78956978835578,
+        "actual_fps": 58.35279399763958,
         "is_healthy": true,
         "battery_optimization_works": true
       }
@@ -63,11 +63,11 @@
     {
       "check_name": "Boot Performance",
       "passed": true,
-      "details": "Import: 0.01ms, Init: 1.21ms",
+      "details": "Import: 0.01ms, Init: 0.99ms",
       "metrics": {
-        "import_time_ms": 0.013828277587890625,
-        "init_time_ms": 1.2149810791015625,
-        "total_boot_time_ms": 1.2288093566894531,
+        "import_time_ms": 0.01430511474609375,
+        "init_time_ms": 0.9944438934326172,
+        "total_boot_time_ms": 1.008749008178711,
         "target_import_ms": 5000,
         "target_init_ms": 1000
       }
@@ -77,8 +77,8 @@
       "passed": true,
       "details": "Memory increase: 0.00MB",
       "metrics": {
-        "baseline_memory_mb": 85.546875,
-        "loaded_memory_mb": 85.546875,
+        "baseline_memory_mb": 86.32421875,
+        "loaded_memory_mb": 86.32421875,
         "memory_increase_mb": 0.0,
         "target_increase_mb": 100
       }

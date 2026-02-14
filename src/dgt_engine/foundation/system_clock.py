@@ -252,6 +252,19 @@ class SystemClock:
             error_msg = f"Failed to force frame: {str(e)}"
             logger.error(error_msg)
             return Result(success=False, error=error_msg)
+    
+    def record_frame(self, frame_start: float, frame_end: float) -> None:
+        """Record frame metrics from an external loop"""
+        elapsed = frame_end - self.last_frame_time if self.last_frame_time > 0 else self.target_frame_time
+        self._update_metrics(frame_start, frame_end, elapsed)
+        self.last_frame_time = frame_start
+        
+    def get_sleep_time(self, frame_start: float) -> float:
+        """Calculate sleep time needed to maintain target FPS"""
+        current_time = time.perf_counter()
+        elapsed = current_time - frame_start
+        sleep_time = self.target_frame_time - elapsed
+        return max(0.0, sleep_time)
 
 
 # Global system clock instance
