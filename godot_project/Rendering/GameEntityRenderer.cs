@@ -10,7 +10,7 @@ Architecture:
 - Entity type → renderer strategy mapping
 - Composable visual components (color, shape, animation)
 - Scale-agnostic rendering (adapts to viewport)
-/*
+*/
 
 using Godot;
 using System;

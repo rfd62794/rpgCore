@@ -1,5 +1,6 @@
 using Godot;
 using System;
+using rpgCore.Godot.Models;
 
 namespace rpgCore.Godot.Rendering {
     /// <summary>
@@ -19,7 +20,7 @@ namespace rpgCore.Godot.Rendering {
         /// <summary>
         /// Render a complete frame from game state data.
         /// </summary>
-        void RenderFrame(FrameDataDTO frameData);
+        void RenderFrame(FrameUpdateMessage frameData);
 
         /// <summary>
         /// Present the rendered frame to display (swap buffers, flip, etc.)

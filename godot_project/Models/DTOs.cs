@@ -121,6 +121,26 @@ namespace rpgCore.Godot.Models {
         );
     }
 
+    /// <summary>Particle emitter state.</summary>
+    [System.Serializable]
+    public class ParticleEmitterDTO {
+        public float X { get; set; }
+        public float Y { get; set; }
+        public int ParticleCount { get; set; }
+        public float Intensity { get; set; }
+        public float SpreadRadius { get; set; }
+    }
+
+    /// <summary>Frame update message structure (matches GameServer usage).</summary>
+    [System.Serializable]
+    public class FrameUpdateMessage {
+        public double Timestamp { get; set; }
+        public int FrameNumber { get; set; }
+        public List<EntityDTO> Entities { get; set; } = new();
+        public List<ParticleEmitterDTO> Particles { get; set; } = new();
+        public HUDStateDTO Hud { get; set; }
+    }
+
     /// <summary>Text render command.</summary>
     [System.Serializable]
     public class TextCommand : RenderCommand {

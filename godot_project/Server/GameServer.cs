@@ -7,7 +7,7 @@ SOLID Principle: Single Responsibility
 - Only responsible for IPC server and message routing
 - Delegates rendering to GameRenderer
 - Delegates entity sync to EntitySynchronizer
-/*
+*/
 
 using Godot;
 using System;
@@ -435,16 +435,4 @@ namespace rpgCore.Godot.Server
         public bool IsRunning => _isRunning;
     }
 
-    /// <summary>
-    /// Frame update message from Python engine.
-    /// Contains all entity and visual state for current frame.
-    /// </summary>
-    public class FrameUpdateMessage
-    {
-        public double Timestamp { get; set; }
-        public int FrameNumber { get; set; }
-        public List<EntityDTO> Entities { get; set; } = new();
-        public List<ParticleEmitterDTO> Particles { get; set; } = new();
-        public HUDStateDTO? HUD { get; set; }
-    }
 }
