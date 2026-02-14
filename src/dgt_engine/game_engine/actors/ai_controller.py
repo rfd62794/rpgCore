@@ -26,7 +26,7 @@ from dgt_engine.systems.kernel.constants import (
     PATHFINDING_MAX_ITERATIONS, VOYAGER_INTERACTION_RANGE
 )
 from dgt_engine.systems.kernel.config import VoyagerConfig
-from dgt_engine.narrative.chronos import ChronosEngine, ChronosEngineFactory
+from dgt_engine.engine.chronos import ChronosEngine
 
 # Body — pathfinding and navigation primitives
 from actors.pawn_navigation import (
@@ -47,7 +47,7 @@ class AIController:
             # Legacy mode
             self.config = VoyagerConfig(seed="DEFAULT")
             self.dd_engine = config_or_dd_engine
-            self.chronos_engine = chronos_engine or ChronosEngineFactory.create_engine()
+            self.chronos_engine = chronos_engine
         
         # Navigation components
         self.navigator = PathfindingNavigator()

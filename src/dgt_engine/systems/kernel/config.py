@@ -75,6 +75,8 @@ class AIConfig:
     pondering_timeout: float = 5.0
     enable_autonomous_mode: bool = True
 
+# Alias for backward compatibility
+VoyagerConfig = AIConfig
 
 @dataclass
 class SystemConfig:
@@ -150,7 +152,7 @@ class SystemConfig:
             body=body_config,
             chronos=chronos_config,
             persona=persona_config,
-            voyager=voyager_config,
+            ai=voyager_config,
             default_spawn_points=default_spawn_points,
             default_interest_points=default_interest_points,
             **system_settings
@@ -196,10 +198,10 @@ class SystemConfig:
                 'enable_faction_dynamics': self.persona.enable_faction_dynamics
             },
             'voyager': {
-                'movement_range': self.voyager.movement_range,
-                'pathfinding_timeout': self.voyager.pathfinding_timeout,
-                'pondering_timeout': self.voyager.pondering_timeout,
-                'enable_autonomous_mode': self.voyager.enable_autonomous_mode
+                'movement_range': self.ai.movement_range,
+                'pathfinding_timeout': self.ai.pathfinding_timeout,
+                'pondering_timeout': self.ai.pondering_timeout,
+                'enable_autonomous_mode': self.ai.enable_autonomous_mode
             },
             'target_fps': self.target_fps,
             'enable_graphics': self.enable_graphics,
