@@ -216,14 +216,15 @@ class AsteroidsNEATGame:
         self.generation_start_time = time.time()
 
     def initialize(self) -> bool:
-        """Initialize game and connect to Godot."""
+        """Initialize game and attempt to connect to Godot."""
         print("[Initializing NEAT Asteroids Game...]")
 
         if not self.sdk.connect():
-            print("[ERROR] Failed to connect to Godot renderer")
-            return False
-
-        print("[OK] Connected to Godot")
+            print("[WARNING] Failed to connect to Godot renderer - Running HEADLESS mode")
+            self.headless = True
+        else:
+            print("[OK] Connected to Godot")
+            self.headless = False
 
         # Create initial pilot population
         self._spawn_pilot_population()
@@ -445,7 +446,10 @@ class AsteroidsNEATGame:
                     asteroid["active"] = False
 
     def _send_frame_to_renderer(self) -> None:
-        """Send frame to Godot."""
+        """Send frame to Godot if connected."""
+        if hasattr(self, 'headless') and self.headless:
+            return
+
         hud_data = {
             "score": str(self.stats.score),
             "lives": str(self.stats.lives),
