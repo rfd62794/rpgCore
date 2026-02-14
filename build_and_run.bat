@@ -10,9 +10,7 @@ echo ===========================================================================
 echo.
 
 echo [Step 1/3] Building C# project...
-cd "%PROJECT_PATH%"
-"%GODOT_PATH%" --headless --build-solutions --quit
-cd ..
+call "%~dp0godot_project\build.bat"
 
 echo.
 echo [Step 2/3] Starting Godot game window...
