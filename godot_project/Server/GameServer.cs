@@ -313,7 +313,7 @@ namespace rpgCore.Godot.Server
                     FrameNumber = Convert.ToInt32(message.GetValueOrDefault("frame_number", 0)),
                     Entities = new List<EntityDTO>(),
                     Particles = new List<ParticleEmitterDTO>(),
-                    HUD = null
+                    Hud = null
                 };
 
                 // Parse entities
@@ -334,7 +334,7 @@ namespace rpgCore.Godot.Server
                 if (message.TryGetValue("hud", out var hudObj))
                 {
                     var hudJson = JsonConvert.SerializeObject(hudObj);
-                    frameUpdate.HUD = JsonConvert.DeserializeObject<HUDStateDTO>(hudJson);
+                    frameUpdate.Hud = JsonConvert.DeserializeObject<HUDStateDTO>(hudJson);
                 }
 
                 OnFrameUpdate?.Invoke(frameUpdate);

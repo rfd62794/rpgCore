@@ -23,7 +23,7 @@ namespace rpgCore.Godot.Rendering
     /// Renders game entities to Godot Canvas2D.
     /// Supports multiple game types and entity styles.
     /// </summary>
-    public partial class GameEntityRenderer : CanvasItem
+    public partial class GameEntityRenderer : Node2D
     {
         private Dictionary<string, EntityRenderer> _entityRenderers = new();
         private Vector2 _worldScale = Vector2.One;
