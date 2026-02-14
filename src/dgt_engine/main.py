@@ -35,10 +35,10 @@ except ImportError:
 
 # Import narrative engines
 try:
-    from dgt_engine.engine.chronos import ChronosEngine, ChronosEngineFactory
+    from dgt_engine.engine.chronos import ChronosEngine
     from dgt_engine.narrative.persona import PersonaEngine, PersonaEngineFactory
 except ImportError:
-    from dgt_engine.engine.chronos import ChronosEngine, ChronosEngineFactory
+    from dgt_engine.engine.chronos import ChronosEngine
     from dgt_engine.narrative.persona import PersonaEngine, PersonaEngineFactory
 
 # Import actor
@@ -223,7 +223,7 @@ class DGTSystem:
                 logger.info("🎨 Graphics Engine initialized")
             
             # Initialize Chronos Engine (Quest & Progression Pillar)
-            self.chronos_engine = ChronosEngineFactory.create_engine()
+            self.chronos_engine = ChronosEngine(self.world_engine.world_ledger)
             self.chronos_engine.initialize_main_quest([
                 (10, 25), (10, 20), (10, 10), (20, 10), (25, 30), (32, 32)
             ])
