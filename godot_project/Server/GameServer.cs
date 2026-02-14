@@ -11,6 +11,7 @@ SOLID Principle: Single Responsibility
 
 using Godot;
 using System;
+using System.IO;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
@@ -167,57 +168,49 @@ namespace rpgCore.Godot.Server
         /// <summary>
         /// Receive messages from Python engine.
         /// </summary>
+        /// <summary>
+        /// Receive messages from Python engine using StreamReader for robust line reading.
+        /// </summary>
         private void ReceiveLoop()
         {
-            byte[] buffer = new byte[65536]; // 64KB buffer
-            StringBuilder messageBuffer = new StringBuilder();
-
-            while (_isRunning && _isConnected && _stream != null)
+            try
             {
-                try
+                // Use StreamReader to handle buffering and line splitting correctly
+                using (var reader = new StreamReader(_stream, Encoding.UTF8, detectEncodingFromByteOrderMarks: false, bufferSize: 65536, leaveOpen: true))
                 {
-                    int bytesRead = _stream.Read(buffer, 0, buffer.Length);
-
-                    if (bytesRead == 0)
+                    while (_isRunning && _isConnected && _stream != null)
                     {
-                        // Connection closed
-                        _isConnected = false;
-                        break;
-                    }
-
-                    string chunk = Encoding.UTF8.GetString(buffer, 0, bytesRead);
-                    messageBuffer.Append(chunk);
-
-                    // Process complete messages
-                    string content = messageBuffer.ToString();
-                    int newlineIndex;
-
-                    while ((newlineIndex = content.IndexOf('\n')) != -1)
-                    {
-                        string message = content.Substring(0, newlineIndex);
+                        string? line = reader.ReadLine();
                         
-                        if (!string.IsNullOrWhiteSpace(message))
+                        if (line == null)
+                        {
+                            // End of stream
+                            _isConnected = false;
+                            break;
+                        }
+
+                        if (!string.IsNullOrWhiteSpace(line))
                         {
                             lock (_receiveLock)
                             {
-                                _receiveQueue.Enqueue(message);
+                                _receiveQueue.Enqueue(line);
                             }
                         }
-
-                        // Update content to remaining part
-                        content = content.Substring(newlineIndex + 1);
                     }
-
-                    // Keep incomplete fragment in buffer
-                    messageBuffer.Clear();
-                    messageBuffer.Append(content);
                 }
-                catch (Exception e)
-                {
-                    if (_isRunning && _isConnected)
-                        GD.PrintErr($"[GameServer] Receive error: {e.Message}");
-                    break;
-                }
+            }
+            catch (IOException ioEx)
+            {
+                // Expected when stream closes
+                if (_isRunning)
+                    GD.Print($"[GameServer] Connection closed: {ioEx.Message}");
+                _isConnected = false;
+            }
+            catch (Exception e)
+            {
+                if (_isRunning && _isConnected)
+                    GD.PrintErr($"[GameServer] Receive error: {e.Message}");
+                _isConnected = false;
             }
         }
 
