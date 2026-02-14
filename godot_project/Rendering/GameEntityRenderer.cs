@@ -82,9 +82,9 @@ namespace rpgCore.Godot.Rendering
             }
 
             // Render HUD
-            if (frameUpdate.HUD != null)
+            if (frameUpdate.Hud != null)
             {
-                RenderHUD(frameUpdate.HUD);
+                RenderHUD(frameUpdate.Hud);
             }
 
             QueueRedraw();

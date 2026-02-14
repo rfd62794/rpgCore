@@ -8,7 +8,10 @@ script = ExtResource("1_0h4qd")
 [node name="GameCanvas" type="CanvasLayer" parent="."]
 layer = 0
 
-[node name="GameRenderer" type="CanvasItem" parent="GameCanvas"]
+[ext_resource type="Script" path="res://Rendering/GameEntityRenderer.cs" id="2_r3ndr"]
+
+[node name="GameRenderer" type="Node2D" parent="GameCanvas"]
+script = ExtResource("2_r3ndr")
 
 [node name="Control" type="Control" parent="."]
 layout_mode = 3
