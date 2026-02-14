@@ -22,7 +22,7 @@ namespace rpgCore.Godot.Models {
         public float[] Velocity { get; set; }  // [vx, vy]
         public float Angle { get; set; }  // Radians
         public float Radius { get; set; }
-        public int Color { get; set; }
+        public int? Color { get; set; }
         public float[] Vertices { get; set; }
         public bool Active { get; set; }
         public float Age { get; set; }
