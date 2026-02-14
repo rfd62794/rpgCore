@@ -172,13 +172,13 @@ class SystemClock:
         
         # Estimate CPU usage (simplified)
         target_time_ms = self.target_frame_time * 1000
-        if frame_time_ms > target_time_ms:
-            self.metrics.cpu_usage_percent = (frame_time_ms / target_time_ms) * 100
+        if frame_execution_ms > target_time_ms:
+            self.metrics.cpu_usage_percent = (frame_execution_ms / target_time_ms) * 100
         else:
-            self.metrics.cpu_usage_percent = (frame_time_ms / target_time_ms) * 100
+            self.metrics.cpu_usage_percent = (frame_execution_ms / target_time_ms) * 100
         
         # Check for dropped frames
-        if frame_time_ms > target_time_ms * 1.5:  # 50% over target
+        if frame_execution_ms > target_time_ms * 1.5:  # 50% over target
             self.metrics.frames_dropped += 1
         
         # Log warnings if CPU usage is too high

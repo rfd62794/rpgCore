@@ -1,18 +1,18 @@
 {
-  "validation_timestamp": "2026-02-13 21:54:42",
+  "validation_timestamp": "2026-02-13 21:55:58",
   "wave": "3_production_hardening",
   "architecture": "three_tier",
   "total_checks": 9,
-  "passed_checks": 7,
-  "failed_checks": 2,
-  "success_rate": 0.7777777777777778,
+  "passed_checks": 8,
+  "failed_checks": 1,
+  "success_rate": 0.8888888888888888,
   "production_ready": false,
-  "miyoo_mini_ready": false,
+  "miyoo_mini_ready": true,
   "categories": {
     "architecture": {
       "total": 3,
-      "passed": 2,
-      "failed": 1
+      "passed": 3,
+      "failed": 0
     },
     "performance": {
       "total": 3,
@@ -50,24 +50,24 @@
     },
     {
       "check_name": "SystemClock Performance",
-      "passed": false,
-      "details": "Target FPS: 45.0, Healthy: False, Battery optimized: True",
+      "passed": true,
+      "details": "Target FPS: 45.0, Healthy: True, Battery optimized: True",
       "metrics": {
         "target_fps": 45.0,
         "max_cpu_usage": 80.0,
-        "actual_fps": 211864.49182040215,
-        "is_healthy": false,
+        "actual_fps": 58.78956978835578,
+        "is_healthy": true,
         "battery_optimization_works": true
       }
     },
     {
       "check_name": "Boot Performance",
       "passed": true,
-      "details": "Import: 0.01ms, Init: 0.45ms",
+      "details": "Import: 0.01ms, Init: 1.21ms",
       "metrics": {
-        "import_time_ms": 0.012874603271484375,
-        "init_time_ms": 0.453948974609375,
-        "total_boot_time_ms": 0.4668235778808594,
+        "import_time_ms": 0.013828277587890625,
+        "init_time_ms": 1.2149810791015625,
+        "total_boot_time_ms": 1.2288093566894531,
         "target_import_ms": 5000,
         "target_init_ms": 1000
       }
@@ -77,8 +77,8 @@
       "passed": true,
       "details": "Memory increase: 0.00MB",
       "metrics": {
-        "baseline_memory_mb": 86.6328125,
-        "loaded_memory_mb": 86.6328125,
+        "baseline_memory_mb": 85.546875,
+        "loaded_memory_mb": 85.546875,
         "memory_increase_mb": 0.0,
         "target_increase_mb": 100
       }
