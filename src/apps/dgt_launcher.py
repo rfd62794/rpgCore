@@ -101,8 +101,8 @@ class ThreeTierValidator:
     def _validate_tier2_engines(self) -> None:
         """Validate Tier 2 Engines"""
         try:
-            from engines.body.cinematics.movie_engine import MovieEngine
-            from engines.body.pipeline.asset_loader import AssetLoader
+            from dgt_engine.body.cinematics.movie_engine import MovieEngine
+            from dgt_engine.body.pipeline.asset_loader import AssetLoader
             
             # Test MovieEngine
             engine = MovieEngine(seed="LAUNCHER_TEST")
@@ -138,7 +138,7 @@ class ThreeTierValidator:
         try:
             # This should work - importing from lower tiers
             from foundation.constants import SOVEREIGN_WIDTH
-            from engines.body.cinematics.movie_engine import MovieEngine
+            from dgt_engine.body.cinematics.movie_engine import MovieEngine
             
             logger.info("✅ Import compliance validated")
             
@@ -514,13 +514,13 @@ class DGTPlatformLauncher:
         logger.info("🎮 Creating Asteroids demo")
         
         try:
-            from engines.body.cinematics.movie_engine import MovieEngine
+            from dgt_engine.body.cinematics.movie_engine import MovieEngine
             
             # Create a simple asteroids-like sequence
             engine = MovieEngine(seed="ASTEROIDS_DEMO", target_fps=60.0)
             
             # Create asteroids sequence
-            from engines.body.cinematics.movie_engine import CinematicEvent, EventType, MovieSequence
+            from dgt_engine.body.cinematics.movie_engine import CinematicEvent, EventType, MovieSequence
             
             events = [
                 CinematicEvent(
@@ -580,7 +580,7 @@ class DGTPlatformLauncher:
         logger.info("🧪 Creating RPG Demo")
         
         try:
-            from engines.body.pipeline.asset_loader import AssetLoader
+            from dgt_engine.body.pipeline.asset_loader import AssetLoader
             
             # Load some assets for the demo
             loader = AssetLoader()
