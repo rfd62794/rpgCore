@@ -48,6 +48,7 @@ namespace rpgCore.Godot.Models {
         public int Lives { get; set; }
         public int Wave { get; set; }
         public int AsteroidsRemaining { get; set; }
+        public string Status { get; set; }
     }
 
     /// <summary>Complete game state for rendering.</summary>
