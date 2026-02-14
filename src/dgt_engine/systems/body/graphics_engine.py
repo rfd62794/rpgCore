@@ -26,7 +26,7 @@ from loguru import logger
 # === KERNEL BRIDGE IMPORTS ===
 # Importing from the new DGT Kernel
 try:
-    from rpg_core.foundation.constants import SOVEREIGN_WIDTH, SOVEREIGN_HEIGHT
+    from dgt_engine.foundation.constants import SOVEREIGN_WIDTH, SOVEREIGN_HEIGHT
 except ImportError:
     # Fallback to relative import if package is not in path
     from ...foundation.constants import SOVEREIGN_WIDTH, SOVEREIGN_HEIGHT

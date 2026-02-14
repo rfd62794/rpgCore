@@ -24,12 +24,12 @@ from datetime import datetime
 
 from loguru import logger
 
-from rpg_core.foundation.constants import (
+from dgt_engine.foundation.constants import (
     PERSISTENCE_FORMAT, PERSISTENCE_COMPRESSION, PERSISTENCE_INTERVAL_TURNS,
     BACKUP_INTERVAL_TURNS, MAX_BACKUP_FILES, PERSISTENCE_FILE, BACKUP_DIRECTORY,
     EMERGENCY_SAVE_PREFIX
 )
-from rpg_core.foundation.protocols import WorldStateSnapshot, EntityStateProtocol
+from dgt_engine.foundation.protocols import WorldStateSnapshot, EntityStateProtocol
 
 
 @dataclass

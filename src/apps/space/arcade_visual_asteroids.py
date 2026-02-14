@@ -13,9 +13,9 @@ from pathlib import Path
 # Add src to path
 sys.path.append(str(Path(__file__).parent.parent.parent))
 
-from rpg_core.foundation.types import Result
-from rpg_core.foundation.constants import SOVEREIGN_WIDTH, SOVEREIGN_HEIGHT
-from rpg_core.foundation.system_clock import SystemClock
+from dgt_engine.foundation.types import Result
+from dgt_engine.foundation.constants import SOVEREIGN_WIDTH, SOVEREIGN_HEIGHT
+from dgt_engine.foundation.system_clock import SystemClock
 from loguru import logger
 
 

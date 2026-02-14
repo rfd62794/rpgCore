@@ -20,7 +20,7 @@ from loguru import logger
 from rich.console import Console
 from rich.logging import RichHandler
 
-from rpg_core.foundation.constants import (
+from dgt_engine.foundation.constants import (
     LOG_LEVEL_DEFAULT, LOG_FORMAT
 )
 

@@ -16,17 +16,17 @@ from enum import Enum
 
 from loguru import logger
 
-from rpg_core.systems.kernel.state.models import GameState, InterestPoint
-from rpg_core.systems.kernel.state.enums import AIState as VoyagerState
-from rpg_core.systems.kernel.state.intents import MovementIntent, InteractionIntent, PonderIntent
-from rpg_core.systems.kernel.state.validation import validate_position
-from rpg_core.systems.kernel.state.constants import DIRECTION_VECTORS
-from rpg_core.systems.kernel.constants import (
+from dgt_engine.systems.kernel.state.models import GameState, InterestPoint
+from dgt_engine.systems.kernel.state.enums import AIState as VoyagerState
+from dgt_engine.systems.kernel.state.intents import MovementIntent, InteractionIntent, PonderIntent
+from dgt_engine.systems.kernel.state.validation import validate_position
+from dgt_engine.systems.kernel.state.constants import DIRECTION_VECTORS
+from dgt_engine.systems.kernel.constants import (
     MOVEMENT_RANGE_TILES, INTENT_COOLDOWN_MS, PERSISTENCE_INTERVAL_TURNS,
     PATHFINDING_MAX_ITERATIONS, VOYAGER_INTERACTION_RANGE
 )
-from rpg_core.systems.kernel.config import VoyagerConfig
-from rpg_core.narrative.chronos import ChronosEngine, ChronosEngineFactory
+from dgt_engine.systems.kernel.config import VoyagerConfig
+from dgt_engine.narrative.chronos import ChronosEngine, ChronosEngineFactory
 
 # Body — pathfinding and navigation primitives
 from actors.pawn_navigation import (

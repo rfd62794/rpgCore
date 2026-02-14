@@ -7,19 +7,19 @@ from typing import List, Dict, Any, Optional, Tuple
 from dataclasses import dataclass
 import math
 
-from rpg_core.foundation.interfaces.protocols import RenderProtocol
-from rpg_core.foundation.types import Result
-from rpg_core.foundation.base import BasePPU
-from rpg_core.foundation.constants import SOVEREIGN_WIDTH, SOVEREIGN_HEIGHT, SOVEREIGN_PIXELS
-from rpg_core.systems.body.animation import SpriteAnimator, NewtonianGhostRenderer
-from rpg_core.systems.kernel.controller import BaseController, ControlInput, ControllerManager
-from rpg_core.systems.body.systems.entity_manager import EntityManager, ShipEntity, AsteroidEntity, BulletEntity
-from rpg_core.systems.body.systems.spawner import EntitySpawner, create_asteroid_spawn_config, create_wave_configs
-from rpg_core.systems.body.systems.collision import CollisionSystem, create_asteroids_collision_groups, setup_asteroids_collision_handlers
-from rpg_core.systems.body.systems.status_manager import StatusManager, setup_asteroids_status_manager
+from dgt_engine.foundation.interfaces.protocols import RenderProtocol
+from dgt_engine.foundation.types import Result
+from dgt_engine.foundation.base import BasePPU
+from dgt_engine.foundation.constants import SOVEREIGN_WIDTH, SOVEREIGN_HEIGHT, SOVEREIGN_PIXELS
+from dgt_engine.systems.body.animation import SpriteAnimator, NewtonianGhostRenderer
+from dgt_engine.systems.kernel.controller import BaseController, ControlInput, ControllerManager
+from dgt_engine.systems.body.systems.entity_manager import EntityManager, ShipEntity, AsteroidEntity, BulletEntity
+from dgt_engine.systems.body.systems.spawner import EntitySpawner, create_asteroid_spawn_config, create_wave_configs
+from dgt_engine.systems.body.systems.collision import CollisionSystem, create_asteroids_collision_groups, setup_asteroids_collision_handlers
+from dgt_engine.systems.body.systems.status_manager import StatusManager, setup_asteroids_status_manager
 from .physics_body import PhysicsBody, PhysicsState
 from .entities.space_entity import SpaceEntity, EntityType
-from rpg_core.foundation.vector import Vector2
+from dgt_engine.foundation.vector import Vector2
 from .scrap_entity import ScrapEntity
 
 

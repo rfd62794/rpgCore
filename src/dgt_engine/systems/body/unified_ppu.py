@@ -23,12 +23,12 @@ from abc import ABC, abstractmethod
 
 from loguru import logger
 
-from rpg_core.foundation.interfaces.protocols import PPUProtocol, Result, ValidationResult
-from rpg_core.foundation.base import BasePPU
-from rpg_core.exceptions.core import PPUException, create_ppu_exception
-from rpg_core.systems.kernel.models import ViewportLayout, ViewportLayoutMode, Rectangle, Point
-from rpg_core.systems.kernel.viewport_manager import ViewportManager
-from rpg_core.systems.kernel.constants import SOVEREIGN_WIDTH, SOVEREIGN_HEIGHT, SOVEREIGN_PIXELS
+from dgt_engine.foundation.interfaces.protocols import PPUProtocol, Result, ValidationResult
+from dgt_engine.foundation.base import BasePPU
+from dgt_engine.exceptions.core import PPUException, create_ppu_exception
+from dgt_engine.systems.kernel.models import ViewportLayout, ViewportLayoutMode, Rectangle, Point
+from dgt_engine.systems.kernel.viewport_manager import ViewportManager
+from dgt_engine.systems.kernel.constants import SOVEREIGN_WIDTH, SOVEREIGN_HEIGHT, SOVEREIGN_PIXELS
 
 
 # Sovereign Resolution Constants (ADR 192) - Using centralized constants

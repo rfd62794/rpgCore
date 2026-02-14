@@ -12,11 +12,11 @@ import time
 
 from loguru import logger
 
-from rpg_core.systems.graphics.pixel_renderer import PixelRenderer, Pixel
-from rpg_core.systems.graphics.tile_bank import TileBank, TileType
-from rpg_core.models.metasprite import Metasprite, MetaspriteConfig, CharacterRole
-from rpg_core.foundation.interfaces.visuals import AnimationState, SpriteCoordinate
-from rpg_core.ui.palette_manager import PaletteManager, PaletteType
+from dgt_engine.systems.graphics.pixel_renderer import PixelRenderer, Pixel
+from dgt_engine.systems.graphics.tile_bank import TileBank, TileType
+from dgt_engine.models.metasprite import Metasprite, MetaspriteConfig, CharacterRole
+from dgt_engine.foundation.interfaces.visuals import AnimationState, SpriteCoordinate
+from dgt_engine.ui.palette_manager import PaletteManager, PaletteType
 
 
 class RenderLayer(Enum):

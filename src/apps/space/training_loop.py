@@ -14,11 +14,11 @@ from loguru import logger
 # Add src to path
 sys.path.append(str(Path(__file__).parent.parent.parent))
 
-from rpg_core.foundation.types import Result
-from rpg_core.foundation.constants import SOVEREIGN_WIDTH, SOVEREIGN_HEIGHT, DEBUG_INFINITE_ENERGY
-from rpg_core.systems.mind.neat.neat_engine import NEATEngine, NeuralNetwork, create_neat_engine
-from rpg_core.systems.mind.neat.fitness import FitnessCalculator, create_fitness_calculator
-from rpg_core.systems.kernel.controller import ControlInput
+from dgt_engine.foundation.types import Result
+from dgt_engine.foundation.constants import SOVEREIGN_WIDTH, SOVEREIGN_HEIGHT, DEBUG_INFINITE_ENERGY
+from dgt_engine.systems.mind.neat.neat_engine import NEATEngine, NeuralNetwork, create_neat_engine
+from dgt_engine.systems.mind.neat.fitness import FitnessCalculator, create_fitness_calculator
+from dgt_engine.systems.kernel.controller import ControlInput
 from apps.space.logic.ai_controller import create_ai_controller
 from apps.space.arcade_visual_asteroids import ArcadeVisualAsteroids
 

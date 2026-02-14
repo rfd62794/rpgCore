@@ -15,12 +15,12 @@ import time
 import threading
 from enum import Enum
 
-from rpg_core.foundation.types import Result
-from rpg_core.foundation.protocols import (
+from dgt_engine.foundation.types import Result
+from dgt_engine.foundation.protocols import (
     WorldStateSnapshot, EntityStateProtocol, Vector2Protocol,
     EventCallbackProtocol, RenderCallbackProtocol
 )
-from rpg_core.foundation.registry import DGTRegistry, RegistryType
+from dgt_engine.foundation.registry import DGTRegistry, RegistryType
 
 
 class SystemStatus(Enum):
@@ -344,7 +344,7 @@ class BaseSystem(ABC):
     def _get_logger(self):
         """Get logger for this system"""
         try:
-            from rpg_core.foundation.utils.logger import get_logger_manager
+            from dgt_engine.foundation.utils.logger import get_logger_manager
             return get_logger_manager().get_component_logger(f"system_{self.config.system_id}")
         except Exception:
             import logging
@@ -431,7 +431,7 @@ class BaseComponent(ABC):
     def _get_logger(self):
         """Get logger for this component"""
         try:
-            from rpg_core.foundation.utils.logger import get_logger_manager
+            from dgt_engine.foundation.utils.logger import get_logger_manager
             return get_logger_manager().get_component_logger(f"component_{self.component_id}")
         except Exception:
             import logging

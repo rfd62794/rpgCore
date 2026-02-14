@@ -17,16 +17,16 @@ from pathlib import Path
 
 from loguru import logger
 
-from rpg_core.systems.kernel.state.models import (
+from dgt_engine.systems.kernel.state.models import (
     Tile, TileType, BiomeType, InterestPoint, InterestType, Chunk, WorldDelta, TileData
 )
-from rpg_core.systems.kernel.state.validation import validate_position
-from rpg_core.foundation.constants import (
+from dgt_engine.systems.kernel.state.validation import validate_position
+from dgt_engine.foundation.constants import (
     WORLD_SIZE_X, WORLD_SIZE_Y, CHUNK_SIZE, INTEREST_POINT_SPAWN_CHANCE,
     PERMUTATION_TABLE_SIZE, NOISE_SCALE, NOISE_OCTAVES, NOISE_PERSISTENCE, NOISE_LACUNARITY,
     INTEREST_POINT_DENSITY, INTEREST_POINT_MIN_DISTANCE, INTEREST_POINT_MAX_PER_CHUNK
 )
-from rpg_core.systems.body.pipeline.asset_loader import AssetLoader, ObjectRegistry
+from dgt_engine.systems.body.pipeline.asset_loader import AssetLoader, ObjectRegistry
 
 
 @dataclass

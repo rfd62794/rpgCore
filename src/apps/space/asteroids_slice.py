@@ -27,18 +27,18 @@ _src = Path(__file__).resolve().parent.parent.parent
 if str(_src) not in sys.path:
     sys.path.insert(0, str(_src))
 
-from rpg_core.foundation.vector import Vector2
-from rpg_core.foundation.constants import SOVEREIGN_WIDTH as WIDTH, SOVEREIGN_HEIGHT as HEIGHT
-from rpg_core.systems.body.kinetics import KineticEntity
-from rpg_core.systems.graphics.fx.exhaust_system import ExhaustSystem
-from rpg_core.game_engine.actors.asteroid_pilot import AsteroidPilot
+from dgt_engine.foundation.vector import Vector2
+from dgt_engine.foundation.constants import SOVEREIGN_WIDTH as WIDTH, SOVEREIGN_HEIGHT as HEIGHT
+from dgt_engine.systems.body.kinetics import KineticEntity
+from dgt_engine.systems.graphics.fx.exhaust_system import ExhaustSystem
+from dgt_engine.game_engine.actors.asteroid_pilot import AsteroidPilot
 
 if TYPE_CHECKING:
-    from rpg_core.game_engine.entities.asteroid import Asteroid
-    from rpg_core.game_engine.actors.asteroid_pilot import AsteroidPilot
-    from rpg_core.systems.graphics.fx.exhaust_system import ExhaustSystem
+    from dgt_engine.game_engine.entities.asteroid import Asteroid
+    from dgt_engine.game_engine.actors.asteroid_pilot import AsteroidPilot
+    from dgt_engine.systems.graphics.fx.exhaust_system import ExhaustSystem
 
-from rpg_core.foundation.utils.performance_monitor import (
+from dgt_engine.foundation.utils.performance_monitor import (
     PerformanceMonitor,
     initialize_performance_monitor,
     get_performance_monitor,
@@ -498,7 +498,7 @@ class VisualRunner:
 
     def _tick(self) -> None:
         """One frame: input → physics → render → blit."""
-        from rpg_core.game.actors.asteroid_pilot import AsteroidPilot
+        from dgt_engine.game.actors.asteroid_pilot import AsteroidPilot
         
         t0 = time.time()
 

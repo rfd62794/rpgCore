@@ -20,56 +20,56 @@ import time
 from pathlib import Path
 from typing import Dict, Any, Optional, TypedDict, Union, Callable, Awaitable, NotRequired
 
-from rpg_core.utils import initialize_logging, get_logger_manager
+from dgt_engine.utils import initialize_logging, get_logger_manager
 
 # Import pillar engines
 try:
-    from rpg_core.game_engine import WorldEngine, WorldEngineFactory
-    from rpg_core.game_engine import DDEngine
-    from rpg_core.systems.body import GraphicsEngine, GraphicsEngineFactory
+    from dgt_engine.game_engine import WorldEngine, WorldEngineFactory
+    from dgt_engine.game_engine import DDEngine
+    from dgt_engine.systems.body import GraphicsEngine, GraphicsEngineFactory
 except ImportError:
     # Fallback to local systems if package import fails
-    from rpg_core.game_engine import WorldEngine, WorldEngineFactory
-    from rpg_core.game_engine import DDEngine
-    from rpg_core.systems.body import GraphicsEngine, GraphicsEngineFactory
+    from dgt_engine.game_engine import WorldEngine, WorldEngineFactory
+    from dgt_engine.game_engine import DDEngine
+    from dgt_engine.systems.body import GraphicsEngine, GraphicsEngineFactory
 
 # Import narrative engines
 try:
-    from rpg_core.engine.chronos import ChronosEngine, ChronosEngineFactory
-    from rpg_core.narrative.persona import PersonaEngine, PersonaEngineFactory
+    from dgt_engine.engine.chronos import ChronosEngine, ChronosEngineFactory
+    from dgt_engine.narrative.persona import PersonaEngine, PersonaEngineFactory
 except ImportError:
-    from rpg_core.engine.chronos import ChronosEngine, ChronosEngineFactory
-    from rpg_core.narrative.persona import PersonaEngine, PersonaEngineFactory
+    from dgt_engine.engine.chronos import ChronosEngine, ChronosEngineFactory
+    from dgt_engine.narrative.persona import PersonaEngine, PersonaEngineFactory
 
 # Import actor
 try:
-    from rpg_core.game_engine.actors.ai_controller import AIController, Spawner
+    from dgt_engine.game_engine.actors.ai_controller import AIController, Spawner
 except ImportError:
-    from rpg_core.game_engine.actors.ai_controller import AIController, Spawner
+    from dgt_engine.game_engine.actors.ai_controller import AIController, Spawner
 
 # Import utilities
-from rpg_core.utils.config_manager import (
+from dgt_engine.utils.config_manager import (
     setup_configuration_management, load_system_config,
     SystemConfigModel, ConfigurationManager
 )
 
 # Import circuit breaker
-from rpg_core.utils.circuit_breaker import (
+from dgt_engine.utils.circuit_breaker import (
     get_circuit_manager, circuit_breaker, CircuitBreakerConfig,
     CircuitBreakerManager
 )
 
 # Import performance monitoring
-from rpg_core.utils.performance_monitor import (
+from dgt_engine.utils.performance_monitor import (
     initialize_performance_monitor, get_performance_monitor,
     PerformanceMonitor
 )
 
 # Import developer console
 try:
-    from rpg_core.tools.developer_console import DeveloperConsole
+    from dgt_engine.tools.developer_console import DeveloperConsole
 except ImportError:
-    from rpg_core.tools.developer_console import DeveloperConsole
+    from dgt_engine.tools.developer_console import DeveloperConsole
 
 # Heartbeat Controller - Placeholder for missing core module
 HeartbeatController = None

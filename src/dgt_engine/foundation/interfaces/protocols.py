@@ -13,7 +13,7 @@ from abc import ABC, abstractmethod
 from enum import Enum
 
 # Import foundation types to avoid circular dependencies
-from rpg_core.foundation.types import Result, ValidationResult
+from dgt_engine.foundation.types import Result, ValidationResult
 
 # Generic type variables
 T = TypeVar('T')

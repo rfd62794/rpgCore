@@ -15,11 +15,11 @@ from loguru import logger
 # Add src to path
 sys.path.append(str(Path(__file__).parent.parent.parent))
 
-from rpg_core.foundation.types import Result
-from rpg_core.foundation.constants import SOVEREIGN_WIDTH, SOVEREIGN_HEIGHT, DEBUG_INFINITE_ENERGY
-from rpg_core.game_engine import TriBrain, create_tri_brain, ShipGenetics
-from rpg_core.game_engine.actors.asteroid_pilot import AsteroidPilot
-from rpg_core.systems.body import UnifiedPPU, create_unified_ppu, RenderPacket
+from dgt_engine.foundation.types import Result
+from dgt_engine.foundation.constants import SOVEREIGN_WIDTH, SOVEREIGN_HEIGHT, DEBUG_INFINITE_ENERGY
+from dgt_engine.game_engine import TriBrain, create_tri_brain, ShipGenetics
+from dgt_engine.game_engine.actors.asteroid_pilot import AsteroidPilot
+from dgt_engine.systems.body import UnifiedPPU, create_unified_ppu, RenderPacket
 
 
 class Bullet:

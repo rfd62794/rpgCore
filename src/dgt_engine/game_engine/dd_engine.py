@@ -17,14 +17,14 @@ from collections import deque
 
 from loguru import logger
 
-from rpg_core.systems.kernel.state.models import GameState, WorldDelta
-from rpg_core.systems.kernel.state.enums import IntentType, ValidationResult
-from rpg_core.systems.kernel.state.intents import (
+from dgt_engine.systems.kernel.state.models import GameState, WorldDelta
+from dgt_engine.systems.kernel.state.enums import IntentType, ValidationResult
+from dgt_engine.systems.kernel.state.intents import (
     Command, CommandResult, IntentValidation, MovementIntent, InteractionIntent, PonderIntent
 )
-from rpg_core.systems.kernel.state.validation import validate_intent
-from rpg_core.foundation.constants import INTENT_COOLDOWN_MS
-from rpg_core.systems.body.pipeline.asset_loader import AssetLoader
+from dgt_engine.systems.kernel.state.validation import validate_intent
+from dgt_engine.foundation.constants import INTENT_COOLDOWN_MS
+from dgt_engine.systems.body.pipeline.asset_loader import AssetLoader
 from .combat_resolver import CombatResolver
 
 
@@ -96,7 +96,7 @@ class DDEngine:
         
         # Object DNA integration
         self.asset_loader = AssetLoader()
-        from rpg_core.systems.body.pipeline.asset_loader import ObjectRegistry
+        from dgt_engine.systems.body.pipeline.asset_loader import ObjectRegistry
         self.object_registry = ObjectRegistry(self.asset_loader)
         
         # Combat system

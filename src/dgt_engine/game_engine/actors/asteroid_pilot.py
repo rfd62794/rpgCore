@@ -10,13 +10,13 @@ from dataclasses import dataclass
 from enum import Enum
 from loguru import logger
 
-from rpg_core.foundation.types import Result
-from rpg_core.foundation.constants import SOVEREIGN_WIDTH, SOVEREIGN_HEIGHT, DEBUG_INFINITE_ENERGY
-from rpg_core.systems.kernel.controller import BaseController, ControlInput
-from rpg_core.game_engine.neat.neat_engine import NeuralNetwork
-from rpg_core.game_engine.logic.short_term_memory import create_short_term_memory
-from rpg_core.game_engine.logic.knowledge_library import create_knowledge_library
-from rpg_core.game_engine.logic.technique_extractor import TechniqueTemplate
+from dgt_engine.foundation.types import Result
+from dgt_engine.foundation.constants import SOVEREIGN_WIDTH, SOVEREIGN_HEIGHT, DEBUG_INFINITE_ENERGY
+from dgt_engine.systems.kernel.controller import BaseController, ControlInput
+from dgt_engine.game_engine.neat.neat_engine import NeuralNetwork
+from dgt_engine.game_engine.logic.short_term_memory import create_short_term_memory
+from dgt_engine.game_engine.logic.knowledge_library import create_knowledge_library
+from dgt_engine.game_engine.logic.technique_extractor import TechniqueTemplate
 
 
 class PilotState(Enum):

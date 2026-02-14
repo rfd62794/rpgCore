@@ -10,8 +10,8 @@ import math
 import time
 from loguru import logger
 
-from rpg_core.foundation.types import Result
-from rpg_core.foundation.constants import SOVEREIGN_WIDTH, SOVEREIGN_HEIGHT
+from dgt_engine.foundation.types import Result
+from dgt_engine.foundation.constants import SOVEREIGN_WIDTH, SOVEREIGN_HEIGHT
 from .entity_manager import EntityManager, Entity
 
 

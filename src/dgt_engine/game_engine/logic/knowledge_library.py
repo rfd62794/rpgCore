@@ -8,7 +8,7 @@ import math
 from typing import Dict, List, Any, Optional, Tuple
 from pathlib import Path
 from loguru import logger
-from rpg_core.foundation.types import Result
+from dgt_engine.foundation.types import Result
 
 from .technique_extractor import TechniqueTemplate, create_technique_extractor
 

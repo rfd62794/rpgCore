@@ -8,7 +8,7 @@ from typing import Dict, List, Any, Optional, Tuple
 from dataclasses import dataclass
 from loguru import logger
 
-from rpg_core.foundation.types import Result
+from dgt_engine.foundation.types import Result
 
 
 @dataclass

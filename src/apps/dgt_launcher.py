@@ -19,9 +19,9 @@ from enum import Enum
 # Add src to path for imports
 sys.path.append(str(Path(__file__).parent.parent))
 
-from foundation.types import Result
-from foundation.system_clock import SystemClock
-from foundation.constants import SOVEREIGN_WIDTH, SOVEREIGN_HEIGHT
+from dgt_engine.foundation.types import Result
+from dgt_engine.foundation.system_clock import SystemClock
+from dgt_engine.foundation.constants import SOVEREIGN_WIDTH, SOVEREIGN_HEIGHT
 from loguru import logger
 
 
@@ -80,9 +80,9 @@ class ThreeTierValidator:
     def _validate_tier1_foundation(self) -> None:
         """Validate Tier 1 Foundation"""
         try:
-            from foundation.constants import SOVEREIGN_WIDTH, SOVEREIGN_HEIGHT
-            from foundation.types import Result, ValidationResult
-            from foundation.system_clock import SystemClock
+            from dgt_engine.foundation.constants import SOVEREIGN_WIDTH, SOVEREIGN_HEIGHT
+            from dgt_engine.foundation.types import Result, ValidationResult
+            from dgt_engine.foundation.system_clock import SystemClock
             
             # Test SystemClock
             clock = SystemClock(target_fps=60.0)
@@ -137,7 +137,7 @@ class ThreeTierValidator:
         """Validate import compliance"""
         try:
             # This should work - importing from lower tiers
-            from foundation.constants import SOVEREIGN_WIDTH
+            from dgt_engine.foundation.constants import SOVEREIGN_WIDTH
             from dgt_engine.body.cinematics.movie_engine import MovieEngine
             
             logger.info("✅ Import compliance validated")

@@ -18,7 +18,7 @@ from dataclasses import dataclass
 from loguru import logger
 from pydantic import ValidationError
 
-from rpg_core.foundation.protocols import WorldStateSnapshot, EntityStateProtocol
+from dgt_engine.foundation.protocols import WorldStateSnapshot, EntityStateProtocol
 
 
 @dataclass
