@@ -17,19 +17,28 @@ namespace rpgCore.Godot.Models {
     [System.Serializable]
     public class EntityDTO {
         public string Id { get; set; }
-        public string Type { get; set; }  // "ship", "asteroid", "bullet", etc.
+        public string Type { get; set; }
         public float[] Position { get; set; }  // [x, y]
         public float[] Velocity { get; set; }  // [vx, vy]
-        public float Heading { get; set; }  // Radians
+        public float Angle { get; set; }  // Radians
         public float Radius { get; set; }
-        public int Color { get; set; }  // Palette index
-        public float[] Vertices { get; set; }  // Ship only
+        public int Color { get; set; }
+        public float[] Vertices { get; set; }
         public bool Active { get; set; }
         public float Age { get; set; }
         public float Lifetime { get; set; }
 
-        public Vector2 GetPosition() => new Vector2(Position[0], Position[1]);
-        public Vector2 GetVelocity() => new Vector2(Velocity[0], Velocity[1]);
+        public Vector2 GetPosition() => new Vector2(X, Y);
+        public Vector2 GetVelocity() => new Vector2(Vx, Vy);
+
+        [Newtonsoft.Json.JsonIgnore]
+        public float X => Position != null && Position.Length > 0 ? Position[0] : 0;
+        [Newtonsoft.Json.JsonIgnore]
+        public float Y => Position != null && Position.Length > 1 ? Position[1] : 0;
+        [Newtonsoft.Json.JsonIgnore]
+        public float Vx => Velocity != null && Velocity.Length > 0 ? Velocity[0] : 0;
+        [Newtonsoft.Json.JsonIgnore]
+        public float Vy => Velocity != null && Velocity.Length > 1 ? Velocity[1] : 0;
     }
 
     /// <summary>HUD state for rendering.</summary>
@@ -57,9 +66,11 @@ namespace rpgCore.Godot.Models {
     /// <summary>Input command from player.</summary>
     [System.Serializable]
     public class InputCommandDTO {
-        public string Action { get; set; }  // "thrust", "rotate", "fire", "menu"
-        public float Value { get; set; }  // -1.0 to 1.0
+        public string CommandType { get; set; }  // "thrust", "rotate", "fire", "menu"
+        public float Value { get; set; }
         public float Timestamp { get; set; }
+        public float Duration { get; set; }
+        public float Intensity { get; set; }
     }
 
     /// <summary>Frame data for rendering.</summary>
