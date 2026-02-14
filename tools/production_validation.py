@@ -127,7 +127,7 @@ class ThreeTierProductionValidator:
             # Test Tier 1 imports (should work independently)
             try:
                 from dgt_engine.foundation.constants import SOVEREIGN_WIDTH, SOVEREIGN_HEIGHT
-                from dgt_engine.foundation.types import Result, ValidationResult
+                from dgt_engine.foundation.types import Result, ValidationResult as EngineValidationResult
                 from dgt_engine.foundation.system_clock import SystemClock
                 
                 tier1_imports_work = True
