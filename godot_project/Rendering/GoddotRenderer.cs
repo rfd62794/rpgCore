@@ -104,7 +104,7 @@ namespace rpgCore.Godot.Rendering {
         /// <summary>Draw the player ship as a triangle with outline.</summary>
         private void DrawShip(EntityDTO ship) {
             var pos = ship.GetPosition() * scale;
-            var heading = ship.Heading;
+            var heading = ship.Angle;
             var shipRadius = ship.Radius * scale;
 
             // Ship vertices (triangle pointing right in local space)
