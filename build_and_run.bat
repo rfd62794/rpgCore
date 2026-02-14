@@ -9,6 +9,12 @@ echo NEAT ASTEROIDS - BUILD AND RUN
 echo ================================================================================
 echo.
 
+echo [Step 0/3] Cleaning up potential zombie processes...
+taskkill /F /IM Godot_v4.6-stable_mono_win64.exe 2>nul
+taskkill /F /IM python.exe 2>nul
+timeout /t 1 /nobreak >nul
+echo.
+
 echo [Step 1/3] Building C# project...
 call "%~dp0godot_project\build.bat"
 
