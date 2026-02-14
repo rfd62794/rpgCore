@@ -29,6 +29,7 @@ from game_engine.foundation.registry import (
     RegistryType,
     RegistryEntry,
 )
+from game_engine.foundation.result import Result
 
 __all__ = [
     # Base classes
@@ -49,4 +50,6 @@ __all__ = [
     "DGTRegistry",
     "RegistryType",
     "RegistryEntry",
+    # Result type
+    "Result",
 ]
