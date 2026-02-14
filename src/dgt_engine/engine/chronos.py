@@ -51,6 +51,16 @@ class ChronosEngine:
         self.faction_system = FactionSystem(world_ledger)
         
         logger.info("Chronos Engine initialized for world evolution with faction system")
+
+    def initialize_main_quest(self, quest_path: List[Tuple[int, int]]):
+        """
+        Initialize the main quest line with key locations.
+        
+        Args:
+            quest_path: List of coordinates for the main quest path
+        """
+        self.quest_path = [Coordinate(x, y, 0) for x, y in quest_path]
+        logger.info(f"Main quest initialized with {len(self.quest_path)} steps")
     
     def advance_time(self, delta_turns: int) -> List[WorldEvent]:
         """
