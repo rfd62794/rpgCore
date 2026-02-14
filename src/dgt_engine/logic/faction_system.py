@@ -16,7 +16,7 @@ import json
 from datetime import datetime
 
 from loguru import logger
-from world_ledger import WorldLedger, Coordinate, WorldChunk
+from dgt_engine.game_engine.world_ledger import WorldLedger, Coordinate, WorldChunk
 
 
 class FactionRelation(Enum):

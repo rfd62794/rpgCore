@@ -14,7 +14,7 @@ from datetime import datetime
 import json
 
 from loguru import logger
-from world_ledger import WorldLedger, Coordinate
+from dgt_engine.game_engine.world_ledger import WorldLedger, Coordinate
 from game_state import GameState
 from utils.baker_expanded import ExpandedBaker, AssetType
 

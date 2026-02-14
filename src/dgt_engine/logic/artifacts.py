@@ -15,8 +15,8 @@ from enum import Enum
 import json
 
 from loguru import logger
-from world_ledger import WorldLedger, Coordinate
-from logic.faction_system import FactionSystem, FactionType
+from dgt_engine.game_engine.world_ledger import WorldLedger, Coordinate
+from dgt_engine.logic.faction_system import FactionSystem, FactionType
 
 
 class ArtifactRarity(Enum):

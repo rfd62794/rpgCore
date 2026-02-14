@@ -12,7 +12,7 @@ from typing import Dict, List, Tuple, Optional, Any
 from dataclasses import dataclass
 
 from loguru import logger
-from world_ledger import Coordinate
+from dgt_engine.game_engine.world_ledger import Coordinate
 
 
 @dataclass

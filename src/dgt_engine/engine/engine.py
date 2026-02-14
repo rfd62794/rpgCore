@@ -22,12 +22,12 @@ from dgt_engine.game_engine.world_ledger import WorldLedger, Coordinate
 from dgt_engine.logic.faction_system import FactionSystem
 from dgt_engine.logic.orientation import OrientationManager
 from dgt_engine.ui.dashboard import UnifiedDashboard, DashboardLayout
-from chronos import ChronosEngine
-from utils.historian import Historian, WorldSeed
-from ui.renderer_3d import ASCIIDoomRenderer
-from d20_core import D20Resolver, D20Result
-from logic.artifacts import ArtifactGenerator
-from loot_system import LootSystem
+from dgt_engine.engine.chronos import ChronosEngine
+from dgt_engine.foundation.utils.historian import Historian, WorldSeed
+from dgt_engine.ui.renderer_3d import ASCIIDoomRenderer
+from dgt_engine.engine.d20_core import D20Resolver, D20Result
+from dgt_engine.logic.artifacts import ArtifactGenerator
+from dgt_engine.game_engine.loot_system import LootSystem
 
 
 class SyntheticRealityEngine:
