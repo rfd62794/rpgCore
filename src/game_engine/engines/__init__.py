@@ -15,7 +15,27 @@ Each engine can be used independently or composed together.
 Depends on: game_engine.core, game_engine.foundation
 """
 
+from game_engine.engines.base_engine import BaseEngine
+from game_engine.engines.d20_core import D20Resolver, D20Result, DifficultyClass
+from game_engine.engines.chronos import ChronosEngine, WorldEvent
+from game_engine.engines.semantic_engine import SemanticResolver
+from game_engine.engines.narrative_engine import NarrativeEngine
+from game_engine.engines.synthetic_reality import SyntheticRealityEngine
+
 __all__ = [
-    # SyntheticRealityEngine, ChronosEngine, D20Resolver, etc.
-    # Will be populated as engine modules are migrated
+    # Base
+    "BaseEngine",
+    # D20 Rules
+    "D20Resolver",
+    "D20Result",
+    "DifficultyClass",
+    # Time Management
+    "ChronosEngine",
+    "WorldEvent",
+    # Intent Parsing
+    "SemanticResolver",
+    # Narrative
+    "NarrativeEngine",
+    # Master Orchestrator
+    "SyntheticRealityEngine",
 ]
