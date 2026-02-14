@@ -217,13 +217,13 @@ class AsteroidsNEATGame:
 
     def initialize(self) -> bool:
         """Initialize game and connect to Godot."""
-        print("🧠 Initializing NEAT Asteroids Game...")
+        print("[Initializing NEAT Asteroids Game...]")
 
         if not self.sdk.connect():
-            print("❌ Failed to connect to Godot renderer")
+            print("[ERROR] Failed to connect to Godot renderer")
             return False
 
-        print("✅ Connected to Godot")
+        print("[OK] Connected to Godot")
 
         # Create initial pilot population
         self._spawn_pilot_population()
@@ -232,7 +232,7 @@ class AsteroidsNEATGame:
         self.current_time = 0.0
         self.generation_start_time = time.time()
 
-        print("✅ NEAT game initialized")
+        print("[OK] NEAT game initialized")
         return True
 
     def _spawn_pilot_population(self):
@@ -274,7 +274,7 @@ class AsteroidsNEATGame:
                 "pilot_id": i
             })
 
-        print(f"🚀 Spawned {self.population_size} pilots for generation {self.generation}")
+        print(f"[Spawned {self.population_size} pilots for generation {self.generation}]")
 
         # Spawn asteroids
         for i in range(3):
@@ -324,9 +324,9 @@ class AsteroidsNEATGame:
                     print(f"Frame {self.frame_count:5d} | Generation {self.generation} | Active Pilots: {len([p for p in self.active_pilots.values() if p.alive])}")
 
         except KeyboardInterrupt:
-            print("\n⏹️  Game interrupted by user")
+            print("\n[Game interrupted by user]")
         except Exception as e:
-            print(f"❌ Game error: {e}")
+            print(f"[Game error: {e}]")
         finally:
             self.shutdown()
 
@@ -457,7 +457,7 @@ class AsteroidsNEATGame:
 
     def _end_generation(self) -> None:
         """End current generation and calculate fitness."""
-        print(f"\n📊 Generation {self.generation} Complete")
+        print(f"\n[Generation {self.generation} Complete]")
 
         for ship_id, pilot in self.active_pilots.items():
             fitness = pilot.fitness_metrics.calculate_composite_fitness()
@@ -468,10 +468,10 @@ class AsteroidsNEATGame:
 
     def shutdown(self) -> None:
         """Shutdown game."""
-        print("🛑 Shutting down NEAT game")
+        print("[Shutting down NEAT game]")
         self.state = GameState.SHUTDOWN
         self.sdk.disconnect()
-        print("✅ Shutdown complete")
+        print("[Shutdown complete]")
 
 
 if __name__ == "__main__":
