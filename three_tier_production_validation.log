@@ -1,0 +1,90 @@
+21:51:28 | INFO | 🔍 Starting Three-Tier Production Validation Suite
+21:51:28 | INFO | 🏛️ Validating Three-Tier Structure
+21:51:28 | INFO | ⚖️ Validating Import Compliance
+21:51:28 | ERROR | ❌ Tier 1 import failed: No module named 'foundation.constants'
+21:51:28 | ERROR | ❌ Tier 2 import failed: No module named 'engines'
+21:51:28 | INFO | ✅ Tier 3 scenario accessible
+21:51:28 | ERROR | ❌ Three-Tier validation failed: cannot access local variable 'ValidationResult' where it is not associated with a value
+21:52:12 | INFO | 🔍 Starting Three-Tier Production Validation Suite
+21:52:12 | INFO | 🏛️ Validating Three-Tier Structure
+21:52:12 | INFO | ⚖️ Validating Import Compliance
+21:52:12 | INFO | ✅ Tier 1 imports working
+21:52:13 | INFO | ✅ Tier 2 imports working
+21:52:13 | INFO | ✅ Tier 3 scenario accessible
+21:52:13 | ERROR | ❌ Three-Tier validation failed: ValidationResult.__init__() got an unexpected keyword argument 'check_name'
+21:52:28 | INFO | 🔍 Starting Three-Tier Production Validation Suite
+21:52:28 | INFO | 🏛️ Validating Three-Tier Structure
+21:52:28 | INFO | ⚖️ Validating Import Compliance
+21:52:29 | INFO | ✅ Tier 1 imports working
+21:52:29 | INFO | ✅ Tier 2 imports working
+21:52:29 | INFO | ✅ Tier 3 scenario accessible
+21:52:29 | INFO | ⏰ Validating SystemClock Performance
+21:52:29 | INFO | 🕐 SystemClock initialized: 60.0 FPS target, max CPU: 80.0%
+21:52:29 | INFO | 🔋 Battery optimization: 60.0 FPS → 45.0 FPS (battery: 30%)
+21:52:29 | INFO | ⚡ Validating Boot Performance
+21:52:29 | INFO | 🕐 SystemClock initialized: 60.0 FPS target, max CPU: 80.0%
+21:52:29 | INFO | 🕐 SystemClock initialized: 60.0 FPS target, max CPU: 80.0%
+21:52:29 | INFO | 🎬 MovieEngine initialized with seed: BOOT_TEST at 60.0 FPS
+21:52:29 | INFO | 📦 AssetLoader initialized with base path: assets
+21:52:29 | INFO | 💾 Validating Memory Footprint
+21:52:29 | INFO | 🕐 SystemClock initialized: 60.0 FPS target, max CPU: 80.0%
+21:52:29 | INFO | 🕐 SystemClock initialized: 60.0 FPS target, max CPU: 80.0%
+21:52:29 | INFO | 🎬 MovieEngine initialized with seed: MEMORY_TEST at 60.0 FPS
+21:52:29 | INFO | 📦 AssetLoader initialized with base path: assets
+21:52:29 | INFO | 🔋 Validating Miyoo Battery Optimization
+21:52:29 | INFO | 🕐 SystemClock initialized: 60.0 FPS target, max CPU: 80.0%
+21:52:29 | INFO | 🔋 Battery optimization: 60.0 FPS → 45.0 FPS (battery: 20%)
+21:52:29 | INFO | 🔋 Battery optimization: 45.0 FPS → 30.0 FPS (battery: 10%)
+21:52:29 | INFO | 🗂️ Validating Asset Pipeline
+21:52:29 | INFO | 📦 AssetLoader initialized with base path: assets
+21:52:29 | INFO | 🏢 BuildingRegistry initialized with archive path: archive\legacy_refactor_2026\assets\harvested
+21:52:29 | INFO | 🏢 Found 74 building files in archive
+21:52:30 | INFO | 🏢 Successfully loaded 74 buildings from archive
+21:52:30 | INFO | 🎬 Validating Cinematic Engine
+21:52:30 | INFO | 🕐 SystemClock initialized: 60.0 FPS target, max CPU: 80.0%
+21:52:30 | INFO | 🎬 MovieEngine initialized with seed: CINEMATIC_TEST at 60.0 FPS
+21:52:30 | INFO | 🎬 Created Forest Gate sequence: 6 events, 15.0s
+21:52:30 | INFO | [21:52:30] INFO: 🎬 Starting sequence: Forest Gate Premiere
+21:52:30 | INFO | [21:52:30] INFO: 🎭 Event: scene_transition - Spawn forest objects
+21:52:30 | INFO | [21:52:30] INFO: ⏹️ Sequence stopped after 0.0s
+21:52:30 | INFO | 🎭 Validating Theater Mode
+21:52:30 | INFO | 📊 Generating Three-Tier Validation Report
+21:52:30 | INFO | 📄 Three-Tier validation report saved to THREE_TIER_PRODUCTION_VALIDATION_REPORT.json
+21:53:16 | INFO | 🔍 Starting Three-Tier Production Validation Suite
+21:53:16 | INFO | 🏛️ Validating Three-Tier Structure
+21:53:16 | INFO | ⚖️ Validating Import Compliance
+21:53:17 | INFO | ✅ Tier 1 imports working
+21:53:17 | INFO | ✅ Tier 2 imports working
+21:53:17 | INFO | ✅ Tier 3 scenario accessible
+21:53:17 | INFO | ⏰ Validating SystemClock Performance
+21:53:17 | INFO | 🕐 SystemClock initialized: 60.0 FPS target, max CPU: 80.0%
+21:53:17 | INFO | 🔋 Battery optimization: 60.0 FPS → 45.0 FPS (battery: 30%)
+21:53:17 | INFO | ⚡ Validating Boot Performance
+21:53:17 | INFO | 🕐 SystemClock initialized: 60.0 FPS target, max CPU: 80.0%
+21:53:17 | INFO | 🕐 SystemClock initialized: 60.0 FPS target, max CPU: 80.0%
+21:53:17 | INFO | 🎬 MovieEngine initialized with seed: BOOT_TEST at 60.0 FPS
+21:53:17 | INFO | 📦 AssetLoader initialized with base path: assets
+21:53:17 | INFO | 💾 Validating Memory Footprint
+21:53:17 | INFO | 🕐 SystemClock initialized: 60.0 FPS target, max CPU: 80.0%
+21:53:17 | INFO | 🕐 SystemClock initialized: 60.0 FPS target, max CPU: 80.0%
+21:53:17 | INFO | 🎬 MovieEngine initialized with seed: MEMORY_TEST at 60.0 FPS
+21:53:17 | INFO | 📦 AssetLoader initialized with base path: assets
+21:53:17 | INFO | 🔋 Validating Miyoo Battery Optimization
+21:53:17 | INFO | 🕐 SystemClock initialized: 60.0 FPS target, max CPU: 80.0%
+21:53:17 | INFO | 🔋 Battery optimization: 60.0 FPS → 45.0 FPS (battery: 20%)
+21:53:17 | INFO | 🔋 Battery optimization: 45.0 FPS → 30.0 FPS (battery: 10%)
+21:53:17 | INFO | 🗂️ Validating Asset Pipeline
+21:53:17 | INFO | 📦 AssetLoader initialized with base path: assets
+21:53:17 | INFO | 🏢 BuildingRegistry initialized with archive path: archive\legacy_refactor_2026\assets\harvested
+21:53:17 | INFO | 🏢 Found 74 building files in archive
+21:53:17 | INFO | 🏢 Successfully loaded 74 buildings from archive
+21:53:17 | INFO | 🎬 Validating Cinematic Engine
+21:53:17 | INFO | 🕐 SystemClock initialized: 60.0 FPS target, max CPU: 80.0%
+21:53:17 | INFO | 🎬 MovieEngine initialized with seed: CINEMATIC_TEST at 60.0 FPS
+21:53:17 | INFO | 🎬 Created Forest Gate sequence: 6 events, 15.0s
+21:53:17 | INFO | [21:53:17] INFO: 🎬 Starting sequence: Forest Gate Premiere
+21:53:17 | INFO | [21:53:17] INFO: 🎭 Event: scene_transition - Spawn forest objects
+21:53:17 | INFO | [21:53:17] INFO: ⏹️ Sequence stopped after 0.0s
+21:53:17 | INFO | 🎭 Validating Theater Mode
+21:53:17 | INFO | 📊 Generating Three-Tier Validation Report
+21:53:17 | INFO | 📄 Three-Tier validation report saved to THREE_TIER_PRODUCTION_VALIDATION_REPORT.json

@@ -503,7 +503,7 @@ class ThreeTierProductionValidator:
         
         try:
             # Run the theater mode test script
-            test_script_path = src_path.parent / "test_theater_mode.py"
+            test_script_path = src_path.parent / "tests" / "test_theater_mode.py"
             
             if not test_script_path.exists():
                 self.results.append(ValidationResult(
