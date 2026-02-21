@@ -229,19 +229,23 @@ class BattleField:
 
                 pygame.draw.rect(self.screen, BORDER_COLOR, tile_rect, BORDER_PX)
 
-                # Draw Blue Token
-                if self.blue_token.active and self.blue_token.col == col and self.blue_token.row == row:
-                    cx, cy = x + TILE_SIZE // 2, y + TILE_SIZE // 2
-                    draw_slime(self.screen, cx, cy, TILE_SIZE, SLIME_COLORS[TileState.BLUE])
-                    sz_label = self.font_token.render("3", True, (255, 255, 255))
-                    self.screen.blit(sz_label, (cx - sz_label.get_width()//2, cy - sz_label.get_height()//2 - 2))
+        # Draw Blue Token
+        if self.blue_token.active:
+            x = GRID_OFFSET_X + self.blue_token.col * TILE_SIZE
+            y = GRID_OFFSET_Y + self.blue_token.row * TILE_SIZE
+            cx, cy = x + TILE_SIZE // 2, y + TILE_SIZE // 2
+            draw_slime(self.screen, cx, cy, TILE_SIZE, SLIME_COLORS[TileState.BLUE])
+            sz_label = self.font_token.render("3", True, (255, 255, 255))
+            self.screen.blit(sz_label, (cx - sz_label.get_width()//2, cy - sz_label.get_height()//2 - 2))
 
-                # Draw Red Token
-                if self.red_token.active and self.red_token.col == col and self.red_token.row == row:
-                    cx, cy = x + TILE_SIZE // 2, y + TILE_SIZE // 2
-                    draw_slime(self.screen, cx, cy, TILE_SIZE, SLIME_COLORS[TileState.RED])
-                    sz_label = self.font_token.render("3", True, (255, 255, 255))
-                    self.screen.blit(sz_label, (cx - sz_label.get_width()//2, cy - sz_label.get_height()//2 - 2))
+        # Draw Red Token
+        if self.red_token.active:
+            x = GRID_OFFSET_X + self.red_token.col * TILE_SIZE
+            y = GRID_OFFSET_Y + self.red_token.row * TILE_SIZE
+            cx, cy = x + TILE_SIZE // 2, y + TILE_SIZE // 2
+            draw_slime(self.screen, cx, cy, TILE_SIZE, SLIME_COLORS[TileState.RED])
+            sz_label = self.font_token.render("3", True, (255, 255, 255))
+            self.screen.blit(sz_label, (cx - sz_label.get_width()//2, cy - sz_label.get_height()//2 - 2))
 
         # Win/Loss Banner
         if self.game_over:
