@@ -81,9 +81,9 @@ class BattleField:
         self.grid = [[TileState.NEUTRAL for _ in range(GRID_COLS)] for _ in range(GRID_ROWS)]
         generate_obstacles(self.grid)
 
-        # Tokens
+        # Tokens (DEBUG: Place RED token adjacent to BLUE to force immediate collision)
         self.blue_token = SquadToken(0, 0, TileState.BLUE)
-        self.red_token = SquadToken(GRID_COLS - 1, GRID_ROWS - 1, TileState.RED)
+        self.red_token = SquadToken(1, 0, TileState.RED)
 
         logger.info(f"🗺️  BattleField initialized for {region_name} ({difficulty})")
 
