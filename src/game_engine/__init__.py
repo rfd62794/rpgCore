@@ -15,16 +15,16 @@ Architecture:
     Tier 3 (Demos): Application-specific game implementations
 
 Usage:
-    from game_engine.core import SystemClock, Vector2
-    from game_engine.engines import SyntheticRealityEngine, ChronosEngine
-    from game_engine.systems import EntityManager, PhysicsSystem
+    from src.game_engine.core import SystemClock, Vector2
+    from src.game_engine.engines import SyntheticRealityEngine, ChronosEngine
+    from src.game_engine.systems import EntityManager, PhysicsSystem
 """
 
 __version__ = "0.1.0"
 __author__ = "Game Engine Team"
 
 # Core exports - Foundation layer
-from game_engine.core import (
+from src.game_engine.core import (
     SystemClock,
     Vector2,
     Vector3,

@@ -1,9 +1,9 @@
 import pytest
 from pathlib import Path
 from unittest.mock import Mock, patch, mock_open
-from game_engine.foundation.asset_registry import AssetRegistry, AssetType, Asset
-from game_engine.foundation.asset_loaders import SpriteAssetLoader, ConfigAssetLoader
-from game_engine.foundation.asset_cache import AssetCache
+from src.game_engine.foundation.asset_registry import AssetRegistry, AssetType, Asset
+from src.game_engine.foundation.asset_loaders import SpriteAssetLoader, ConfigAssetLoader
+from src.game_engine.foundation.asset_cache import AssetCache
 
 # --- AssetRegistry Tests ---
 

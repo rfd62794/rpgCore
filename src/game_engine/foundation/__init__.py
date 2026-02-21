@@ -8,14 +8,14 @@ to be composed together.
 Depends on: game_engine.core
 """
 
-from game_engine.foundation.base_system import (
+from src.game_engine.foundation.base_system import (
     BaseSystem,
     BaseComponent,
     SystemConfig,
     SystemStatus,
     PerformanceMetrics,
 )
-from game_engine.foundation.protocols import (
+from src.game_engine.foundation.protocols import (
     Vector2Protocol,
     Vector3Protocol,
     EntityProtocol,
@@ -24,12 +24,12 @@ from game_engine.foundation.protocols import (
     RenderPacketProtocol,
     ConfigProtocol,
 )
-from game_engine.foundation.registry import (
+from src.game_engine.foundation.registry import (
     DGTRegistry,
     RegistryType,
     RegistryEntry,
 )
-from game_engine.foundation.result import Result
+from src.game_engine.foundation.result import Result
 
 __all__ = [
     # Base classes

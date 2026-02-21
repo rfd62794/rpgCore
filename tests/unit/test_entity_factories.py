@@ -11,7 +11,7 @@ Tests verify:
 
 import pytest
 
-from game_engine.systems.body.entity_factories import (
+from src.game_engine.systems.body.entity_factories import (
     create_player_ship,
     create_asteroid,
     create_enemy_fighter,
@@ -22,7 +22,7 @@ from game_engine.systems.body.entity_factories import (
     create_animal,
     create_facility,
 )
-from game_engine.foundation.asset_system.entity_templates import EntityTemplateRegistry
+from src.game_engine.foundation.asset_system.entity_templates import EntityTemplateRegistry
 
 
 # --- Space Game Factory Tests ---

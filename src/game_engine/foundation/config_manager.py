@@ -6,8 +6,8 @@ from loguru import logger
 import yaml
 import json
 
-from game_engine.foundation.asset_registry import AssetRegistry
-from game_engine.foundation.config_schemas import GameConfig
+from src.game_engine.foundation.asset_registry import AssetRegistry
+from src.game_engine.foundation.config_schemas import GameConfig
 
 class ConfigManager:
     """

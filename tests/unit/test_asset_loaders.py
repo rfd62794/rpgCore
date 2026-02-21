@@ -16,7 +16,7 @@ import tempfile
 import os
 from pathlib import Path
 
-from game_engine.foundation.asset_system.asset_loaders import (
+from src.game_engine.foundation.asset_system.asset_loaders import (
     AbstractAssetLoader,
     ConfigAssetLoader,
     EntityTemplateLoader,
@@ -24,7 +24,7 @@ from game_engine.foundation.asset_system.asset_loaders import (
     CustomAssetLoader,
     AssetLoaderRegistry,
 )
-from game_engine.foundation.asset_system.asset_registry import AssetType
+from src.game_engine.foundation.asset_system.asset_registry import AssetType
 
 
 @pytest.fixture

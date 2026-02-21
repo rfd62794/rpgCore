@@ -13,8 +13,8 @@ Tests verify:
 import pytest
 import time
 
-from game_engine.foundation.asset_system.asset_cache import AssetCache
-from game_engine.foundation.asset_system.asset_registry import Asset, AssetType
+from src.game_engine.foundation.asset_system.asset_cache import AssetCache
+from src.game_engine.foundation.asset_system.asset_registry import Asset, AssetType
 
 
 def _make_asset(asset_id: str, asset_type: AssetType = AssetType.SPRITE) -> Asset:

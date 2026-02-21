@@ -1,7 +1,7 @@
 import pytest
 from pydantic import ValidationError
-from game_engine.foundation.config_schemas import GameConfig, PhysicsConfig, GraphicsConfig
-from game_engine.foundation.config_manager import ConfigManager
+from src.game_engine.foundation.config_schemas import GameConfig, PhysicsConfig, GraphicsConfig
+from src.game_engine.foundation.config_manager import ConfigManager
 
 # --- Schema Tests ---
 

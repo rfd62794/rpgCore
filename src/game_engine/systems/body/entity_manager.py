@@ -17,7 +17,7 @@ from abc import ABC, abstractmethod
 import uuid
 from enum import Enum
 
-from game_engine.foundation import BaseSystem, SystemConfig, SystemStatus, Result
+from src.game_engine.foundation import BaseSystem, SystemConfig, SystemStatus, Result
 
 
 class EntityComponentProtocol(Protocol):
@@ -361,7 +361,7 @@ class EntityManager(BaseSystem):
         if entity_type not in self.pools:
             # Auto-register default Entity if not found, to prevent crash on simple templates
             # In production, you might want to log a warning or error here.
-            from game_engine.systems.body.entity_manager import Entity
+            from src.game_engine.systems.body.entity_manager import Entity
             self.register_entity_type(entity_type, Entity)
 
     def _apply_template_properties(self, entity: Entity, template: Any) -> None:

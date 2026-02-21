@@ -18,9 +18,9 @@ from typing import Dict, List, Optional, Any, Tuple
 from dataclasses import dataclass
 from enum import Enum
 
-from game_engine.foundation import BaseSystem, SystemConfig, SystemStatus, Result
-from game_engine.systems.body.entity_manager import SpaceEntity
-from game_engine.systems.body.fracture_system import FractureSystem, AsteroidFragment, GeneticTraits
+from src.game_engine.foundation import BaseSystem, SystemConfig, SystemStatus, Result
+from src.game_engine.systems.body.entity_manager import SpaceEntity
+from src.game_engine.systems.body.fracture_system import FractureSystem, AsteroidFragment, GeneticTraits
 
 # Screen constants
 SCREEN_WIDTH = 160
@@ -218,7 +218,7 @@ class WaveSpawner(BaseSystem):
                     entity.genetic_id = f"wave{self.current_wave}_ast{i}"
 
                 # Create fragment wrapper
-                from game_engine.systems.body.fracture_system import AsteroidFragment as AF
+                from src.game_engine.systems.body.fracture_system import AsteroidFragment as AF
                 fragment_config = self.fracture_system.size_configs[size]
 
                 asteroid = AF(

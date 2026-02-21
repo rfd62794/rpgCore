@@ -1,9 +1,9 @@
 from typing import Dict, Any, List
 from loguru import logger
 
-from game_engine.foundation.base_system import BaseSystem, SystemConfig, SystemStatus
-from game_engine.engines.godot_bridge import GodotBridge
-from game_engine.systems.body.entity_manager import EntityManager, Entity
+from src.game_engine.foundation.base_system import BaseSystem, SystemConfig, SystemStatus
+from src.game_engine.engines.godot_bridge import GodotBridge
+from src.game_engine.systems.body.entity_manager import EntityManager, Entity
 
 class GodotRenderSystem(BaseSystem):
     """

@@ -17,8 +17,8 @@ from pathlib import Path
 from typing import Any, Dict, List, Optional, Type
 import json
 
-from game_engine.foundation.result import Result
-from game_engine.foundation.asset_system.asset_registry import Asset, AssetType
+from src.game_engine.foundation.result import Result
+from src.game_engine.foundation.asset_system.asset_registry import Asset, AssetType
 
 try:
     import yaml

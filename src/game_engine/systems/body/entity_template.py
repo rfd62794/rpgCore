@@ -3,8 +3,8 @@ from dataclasses import dataclass, field
 import threading
 from loguru import logger
 
-from game_engine.foundation.asset_registry import AssetRegistry, AssetType
-from game_engine.foundation.config_manager import ConfigManager
+from src.game_engine.foundation.asset_registry import AssetRegistry, AssetType
+from src.game_engine.foundation.config_manager import ConfigManager
 
 @dataclass
 class EntityTemplate:

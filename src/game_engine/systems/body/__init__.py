@@ -16,7 +16,7 @@ Provides:
 - FXSystem: Particle effects and visual effects
 """
 
-from game_engine.systems.body.entity_manager import (
+from src.game_engine.systems.body.entity_manager import (
     EntityManager,
     Entity,
     EntityComponent,
@@ -25,14 +25,14 @@ from game_engine.systems.body.entity_manager import (
     RPGEntity,
     TycoonEntity,
 )
-from game_engine.systems.body.collision_system import (
+from src.game_engine.systems.body.collision_system import (
     CollisionSystem,
     CollisionInfo,
     CollisionGroup,
     CollisionType,
     create_space_combat_collision_groups,
 )
-from game_engine.systems.body.projectile_system import (
+from src.game_engine.systems.body.projectile_system import (
     ProjectileSystem,
     ProjectileStats,
     ProjectileState,
@@ -40,7 +40,7 @@ from game_engine.systems.body.projectile_system import (
     create_rapid_fire_system,
     create_heavy_weapon_system,
 )
-from game_engine.systems.body.status_manager import (
+from src.game_engine.systems.body.status_manager import (
     StatusManager,
     StatusEffect,
     EffectType,
@@ -50,7 +50,7 @@ from game_engine.systems.body.status_manager import (
     create_poison_dot,
     create_stun_cc,
 )
-from game_engine.systems.body.fracture_system import (
+from src.game_engine.systems.body.fracture_system import (
     FractureSystem,
     AsteroidFragment,
     GeneticTraits,
@@ -58,7 +58,7 @@ from game_engine.systems.body.fracture_system import (
     create_genetic_fracture_system,
     create_hard_fracture_system,
 )
-from game_engine.systems.body.wave_spawner import (
+from src.game_engine.systems.body.wave_spawner import (
     WaveSpawner,
     WaveConfig,
     create_arcade_wave_spawner,

@@ -17,7 +17,7 @@ from collections import OrderedDict
 from typing import Any, Dict, Optional
 import time
 
-from game_engine.foundation.asset_system.asset_registry import Asset
+from src.game_engine.foundation.asset_system.asset_registry import Asset
 
 
 class AssetCache:

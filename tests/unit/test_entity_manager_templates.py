@@ -11,11 +11,11 @@ Tests verify:
 
 import pytest
 
-from game_engine.systems.body.entity_manager import (
+from src.game_engine.systems.body.entity_manager import (
     EntityManager, Entity, SpaceEntity
 )
-from game_engine.foundation import SystemConfig, Result
-from game_engine.foundation.asset_system.entity_templates import (
+from src.game_engine.foundation import SystemConfig, Result
+from src.game_engine.foundation.asset_system.entity_templates import (
     EntityTemplate, EntityTemplateRegistry
 )
 

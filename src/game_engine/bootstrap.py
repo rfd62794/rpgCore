@@ -9,14 +9,14 @@ from typing import Optional, Dict, Any
 
 from loguru import logger
 
-from game_engine.foundation.asset_registry import AssetRegistry
-from game_engine.foundation.config_manager import ConfigManager
-from game_engine.systems.body.entity_manager import EntityManager
-from game_engine.systems.body.entity_template import EntityTemplateRegistry
-from game_engine.foundation.base_system import SystemConfig
+from src.game_engine.foundation.asset_registry import AssetRegistry
+from src.game_engine.foundation.config_manager import ConfigManager
+from src.game_engine.systems.body.entity_manager import EntityManager
+from src.game_engine.systems.body.entity_template import EntityTemplateRegistry
+from src.game_engine.foundation.base_system import SystemConfig
 
 # Import Godot subsystems
-from game_engine.systems.graphics.godot_render_system import GodotRenderSystem
+from src.game_engine.systems.graphics.godot_render_system import GodotRenderSystem
 
 class GameContext:
     def __init__(self):

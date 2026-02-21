@@ -10,8 +10,8 @@ import sys
 import math
 from typing import List, Dict, Any
 
-from game_engine.systems.graphics.pixel_renderer import PixelRenderer, Pixel
-from game_engine.foundation import SystemConfig
+from src.game_engine.systems.graphics.pixel_renderer import PixelRenderer, Pixel
+from src.game_engine.foundation import SystemConfig
 
 class TerminalBridge:
     """

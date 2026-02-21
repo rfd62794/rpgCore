@@ -7,7 +7,7 @@ lifecycle management and integration with the game engine framework.
 
 from abc import ABC, abstractmethod
 from typing import Optional, Dict, Any
-from game_engine.foundation import BaseSystem, SystemConfig, SystemStatus
+from src.game_engine.foundation import BaseSystem, SystemConfig, SystemStatus
 
 
 class BaseEngine(BaseSystem, ABC):

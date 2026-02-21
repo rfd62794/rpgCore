@@ -3,7 +3,7 @@ import time
 from typing import Dict, Optional, OrderedDict
 from loguru import logger
 
-from game_engine.foundation.asset_registry import Asset
+from src.game_engine.foundation.asset_registry import Asset
 
 class AssetCache:
     """

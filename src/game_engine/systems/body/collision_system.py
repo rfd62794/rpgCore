@@ -13,8 +13,8 @@ from dataclasses import dataclass
 from enum import Enum
 import math
 
-from game_engine.foundation import BaseSystem, SystemConfig, SystemStatus, Result
-from game_engine.systems.body.entity_manager import Entity
+from src.game_engine.foundation import BaseSystem, SystemConfig, SystemStatus, Result
+from src.game_engine.systems.body.entity_manager import Entity
 
 
 class CollisionType(Enum):

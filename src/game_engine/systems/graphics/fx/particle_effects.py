@@ -16,8 +16,8 @@ from typing import List, Dict, Any, Optional, Tuple
 from dataclasses import dataclass, field
 from enum import Enum
 
-from game_engine.systems.graphics.fx.fx_system import FXSystem, ParticleEmitter
-from game_engine.foundation import BaseSystem, SystemConfig, SystemStatus, Result
+from src.game_engine.systems.graphics.fx.fx_system import FXSystem, ParticleEmitter
+from src.game_engine.foundation import BaseSystem, SystemConfig, SystemStatus, Result
 
 
 class EffectPreset(Enum):

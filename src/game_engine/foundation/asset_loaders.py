@@ -6,7 +6,7 @@ import yaml
 from loguru import logger
 from PIL import Image
 
-from game_engine.foundation.asset_registry import Asset, AssetType
+from src.game_engine.foundation.asset_registry import Asset, AssetType
 
 class AbstractAssetLoader(ABC):
     """Abstract base class for asset loaders."""

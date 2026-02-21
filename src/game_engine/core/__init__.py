@@ -8,8 +8,8 @@ This layer should never depend on higher layers (engines, systems, UI).
 Higher layers depend on this layer.
 """
 
-from game_engine.core.clock import SystemClock
-from game_engine.core.types import Vector2, Vector3
+from src.game_engine.core.clock import SystemClock
+from src.game_engine.core.types import Vector2, Vector3
 
 __all__ = [
     "SystemClock",

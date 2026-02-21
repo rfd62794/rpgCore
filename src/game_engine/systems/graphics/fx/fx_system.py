@@ -17,7 +17,7 @@ from typing import Dict, List, Tuple, Optional, Any
 from dataclasses import dataclass
 import math
 
-from game_engine.foundation import BaseSystem, SystemConfig, SystemStatus, Result
+from src.game_engine.foundation import BaseSystem, SystemConfig, SystemStatus, Result
 
 
 @dataclass

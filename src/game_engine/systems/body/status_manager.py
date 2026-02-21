@@ -17,7 +17,7 @@ from dataclasses import dataclass, field
 from enum import Enum
 from abc import ABC, abstractmethod
 
-from game_engine.foundation import BaseSystem, SystemConfig, SystemStatus, Result
+from src.game_engine.foundation import BaseSystem, SystemConfig, SystemStatus, Result
 
 
 class EffectType(Enum):

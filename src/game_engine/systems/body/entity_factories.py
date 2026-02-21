@@ -13,7 +13,7 @@ Usage:
 """
 
 from typing import Dict, Any
-from game_engine.foundation.asset_system.entity_templates import EntityTemplate
+from src.game_engine.foundation.asset_system.entity_templates import EntityTemplate
 
 
 def _get_preset(presets: Dict[str, Dict[str, Any]], key: str, preset_type: str) -> Dict[str, Any]:

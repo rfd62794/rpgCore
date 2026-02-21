@@ -16,8 +16,8 @@ from typing import Dict, Optional, Any, Tuple
 from dataclasses import dataclass, field
 from enum import Enum
 
-from game_engine.systems.graphics.fx.fx_system import FXSystem, ParticleEmitter
-from game_engine.foundation import BaseSystem, SystemConfig, SystemStatus, Result
+from src.game_engine.systems.graphics.fx.fx_system import FXSystem, ParticleEmitter
+from src.game_engine.foundation import BaseSystem, SystemConfig, SystemStatus, Result
 
 
 class ThrusterType(Enum):
@@ -257,7 +257,7 @@ class ExhaustSystem(BaseSystem):
 def create_default_exhaust_system(fx_system: Optional[FXSystem] = None) -> ExhaustSystem:
     """Create default exhaust system with standard settings"""
     if fx_system is None:
-        from game_engine.systems.graphics.fx import create_default_fx_system
+        from src.game_engine.systems.graphics.fx import create_default_fx_system
         fx_system = create_default_fx_system()
     config = SystemConfig(name="ExhaustSystem")
     system = ExhaustSystem(config, fx_system)
@@ -268,7 +268,7 @@ def create_default_exhaust_system(fx_system: Optional[FXSystem] = None) -> Exhau
 def create_high_intensity_exhaust_system(fx_system: Optional[FXSystem] = None) -> ExhaustSystem:
     """Create high-intensity exhaust system for heavy emissions"""
     if fx_system is None:
-        from game_engine.systems.graphics.fx import create_large_fx_system
+        from src.game_engine.systems.graphics.fx import create_large_fx_system
         fx_system = create_large_fx_system()
     system = create_default_exhaust_system(fx_system)
     return system
@@ -277,7 +277,7 @@ def create_high_intensity_exhaust_system(fx_system: Optional[FXSystem] = None) -
 def create_minimal_exhaust_system(fx_system: Optional[FXSystem] = None) -> ExhaustSystem:
     """Create minimal exhaust system for low-emission scenarios"""
     if fx_system is None:
-        from game_engine.systems.graphics.fx import create_minimal_fx_system
+        from src.game_engine.systems.graphics.fx import create_minimal_fx_system
         fx_system = create_minimal_fx_system()
     system = create_default_exhaust_system(fx_system)
     return system

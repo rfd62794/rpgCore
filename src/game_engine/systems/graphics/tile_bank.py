@@ -16,7 +16,7 @@ from typing import Dict, List, Tuple, Optional, Any
 from dataclasses import dataclass, field
 from enum import Enum
 
-from game_engine.foundation import BaseSystem, SystemConfig, SystemStatus, Result
+from src.game_engine.foundation import BaseSystem, SystemConfig, SystemStatus, Result
 
 
 class TileType(Enum):

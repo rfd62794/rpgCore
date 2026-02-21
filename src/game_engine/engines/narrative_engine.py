@@ -14,8 +14,8 @@ Features:
 
 from typing import Dict, Optional, Any
 
-from game_engine.foundation import SystemConfig, SystemStatus
-from game_engine.engines.base_engine import BaseEngine
+from src.game_engine.foundation import SystemConfig, SystemStatus
+from src.game_engine.engines.base_engine import BaseEngine
 
 
 class NarrativeEngine(BaseEngine):

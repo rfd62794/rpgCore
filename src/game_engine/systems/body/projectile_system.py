@@ -16,8 +16,8 @@ from typing import List, Optional, Tuple, Dict, Any
 from dataclasses import dataclass
 from enum import Enum
 
-from game_engine.foundation import BaseSystem, SystemConfig, SystemStatus, Result
-from game_engine.systems.body.entity_manager import Entity, SpaceEntity
+from src.game_engine.foundation import BaseSystem, SystemConfig, SystemStatus, Result
+from src.game_engine.systems.body.entity_manager import Entity, SpaceEntity
 
 
 @dataclass

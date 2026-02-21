@@ -16,8 +16,8 @@ from dataclasses import dataclass
 from typing import Dict, List, Optional, Any, Tuple
 from enum import Enum
 
-from game_engine.foundation import BaseSystem, SystemConfig, SystemStatus
-from game_engine.engines.base_engine import BaseEngine
+from src.game_engine.foundation import BaseSystem, SystemConfig, SystemStatus
+from src.game_engine.engines.base_engine import BaseEngine
 
 
 @dataclass
