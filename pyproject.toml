@@ -68,5 +68,5 @@ disallow_untyped_defs = true
 
 [dependency-groups]
 dev = [
-    "hypothesis",
+    "hypothesis>=6.151.9",
 ]
