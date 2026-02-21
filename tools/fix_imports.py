@@ -28,7 +28,7 @@ def fix_imports_in_file(filepath):
     return False
 
 def main():
-    test_files = glob.glob('tests/**/*.py', recursive=True) + glob.glob('tests/*.py')
+    test_files = glob.glob('tests/**/*.py', recursive=True) + glob.glob('tests/*.py') + glob.glob('tests/unit/**/*.py', recursive=True) + glob.glob('tests/unit/*.py')
     fixed_count = 0
     for file in test_files:
         if fix_imports_in_file(file):
