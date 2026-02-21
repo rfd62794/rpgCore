@@ -1,19 +1,18 @@
 """
-Territorial Grid Prototype — Spec-001, Session 006
+Territorial Grid Prototype — Spec-001, Session 007
 ===================================================
 A 10x10 tile-based territorial map rendered inside the rpgCore game loop.
 Each tile tracks ownership: Neutral, Blue Clan, or Red Clan.
 
-Session 006 — Universal Blink, Win Condition & Reset:
-  Player moves now animate through the same 3-step blink as AI (symmetric UX).
-  check_win(): first clan to reach WIN_THRESHOLD (60) tiles wins.
-  Winner banner rendered over grid; ESC resets board to seeded state.
-  HUD shows X/60 progress bars for each clan.
+Session 007 — UI Formalization (visual-only, no mechanic changes):
+  Title bar updated. HUD panel gets dark background + 1px separator.
+  Typography hierarchy: title / section labels / stat values.
+  Progress bars: pygame rect with background track (no Unicode blocks).
+  Battle log: distinct strip at bottom of sidebar with own background.
 
-Session 005 — Turn Clarity & AI Intent: TurnState, adjacency AI, 300ms blink.
-Session 004 — Reactive AI: ai_take_turn() fires after every player action.
-Session 003 — Seed Initial State: Blue top-left 2×2, Red bottom-right 2×2.
-Session 002 — Contested Tile Logic: NEUTRAL→claim | BLUE→no-op | RED→battle.
+Session 006 — Universal Blink, Win Condition & Reset.
+Session 005 — Turn Clarity & AI Intent: TurnState, adjacency AI, blink.
+Session 004 — Reactive AI | Session 003 — Seed | Session 002 — Click logic.
 
 Architecture: Flat module, mirroring simple_visual_asteroids.py loop contract.
   handle_events → update(dt_ms) → render → clock.tick(FPS)
@@ -33,17 +32,17 @@ from loguru import logger
 # ---------------------------------------------------------------------------
 WINDOW_WIDTH: int = 640
 WINDOW_HEIGHT: int = 480
-WINDOW_TITLE: str = "rpgCore — Slime Clan Territorial Prototype [Session 001]"
+WINDOW_TITLE: str = "rpgCore — Slime Clan"
 FPS: int = 60
 
 # Grid layout — 10×10 tiles of 48px each = 480px fills full window height.
-# 80px left margin centres the 480px grid in a 640px wide window.
+# 80px left sidebar + 480px grid = 560px; 80px right margin.
 GRID_COLS: int = 10
 GRID_ROWS: int = 10
-TILE_SIZE: int = 48           # px per tile
-GRID_OFFSET_X: int = 80      # (640 - 480) // 2  — horizontal centre
-GRID_OFFSET_Y: int = 0       # grid fills full height, no vertical offset
-BORDER_PX: int = 1           # px border drawn around each tile
+TILE_SIZE: int = 48
+GRID_OFFSET_X: int = 80
+GRID_OFFSET_Y: int = 0
+BORDER_PX: int = 1
 
 
 # ---------------------------------------------------------------------------
@@ -57,7 +56,7 @@ class TileState(enum.IntEnum):
 
 class TurnState(enum.Enum):
     PLAYER_TURN    = "player"
-    PLAYER_BLINKING = "player_blinking"  # Session 006: player move animates
+    PLAYER_BLINKING = "player_blinking"
     AI_BLINKING    = "ai_blinking"
 
 
@@ -92,21 +91,30 @@ def check_win(
 
 # Visually distinct colours for each ownership state
 TILE_COLORS: dict[TileState, tuple[int, int, int]] = {
-    TileState.NEUTRAL: (70, 70, 70),    # dark slate — unclaimed territory
-    TileState.BLUE:    (30, 110, 220),  # bold blue  — Blue Clan
-    TileState.RED:     (210, 50,  50),  # bold red   — Red Clan
+    TileState.NEUTRAL: (70, 70, 70),
+    TileState.BLUE:    (30, 110, 220),
+    TileState.RED:     (210, 50,  50),
 }
 
-# Lighter shade drawn as an inner highlight to add visual depth
 TILE_HIGHLIGHT: dict[TileState, tuple[int, int, int]] = {
     TileState.NEUTRAL: (100, 100, 100),
     TileState.BLUE:    (70,  150, 255),
     TileState.RED:     (255, 90,   90),
 }
 
-BORDER_COLOR: tuple[int, int, int] = (20, 20, 20)
-BACKGROUND_COLOR: tuple[int, int, int] = (15, 15, 20)
+BORDER_COLOR: tuple[int, int, int]     = (20,  20,  20)
+BACKGROUND_COLOR: tuple[int, int, int] = (15,  15,  20)
+
+# ---------------------------------------------------------------------------
+# Session 007 — HUD visual palette
+# ---------------------------------------------------------------------------
 SIDEBAR_TEXT_COLOR: tuple[int, int, int] = (200, 200, 200)
+PANEL_BG: tuple[int, int, int]           = (18,  18,  26)   # sidebar background
+PANEL_BORDER: tuple[int, int, int]       = (55,  55,  80)   # grid separator line
+LABEL_COLOR: tuple[int, int, int]        = (120, 120, 148)  # muted section labels
+BAR_TRACK: tuple[int, int, int]          = (38,  38,  55)   # progress bar track
+BAR_HEIGHT: int = 7                                          # progress bar px height
+BATTLE_LOG_BG: tuple[int, int, int]      = (25,  18,  38)   # battle log strip bg
 
 
 # ---------------------------------------------------------------------------
@@ -324,13 +332,17 @@ class TerritorialGrid:
         # Legacy flash set kept for potential future use (Session 004)
         self.flash_tiles: set[tuple[int, int]] = set()
 
-        # Font for sidebar HUD — fall back gracefully
+        # Font hierarchy — Session 007 typography
         try:
-            self.font_large = pygame.font.Font(None, 28)
-            self.font_small = pygame.font.Font(None, 20)
+            self.font_title  = pygame.font.Font(None, 22)  # SLIME CLAN header
+            self.font_label  = pygame.font.Font(None, 16)  # section labels
+            self.font_small  = pygame.font.Font(None, 16)  # stat values (compat alias)
+            self.font_large  = pygame.font.Font(None, 22)  # banner font (compat alias)
         except Exception:
-            self.font_large = pygame.font.SysFont("monospace", 22)
-            self.font_small = pygame.font.SysFont("monospace", 16)
+            self.font_title  = pygame.font.SysFont("monospace", 16)
+            self.font_label  = pygame.font.SysFont("monospace", 13)
+            self.font_small  = self.font_label
+            self.font_large  = self.font_title
 
         logger.info(
             "🗺️  TerritorialGrid initialised — {}×{} window, {}×{} grid",
@@ -543,68 +555,119 @@ class TerritorialGrid:
         self.flash_tiles.clear()
 
 
+    def _draw_progress_bar(
+        self,
+        x: int, y: int, width: int, height: int,
+        count: int, total: int,
+        color: tuple[int, int, int],
+    ) -> None:
+        """Pygame rect progress bar with a background track."""
+        pygame.draw.rect(self.screen, BAR_TRACK, (x, y, width, height), border_radius=3)
+        fill_w = max(2, min(int(count / total * width), width))
+        pygame.draw.rect(self.screen, color,    (x, y, fill_w, height), border_radius=3)
+
     def _draw_sidebar(self) -> None:
-        """Render territory counts, progress bars, turn indicator, and controls."""
+        """
+        Session 007 HUD panel \u2014 fully pygame-drawn.
+
+        Layout top\u2192bottom:
+          Panel bg + separator | Title | Turn pill | Progress bars | Controls | Battle log
+        """
+        # 1. Panel background + separator
+        pygame.draw.rect(self.screen, PANEL_BG, (0, 0, GRID_OFFSET_X, WINDOW_HEIGHT))
+        pygame.draw.rect(self.screen, PANEL_BORDER, (GRID_OFFSET_X - 1, 0, 1, WINDOW_HEIGHT))
+
         blue_count = sum(
             self.grid[r][c] == TileState.BLUE
-            for r in range(GRID_ROWS)
-            for c in range(GRID_COLS)
+            for r in range(GRID_ROWS) for c in range(GRID_COLS)
         )
         red_count = sum(
             self.grid[r][c] == TileState.RED
-            for r in range(GRID_ROWS)
-            for c in range(GRID_COLS)
+            for r in range(GRID_ROWS) for c in range(GRID_COLS)
         )
         neutral_count = GRID_COLS * GRID_ROWS - blue_count - red_count
 
-        # Progress bar helper: 10 chars wide
-        def pbar(count: int, total: int = WIN_THRESHOLD, width: int = 9) -> str:
-            filled = min(int(count / total * width), width)
-            return "█" * filled + "░" * (width - filled)
+        pad   = 7
+        bar_w = GRID_OFFSET_X - pad * 2   # 66 px
+        y     = 9
 
-        sidebar_x = 6
-        # Turn indicator
+        def t(surf: pygame.Surface, x_off: int, y_off: int) -> None:
+            self.screen.blit(surf, (x_off, y_off))
+
+        # 2. Title block
+        s = self.font_title.render("SLIME CLAN", True, (195, 190, 100))
+        t(s, pad, y);  y += s.get_height() + 1
+        s = self.font_label.render("Session 007", True, LABEL_COLOR)
+        t(s, pad, y);  y += s.get_height() + 8
+
+        # 3. Turn indicator pill
         if self.winner is not None:
-            turn_text  = "GAME OVER"
-            turn_color = (180, 180, 120)
+            turn_text, turn_color = "GAME OVER", (195, 190, 100)
         elif self.turn == TurnState.PLAYER_TURN:
-            turn_text  = "YOUR TURN"
-            turn_color = TILE_HIGHLIGHT[TileState.BLUE]
+            turn_text, turn_color = "YOUR TURN", TILE_HIGHLIGHT[TileState.BLUE]
         else:
-            turn_text  = "RED MOVING"
-            turn_color = TILE_HIGHLIGHT[TileState.RED]
+            turn_text, turn_color = "RED MOVING", TILE_HIGHLIGHT[TileState.RED]
 
-        lines = [
-            ("SLIME CLAN", (180, 180, 120), self.font_large),
-            ("Session 006", (130, 130, 130), self.font_small),
-            ("", SIDEBAR_TEXT_COLOR, self.font_small),
-            (turn_text, turn_color, self.font_small),
-            ("", SIDEBAR_TEXT_COLOR, self.font_small),
-            ("TO WIN: 60 tiles", (160, 160, 100), self.font_small),
-            ("", SIDEBAR_TEXT_COLOR, self.font_small),
-            (f"Blue {blue_count:>2}/60", TILE_HIGHLIGHT[TileState.BLUE], self.font_small),
-            (pbar(blue_count), TILE_HIGHLIGHT[TileState.BLUE], self.font_small),
-            (f"Red  {red_count:>2}/60", TILE_HIGHLIGHT[TileState.RED], self.font_small),
-            (pbar(red_count), TILE_HIGHLIGHT[TileState.RED], self.font_small),
-            (f"Neutral {neutral_count:>2}", TILE_HIGHLIGHT[TileState.NEUTRAL], self.font_small),
-            ("", SIDEBAR_TEXT_COLOR, self.font_small),
-            (f"Battles: {self.battles_fought}", SIDEBAR_TEXT_COLOR, self.font_small),
-            (f"Last:", SIDEBAR_TEXT_COLOR, self.font_small),
-            (f" {self.last_battle_result}", (220, 200, 100), self.font_small),
-            ("", SIDEBAR_TEXT_COLOR, self.font_small),
-            ("CONTROLS", (180, 180, 120), self.font_small),
-            ("Neutral: claim", SIDEBAR_TEXT_COLOR, self.font_small),
-            ("Red: battle", SIDEBAR_TEXT_COLOR, self.font_small),
-            ("Blue: owned", SIDEBAR_TEXT_COLOR, self.font_small),
-            ("ESC: quit/reset", SIDEBAR_TEXT_COLOR, self.font_small),
+        pill = pygame.Surface((bar_w, 14), pygame.SRCALPHA)
+        pill.fill((42, 42, 62, 210))
+        self.screen.blit(pill, (pad, y - 1))
+        s = self.font_label.render(turn_text, True, turn_color)
+        t(s, pad + 2, y);  y += 14 + 8
+
+        # 4. TO WIN progress section
+        s = self.font_label.render("TO WIN: 60", True, LABEL_COLOR)
+        t(s, pad, y);  y += s.get_height() + 4
+
+        s = self.font_label.render(f"B {blue_count:>2}/60", True, TILE_HIGHLIGHT[TileState.BLUE])
+        t(s, pad, y);  y += s.get_height() + 2
+        self._draw_progress_bar(pad, y, bar_w, BAR_HEIGHT,
+                                blue_count, WIN_THRESHOLD, TILE_HIGHLIGHT[TileState.BLUE])
+        y += BAR_HEIGHT + 6
+
+        s = self.font_label.render(f"R {red_count:>2}/60", True, TILE_HIGHLIGHT[TileState.RED])
+        t(s, pad, y);  y += s.get_height() + 2
+        self._draw_progress_bar(pad, y, bar_w, BAR_HEIGHT,
+                                red_count, WIN_THRESHOLD, TILE_HIGHLIGHT[TileState.RED])
+        y += BAR_HEIGHT + 5
+
+        s = self.font_label.render(f"N {neutral_count}", True, TILE_HIGHLIGHT[TileState.NEUTRAL])
+        t(s, pad, y);  y += s.get_height() + 6
+
+        s = self.font_label.render(f"Battles:{self.battles_fought}", True, LABEL_COLOR)
+        t(s, pad, y)
+
+        # 5. Controls (above battle log strip)
+        ctrl = [
+            ("CONTROLS", LABEL_COLOR),
+            ("N: claim",       SIDEBAR_TEXT_COLOR),
+            ("R: battle",      SIDEBAR_TEXT_COLOR),
+            ("B: owned",       SIDEBAR_TEXT_COLOR),
+            ("ESC: quit/rst",  SIDEBAR_TEXT_COLOR),
         ]
+        BATTLE_LOG_H = 44
+        line_h = 15
+        ctrl_y = WINDOW_HEIGHT - BATTLE_LOG_H - 4 - len(ctrl) * line_h
+        for label, color in ctrl:
+            s = self.font_label.render(label, True, color)
+            t(s, pad, ctrl_y);  ctrl_y += line_h
 
-        y = 12
-        for text, color, font in lines:
-            if text:
-                surf = font.render(text, True, color)
-                self.screen.blit(surf, (sidebar_x, y))
-            y += font.size("A")[1] + 3
+        # 6. Battle log strip (pinned at bottom)
+        log_y = WINDOW_HEIGHT - BATTLE_LOG_H
+        pygame.draw.rect(self.screen, BATTLE_LOG_BG, (0, log_y, GRID_OFFSET_X, BATTLE_LOG_H))
+        pygame.draw.rect(self.screen, PANEL_BORDER,  (0, log_y, GRID_OFFSET_X, 1))
+
+        s = self.font_label.render("Last:", True, LABEL_COLOR)
+        t(s, pad, log_y + 4)
+        result = self.last_battle_result
+        # Split "coord \u2192 winner" onto two lines so it fits in 66px
+        parts = result.split(" \u2192 ") if " \u2192 " in result else [result]
+        s1 = self.font_label.render(parts[0], True, (220, 200, 100))
+        t(s1, pad, log_y + 17)
+        if len(parts) > 1:
+            s2 = self.font_label.render("\u2192 " + parts[1], True, (220, 200, 100))
+            t(s2, pad, log_y + 29)
+
+
 
     # ------------------------------------------------------------------
     # Main loop
