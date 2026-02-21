@@ -160,6 +160,10 @@ def execute_action(actor: SlimeUnit, allies: List[SlimeUnit], enemies: List[Slim
         missing_hp = target.max_hp - target.hp
         heal_amt = max(2, actor.attack) + int(missing_hp * 0.3) 
         
+        # Session 015 Update: Hard cap heal to 30% of max HP to prevent infinite looping
+        max_heal_cap = max(1, int(target.max_hp * 0.3))
+        heal_amt = min(max_heal_cap, heal_amt)
+        
         target.hp = min(target.max_hp, target.hp + heal_amt)
         return f"✨ {actor.name} heals {target.name} for {heal_amt} HP! ({target.hp}/{target.max_hp} HP)"
         
@@ -182,6 +186,7 @@ class AutoBattleScene:
         pygame.display.set_caption("rpgCore — Auto-Battle")
         self.region_name = region_name
         self.difficulty = difficulty
+        self.turn_count = 0
         
         try:
             self.font_name = pygame.font.Font(None, 20)
@@ -226,6 +231,7 @@ class AutoBattleScene:
         alive = [u for u in self.blue_squad + self.red_squad if u.hp > 0]
         # Sort by speed descending
         self.turn_queue = sorted(alive, key=lambda x: x.speed, reverse=True)
+        self.turn_count += 1
 
     def handle_events(self):
         for event in pygame.event.get():
