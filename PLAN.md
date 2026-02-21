@@ -22,8 +22,9 @@
   - Draw Blue squad on `x = WINDOW_WIDTH // 6`.
   - Draw Red squad on `x = WINDOW_WIDTH - WINDOW_WIDTH // 6`.
   - Utilize `draw_slime` for the core body.
-  - Draw shapes above/on slimes to signify hats (e.g. a small square, triangle, or dot above).
+  - Render the unit's name above the slime sprite.
   - Draw HP bars below each survivor.
+  - Render a small shape indicator (`C`/`S`/`T`) and hat indicator (`⚔`/`🛡`/`✨`) beneath the HP bar for quick readability.
 
 ### 3. Combat Logic Functions (Pure functions)
 - `execute_action(actor, allies, enemies)`: Handles the logic where `SWORD` finds enemy min HP to attack, `SHIELD` buffs defense, `STAFF` heals ally min HP.
