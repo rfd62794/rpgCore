@@ -1,16 +1,16 @@
 """
-Territorial Grid Prototype — Spec-001, Session 008
+Territorial Grid Prototype — Spec-001, Session 009
 ===================================================
 A 10x10 tile-based territorial map rendered inside the rpgCore game loop.
 Each tile tracks ownership: Neutral, Blue Clan, Red Clan, or Blocked.
 
-Session 008 — Procedural Obstacle Generation:
-  TileState.BLOCKED added. generate_obstacles() places 8 impassable tiles
-  in the neutral zone only, never in either clan's 3×3 corner protection area.
-  Blocked tiles render as dark gray + yellow X. Win threshold adjusts to
-  (claimable_tiles × WIN_FRACTION) so obstacles don't inflate win cost.
+Session 009 — Proximity-Weighted Battle System:
+  compute_battle_strength(): base tiles + adjacent tiles×3 bonus.
+  resolve_battle_weighted(): probabilistic winner drawn from strength ratio.
+  Battle log shows 'B:12 vs R:8 → Blue wins'. HUD shows 'Blue had X%'.
 
-Session 007 — UI Formalization: panel bg, progress bars, battle log strip.
+Session 008 — Procedural Obstacle Generation (8 BLOCKED tiles, corner zones).
+Session 007 — UI Formalization (panel, progress bars, battle log strip).
 Session 006 — Universal Blink, Win Condition & Reset.
 Session 005 — Turn Clarity & AI Intent: TurnState, adjacency AI, blink.
 Sessions 001–004 — Grid | Click logic | Seed | Reactive AI.
@@ -140,22 +140,70 @@ BATTLE_LOG_BG: tuple[int, int, int]      = (25,  18,  38)   # battle log strip b
 # ---------------------------------------------------------------------------
 # Battle resolution stub (Session 002)
 # ---------------------------------------------------------------------------
-def resolve_battle(attacker: str, defender: str) -> str:
+def compute_battle_strength(
+    grid: list[list[TileState]],
+    col: int,
+    row: int,
+    clan: TileState,
+) -> int:
     """
-    Stub battle resolver — returns winner name at random.
+    Session 009: Battle strength for a clan at a contested tile.
 
-    This is the seam for real battle logic in Session 003+.
-    Signature is intentionally simple: plain strings for easy testing.
+    Strength = (total tiles held by clan) + (adjacent clan tiles × 3)
 
-    Args:
-        attacker: Clan name initiating the attack (e.g. 'BLUE')
-        defender: Clan name defending the tile (e.g. 'RED')
+    The proximity bonus rewards clans that surround the contested tile,
+    making concentrated territory more powerful than equal but dispersed tiles.
+    Minimum returned value is 1 to keep probability well-defined.
+    """
+    base = sum(
+        grid[r][c] == clan
+        for r in range(GRID_ROWS)
+        for c in range(GRID_COLS)
+    )
+    proximity_bonus = 0
+    for dc, dr in ((-1, 0), (1, 0), (0, -1), (0, 1)):
+        nc, nr = col + dc, row + dr
+        if 0 <= nc < GRID_COLS and 0 <= nr < GRID_ROWS:
+            if grid[nr][nc] == clan:
+                proximity_bonus += 3
+    return max(1, base + proximity_bonus)
+
+
+def resolve_battle_weighted(
+    grid: list[list[TileState]],
+    col: int,
+    row: int,
+    attacker: str,
+    defender: str,
+) -> tuple[str, int, int, float]:
+    """
+    Session 009: Probabilistic battle weighted by clan strength.
+
+    Win probability = attacker_strength / (attacker_strength + defender_strength).
+    Result is stochastic — upsets always possible, but strength skews odds.
 
     Returns:
-        The winning clan name — either attacker or defender.
+        (winner, attacker_strength, defender_strength, attacker_win_probability)
+    """
+    atk_clan = TileState.BLUE if attacker == "BLUE" else TileState.RED
+    def_clan = TileState.BLUE if defender == "BLUE" else TileState.RED
+    atk_str = compute_battle_strength(grid, col, row, atk_clan)
+    def_str = compute_battle_strength(grid, col, row, def_clan)
+    atk_prob = atk_str / (atk_str + def_str)
+    winner = attacker if random.random() < atk_prob else defender
+    logger.info(
+        "⚔️ Battle ({},{}) — {}:{} vs {}:{} → {} wins (atk_prob={:.0%})",
+        col, row, attacker, atk_str, defender, def_str, winner, atk_prob,
+    )
+    return winner, atk_str, def_str, atk_prob
+
+
+def resolve_battle(attacker: str, defender: str) -> str:
+    """
+    Legacy 50/50 stub — retained for test backward-compatibility.
+    Production code (Session 009+) uses resolve_battle_weighted().
     """
     winner = random.choice([attacker, defender])
-    logger.info("⚔️  Battle: {} attacks {} → {} wins", attacker, defender, winner)
     return winner
 
 
@@ -201,11 +249,11 @@ def ai_choose_action(
     grid: list[list[TileState]],
 ) -> tuple[int, int, TileState] | None:
     """
-    Session 005: Decide the AI's next action WITHOUT modifying the grid.
+    Session 005/009: Decide the AI's next action WITHOUT modifying the grid.
 
     Returns (col, row, new_state) or None if no valid targets exist.
-    Tiles adjacent to Red territory are weighted 5×; others weight 1.
-    Battle resolution uses resolve_battle() — same seam as player.
+    Tiles adjacent to Red territory are weighted 5x; others weight 1.
+    Battle resolution uses resolve_battle_weighted() (Session 009).
     """
     adjacent_red = get_tiles_adjacent_to_red(grid)
 
@@ -236,9 +284,12 @@ def ai_choose_action(
     else:
         weights = [5.0 if t in adjacent_red else 1.0 for t in blue]
         col, row = _weighted_choice(blue, weights)
-        winner = resolve_battle(attacker="RED", defender="BLUE")
+        winner, r_str, b_str, r_prob = resolve_battle_weighted(grid, col, row, "RED", "BLUE")
         new_state = TileState.RED if winner == "RED" else TileState.BLUE
-        logger.info("🤖 AI attacks Blue ({},{}) → {} wins", col, row, winner)
+        logger.info(
+            "🤖 AI attacks Blue ({},{}) R:{} vs B:{} → {} wins ({:.0%})",
+            col, row, r_str, b_str, winner, r_prob,
+        )
         return (col, row, new_state)
 
 
@@ -376,15 +427,15 @@ class TerritorialGrid:
         self.click_count: int = 0
         self.battles_fought: int = 0
         self.last_battle_result: str = "—"
+        self.last_battle_odds: float = 0.0   # Session 009: Blue's win % last battle
         # Turn / blink state (Sessions 005-006)
         self.turn: TurnState = TurnState.PLAYER_TURN
-        self.winner: TileState | None = None       # set when a clan hits WIN_THRESHOLD
+        self.winner: TileState | None = None
         self._blink_tile: tuple[int, int] | None = None
         self._blink_pre_state: TileState = TileState.NEUTRAL
         self._blink_pending: TileState = TileState.BLUE
         self._blink_step: int = 0
         self._blink_timer_ms: float = 0.0
-        # Legacy flash set kept for potential future use (Session 004)
         self.flash_tiles: set[tuple[int, int]] = set()
 
         # Font hierarchy — Session 007 typography
@@ -458,10 +509,14 @@ class TerritorialGrid:
 
         elif state == TileState.RED:
             self.battles_fought += 1
-            winner = resolve_battle(attacker="BLUE", defender="RED")
+            winner, b_str, r_str, b_prob = resolve_battle_weighted(
+                self.grid, col, row, "BLUE", "RED"
+            )
             pending = TileState.BLUE if winner == "BLUE" else TileState.RED
-            self.last_battle_result = f"({col},{row}) → {winner} wins"
-            logger.info("⚔️ Player battles Red ({},{}) → {} wins", col, row, winner)
+            self.last_battle_result = f"B:{b_str} vs R:{r_str}\u2192{winner[0]}"
+            self.last_battle_odds = b_prob
+            logger.info("⚔️ Player battles Red ({},{}) B:{} vs R:{} → {} ({:.0%})",
+                        col, row, b_str, r_str, winner, b_prob)
 
         else:
             return
