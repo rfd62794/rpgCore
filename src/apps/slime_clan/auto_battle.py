@@ -388,8 +388,9 @@ if __name__ == "__main__":
     import argparse
     parser = argparse.ArgumentParser()
     parser.add_argument("--region", default="Unknown Region", help="Region name for the battle header")
+    parser.add_argument("--difficulty", default="NORMAL", help="Difficulty multiplier modifier")
     args = parser.parse_args()
     
-    app = AutoBattleScene(region_name=args.region)
+    app = AutoBattleScene(region_name=args.region, difficulty=args.difficulty)
     app.run()
     sys.exit(app.exit_code)
