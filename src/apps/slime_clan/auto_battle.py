@@ -140,7 +140,16 @@ def execute_action(actor: SlimeUnit, allies: List[SlimeUnit], enemies: List[Slim
             target = min(alive_enemies, key=lambda e: e.hp)
             
         damage = max(1, actor.attack - target.defense)
+        
+        # Session 016: 15% Crit Chance
+        is_crit = random.random() < 0.15
+        if is_crit:
+            damage = int(damage * 1.75)
+        
         target.hp = max(0, target.hp - damage)
+        
+        if is_crit:
+            return f"💥 CRITICAL HIT! {actor.name} attacks {target.name} for {damage} dmg! ({target.hp}/{target.max_hp} HP)"
         return f"⚔️ {actor.name} attacks {target.name} for {damage} dmg! ({target.hp}/{target.max_hp} HP)"
 
     elif actor.hat == Hat.SHIELD:
