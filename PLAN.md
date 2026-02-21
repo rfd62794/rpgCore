@@ -1,24 +1,33 @@
-# Implementation Plan: Inventory Directive
+# Implementation Plan: Session 012 - Overworld Stub
 
 ## Technical Approach
 
-1. **Information Gathering**:
-   - Use `list_dir` to map the root directory.
-   - Use `find_by_name` to locate all Python files (`*.py`) inside `src`, `tools`, `scripts`, and `tests`.
-   - Read the relevant core files (`src/core`, `src/engine`, `src/ui`, etc.) using `view_file` to determine their purpose and identify reusable systems.
-   - Analyze `slime_clan/territorial_grid.py` to summarize its reusable pieces.
+### 1. Data Structures & State Management
+- Define `NodeState` enum in `src/apps/slime_clan/overworld.py` for possible node ownerships (`HOME`, `RED`, `BLUE`, `CONTESTED`).
+- Create a `MapNode` dataclass containing `id`, `name`, `x`, `y`, `state`, and `connections`.
+- Initialize the graph with 1 Home node and 4 contestable nodes (e.g., "Crash Site", "Northern Wastes", "Scrap Yard", "Eastern Front", "Deep Red Core").
 
-2. **Generate `INVENTORY.md`**:
-   - Create a markdown file at `docs/INVENTORY.md`.
-   - Section 1: Directory structure (high-level tree).
-   - Section 2: Component inventory (1-line summaries of non-Slime Clan Python files).
-   - Section 3: System inventory (reusable game loops, entities, UI).
-   - Section 4: Slime Clan summary (what `territorial_grid.py` provides).
-   - Section 5: Gaps for an Overworld screen.
+### 2. Overworld Engine (`overworld.py`)
+- Initialize a Pygame window at 640x480.
+- `handle_events()`: Detect clicks within node radii.
+- `update()`: Handle logic and transitions. If a Red/Contested node is clicked, execute the battle transition.
+- `render()`: Draw connection lines between nodes, then draw nodes (distinct shapes/colors based on `NodeState`).
 
-3. **Commit**:
-   - Use `run_command` with `git add docs/INVENTORY.md` and `git commit -m "docs: Add rpgCore repository and system INVENTORY.md"`.
+### 3. Transition Logic
+- When triggering a battle, use `subprocess.run([sys.executable, "-m", "src.apps.slime_clan.territorial_grid"])` to launch the grid battle, simulating a scene transition without complex engine coupling.
+- Upon completion of the subprocess (simulated win), update the node state to `BLUE`.
+
+### 4. Root Launcher (`run_overworld.py`)
+- Very simple 3-line file to import and launch the `Overworld` class game loop.
+
+### 5. Tests
+- Create `tests/unit/test_overworld_state.py`.
+- Write tests for initializing `MapNode` relationships and verifying `NodeState` transitions.
+- Verify existing tests still pass with `pytest`.
 
 ## Verification Plan
-- Ensure `docs/INVENTORY.md` exists and contains all 5 required sections accurately reflecting the codebase.
-- Ensure the commit is present on the `main` branch.
+1. Run `pytest` to ensure test count is >= 79 and all pass.
+2. Execute `python run_overworld.py`.
+3. Verify map renders correctly.
+4. Click a Red node -> see the `territorial_grid` window open.
+5. Close the grid window -> verify the Red node turned Blue on the map.
