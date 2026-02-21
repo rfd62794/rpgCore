@@ -125,34 +125,41 @@ def execute_action(actor: SlimeUnit, allies: List[SlimeUnit], enemies: List[Slim
         return f"{actor.name} is dead and cannot act."
 
     # Clear taunt at start of turn (if we had a duration, we'd decrement it here)
-    # For now, taunt lasts until their next turn.
     actor.taunt_active = False
 
     if actor.hat == Hat.SWORD:
-        # Attack lowest absolute HP enemy
         alive_enemies = [e for e in enemies if e.hp > 0]
         if not alive_enemies:
             return f"{actor.name} finds no enemies to attack."
             
-        target = min(alive_enemies, key=lambda e: e.hp)
+        # Session 015 Taunt Redirection
+        taunted_enemies = [e for e in alive_enemies if e.taunt_active]
+        if taunted_enemies:
+            target = min(taunted_enemies, key=lambda e: e.hp)
+        else:
+            target = min(alive_enemies, key=lambda e: e.hp)
+            
         damage = max(1, actor.attack - target.defense)
         target.hp = max(0, target.hp - damage)
         return f"⚔️ {actor.name} attacks {target.name} for {damage} dmg! ({target.hp}/{target.max_hp} HP)"
 
     elif actor.hat == Hat.SHIELD:
-        # Taunt (Placeholder for Session 014 aggro logic)
         actor.taunt_active = True
         actor.defense += 2 # Temporary defense boost
-        return f"🛡️ {actor.name} raises shield! (+2 Def, Taunting)"
+        return f"🛡️ {actor.name} raises shield! (+2 Def, TAUNTING)"
 
     elif actor.hat == Hat.STAFF:
-        # Heal lowest HP% ally
         alive_allies = [a for a in allies if a.hp > 0]
         if not alive_allies:
             return f"{actor.name} has no allies to heal."
             
+        # Heal lowest HP% ally
         target = min(alive_allies, key=lambda a: a.hp / a.max_hp)
-        heal_amt = max(2, actor.attack) # Use attack stat directly for heal power
+        
+        # Session 015 Heal Scaling (Base Attack + % of Missing HP)
+        missing_hp = target.max_hp - target.hp
+        heal_amt = max(2, actor.attack) + int(missing_hp * 0.3) 
+        
         target.hp = min(target.max_hp, target.hp + heal_amt)
         return f"✨ {actor.name} heals {target.name} for {heal_amt} HP! ({target.hp}/{target.max_hp} HP)"
         
