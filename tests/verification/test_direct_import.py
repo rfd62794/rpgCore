@@ -12,21 +12,21 @@ from typing import List, Dict, Any
 
 # Test foundation imports directly
 try:
-    from src.dgt_engine.foundation.genetics.schema import TurboGenome, LimbShape
+    from dgt_engine.foundation.genetics.schema import TurboGenome, LimbShape
     print("✅ Genetic schema import successful")
 except ImportError as e:
     print(f"❌ Genetic schema import failed: {e}")
     sys.exit(1)
 
 try:
-    from src.dgt_engine.foundation.types.race import create_turtle_state, TerrainType
+    from dgt_engine.foundation.types.race import create_turtle_state, TerrainType
     print("✅ Race types import successful")
 except ImportError as e:
     print(f"❌ Race types import failed: {e}")
     sys.exit(1)
 
 try:
-    from src.dgt_engine.foundation.types.result import Result
+    from dgt_engine.foundation.types.result import Result
     print("✅ Result type import successful")
 except ImportError as e:
     print(f"❌ Result type import failed: {e}")

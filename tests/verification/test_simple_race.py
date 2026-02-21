@@ -12,12 +12,12 @@ from typing import List, Dict, Any
 
 # Direct imports to test individual components
 try:
-    from src.dgt_engine.foundation.genetics.schema import TurboGenome, LimbShape
-    from src.dgt_engine.foundation.types.race import (
+    from dgt_engine.foundation.genetics.schema import TurboGenome, LimbShape
+    from dgt_engine.foundation.types.race import (
         TurtleState, RaceSnapshot, RaceConfig, TerrainType,
         create_turtle_state, create_race_snapshot, TerrainSegment
     )
-    from src.dgt_engine.foundation.types.result import Result
+    from dgt_engine.foundation.types.result import Result
     print("✅ Foundation imports successful")
 except ImportError as e:
     print(f"❌ Foundation import failed: {e}")
