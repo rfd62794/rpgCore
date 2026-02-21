@@ -1,18 +1,19 @@
 """
-Territorial Grid Prototype — Spec-001, Session 007
+Territorial Grid Prototype — Spec-001, Session 008
 ===================================================
 A 10x10 tile-based territorial map rendered inside the rpgCore game loop.
-Each tile tracks ownership: Neutral, Blue Clan, or Red Clan.
+Each tile tracks ownership: Neutral, Blue Clan, Red Clan, or Blocked.
 
-Session 007 — UI Formalization (visual-only, no mechanic changes):
-  Title bar updated. HUD panel gets dark background + 1px separator.
-  Typography hierarchy: title / section labels / stat values.
-  Progress bars: pygame rect with background track (no Unicode blocks).
-  Battle log: distinct strip at bottom of sidebar with own background.
+Session 008 — Procedural Obstacle Generation:
+  TileState.BLOCKED added. generate_obstacles() places 8 impassable tiles
+  in the neutral zone only, never in either clan's 3×3 corner protection area.
+  Blocked tiles render as dark gray + yellow X. Win threshold adjusts to
+  (claimable_tiles × WIN_FRACTION) so obstacles don't inflate win cost.
 
+Session 007 — UI Formalization: panel bg, progress bars, battle log strip.
 Session 006 — Universal Blink, Win Condition & Reset.
 Session 005 — Turn Clarity & AI Intent: TurnState, adjacency AI, blink.
-Session 004 — Reactive AI | Session 003 — Seed | Session 002 — Click logic.
+Sessions 001–004 — Grid | Click logic | Seed | Reactive AI.
 
 Architecture: Flat module, mirroring simple_visual_asteroids.py loop contract.
   handle_events → update(dt_ms) → render → clock.tick(FPS)
@@ -50,8 +51,9 @@ BORDER_PX: int = 1
 # ---------------------------------------------------------------------------
 class TileState(enum.IntEnum):
     NEUTRAL = 0
-    BLUE = 1
-    RED = 2
+    BLUE    = 1
+    RED     = 2
+    BLOCKED = 3  # Session 008: impassable terrain
 
 
 class TurnState(enum.Enum):
@@ -65,8 +67,12 @@ BLINK_STEP_MS: int = 300
 BLINK_STEPS: int = 3
 FLASH_COLOR: tuple[int, int, int] = (255, 255, 255)
 
-# Win condition
-WIN_THRESHOLD: int = 60
+# Win condition (Session 006/008)
+WIN_THRESHOLD: int  = 60    # baseline (no obstacles); kept for test compat
+WIN_FRACTION: float = 0.60  # fraction of claimable tiles each clan needs
+
+# Obstacle generation (Session 008)
+OBSTACLE_COUNT: int = 8  # obstacles placed per game
 
 
 # ---------------------------------------------------------------------------
@@ -74,12 +80,21 @@ WIN_THRESHOLD: int = 60
 # ---------------------------------------------------------------------------
 def check_win(
     grid: list[list[TileState]],
-    threshold: int = WIN_THRESHOLD,
+    threshold: int | None = None,
 ) -> TileState | None:
     """
     Return the winning TileState if any clan holds >= threshold tiles, else None.
-    Returns BLUE first if both somehow hit threshold (impossible in normal play).
+
+    If threshold is None (default), computes dynamically:
+        claimable = total tiles − BLOCKED tiles
+        threshold  = int(claimable × WIN_FRACTION)
+    If threshold is provided explicitly, uses that value directly
+    (backward-compat for tests using check_win(grid, threshold=N)).
     """
+    if threshold is None:
+        blocked   = sum(grid[r][c] == TileState.BLOCKED for r in range(GRID_ROWS) for c in range(GRID_COLS))
+        claimable = GRID_COLS * GRID_ROWS - blocked
+        threshold = max(1, int(claimable * WIN_FRACTION))
     blue = sum(grid[r][c] == TileState.BLUE for r in range(GRID_ROWS) for c in range(GRID_COLS))
     red  = sum(grid[r][c] == TileState.RED  for r in range(GRID_ROWS) for c in range(GRID_COLS))
     if blue >= threshold:
@@ -91,16 +106,21 @@ def check_win(
 
 # Visually distinct colours for each ownership state
 TILE_COLORS: dict[TileState, tuple[int, int, int]] = {
-    TileState.NEUTRAL: (70, 70, 70),
-    TileState.BLUE:    (30, 110, 220),
+    TileState.NEUTRAL: (70,  70,  70),
+    TileState.BLUE:    (30,  110, 220),
     TileState.RED:     (210, 50,  50),
+    TileState.BLOCKED: (42,  40,  46),  # dead zone — darker than neutral
 }
 
 TILE_HIGHLIGHT: dict[TileState, tuple[int, int, int]] = {
     TileState.NEUTRAL: (100, 100, 100),
     TileState.BLUE:    (70,  150, 255),
     TileState.RED:     (255, 90,   90),
+    TileState.BLOCKED: (60,  58,  66),  # subtle
 }
+
+# Session 008 — obstacle visual constants
+BLOCKED_X_COLOR: tuple[int, int, int] = (210, 165, 20)  # amber / yellow X
 
 BORDER_COLOR: tuple[int, int, int]     = (20,  20,  20)
 BACKGROUND_COLOR: tuple[int, int, int] = (15,  15,  20)
@@ -242,28 +262,29 @@ def ai_take_turn(
 # ---------------------------------------------------------------------------
 def seed_initial_state(grid: list[list[TileState]]) -> None:
     """
-    Set the starting board configuration in-place.
+    Set the starting board configuration in-place (Session 003).
+    Session 008: also calls generate_obstacles() after seeding clans.
 
     Blue clan: 2×2 cluster in the top-left corner     — cols 0-1, rows 0-1
     Red clan:  2×2 cluster in the bottom-right corner — cols 8-9, rows 8-9
-    All other tiles remain NEUTRAL.
-
-    Pure function over the grid list — no pygame, no side effects beyond
-    mutating the passed grid. Easy to test and easy to swap in Session 004+.
     """
-    # Blue home territory — top-left 2×2
+    # Blue home territory
     for row in range(2):
         for col in range(2):
             grid[row][col] = TileState.BLUE
 
-    # Red rival territory — bottom-right 2×2
+    # Red rival territory
     for row in range(8, 10):
         for col in range(8, 10):
             grid[row][col] = TileState.RED
 
+    # Procedural obstacles in neutral zone (Session 008)
+    generate_obstacles(grid)
+
     logger.info(
-        "🌱 Board seeded — Blue top-left 2×2, Red bottom-right 2×2, {} neutral tiles",
-        GRID_COLS * GRID_ROWS - 4 - 4,
+        "🌱 Board seeded — Blue top-left 2×2, Red bottom-right 2×2, "
+        "{} obstacle(s) placed",
+        OBSTACLE_COUNT,
     )
 
 
