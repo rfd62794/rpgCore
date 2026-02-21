@@ -54,6 +54,7 @@ target-version = ['py312']
 
 [tool.pytest.ini_options]
 testpaths = ["tests/unit"]
+python_files = ["slime_clan_*.py"]
 pythonpath = ["."]
 
 [tool.isort]
