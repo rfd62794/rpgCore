@@ -19,11 +19,15 @@ sys.path.insert(0, str(Path(__file__).parent.parent.parent / "src"))
 
 from apps.slime_clan.territorial_grid import (
     TileState,
+    TurnState,
     screen_pos_to_tile,
     resolve_battle,
     seed_initial_state,
     ai_take_turn,
+    ai_choose_action,
+    get_tiles_adjacent_to_red,
     AI_NEUTRAL_BIAS,
+    BLINK_STEP_MS,
     GRID_COLS,
     GRID_ROWS,
     TILE_SIZE,
@@ -305,3 +309,109 @@ class TestAiTakeTurn:
         assert neutral_choices / trials > 0.55, (
             f"AI neutral bias too low: {neutral_choices}/{trials}"
         )
+
+
+# ---------------------------------------------------------------------------
+# Session 005 — Adjacency Weighting & ai_choose_action
+# ---------------------------------------------------------------------------
+class TestGetTilesAdjacentToRed:
+    """get_tiles_adjacent_to_red() must return orthogonal neighbours of Red tiles."""
+
+    def _make_grid(self, state: TileState = TileState.NEUTRAL) -> list[list[TileState]]:
+        return [[state] * GRID_COLS for _ in range(GRID_ROWS)]
+
+    def test_no_red_tiles_returns_empty(self) -> None:
+        grid = self._make_grid(TileState.NEUTRAL)
+        assert get_tiles_adjacent_to_red(grid) == set()
+
+    def test_single_red_tile_returns_4_neighbours(self) -> None:
+        grid = self._make_grid(TileState.NEUTRAL)
+        grid[5][5] = TileState.RED
+        adj = get_tiles_adjacent_to_red(grid)
+        assert (4, 5) in adj  # left
+        assert (6, 5) in adj  # right
+        assert (5, 4) in adj  # up
+        assert (5, 6) in adj  # down
+        assert (5, 5) not in adj  # Red tile itself not included
+
+    def test_corner_red_tile_returns_2_neighbours(self) -> None:
+        grid = self._make_grid(TileState.NEUTRAL)
+        grid[0][0] = TileState.RED
+        adj = get_tiles_adjacent_to_red(grid)
+        assert (1, 0) in adj
+        assert (0, 1) in adj
+        assert len(adj) == 2
+
+
+class TestAiChooseAction:
+    """ai_choose_action() must return (col, row, TileState) without touching grid."""
+
+    def _make_grid(self, state: TileState = TileState.NEUTRAL) -> list[list[TileState]]:
+        return [[state] * GRID_COLS for _ in range(GRID_ROWS)]
+
+    def test_returns_none_when_no_targets(self) -> None:
+        grid = self._make_grid(TileState.RED)
+        assert ai_choose_action(grid) is None
+
+    def test_does_not_modify_grid(self) -> None:
+        """ai_choose_action must be read-only — grid unchanged after call."""
+        grid = self._make_grid(TileState.NEUTRAL)
+        before = [row[:] for row in grid]
+        ai_choose_action(grid)
+        assert grid == before
+
+    def test_returns_valid_coord_and_state(self) -> None:
+        grid = self._make_grid(TileState.NEUTRAL)
+        result = ai_choose_action(grid)
+        assert result is not None
+        col, row, new_state = result
+        assert 0 <= col < GRID_COLS
+        assert 0 <= row < GRID_ROWS
+        assert isinstance(new_state, TileState)
+
+    def test_claims_neutral_as_red(self) -> None:
+        grid = self._make_grid(TileState.NEUTRAL)
+        result = ai_choose_action(grid)
+        assert result is not None
+        _, _, new_state = result
+        assert new_state == TileState.RED
+
+    def test_adjacency_prefers_tiles_next_to_red(self) -> None:
+        """
+        With Red in the bottom-right 2x2, 4 neutral tiles are adjacent to Red.
+        Weight math: 4 adj * 5 + 92 non-adj * 1 = 112 total weight.
+        Adjacent tiles have 20/112 = ~18% chance each trial.
+        Pure uniform random would give 4/96 = ~4%.
+        Assert adjacent picks are at least 3x the uniform-random baseline (>12%).
+        """
+        adjacent_picks = 0
+        trials = 200
+        for _ in range(trials):
+            grid = self._make_grid(TileState.NEUTRAL)
+            for r in range(8, 10):
+                for c in range(8, 10):
+                    grid[r][c] = TileState.RED
+            adj = get_tiles_adjacent_to_red(grid)
+            result = ai_choose_action(grid)
+            assert result is not None
+            col, row, _ = result
+            if (col, row) in adj:
+                adjacent_picks += 1
+        # Expect > 12% adjacent picks (3x the 4% uniform-random baseline)
+        assert adjacent_picks / trials > 0.12, (
+            f"AI adjacency preference too low: {adjacent_picks}/{trials}"
+        )
+
+
+
+class TestTurnState:
+    """TurnState enum sanity checks."""
+
+    def test_player_turn_is_default_value(self) -> None:
+        assert TurnState.PLAYER_TURN.value == "player"
+
+    def test_ai_blinking_distinct_from_player(self) -> None:
+        assert TurnState.AI_BLINKING != TurnState.PLAYER_TURN
+
+    def test_blink_step_ms_positive(self) -> None:
+        assert BLINK_STEP_MS > 0
