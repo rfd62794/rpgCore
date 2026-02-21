@@ -1,4 +1,4 @@
-import pytest
+
 from src.apps.slime_clan.auto_battle import (
     Shape, Hat, SlimeUnit, create_slime, execute_action
 )
