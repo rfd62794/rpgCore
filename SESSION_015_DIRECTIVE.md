@@ -1,7 +1,6 @@
 # Session 015 Directive
 
-**Initialize Session 015 — Balance and Tier Integration.** 
-Two focused fixes:
+**Initialize Session 015 — Balance and Tier Integration.**
 
 1. **Battle Balance:** 
    * Increase player squad base stats by +25% across Rex, Brom, and Pip. 
@@ -9,13 +8,18 @@ Two focused fixes:
    * STAFF heal amount should scale with missing HP, not a flat value. 
    * Add a difficulty setting to the overworld: Easy/Normal/Hard adjusting enemy stats by -20%/0%/+20%.
 
-2. **Tier Integration:** 
-   * When a node is clicked on the overworld, launch `territorial_grid.py` first as the mid-tier battle. 
-   * The outcome of the territorial grid battle — Blue win or Red win — determines who won that region, and THEN triggers a 3v3 auto-battle as the 'final skirmish' to confirm the result. 
-   * If the player wins the grid, they enter auto-battle with a stat bonus. 
-   * If the player loses the grid, they enter auto-battle at a disadvantage. 
-   * The overworld node result reflects the auto-battle outcome.
+2. **Operational Tier (Squad Collision):** 
+   * Build `battle_field.py` — a new scene using the `territorial_grid.py` tile rendering as foundation. 640x480, same dark theme, same tile size.
+   * Each side has one Squad Token — a single tile-sized slime sprite with a number '3' indicating squad size. Blue squad spawns top-left, Red squad spawns bottom-right.
+   * Player controls Blue squad direction with arrow keys. Red squad uses simple pathfinding toward Blue. Squads move one tile per turn automatically.
+   * Obstacles from `generate_obstacles()` block movement as before.
+   * When Blue and Red tokens occupy adjacent tiles, pause movement and launch `auto_battle.py` as a sub-scene. Battle resolves, winner's token remains, loser's token is removed.
+   * Blue reaches Red's starting corner = Blue wins the field. Red reaches Blue's starting corner = Red wins.
+   * Field result returns to overworld and flips the node.
+   * Keep `territorial_grid.py` untouched — it becomes a separate conquest mode accessible later.
 
 3. **Maintenance:**
+   * `run_overworld.py` remains single entry point: Overworld → Battle Field → Auto-Battle → back up the chain.
    * All 7 slime_clan tests must still pass. 
+   * Add tests for squad movement logic and collision detection.
    * Update `PLAN.md` with the three-tier war system description.
