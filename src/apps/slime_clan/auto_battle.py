@@ -274,17 +274,34 @@ class AutoBattleScene:
         blue_alive = any(u.hp > 0 for u in self.blue_squad)
         red_alive = any(u.hp > 0 for u in self.red_squad)
         
+        # Win Condition 1: Extermination
         if blue_alive and not red_alive:
             self.winner = "BLUE WINS!"
             self.exit_code = 0
             logger.info("🏆 Blue Squad Victory")
+            return
         elif red_alive and not blue_alive:
             self.winner = "RED WINS!"
             self.exit_code = 1
             logger.info("🏆 Red Squad Victory")
+            return
         elif not blue_alive and not red_alive:
             self.winner = "DRAW!"
             self.exit_code = 1
+            return
+            
+        # Win Condition 2: Turn Limit Reached (Decision by HP Advantage)
+        if hasattr(self, 'turn_count') and self.turn_count >= 50:
+            b_hp_pct = sum(u.hp for u in self.blue_squad) / sum(u.max_hp for u in self.blue_squad)
+            r_hp_pct = sum(u.hp for u in self.red_squad) / sum(u.max_hp for u in self.red_squad)
+            if b_hp_pct > r_hp_pct:
+                self.winner = "BLUE WINS (TIMEOUT)!"
+                self.exit_code = 0
+                logger.info(f"⌛ Turn Limit Reached. Blue wins by HP advantage: {b_hp_pct:.0%} vs {r_hp_pct:.0%}")
+            else:
+                self.winner = "RED WINS (TIMEOUT)!"
+                self.exit_code = 1
+                logger.info(f"⌛ Turn Limit Reached. Red wins by HP advantage: {r_hp_pct:.0%} vs {b_hp_pct:.0%}")
 
     def _get_shape_str(self, shape: Shape) -> str:
         if shape == Shape.CIRCLE: return "C"
