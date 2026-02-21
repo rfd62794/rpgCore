@@ -2,6 +2,13 @@
 **Date:** 2026-02-21 (Session 017)
 **Scope:** Read-only assessment of all systems outside `src/apps/slime_clan/`.
 
+## Extraction Status (Session 018)
+| Component | Source | Extracted To | Status |
+|---|---|---|---|
+| D20Resolver | `game_engine/engines/d20_core.py` | `src/shared/combat/d20_resolver.py` | ✅ Extracted, 11 tests |
+| BaseSystem | `game_engine/foundation/base_system.py` | `src/shared/engine/base_system.py` | ✅ Extracted |
+| SystemClock | `game_engine/core/clock.py` | `src/shared/engine/system_clock.py` | ✅ Extracted |
+
 ---
 
 ## `src/dgt_engine/` — DGT Autonomous Movie System
