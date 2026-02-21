@@ -21,6 +21,7 @@ from apps.slime_clan.territorial_grid import (
     TileState,
     screen_pos_to_tile,
     resolve_battle,
+    seed_initial_state,
     GRID_COLS,
     GRID_ROWS,
     TILE_SIZE,
@@ -180,3 +181,61 @@ class TestIntentAwareClickLogic:
             result = self._apply_click(TileState.RED)
             assert result != TileState.NEUTRAL
 
+
+# ---------------------------------------------------------------------------
+# Session 003 — Seed Initial State
+# ---------------------------------------------------------------------------
+class TestSeedInitialState:
+    """seed_initial_state() must set the correct starting board configuration."""
+
+    def _make_grid(self) -> list[list[TileState]]:
+        """Helper: build a fresh all-neutral grid (no pygame required)."""
+        return [[TileState.NEUTRAL] * GRID_COLS for _ in range(GRID_ROWS)]
+
+    def test_blue_top_left_2x2(self) -> None:
+        grid = self._make_grid()
+        seed_initial_state(grid)
+        for row in range(2):
+            for col in range(2):
+                assert grid[row][col] == TileState.BLUE, (
+                    f"Expected BLUE at ({col},{row}), got {grid[row][col]}"
+                )
+
+    def test_red_bottom_right_2x2(self) -> None:
+        grid = self._make_grid()
+        seed_initial_state(grid)
+        for row in range(8, 10):
+            for col in range(8, 10):
+                assert grid[row][col] == TileState.RED, (
+                    f"Expected RED at ({col},{row}), got {grid[row][col]}"
+                )
+
+    def test_all_other_tiles_remain_neutral(self) -> None:
+        grid = self._make_grid()
+        seed_initial_state(grid)
+        for row in range(GRID_ROWS):
+            for col in range(GRID_COLS):
+                is_blue_corner = row < 2 and col < 2
+                is_red_corner  = row >= 8 and col >= 8
+                if not is_blue_corner and not is_red_corner:
+                    assert grid[row][col] == TileState.NEUTRAL, (
+                        f"Expected NEUTRAL at ({col},{row}), got {grid[row][col]}"
+                    )
+
+    def test_seeded_tile_counts(self) -> None:
+        grid = self._make_grid()
+        seed_initial_state(grid)
+        blue    = sum(grid[r][c] == TileState.BLUE    for r in range(GRID_ROWS) for c in range(GRID_COLS))
+        red     = sum(grid[r][c] == TileState.RED     for r in range(GRID_ROWS) for c in range(GRID_COLS))
+        neutral = sum(grid[r][c] == TileState.NEUTRAL for r in range(GRID_ROWS) for c in range(GRID_COLS))
+        assert blue    == 4
+        assert red     == 4
+        assert neutral == 92
+
+    def test_seed_is_idempotent(self) -> None:
+        """Calling seed_initial_state twice must produce the same board."""
+        grid = self._make_grid()
+        seed_initial_state(grid)
+        seed_initial_state(grid)
+        blue = sum(grid[r][c] == TileState.BLUE for r in range(GRID_ROWS) for c in range(GRID_COLS))
+        assert blue == 4

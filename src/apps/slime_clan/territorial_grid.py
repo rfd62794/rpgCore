@@ -1,8 +1,14 @@
 """
-Territorial Grid Prototype — Spec-001, Session 002
+Territorial Grid Prototype — Spec-001, Session 003
 ===================================================
 A 10x10 tile-based territorial map rendered inside the rpgCore game loop.
 Each tile tracks ownership: Neutral, Blue Clan, or Red Clan.
+
+Session 003 — Seed Initial State:
+  On launch the board starts in a war footing:
+    Blue clan owns a 2×2 cluster in the top-left corner.
+    Red clan owns a 2×2 cluster in the bottom-right corner.
+    All other tiles remain Neutral (contested space).
 
 Session 002 — Contested Tile Logic (intent-aware interaction):
   NEUTRAL tile  → instant Blue claim (free land, no fight needed)
@@ -91,6 +97,36 @@ def resolve_battle(attacker: str, defender: str) -> str:
 
 
 # ---------------------------------------------------------------------------
+# Initial board seeding (Session 003)
+# ---------------------------------------------------------------------------
+def seed_initial_state(grid: list[list[TileState]]) -> None:
+    """
+    Set the starting board configuration in-place.
+
+    Blue clan: 2×2 cluster in the top-left corner     — cols 0-1, rows 0-1
+    Red clan:  2×2 cluster in the bottom-right corner — cols 8-9, rows 8-9
+    All other tiles remain NEUTRAL.
+
+    Pure function over the grid list — no pygame, no side effects beyond
+    mutating the passed grid. Easy to test and easy to swap in Session 004+.
+    """
+    # Blue home territory — top-left 2×2
+    for row in range(2):
+        for col in range(2):
+            grid[row][col] = TileState.BLUE
+
+    # Red rival territory — bottom-right 2×2
+    for row in range(8, 10):
+        for col in range(8, 10):
+            grid[row][col] = TileState.RED
+
+    logger.info(
+        "🌱 Board seeded — Blue top-left 2×2, Red bottom-right 2×2, {} neutral tiles",
+        GRID_COLS * GRID_ROWS - 4 - 4,
+    )
+
+
+# ---------------------------------------------------------------------------
 # Pure helper — coordinate mapping (tested independently of pygame)
 # ---------------------------------------------------------------------------
 def screen_pos_to_tile(
@@ -134,10 +170,11 @@ class TerritorialGrid:
         )
         pygame.display.set_caption(WINDOW_TITLE)
 
-        # 10×10 grid, all tiles start Neutral
+        # 10×10 grid — seeded with starting state (Session 003)
         self.grid: List[List[TileState]] = [
             [TileState.NEUTRAL] * GRID_COLS for _ in range(GRID_ROWS)
         ]
+        seed_initial_state(self.grid)
 
         self.running: bool = True
         self.click_count: int = 0       # total clicks on the grid
@@ -266,7 +303,7 @@ class TerritorialGrid:
         sidebar_x = 6
         lines = [
             ("SLIME CLAN", (180, 180, 120), self.font_large),
-            ("Session 002", (130, 130, 130), self.font_small),
+            ("Session 003", (130, 130, 130), self.font_small),
             ("", SIDEBAR_TEXT_COLOR, self.font_small),
             ("TERRITORY", (180, 180, 120), self.font_small),
             (f"  Blue  {blue_count:>3}", TILE_HIGHLIGHT[TileState.BLUE], self.font_small),
