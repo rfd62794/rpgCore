@@ -763,28 +763,28 @@ class TerritorialGrid:
             ("B: owned",       SIDEBAR_TEXT_COLOR),
             ("ESC: quit/rst",  SIDEBAR_TEXT_COLOR),
         ]
-        BATTLE_LOG_H = 44
+        BATTLE_LOG_H = 56  # tall enough for 3 lines (Session 009 added odds)
         line_h = 15
         ctrl_y = WINDOW_HEIGHT - BATTLE_LOG_H - 4 - len(ctrl) * line_h
         for label, color in ctrl:
             s = self.font_label.render(label, True, color)
             t(s, pad, ctrl_y);  ctrl_y += line_h
 
-        # 6. Battle log strip (pinned at bottom)
+        # 6. Battle log strip (pinned at bottom) — Session 009: shows odds
         log_y = WINDOW_HEIGHT - BATTLE_LOG_H
         pygame.draw.rect(self.screen, BATTLE_LOG_BG, (0, log_y, GRID_OFFSET_X, BATTLE_LOG_H))
         pygame.draw.rect(self.screen, PANEL_BORDER,  (0, log_y, GRID_OFFSET_X, 1))
 
         s = self.font_label.render("Last:", True, LABEL_COLOR)
         t(s, pad, log_y + 4)
-        result = self.last_battle_result
-        # Split "coord \u2192 winner" onto two lines so it fits in 66px
-        parts = result.split(" \u2192 ") if " \u2192 " in result else [result]
-        s1 = self.font_label.render(parts[0], True, (220, 200, 100))
-        t(s1, pad, log_y + 17)
-        if len(parts) > 1:
-            s2 = self.font_label.render("\u2192 " + parts[1], True, (220, 200, 100))
-            t(s2, pad, log_y + 29)
+        s = self.font_label.render(self.last_battle_result, True, (220, 200, 100))
+        t(s, pad, log_y + 18)
+        if self.battles_fought > 0:
+            odds_pct = int(self.last_battle_odds * 100)
+            odds_text = f"Blue had {odds_pct}%"
+            odds_color = (100, 180, 255) if self.last_battle_odds >= 0.5 else (255, 130, 130)
+            s = self.font_label.render(odds_text, True, odds_color)
+            t(s, pad, log_y + 32)
 
 
 
