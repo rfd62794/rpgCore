@@ -23,6 +23,7 @@ from apps.slime_clan.territorial_grid import (
     screen_pos_to_tile,
     resolve_battle,
     seed_initial_state,
+    generate_obstacles,
     ai_take_turn,
     ai_choose_action,
     get_tiles_adjacent_to_red,
@@ -30,6 +31,8 @@ from apps.slime_clan.territorial_grid import (
     AI_NEUTRAL_BIAS,
     BLINK_STEP_MS,
     WIN_THRESHOLD,
+    WIN_FRACTION,
+    OBSTACLE_COUNT,
     GRID_COLS,
     GRID_ROWS,
     TILE_SIZE,
@@ -218,7 +221,8 @@ class TestSeedInitialState:
                     f"Expected RED at ({col},{row}), got {grid[row][col]}"
                 )
 
-    def test_all_other_tiles_remain_neutral(self) -> None:
+    def test_all_other_tiles_not_blue_or_red(self) -> None:
+        """After seeding, all non-corner tiles are NEUTRAL or BLOCKED (Session 008)."""
         grid = self._make_grid()
         seed_initial_state(grid)
         for row in range(GRID_ROWS):
@@ -226,8 +230,8 @@ class TestSeedInitialState:
                 is_blue_corner = row < 2 and col < 2
                 is_red_corner  = row >= 8 and col >= 8
                 if not is_blue_corner and not is_red_corner:
-                    assert grid[row][col] == TileState.NEUTRAL, (
-                        f"Expected NEUTRAL at ({col},{row}), got {grid[row][col]}"
+                    assert grid[row][col] in (TileState.NEUTRAL, TileState.BLOCKED), (
+                        f"Expected NEUTRAL or BLOCKED at ({col},{row}), got {grid[row][col]}"
                     )
 
     def test_seeded_tile_counts(self) -> None:
@@ -235,10 +239,12 @@ class TestSeedInitialState:
         seed_initial_state(grid)
         blue    = sum(grid[r][c] == TileState.BLUE    for r in range(GRID_ROWS) for c in range(GRID_COLS))
         red     = sum(grid[r][c] == TileState.RED     for r in range(GRID_ROWS) for c in range(GRID_COLS))
+        blocked = sum(grid[r][c] == TileState.BLOCKED for r in range(GRID_ROWS) for c in range(GRID_COLS))
         neutral = sum(grid[r][c] == TileState.NEUTRAL for r in range(GRID_ROWS) for c in range(GRID_COLS))
         assert blue    == 4
         assert red     == 4
-        assert neutral == 92
+        assert blocked == OBSTACLE_COUNT
+        assert neutral == GRID_COLS * GRID_ROWS - 4 - 4 - OBSTACLE_COUNT
 
     def test_seed_is_idempotent(self) -> None:
         """Calling seed_initial_state twice must produce the same board."""
@@ -486,7 +492,7 @@ class TestCheckWin:
 class TestSeedAfterReset:
     """After a reset (re-seeding), the board must return to correct starting counts."""
 
-    def test_reset_gives_4_blue_4_red_92_neutral(self) -> None:
+    def test_reset_gives_correct_counts(self) -> None:
         grid = [[TileState.NEUTRAL] * GRID_COLS for _ in range(GRID_ROWS)]
         # Simulate a played state (all blue)
         for r in range(GRID_ROWS):
@@ -499,12 +505,142 @@ class TestSeedAfterReset:
         seed_initial_state(grid)
         blue    = sum(grid[r][c] == TileState.BLUE    for r in range(GRID_ROWS) for c in range(GRID_COLS))
         red     = sum(grid[r][c] == TileState.RED     for r in range(GRID_ROWS) for c in range(GRID_COLS))
-        neutral = sum(grid[r][c] == TileState.NEUTRAL for r in range(GRID_ROWS) for c in range(GRID_COLS))
+        blocked = sum(grid[r][c] == TileState.BLOCKED for r in range(GRID_ROWS) for c in range(GRID_COLS))
         assert blue    == 4
         assert red     == 4
-        assert neutral == 92
+        assert blocked == OBSTACLE_COUNT
 
     def test_check_win_false_after_reset(self) -> None:
         grid = [[TileState.NEUTRAL] * GRID_COLS for _ in range(GRID_ROWS)]
         seed_initial_state(grid)
         assert check_win(grid) is None
+
+
+# ---------------------------------------------------------------------------
+# Session 008 — Procedural Obstacles
+# ---------------------------------------------------------------------------
+class TestGenerateObstacles:
+    """generate_obstacles() must place BLOCKED tiles only in the safe neutral zone."""
+
+    def _make_seeded_grid(self) -> list[list[TileState]]:
+        grid = [[TileState.NEUTRAL] * GRID_COLS for _ in range(GRID_ROWS)]
+        for r in range(2):
+            for c in range(2):
+                grid[r][c] = TileState.BLUE
+        for r in range(8, 10):
+            for c in range(8, 10):
+                grid[r][c] = TileState.RED
+        return grid
+
+    def test_obstacle_count_equals_constant(self) -> None:
+        grid = self._make_seeded_grid()
+        generate_obstacles(grid)
+        blocked = sum(grid[r][c] == TileState.BLOCKED for r in range(GRID_ROWS) for c in range(GRID_COLS))
+        assert blocked == OBSTACLE_COUNT
+
+    def test_custom_count(self) -> None:
+        grid = self._make_seeded_grid()
+        generate_obstacles(grid, count=3)
+        blocked = sum(grid[r][c] == TileState.BLOCKED for r in range(GRID_ROWS) for c in range(GRID_COLS))
+        assert blocked == 3
+
+    def test_no_obstacle_in_blue_3x3_corner(self) -> None:
+        """Cols 0-2, rows 0-2 must never contain BLOCKED tiles."""
+        for _ in range(20):  # run multiple times for randomness coverage
+            grid = self._make_seeded_grid()
+            generate_obstacles(grid)
+            for r in range(3):
+                for c in range(3):
+                    assert grid[r][c] != TileState.BLOCKED, (
+                        f"Obstacle in Blue protection zone at ({c},{r})"
+                    )
+
+    def test_no_obstacle_in_red_3x3_corner(self) -> None:
+        """Cols 7-9, rows 7-9 must never contain BLOCKED tiles."""
+        for _ in range(20):
+            grid = self._make_seeded_grid()
+            generate_obstacles(grid)
+            for r in range(7, 10):
+                for c in range(7, 10):
+                    assert grid[r][c] != TileState.BLOCKED, (
+                        f"Obstacle in Red protection zone at ({c},{r})"
+                    )
+
+    def test_obstacles_are_only_in_neutral_zone(self) -> None:
+        """All BLOCKED tiles must occupy cells that were NEUTRAL before seeding."""
+        grid = self._make_seeded_grid()
+        before_blocked = [
+            (c, r) for r in range(GRID_ROWS) for c in range(GRID_COLS)
+            if grid[r][c] == TileState.NEUTRAL
+        ]
+        generate_obstacles(grid)
+        for r in range(GRID_ROWS):
+            for c in range(GRID_COLS):
+                if grid[r][c] == TileState.BLOCKED:
+                    assert (c, r) in before_blocked, (
+                        f"Obstacle placed at non-neutral tile ({c},{r})"
+                    )
+
+
+class TestBlockedTileState:
+    """TileState.BLOCKED sanity checks + interaction rules."""
+
+    def test_blocked_is_distinct_from_other_states(self) -> None:
+        assert TileState.BLOCKED not in (TileState.NEUTRAL, TileState.BLUE, TileState.RED)
+
+    def test_blocked_tile_skipped_by_ai_choose_action(self) -> None:
+        """AI must never return a BLOCKED coordinate as its action."""
+        grid = [[TileState.BLOCKED] * GRID_COLS for _ in range(GRID_ROWS)]
+        # Leave one neutral tile so AI has a target, one blue to avoid None path
+        grid[5][5] = TileState.NEUTRAL
+        result = ai_choose_action(grid)
+        if result is not None:
+            col, row, _ = result
+            assert (col, row) == (5, 5), (
+                f"AI chose a BLOCKED tile at ({col},{row})"
+            )
+
+    def test_blocked_tile_excluded_from_ai_neutral_list(self) -> None:
+        """A fully-blocked grid with no NEUTRAL or BLUE returns None from ai_choose_action."""
+        grid = [[TileState.BLOCKED] * GRID_COLS for _ in range(GRID_ROWS)]
+        assert ai_choose_action(grid) is None
+
+
+class TestCheckWinWithObstacles:
+    """check_win() must scale threshold by claimable tiles."""
+
+    def _make_grid(self) -> list[list[TileState]]:
+        return [[TileState.NEUTRAL] * GRID_COLS for _ in range(GRID_ROWS)]
+
+    def test_dynamic_threshold_reduces_with_blocked_tiles(self) -> None:
+        """
+        With 10 BLOCKED tiles: claimable = 90, threshold = int(90*0.60) = 54.
+        Blue holding 54 tiles should win.
+        """
+        grid = self._make_grid()
+        blocked_count = 10
+        count = 0
+        for r in range(GRID_ROWS):
+            for c in range(GRID_COLS):
+                if count < blocked_count:
+                    grid[r][c] = TileState.BLOCKED
+                    count += 1
+        # Give Blue exactly 54 tiles
+        blue_placed = 0
+        for r in range(GRID_ROWS):
+            for c in range(GRID_COLS):
+                if grid[r][c] == TileState.NEUTRAL and blue_placed < 54:
+                    grid[r][c] = TileState.BLUE
+                    blue_placed += 1
+        result = check_win(grid)
+        assert result == TileState.BLUE
+
+    def test_explicit_threshold_overrides_dynamic(self) -> None:
+        """Passing explicit threshold=1 still works (backward compat)."""
+        grid = self._make_grid()
+        grid[0][0] = TileState.BLUE
+        assert check_win(grid, threshold=1) == TileState.BLUE
+        assert check_win(grid, threshold=2) is None
+
+    def test_win_fraction_constant(self) -> None:
+        assert WIN_FRACTION == 0.60
