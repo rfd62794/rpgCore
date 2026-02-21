@@ -1,50 +1,38 @@
-# Implementation Plan: Session 013 - Auto-Battle Scene
+# Implementation Plan: Session 015 - Balance and Tier Integration
 
 ## Technical Approach
 
-### 1. Data Structures & State Management
-- Create `src/apps/slime_clan/auto_battle.py`.
-- Define `Shape` (`CIRCLE`, `SQUARE`, `TRIANGLE`) and `Hat` (`SWORD`, `SHIELD`, `STAFF`) Enums.
-- Implement `SlimeUnit` dataclass.
-  - Implement a factory method or pure function `create_slime(name, shape, hat)` to generate units with shape-adjusted stats.
-- Define `Action` and `TurnOrder` semantics to handle combat.
+### 1. Three-Tier War System Architecture
+The game loop consists of three interconnected simulation tiers:
+1. **Strategic Tier (`overworld.py`)**: A static node map where the player plots their macro-campaign. Each node (Region) is contested, red, or blue. Clicking a node initiates an invasion. Features global win/loss tracking.
+2. **Operational Tier (`territorial_grid.py`)**: A mid-level skirmish that determines the spatial momentum of the invasion. A grid-based simulation where blue and red abstract slimes collide for dominance over tiles.
+3. **Tactical Tier (`auto_battle.py`)**: The final 3v3 auto-battler resolving the conflict using specific player squad characters (`Rex`, `Brom`, `Pip`) against a specialized red squad.
 
-### 2. Auto-Battle Engine (`auto_battle.py`)
-- Define `Squad` list containing surviving `SlimeUnit`s.
-- `handle_events()`: only checks for Window Quit or ESC.
-- `update()`:
-  - Timer mechanism triggers every 800ms.
-  - Sort all surviving units by speed (fastest first).
-  - Let one unit execute its action.
-  - Advance the pointer; reset pointer if sequence complete.
-  - Check for squad wipe conditions.
-- `render()`:
-  - Draw Blue squad on `x = WINDOW_WIDTH // 6`.
-  - Draw Red squad on `x = WINDOW_WIDTH - WINDOW_WIDTH // 6`.
-  - Utilize `draw_slime` for the core body.
-  - Render the unit's name above the slime sprite.
-  - Draw HP bars below each survivor.
-  - Render a small shape indicator (`C`/`S`/`T`) and hat indicator (`⚔`/`🛡`/`✨`) beneath the HP bar for quick readability.
+### 2. Session 015 Objectives
 
-### 3. Combat Logic Functions (Pure functions)
-- `execute_action(actor, allies, enemies)`: Handles the logic where `SWORD` finds enemy min HP to attack, `SHIELD` buffs defense, `STAFF` heals ally min HP.
+**A. Battle Balance (`auto_battle.py`)**
+- **Player Bias**: The core trio (`Rex`, `Brom`, `Pip`) receives a permanent +25% base stat multiplier (HP, Attack, Defense, Speed) so the player acts as a durable, elite underdog.
+- **SHIELD Taunt Redirection**: `SWORD` logic must explicitly check if any enemy has `taunt_active=True`. If so, those enemies must be prioritized over the standard "lowest HP" fallback.
+- **STAFF Heal Scaling**: Change the heal function from standard flat scaling to a percentage-missing based heal (e.g., target missing HP / max HP factor).
 
-### 4. Root Launcher (`run_auto_battle.py`)
-- Python script to launch the auto-combat visualization.
+**B. Difficulty Scaling (`overworld.py`)**
+- Implement an Easy/Normal/Hard scaling configuration.
+- Pass `--difficulty` from the overworld down to the tactical `auto_battle.py` layer.
+- Enemy squads scale -20% / 0% / +20% based on difficulty.
 
-### 5. Tests
-- Create `tests/unit/slime_clan_autobattle_test.py`.
-- Write tests:
-  - `test_slime_stat_generation`
-  - `test_turn_order_sorting`
-  - `test_sword_targets_lowest_hp_enemy`
-  - `test_staff_heals_lowest_hp_ally`
+**C. Tier Integration (`overworld.py` -> `territorial_grid.py` -> `auto_battle.py`)**
+- Revise the `_launch_battle()` function in `overworld.py`.
+- First, launch `territorial_grid.py` via subprocess.
+- Wait for the result object (exit code 0 = Blue Win, 1 = Red Win/Cancel).
+- Launch `auto_battle.py` with an argument like `--grid-advantage=PLAYER` or `--grid-advantage=ENEMY`.
+- Parse the result to determine final node ownership.
 
-### 6. Known Limitations
-- **Animation Fidelity**: Visualizing actions (like a projectile or sword swing) may be rudimentary (e.g., text popups or simple flashes) to keep within the fast development pace of the stub.
-- **Subprocesses**: Still lacking a unified Scene Manager, so isolated tests run decoupled.
+### 3. Tests
+- Update `tests/unit/slime_clan_autobattle_test.py` to cover taunt logic and scaled healing logic.
+- Maintain the 7 tests in the `slime_clan_*.py` suite.
 
 ## Verification Plan
-1. Run `pytest` to ensure test count is >= 79 and all pass.
-2. Execute `python run_auto_battle.py`.
-3. Verify battle loop runs cleanly and autonomously.
+1. Run `uv run pytest` to ensure all 7 unit tests pass.
+2. Run `python run_overworld.py`.
+3. Verify clicking a node first opens the grid, then upon completion, opens the auto battler with the correct stat buffs applied.
+4. Verify the overworld correctly handles the final result.
