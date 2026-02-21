@@ -10,19 +10,14 @@ import time
 from pathlib import Path
 from typing import List, Dict, Any
 
-# Add src to path for imports
-src_path = Path(__file__).parent.parent.parent / "src"
-if str(src_path) not in sys.path:
-    sys.path.insert(0, str(src_path))
-
 # Direct imports to test individual components
 try:
-    from dgt_engine.foundation.genetics.schema import TurboGenome, LimbShape
-    from dgt_engine.foundation.types.race import (
+    from src.dgt_engine.foundation.genetics.schema import TurboGenome, LimbShape
+    from src.dgt_engine.foundation.types.race import (
         TurtleState, RaceSnapshot, RaceConfig, TerrainType,
-        create_turtle_state, create_race_snapshot
+        create_turtle_state, create_race_snapshot, TerrainSegment
     )
-    from dgt_engine.foundation.types import Result
+    from src.dgt_engine.foundation.types.result import Result
     print("✅ Foundation imports successful")
 except ImportError as e:
     print(f"❌ Foundation import failed: {e}")
@@ -30,25 +25,21 @@ except ImportError as e:
 
 # Test individual race components
 try:
-    # Import physics engine directly
-    sys.path.insert(0, str(src_path / "dgt_engine" / "engines" / "race"))
-    from physics_engine import RacePhysicsEngine, create_race_physics_engine
+    from src.dgt_engine.engines.race.physics_engine import RacePhysicsEngine, create_race_physics_engine
     print("✅ Physics engine import successful")
 except ImportError as e:
     print(f"❌ Physics engine import failed: {e}")
     sys.exit(1)
 
 try:
-    # Import terrain system directly
-    from terrain_system import TerrainSystem, create_terrain_system
+    from src.dgt_engine.engines.race.terrain_system import TerrainSystem, create_terrain_system
     print("✅ Terrain system import successful")
 except ImportError as e:
     print(f"❌ Terrain system import failed: {e}")
     sys.exit(1)
 
 try:
-    # Import race arbiter directly
-    from race_arbiter import RaceArbiter, create_race_arbiter
+    from src.dgt_engine.engines.race.race_arbiter import RaceArbiter, create_race_arbiter
     print("✅ Race arbiter import successful")
 except ImportError as e:
     print(f"❌ Race arbiter import failed: {e}")

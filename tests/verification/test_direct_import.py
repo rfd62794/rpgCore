@@ -10,37 +10,23 @@ import time
 from pathlib import Path
 from typing import List, Dict, Any
 
-# Add src to path for imports
-src_path = Path(__file__).parent.parent.parent / "src"
-if str(src_path) not in sys.path:
-    sys.path.insert(0, str(src_path))
-
 # Test foundation imports directly
 try:
-    # Import schema directly
-    schema_path = src_path / "dgt_engine" / "foundation" / "genetics" / "schema.py"
-    sys.path.insert(0, str(src_path / "dgt_engine" / "foundation" / "genetics"))
-    from schema import TurboGenome, LimbShape
+    from src.dgt_engine.foundation.genetics.schema import TurboGenome, LimbShape
     print("✅ Genetic schema import successful")
 except ImportError as e:
     print(f"❌ Genetic schema import failed: {e}")
     sys.exit(1)
 
 try:
-    # Import types directly
-    types_path = src_path / "dgt_engine" / "foundation" / "types" / "race.py"
-    sys.path.insert(0, str(src_path / "dgt_engine" / "foundation" / "types"))
-    from race import create_turtle_state, TerrainType
+    from src.dgt_engine.foundation.types.race import create_turtle_state, TerrainType
     print("✅ Race types import successful")
 except ImportError as e:
     print(f"❌ Race types import failed: {e}")
     sys.exit(1)
 
 try:
-    # Import result directly
-    result_path = src_path / "dgt_engine" / "foundation" / "types" / "result.py"
-    sys.path.insert(0, str(src_path / "dgt_engine" / "foundation" / "types"))
-    from result import Result
+    from src.dgt_engine.foundation.types.result import Result
     print("✅ Result type import successful")
 except ImportError as e:
     print(f"❌ Result type import failed: {e}")
@@ -48,26 +34,21 @@ except ImportError as e:
 
 # Test race engine imports directly
 try:
-    # Import physics engine directly
-    physics_path = src_path / "dgt_engine" / "engines" / "race" / "physics_engine.py"
-    sys.path.insert(0, str(src_path / "dgt_engine" / "engines" / "race"))
-    from physics_engine import create_race_physics_engine
+    from src.dgt_engine.engines.race.physics_engine import create_race_physics_engine
     print("✅ Physics engine import successful")
 except ImportError as e:
     print(f"❌ Physics engine import failed: {e}")
     sys.exit(1)
 
 try:
-    # Import terrain system directly
-    from terrain_system import create_terrain_system
+    from src.dgt_engine.engines.race.terrain_system import create_terrain_system
     print("✅ Terrain system import successful")
 except ImportError as e:
     print(f"❌ Terrain system import failed: {e}")
     sys.exit(1)
 
 try:
-    # Import race arbiter directly
-    from race_arbiter import create_race_arbiter
+    from src.dgt_engine.engines.race.race_arbiter import create_race_arbiter
     print("✅ Race arbiter import successful")
 except ImportError as e:
     print(f"❌ Race arbiter import failed: {e}")
