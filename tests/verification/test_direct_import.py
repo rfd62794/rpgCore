@@ -18,8 +18,8 @@ if str(src_path) not in sys.path:
 # Test foundation imports directly
 try:
     # Import schema directly
-    schema_path = src_path / "foundation" / "genetics" / "schema.py"
-    sys.path.insert(0, str(src_path / "foundation" / "genetics"))
+    schema_path = src_path / "dgt_engine" / "foundation" / "genetics" / "schema.py"
+    sys.path.insert(0, str(src_path / "dgt_engine" / "foundation" / "genetics"))
     from schema import TurboGenome, LimbShape
     print("✅ Genetic schema import successful")
 except ImportError as e:
@@ -28,8 +28,8 @@ except ImportError as e:
 
 try:
     # Import types directly
-    types_path = src_path / "foundation" / "types" / "race.py"
-    sys.path.insert(0, str(src_path / "foundation" / "types"))
+    types_path = src_path / "dgt_engine" / "foundation" / "types" / "race.py"
+    sys.path.insert(0, str(src_path / "dgt_engine" / "foundation" / "types"))
     from race import create_turtle_state, TerrainType
     print("✅ Race types import successful")
 except ImportError as e:
@@ -38,8 +38,8 @@ except ImportError as e:
 
 try:
     # Import result directly
-    result_path = src_path / "foundation" / "types" / "result.py"
-    sys.path.insert(0, str(src_path / "foundation" / "types"))
+    result_path = src_path / "dgt_engine" / "foundation" / "types" / "result.py"
+    sys.path.insert(0, str(src_path / "dgt_engine" / "foundation" / "types"))
     from result import Result
     print("✅ Result type import successful")
 except ImportError as e:
@@ -49,8 +49,8 @@ except ImportError as e:
 # Test race engine imports directly
 try:
     # Import physics engine directly
-    physics_path = src_path / "engines" / "race" / "physics_engine.py"
-    sys.path.insert(0, str(src_path / "engines" / "race"))
+    physics_path = src_path / "dgt_engine" / "engines" / "race" / "physics_engine.py"
+    sys.path.insert(0, str(src_path / "dgt_engine" / "engines" / "race"))
     from physics_engine import create_race_physics_engine
     print("✅ Physics engine import successful")
 except ImportError as e:

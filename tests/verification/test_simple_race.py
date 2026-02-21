@@ -31,7 +31,7 @@ except ImportError as e:
 # Test individual race components
 try:
     # Import physics engine directly
-    sys.path.insert(0, str(src_path / "engines" / "race"))
+    sys.path.insert(0, str(src_path / "dgt_engine" / "engines" / "race"))
     from physics_engine import RacePhysicsEngine, create_race_physics_engine
     print("✅ Physics engine import successful")
 except ImportError as e:
