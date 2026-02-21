@@ -1,19 +1,20 @@
 """
-Territorial Grid Prototype — Spec-001, Session 003
+Territorial Grid Prototype — Spec-001, Session 004
 ===================================================
 A 10x10 tile-based territorial map rendered inside the rpgCore game loop.
 Each tile tracks ownership: Neutral, Blue Clan, or Red Clan.
 
+Session 004 — Reactive AI:
+  After any player action that changes a tile, ai_take_turn() fires once.
+  AI strategy: 70% grab a random neutral tile for Red, 30% contest a Blue tile.
+  When neutral tiles are exhausted the AI always contests Blue.
+  Any tile that changed ownership this frame flashes white for one frame.
+
 Session 003 — Seed Initial State:
-  On launch the board starts in a war footing:
-    Blue clan owns a 2×2 cluster in the top-left corner.
-    Red clan owns a 2×2 cluster in the bottom-right corner.
-    All other tiles remain Neutral (contested space).
+  Blue 2×2 top-left, Red 2×2 bottom-right, 92 neutral tiles.
 
 Session 002 — Contested Tile Logic (intent-aware interaction):
-  NEUTRAL tile  → instant Blue claim (free land, no fight needed)
-  BLUE tile     → no action (already owned)
-  RED tile      → resolve_battle() stub; winner applied to tile
+  NEUTRAL → instant Blue claim | BLUE → no-op | RED → resolve_battle()
 
 Architecture: Flat module, mirroring simple_visual_asteroids.py loop contract.
   handle_events → update → render → clock.tick(60)
@@ -97,6 +98,60 @@ def resolve_battle(attacker: str, defender: str) -> str:
 
 
 # ---------------------------------------------------------------------------
+# Reactive AI (Session 004)
+# ---------------------------------------------------------------------------
+AI_NEUTRAL_BIAS: float = 0.70  # probability AI grabs neutral over contesting Blue
+FLASH_COLOR: tuple[int, int, int] = (255, 255, 255)  # one-frame ownership-change indicator
+
+
+def ai_take_turn(
+    grid: list[list[TileState]],
+) -> tuple[int, int] | None:
+    """
+    AI takes one action on the board in-place and returns the changed tile.
+
+    Strategy:
+      - If neutral tiles exist: 70% chance grab one for Red, else contest Blue.
+      - If no neutral tiles remain: always contest a random Blue tile.
+      - If no valid targets exist (AI has won): return None.
+
+    Uses resolve_battle() for contested tiles — consistent with player logic.
+    Pure function over grid; returns (col, row) of the tile acted on, or None.
+    """
+    neutral = [
+        (c, r)
+        for r in range(GRID_ROWS)
+        for c in range(GRID_COLS)
+        if grid[r][c] == TileState.NEUTRAL
+    ]
+    blue = [
+        (c, r)
+        for r in range(GRID_ROWS)
+        for c in range(GRID_COLS)
+        if grid[r][c] == TileState.BLUE
+    ]
+
+    if not neutral and not blue:
+        logger.info("🤖 AI has no valid targets — map fully Red")
+        return None
+
+    # Decide: grab neutral (if available and bias rolls True) or contest Blue
+    take_neutral = neutral and (not blue or random.random() < AI_NEUTRAL_BIAS)
+
+    if take_neutral:
+        col, row = random.choice(neutral)
+        grid[row][col] = TileState.RED
+        logger.info("🤖 AI claims neutral ({},{})", col, row)
+        return (col, row)
+    else:
+        col, row = random.choice(blue)
+        winner = resolve_battle(attacker="RED", defender="BLUE")
+        grid[row][col] = TileState.RED if winner == "RED" else TileState.BLUE
+        logger.info("🤖 AI attacks Blue ({},{}) → {} wins", col, row, winner)
+        return (col, row)
+
+
+# ---------------------------------------------------------------------------
 # Initial board seeding (Session 003)
 # ---------------------------------------------------------------------------
 def seed_initial_state(grid: list[list[TileState]]) -> None:
@@ -177,9 +232,12 @@ class TerritorialGrid:
         seed_initial_state(self.grid)
 
         self.running: bool = True
-        self.click_count: int = 0       # total clicks on the grid
-        self.battles_fought: int = 0    # RED tile attacks attempted
-        self.last_battle_result: str = "—"  # shown in sidebar HUD
+        self.click_count: int = 0
+        self.battles_fought: int = 0
+        self.last_battle_result: str = "—"
+        # Session 004 state
+        self.flash_tiles: set[tuple[int, int]] = set()  # tiles to flash white this frame
+        self._player_acted: bool = False                # triggers AI in update()
 
         # Font for sidebar HUD — fall back gracefully
         try:
@@ -213,6 +271,7 @@ class TerritorialGrid:
     def _handle_click(self, pos: tuple[int, int]) -> None:
         """
         Intent-aware tile interaction (Session 002).
+        Records any ownership change in flash_tiles and sets _player_acted.
 
         NEUTRAL → instant Blue claim (free land)
         BLUE    → no action (already owned by player)
@@ -220,36 +279,39 @@ class TerritorialGrid:
         """
         result = screen_pos_to_tile(pos[0], pos[1])
         if result is None:
-            return  # click in sidebar — ignore
+            return
 
         col, row = result
         state = self.grid[row][col]
         self.click_count += 1
 
         if state == TileState.NEUTRAL:
-            # Free land — instant claim, no battle needed
             self.grid[row][col] = TileState.BLUE
+            self.flash_tiles.add((col, row))
+            self._player_acted = True
             logger.info("🏴 Tile ({},{}) claimed: NEUTRAL → BLUE", col, row)
 
         elif state == TileState.BLUE:
-            # Already owned — do nothing
             logger.debug("🔵 Tile ({},{}) already owned by Blue — no action", col, row)
 
         elif state == TileState.RED:
-            # Enemy tile — fight for it
             self.battles_fought += 1
             winner = resolve_battle(attacker="BLUE", defender="RED")
             self.grid[row][col] = TileState.BLUE if winner == "BLUE" else TileState.RED
-            self.last_battle_result = (
-                f"({col},{row}) → {winner} wins"
-            )
+            self.last_battle_result = f"({col},{row}) → {winner} wins"
+            self.flash_tiles.add((col, row))
+            self._player_acted = True
 
     # ------------------------------------------------------------------
     # Update (reserved — no logic yet for Session 001)
     # ------------------------------------------------------------------
     def update(self) -> None:
-        """Reserved for future battle resolution stub (Session 002+)."""
-        pass
+        """Trigger AI response after any player action that changed a tile."""
+        if self._player_acted:
+            ai_tile = ai_take_turn(self.grid)
+            if ai_tile is not None:
+                self.flash_tiles.add(ai_tile)
+            self._player_acted = False
 
     # ------------------------------------------------------------------
     # Rendering
@@ -262,29 +324,26 @@ class TerritorialGrid:
         pygame.display.flip()
 
     def _draw_grid(self) -> None:
-        """Draw all 10×10 tiles with fill, inner highlight, and border."""
+        """Draw all 10×10 tiles. Tiles in flash_tiles render white this frame."""
         for row in range(GRID_ROWS):
             for col in range(GRID_COLS):
                 state = self.grid[row][col]
                 x = GRID_OFFSET_X + col * TILE_SIZE
                 y = GRID_OFFSET_Y + row * TILE_SIZE
-
-                # Filled tile background
                 tile_rect = pygame.Rect(x, y, TILE_SIZE, TILE_SIZE)
-                pygame.draw.rect(self.screen, TILE_COLORS[state], tile_rect)
 
-                # Inner highlight stripe (top-left corner, 3px)
-                highlight_rect = pygame.Rect(
-                    x + 2, y + 2, TILE_SIZE - 4, TILE_SIZE - 4
-                )
-                pygame.draw.rect(
-                    self.screen, TILE_HIGHLIGHT[state], highlight_rect, 2
-                )
+                if (col, row) in self.flash_tiles:
+                    # One-frame white flash: ownership just changed this frame
+                    pygame.draw.rect(self.screen, FLASH_COLOR, tile_rect)
+                else:
+                    pygame.draw.rect(self.screen, TILE_COLORS[state], tile_rect)
+                    highlight_rect = pygame.Rect(x + 2, y + 2, TILE_SIZE - 4, TILE_SIZE - 4)
+                    pygame.draw.rect(self.screen, TILE_HIGHLIGHT[state], highlight_rect, 2)
 
-                # Tile border
-                pygame.draw.rect(
-                    self.screen, BORDER_COLOR, tile_rect, BORDER_PX
-                )
+                pygame.draw.rect(self.screen, BORDER_COLOR, tile_rect, BORDER_PX)
+
+        # Clear flash set — tiles return to normal color next frame
+        self.flash_tiles.clear()
 
     def _draw_sidebar(self) -> None:
         """Render ownership counts and instructions in the left sidebar."""
@@ -303,7 +362,7 @@ class TerritorialGrid:
         sidebar_x = 6
         lines = [
             ("SLIME CLAN", (180, 180, 120), self.font_large),
-            ("Session 003", (130, 130, 130), self.font_small),
+            ("Session 004", (130, 130, 130), self.font_small),
             ("", SIDEBAR_TEXT_COLOR, self.font_small),
             ("TERRITORY", (180, 180, 120), self.font_small),
             (f"  Blue  {blue_count:>3}", TILE_HIGHLIGHT[TileState.BLUE], self.font_small),

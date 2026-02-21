@@ -22,6 +22,8 @@ from apps.slime_clan.territorial_grid import (
     screen_pos_to_tile,
     resolve_battle,
     seed_initial_state,
+    ai_take_turn,
+    AI_NEUTRAL_BIAS,
     GRID_COLS,
     GRID_ROWS,
     TILE_SIZE,
@@ -239,3 +241,67 @@ class TestSeedInitialState:
         seed_initial_state(grid)
         blue = sum(grid[r][c] == TileState.BLUE for r in range(GRID_ROWS) for c in range(GRID_COLS))
         assert blue == 4
+
+
+# ---------------------------------------------------------------------------
+# Session 004 — Reactive AI
+# ---------------------------------------------------------------------------
+class TestAiTakeTurn:
+    """ai_take_turn() must act correctly based on available tiles."""
+
+    def _make_grid(self, state: TileState = TileState.NEUTRAL) -> list[list[TileState]]:
+        return [[state] * GRID_COLS for _ in range(GRID_ROWS)]
+
+    def test_ai_claims_neutral_returns_valid_coord(self) -> None:
+        grid = self._make_grid(TileState.NEUTRAL)
+        result = ai_take_turn(grid)
+        assert result is not None
+        col, row = result
+        assert 0 <= col < GRID_COLS
+        assert 0 <= row < GRID_ROWS
+
+    def test_ai_turns_neutral_tile_to_red(self) -> None:
+        grid = self._make_grid(TileState.NEUTRAL)
+        result = ai_take_turn(grid)
+        assert result is not None
+        col, row = result
+        assert grid[row][col] == TileState.RED
+
+    def test_ai_returns_none_when_all_red(self) -> None:
+        """AI has no valid targets when the whole map is Red."""
+        grid = self._make_grid(TileState.RED)
+        result = ai_take_turn(grid)
+        assert result is None
+
+    def test_ai_fallback_contests_blue_when_no_neutral(self) -> None:
+        """With zero neutral tiles the AI must always act on a Blue tile."""
+        grid = self._make_grid(TileState.BLUE)
+        result = ai_take_turn(grid)
+        assert result is not None
+        col, row = result
+        # Tile is now either RED (AI won) or BLUE (defender held)
+        assert grid[row][col] in (TileState.RED, TileState.BLUE)
+
+    def test_ai_neutral_bias_is_statistical(self) -> None:
+        """
+        Over 200 trials with an equal mix of neutral/blue tiles,
+        the AI should choose neutral more often than blue.
+        The 70% bias means we expect far more than 50% neutral picks.
+        """
+        neutral_choices = 0
+        trials = 200
+        for _ in range(trials):
+            # Grid: half neutral (top 5 rows), half blue (bottom 5 rows)
+            grid = [
+                [TileState.NEUTRAL if r < 5 else TileState.BLUE] * GRID_COLS
+                for r in range(GRID_ROWS)
+            ]
+            result = ai_take_turn(grid)
+            assert result is not None
+            col, row = result
+            if row < 5:  # neutral zone
+                neutral_choices += 1
+        # Expect roughly 70% — allow wide margin for randomness (> 55%)
+        assert neutral_choices / trials > 0.55, (
+            f"AI neutral bias too low: {neutral_choices}/{trials}"
+        )
