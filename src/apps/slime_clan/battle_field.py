@@ -181,11 +181,10 @@ class BattleField:
             if result.returncode == 0:
                 logger.info("🏆 Blue squad won the tactical skirmish! Red token eliminated.")
                 self.red_token.active = False
-                # Check if Blue is already at Red's base — if so, instant field win
-                if self.blue_token.col >= GRID_COLS - 2 and self.blue_token.row >= GRID_ROWS - 2:
-                    logger.info("🎉 BLUE AT ENEMY BASE + RED ELIMINATED! Field Secured!")
-                    self.exit_code = 0
-                    self.game_over = True
+                # No enemies remain — field is secured
+                logger.info("🎉 Field Secured! Returning to Overworld.")
+                self.exit_code = 0
+                self.game_over = True
             else:
                 logger.info(f"💀 Red squad repelled the attack! Blue token eliminated. Exit Code: {result.returncode}")
                 self.blue_token.active = False
