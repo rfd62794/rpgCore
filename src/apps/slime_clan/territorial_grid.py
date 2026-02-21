@@ -281,6 +281,43 @@ def resolve_battle(attacker: str, defender: str) -> str:
 
 
 # ---------------------------------------------------------------------------
+# Session 011 — Tile Intelligence HUD (Hover Tooltips)
+# ---------------------------------------------------------------------------
+def get_hover_tooltip(grid: list[list[TileState]], col: int, row: int) -> str:
+    """
+    Pure function to generate context-aware HUD text for a hovered tile.
+    Takes into account adjacency for owned tiles and win-probability for attackable tiles.
+    """
+    state = grid[row][col]
+    
+    if state == TileState.NEUTRAL:
+        return "Claim: Free \u2192 yours instantly"
+    
+    elif state == TileState.BLOCKED:
+        return "Impassable"
+        
+    elif state == TileState.BLUE:
+        # Count orthogonal adjacent blue tiles
+        adj = 0
+        for dc, dr in ((-1, 0), (1, 0), (0, -1), (0, 1)):
+            nc, nr = col + dc, row + dr
+            if 0 <= nc < GRID_COLS and 0 <= nr < GRID_ROWS:
+                if grid[nr][nc] == TileState.BLUE:
+                    adj += 1
+        return f"Owned \u2014 {adj} adjacent Blue tiles"
+        
+    elif state == TileState.RED:
+        # Calculate battle odds for Blue attacking this Red tile
+        b_str = compute_battle_strength(grid, col, row, TileState.BLUE)
+        r_str = compute_battle_strength(grid, col, row, TileState.RED)
+        b_prob = b_str / (b_str + r_str)
+        pct = int(b_prob * 100)
+        return f"Battle: B:{b_str} vs R:{r_str} \u2192 Blue: {pct}% win chance"
+        
+    return ""
+
+
+# ---------------------------------------------------------------------------
 # AI Logic (Session 004/005)
 # ---------------------------------------------------------------------------
 AI_NEUTRAL_BIAS: float = 0.70
@@ -501,6 +538,10 @@ class TerritorialGrid:
         self.battles_fought: int = 0
         self.last_battle_result: str = "—"
         self.last_battle_odds: float = 0.0   # Session 009: Blue's win % last battle
+        
+        # UI State (Session 011)
+        self.hovered_tile: tuple[int, int] | None = None
+        
         # Turn / blink state (Sessions 005-006)
         self.turn: TurnState = TurnState.PLAYER_TURN
         self.winner: TileState | None = None
@@ -543,6 +584,9 @@ class TerritorialGrid:
                         self._reset()   # game over → reset
                     else:
                         self.running = False  # in-play → quit
+
+            elif event.type == pygame.MOUSEMOTION:
+                self.hovered_tile = screen_pos_to_tile(event.pos[0], event.pos[1])
 
             elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
                 self._handle_click(event.pos)
@@ -752,6 +796,10 @@ class TerritorialGrid:
 
                 pygame.draw.rect(self.screen, BORDER_COLOR, tile_rect, BORDER_PX)
 
+                # Session 011: Draw hover highlight over everything else
+                if self.hovered_tile == (col, row):
+                    pygame.draw.rect(self.screen, (255, 255, 255), tile_rect, 1)
+
         self.flash_tiles.clear()
 
 
@@ -849,21 +897,32 @@ class TerritorialGrid:
             s = self.font_label.render(label, True, color)
             t(s, pad, ctrl_y);  ctrl_y += line_h
 
-        # 6. Battle log strip (pinned at bottom) — Session 009: shows odds
+        # 6. Battle log strip (pinned at bottom) — Session 009: shows odds / Session 011: hover intent
         log_y = WINDOW_HEIGHT - BATTLE_LOG_H
         pygame.draw.rect(self.screen, BATTLE_LOG_BG, (0, log_y, GRID_OFFSET_X, BATTLE_LOG_H))
         pygame.draw.rect(self.screen, PANEL_BORDER,  (0, log_y, GRID_OFFSET_X, 1))
 
-        s = self.font_label.render("Last:", True, LABEL_COLOR)
-        t(s, pad, log_y + 4)
-        s = self.font_label.render(self.last_battle_result, True, (220, 200, 100))
-        t(s, pad, log_y + 18)
-        if self.battles_fought > 0:
-            odds_pct = int(self.last_battle_odds * 100)
-            odds_text = f"Blue had {odds_pct}%"
-            odds_color = (100, 180, 255) if self.last_battle_odds >= 0.5 else (255, 130, 130)
-            s = self.font_label.render(odds_text, True, odds_color)
-            t(s, pad, log_y + 32)
+        if self.hovered_tile is not None and self.winner is None:
+            # Session 011: Show intel for hover target
+            hover_col, hover_row = self.hovered_tile
+            tooltip = get_hover_tooltip(self.grid, hover_col, hover_row)
+            
+            s = self.font_label.render("Intel:", True, LABEL_COLOR)
+            t(s, pad, log_y + 4)
+            s = self.font_label.render(tooltip, True, (220, 220, 250))
+            t(s, pad, log_y + 18)
+        else:
+            # Legacy display: show last battle result
+            s = self.font_label.render("Last:", True, LABEL_COLOR)
+            t(s, pad, log_y + 4)
+            s = self.font_label.render(self.last_battle_result, True, (220, 200, 100))
+            t(s, pad, log_y + 18)
+            if self.battles_fought > 0:
+                odds_pct = int(self.last_battle_odds * 100)
+                odds_text = f"Blue had {odds_pct}%"
+                odds_color = (100, 180, 255) if self.last_battle_odds >= 0.5 else (255, 130, 130)
+                s = self.font_label.render(odds_text, True, odds_color)
+                t(s, pad, log_y + 32)
 
 
 

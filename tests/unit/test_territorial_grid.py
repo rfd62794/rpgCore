@@ -31,6 +31,7 @@ from apps.slime_clan.territorial_grid import (
     get_tiles_adjacent_to_red,
     check_win,
     draw_slime,
+    get_hover_tooltip,
     AI_NEUTRAL_BIAS,
     BLINK_STEP_MS,
     WIN_THRESHOLD,
@@ -812,4 +813,61 @@ class TestDrawSlime:
             )
         except Exception as e:
             pytest.fail(f"draw_slime raised an exception with small tile_size=4: {e}")
+
+
+# ---------------------------------------------------------------------------
+# Session 011 — Tile Intelligence HUD
+# ---------------------------------------------------------------------------
+class TestHoverTooltip:
+    """
+    Session 011: Test string generation logic for the HUD hover text.
+    Relies on pure function `get_hover_tooltip` independently of pygame context.
+    """
+
+    def _make_grid(self, state: TileState = TileState.NEUTRAL) -> list[list[TileState]]:
+        return [[state] * GRID_COLS for _ in range(GRID_ROWS)]
+
+    def test_tooltip_neutral_is_constant(self) -> None:
+        grid = self._make_grid(TileState.NEUTRAL)
+        tooltip = get_hover_tooltip(grid, 5, 5)
+        assert tooltip == "Claim: Free \u2192 yours instantly"
+
+    def test_tooltip_blocked_is_constant(self) -> None:
+        grid = self._make_grid(TileState.BLOCKED)
+        tooltip = get_hover_tooltip(grid, 2, 2)
+        assert tooltip == "Impassable"
+
+    def test_tooltip_blue_counts_adjacent_blue(self) -> None:
+        grid = self._make_grid(TileState.NEUTRAL)
+        # Center tile is Blue
+        grid[5][5] = TileState.BLUE
+        # Adjacents
+        grid[4][5] = TileState.BLUE
+        grid[5][4] = TileState.BLUE
+        # Non-orthogonal should NOT count
+        grid[4][4] = TileState.BLUE
+        
+        tooltip = get_hover_tooltip(grid, 5, 5)
+        # 2 orthogonal adjacent tiles: above (4,5) and left (5,4)
+        assert tooltip == "Owned \u2014 2 adjacent Blue tiles"
+
+    def test_tooltip_red_displays_battle_odds(self) -> None:
+        grid = self._make_grid(TileState.NEUTRAL)
+        # Blue has 3 base tires somewhere far
+        grid[0][0] = TileState.BLUE
+        grid[0][1] = TileState.BLUE
+        grid[1][0] = TileState.BLUE
+        
+        # Red has the target tile and 1 adjacent red 
+        grid[5][5] = TileState.RED
+        grid[6][5] = TileState.RED
+        
+        # Blue strength = 3 base + 0 adj = 3
+        # Red strength = 2 base + 1*3 adj = 5
+        # Blue win % = 3 / 8 = 37.5% -> 37%
+        
+        tooltip = get_hover_tooltip(grid, 5, 5)
+        expected = "Battle: B:3 vs R:5 \u2192 Blue: 37% win chance"
+        assert tooltip == expected
+
 
