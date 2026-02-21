@@ -100,19 +100,31 @@ class Overworld:
                 return
 
     def _launch_battle(self, node: MapNode) -> None:
-        """Launch the territorial_grid battle for the node."""
+        """Launch the auto_battle scene for the node."""
         logger.info(f"⚔️  Launching battle for {node.name}...")
         
-        # Subprocess launch (Two windows is intentional for this stub session)
+        # Subprocess launch
         try:
             # We assume we are running from the repository root
-            base_cmd = [sys.executable, "-m", "src.apps.slime_clan.territorial_grid"]
-            subprocess.run(base_cmd, check=True)
+            base_cmd = [
+                sys.executable, 
+                "-m", "src.apps.slime_clan.auto_battle",
+                "--region", node.name
+            ]
             
-            # Simulate a win on return regardless of actual outcome
-            logger.info(f"🏆 Simulating Blue win for {node.name} upon return")
-            node.state = NodeState.BLUE
-        except subprocess.CalledProcessError as e:
+            # Run the battle, wait for it to finish
+            result = subprocess.run(base_cmd, check=False)
+            
+            # auto_battle.py will return 0 for Blue win, 1 for Red win/Draw/Cancel
+            if result.returncode == 0:
+                logger.info(f"🏆 Blue secured {node.name}!")
+                node.state = NodeState.BLUE
+            else:
+                logger.info(f"💀 Red held {node.name}.")
+                # If it was contested, it becomes red if we lose
+                if node.state == NodeState.CONTESTED:
+                    node.state = NodeState.RED
+        except Exception as e:
             logger.error(f"❌ Battle subprocess failed: {e}")
             
     def update(self, dt_ms: float = 0.0) -> None:
