@@ -169,11 +169,12 @@ FPS = 60
 TICK_RATE_MS = 800
 
 class AutoBattleScene:
-    def __init__(self, region_name: str = "Unknown Region"):
+    def __init__(self, region_name: str = "Unknown Region", difficulty: str = "NORMAL"):
         pygame.init()
         self.screen = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
         pygame.display.set_caption("rpgCore — Auto-Battle")
         self.region_name = region_name
+        self.difficulty = difficulty
         
         try:
             self.font_name = pygame.font.Font(None, 20)
@@ -188,6 +189,11 @@ class AutoBattleScene:
         self.timer_ms = 0.0
         self.exit_code = 1 # Default to 1 (Loss/Cancel) if we exit early
         
+        # Parse difficulty multiplier
+        mult = 1.0
+        if difficulty == "EASY": mult = 0.8
+        elif difficulty == "HARD": mult = 1.2
+        
         # Hard-coded Player Squad (Blue) per Session 014 Directive
         self.blue_squad = [
             create_slime("b1", "Rex", TileState.BLUE, Shape.CIRCLE, Hat.SWORD, is_player=True),
@@ -196,9 +202,9 @@ class AutoBattleScene:
         ]
         
         self.red_squad = [
-            create_slime("r1", "R-Brute", TileState.RED, Shape.SQUARE, Hat.SWORD),
-            create_slime("r2", "R-Scout", TileState.RED, Shape.TRIANGLE, Hat.SWORD),
-            create_slime("r3", "R-Cleric", TileState.RED, Shape.CIRCLE, Hat.STAFF),
+            create_slime("r1", "R-Brute", TileState.RED, Shape.SQUARE, Hat.SWORD, difficulty_mult=mult),
+            create_slime("r2", "R-Scout", TileState.RED, Shape.TRIANGLE, Hat.SWORD, difficulty_mult=mult),
+            create_slime("r3", "R-Cleric", TileState.RED, Shape.CIRCLE, Hat.STAFF, difficulty_mult=mult),
         ]
         
         self.turn_queue: List[SlimeUnit] = []
