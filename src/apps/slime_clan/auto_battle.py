@@ -156,10 +156,11 @@ FPS = 60
 TICK_RATE_MS = 800
 
 class AutoBattleScene:
-    def __init__(self):
+    def __init__(self, region_name: str = "Unknown Region"):
         pygame.init()
         self.screen = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
         pygame.display.set_caption("rpgCore — Auto-Battle")
+        self.region_name = region_name
         
         try:
             self.font_name = pygame.font.Font(None, 20)
@@ -172,12 +173,13 @@ class AutoBattleScene:
 
         self.running = True
         self.timer_ms = 0.0
+        self.exit_code = 1 # Default to 1 (Loss/Cancel) if we exit early
         
-        # Hard-coded 3v3 Squads
+        # Hard-coded Player Squad (Blue) per Session 014 Directive
         self.blue_squad = [
-            create_slime("b1", "B-Tank", TileState.BLUE, Shape.SQUARE, Hat.SHIELD),
-            create_slime("b2", "B-Striker", TileState.BLUE, Shape.TRIANGLE, Hat.SWORD),
-            create_slime("b3", "B-Medic", TileState.BLUE, Shape.CIRCLE, Hat.STAFF),
+            create_slime("b1", "Rex", TileState.BLUE, Shape.CIRCLE, Hat.SWORD),
+            create_slime("b2", "Brom", TileState.BLUE, Shape.SQUARE, Hat.SHIELD),
+            create_slime("b3", "Pip", TileState.BLUE, Shape.TRIANGLE, Hat.STAFF),
         ]
         
         self.red_squad = [
@@ -189,10 +191,10 @@ class AutoBattleScene:
         self.turn_queue: List[SlimeUnit] = []
         self._build_turn_queue()
         
-        self.battle_logs: List[str] = ["Battle Started!"]
+        self.battle_logs: List[str] = [f"Battle Started in {self.region_name}!"]
         self.winner: Optional[str] = None
         
-        logger.info("⚔️ Auto-Battle Initialized")
+        logger.info(f"⚔️ Auto-Battle Initialized for {self.region_name}")
 
     def _build_turn_queue(self):
         alive = [u for u in self.blue_squad + self.red_squad if u.hp > 0]
@@ -248,12 +250,15 @@ class AutoBattleScene:
         
         if blue_alive and not red_alive:
             self.winner = "BLUE WINS!"
+            self.exit_code = 0
             logger.info("🏆 Blue Squad Victory")
         elif red_alive and not blue_alive:
             self.winner = "RED WINS!"
+            self.exit_code = 1
             logger.info("🏆 Red Squad Victory")
         elif not blue_alive and not red_alive:
             self.winner = "DRAW!"
+            self.exit_code = 1
 
     def _get_shape_str(self, shape: Shape) -> str:
         if shape == Shape.CIRCLE: return "C"
@@ -354,5 +359,11 @@ class AutoBattleScene:
         pygame.quit()
 
 if __name__ == "__main__":
-    app = AutoBattleScene()
+    import argparse
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--region", default="Unknown Region", help="Region name for the battle header")
+    args = parser.parse_args()
+    
+    app = AutoBattleScene(region_name=args.region)
     app.run()
+    sys.exit(app.exit_code)

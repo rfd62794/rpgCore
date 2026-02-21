@@ -128,7 +128,26 @@ class Overworld:
             logger.error(f"❌ Battle subprocess failed: {e}")
             
     def update(self, dt_ms: float = 0.0) -> None:
-        pass
+        """Check for global win/loss conditions."""
+        if hasattr(self, 'game_over') and self.game_over:
+            return
+            
+        red_count = 0
+        blue_count = 0
+        for node in self.nodes.values():
+            if node.id == "home":
+                continue
+            if node.state == NodeState.RED:
+                red_count += 1
+            elif node.state == NodeState.BLUE:
+                blue_count += 1
+                
+        if blue_count >= 4:
+            self.game_over = "WIN"
+            logger.info("🎉 Planet Secured!")
+        elif red_count >= 3:
+            self.game_over = "LOSS"
+            logger.info("💀 Colony Lost!")
         
     def render(self) -> None:
         """Draw the map: lines, nodes, and labels."""
@@ -157,6 +176,26 @@ class Overworld:
             lx = node.x - label_surf.get_width() // 2
             ly = node.y + NODE_RADIUS + 10
             self.screen.blit(label_surf, (lx, ly))
+            
+        # Draw game over banners
+        if hasattr(self, 'game_over') and self.game_over:
+            banner_w, banner_h = 500, 100
+            bx = (WINDOW_WIDTH - banner_w) // 2
+            by = (WINDOW_HEIGHT - banner_h) // 2
+            
+            overlay = pygame.Surface((banner_w, banner_h))
+            overlay.set_alpha(230)
+            overlay.fill((10, 10, 15))
+            self.screen.blit(overlay, (bx, by))
+            
+            msg = "Planet Secured - The Slime Clans bow to the Astronaut" if self.game_over == "WIN" else "Colony Lost - The Clans have driven you out"
+            color = (100, 200, 255) if self.game_over == "WIN" else (255, 100, 100)
+            
+            surf = self.font.render(msg, True, color)
+            self.screen.blit(surf, (bx + (banner_w - surf.get_width()) // 2, by + 25))
+            
+            esc_surf = self.font.render("ESC to Exit", True, (150, 150, 150))
+            self.screen.blit(esc_surf, (bx + (banner_w - esc_surf.get_width()) // 2, by + 60))
             
         pygame.display.flip()
 
