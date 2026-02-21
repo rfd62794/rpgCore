@@ -200,6 +200,7 @@ class AutoBattleScene:
         self.running = True
         self.timer_ms = 0.0
         self.exit_code = 1 # Default to 1 (Loss/Cancel) if we exit early
+        self.win_close_timer = 0.0 # Timer to auto-close after a winner is declared
         
         # Parse difficulty multiplier
         mult = 1.0
@@ -243,6 +244,10 @@ class AutoBattleScene:
 
     def update(self, dt_ms: float):
         if self.winner:
+            # Auto-close after 2 seconds so exit code propagates correctly
+            self.win_close_timer += dt_ms
+            if self.win_close_timer >= 2000:
+                self.running = False
             return
 
         self.timer_ms += dt_ms
