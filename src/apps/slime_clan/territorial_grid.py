@@ -1,15 +1,16 @@
 """
-Territorial Grid Prototype — Spec-001, Session 005
+Territorial Grid Prototype — Spec-001, Session 006
 ===================================================
 A 10x10 tile-based territorial map rendered inside the rpgCore game loop.
 Each tile tracks ownership: Neutral, Blue Clan, or Red Clan.
 
-Session 005 — Turn Clarity & AI Intent:
-  TurnState machine: PLAYER_TURN | AI_BLINKING.
-  Player input blocked during AI blink. HUD shows whose turn it is.
-  AI blink: 3 steps × 300 ms (white → original → white) then resolves.
-  AI targeting: adjacency-weighted selection (adjacent to Red = ×5 priority).
+Session 006 — Universal Blink, Win Condition & Reset:
+  Player moves now animate through the same 3-step blink as AI (symmetric UX).
+  check_win(): first clan to reach WIN_THRESHOLD (60) tiles wins.
+  Winner banner rendered over grid; ESC resets board to seeded state.
+  HUD shows X/60 progress bars for each clan.
 
+Session 005 — Turn Clarity & AI Intent: TurnState, adjacency AI, 300ms blink.
 Session 004 — Reactive AI: ai_take_turn() fires after every player action.
 Session 003 — Seed Initial State: Blue top-left 2×2, Red bottom-right 2×2.
 Session 002 — Contested Tile Logic: NEUTRAL→claim | BLUE→no-op | RED→battle.
@@ -55,14 +56,38 @@ class TileState(enum.IntEnum):
 
 
 class TurnState(enum.Enum):
-    PLAYER_TURN = "player"
-    AI_BLINKING = "ai_blinking"
+    PLAYER_TURN    = "player"
+    PLAYER_BLINKING = "player_blinking"  # Session 006: player move animates
+    AI_BLINKING    = "ai_blinking"
 
 
-# Blink sequence: white(300ms) → original(300ms) → white(300ms) → resolve
+# Blink sequence (shared for both player and AI moves)
 BLINK_STEP_MS: int = 300
-BLINK_STEPS: int = 3  # total steps in the sequence
+BLINK_STEPS: int = 3
 FLASH_COLOR: tuple[int, int, int] = (255, 255, 255)
+
+# Win condition
+WIN_THRESHOLD: int = 60
+
+
+# ---------------------------------------------------------------------------
+# Win detection (pure function — Session 006)
+# ---------------------------------------------------------------------------
+def check_win(
+    grid: list[list[TileState]],
+    threshold: int = WIN_THRESHOLD,
+) -> TileState | None:
+    """
+    Return the winning TileState if any clan holds >= threshold tiles, else None.
+    Returns BLUE first if both somehow hit threshold (impossible in normal play).
+    """
+    blue = sum(grid[r][c] == TileState.BLUE for r in range(GRID_ROWS) for c in range(GRID_COLS))
+    red  = sum(grid[r][c] == TileState.RED  for r in range(GRID_ROWS) for c in range(GRID_COLS))
+    if blue >= threshold:
+        return TileState.BLUE
+    if red >= threshold:
+        return TileState.RED
+    return None
 
 
 # Visually distinct colours for each ownership state
@@ -288,16 +313,16 @@ class TerritorialGrid:
         self.click_count: int = 0
         self.battles_fought: int = 0
         self.last_battle_result: str = "—"
-        # Session 005 turn state
+        # Turn / blink state (Sessions 005-006)
         self.turn: TurnState = TurnState.PLAYER_TURN
-        self.flash_tiles: set[tuple[int, int]] = set()  # player immediate flash
-        self._player_acted: bool = False
-        # Blink animation state (AI turn)
+        self.winner: TileState | None = None       # set when a clan hits WIN_THRESHOLD
         self._blink_tile: tuple[int, int] | None = None
-        self._blink_pre_state: TileState = TileState.NEUTRAL  # color before change
-        self._blink_pending: TileState = TileState.RED        # color to apply after
-        self._blink_step: int = 0      # 0=white 1=original 2=white
+        self._blink_pre_state: TileState = TileState.NEUTRAL
+        self._blink_pending: TileState = TileState.BLUE
+        self._blink_step: int = 0
         self._blink_timer_ms: float = 0.0
+        # Legacy flash set kept for potential future use (Session 004)
+        self.flash_tiles: set[tuple[int, int]] = set()
 
         # Font for sidebar HUD — fall back gracefully
         try:
@@ -316,28 +341,32 @@ class TerritorialGrid:
     # Event handling
     # ------------------------------------------------------------------
     def handle_events(self) -> None:
-        """Process pygame events — quit and tile-click."""
+        """Process pygame events — quit, reset, and tile-click."""
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 self.running = False
 
             elif event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
-                    self.running = False
+                    if self.winner is not None:
+                        self._reset()   # game over → reset
+                    else:
+                        self.running = False  # in-play → quit
 
             elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
                 self._handle_click(event.pos)
 
     def _handle_click(self, pos: tuple[int, int]) -> None:
         """
-        Intent-aware tile interaction. Blocked during AI blink (Session 005).
+        Intent-aware tile interaction (Session 006: queues blink, no immediate grid write).
 
-        NEUTRAL → instant Blue claim
+        Blocked if: turn != PLAYER_TURN, or game is over (winner set).
+        NEUTRAL → queues BLUE claim + starts PLAYER_BLINKING
         BLUE    → no action
-        RED     → resolve_battle(); apply winner
+        RED     → resolve_battle(); queues result + starts PLAYER_BLINKING
         """
-        if self.turn != TurnState.PLAYER_TURN:
-            return  # input locked during AI blink sequence
+        if self.turn != TurnState.PLAYER_TURN or self.winner is not None:
+            return
 
         result = screen_pos_to_tile(pos[0], pos[1])
         if result is None:
@@ -348,47 +377,77 @@ class TerritorialGrid:
         self.click_count += 1
 
         if state == TileState.NEUTRAL:
-            self.grid[row][col] = TileState.BLUE
-            self.flash_tiles.add((col, row))
-            self._player_acted = True
-            logger.info("🏴 Tile ({},{}) claimed: NEUTRAL → BLUE", col, row)
+            pending = TileState.BLUE
+            logger.info("🏴 Tile ({},{}) queued: NEUTRAL → BLUE", col, row)
 
         elif state == TileState.BLUE:
             logger.debug("🔵 Tile ({},{}) already owned by Blue — no action", col, row)
+            return
 
         elif state == TileState.RED:
             self.battles_fought += 1
             winner = resolve_battle(attacker="BLUE", defender="RED")
-            self.grid[row][col] = TileState.BLUE if winner == "BLUE" else TileState.RED
+            pending = TileState.BLUE if winner == "BLUE" else TileState.RED
             self.last_battle_result = f"({col},{row}) → {winner} wins"
-            self.flash_tiles.add((col, row))
-            self._player_acted = True
+            logger.info("⚔️ Player battles Red ({},{}) → {} wins", col, row, winner)
+
+        else:
+            return
+
+        # Start player blink sequence
+        self._blink_tile = (col, row)
+        self._blink_pre_state = state
+        self._blink_pending = pending
+        self._blink_step = 0
+        self._blink_timer_ms = 0.0
+        self.turn = TurnState.PLAYER_BLINKING
 
     # ------------------------------------------------------------------
     # Update
     # ------------------------------------------------------------------
     def update(self, dt_ms: float = 0.0) -> None:
         """
-        Session 005 turn state machine.
+        Session 006 turn state machine (symmetric player + AI blink).
 
-        PLAYER_TURN: if player acted, ask AI to choose (no grid change yet),
-                     store blink state, switch to AI_BLINKING.
-        AI_BLINKING: advance blink timer; on step completion advance step;
-                     after BLINK_STEPS apply pending grid change, return to PLAYER.
+        PLAYER_TURN    : waiting for player input.
+        PLAYER_BLINKING: player blink animates; on complete → apply grid change,
+                         check win, then immediately trigger AI choice → AI_BLINKING.
+        AI_BLINKING    : AI blink animates; on complete → apply grid change,
+                         check win, return to PLAYER_TURN.
         """
-        if self.turn == TurnState.PLAYER_TURN:
-            if self._player_acted:
-                action = ai_choose_action(self.grid)
-                if action is not None:
-                    col, row, new_state = action
-                    self._blink_tile = (col, row)
-                    self._blink_pre_state = self.grid[row][col]  # color before change
-                    self._blink_pending = new_state
-                    self._blink_step = 0
-                    self._blink_timer_ms = 0.0
-                    self.turn = TurnState.AI_BLINKING
-                    logger.info("🤖 AI blink started on ({},{})", col, row)
-                self._player_acted = False
+        if self.winner is not None:
+            return  # game frozen at winner screen
+
+        if self.turn == TurnState.PLAYER_BLINKING:
+            self._blink_timer_ms += dt_ms
+            if self._blink_timer_ms >= BLINK_STEP_MS:
+                self._blink_timer_ms -= BLINK_STEP_MS
+                self._blink_step += 1
+                if self._blink_step >= BLINK_STEPS:
+                    # Player blink complete — apply change
+                    col, row = self._blink_tile  # type: ignore[misc]
+                    self.grid[row][col] = self._blink_pending
+                    self._blink_tile = None
+                    logger.info("🏴 Player blink resolved ({},{})", col, row)
+                    # Check win
+                    self.winner = check_win(self.grid)
+                    if self.winner:
+                        self.turn = TurnState.PLAYER_TURN
+                        logger.info("🎉 {} wins!", self.winner.name)
+                        return
+                    # Trigger AI
+                    action = ai_choose_action(self.grid)
+                    if action is not None:
+                        ac, ar, new_state = action
+                        self._blink_tile = (ac, ar)
+                        self._blink_pre_state = self.grid[ar][ac]
+                        self._blink_pending = new_state
+                        self._blink_step = 0
+                        self._blink_timer_ms = 0.0
+                        self.turn = TurnState.AI_BLINKING
+                        logger.info("🤖 AI blink started on ({},{})", ac, ar)
+                    else:
+                        self.turn = TurnState.PLAYER_TURN
 
         elif self.turn == TurnState.AI_BLINKING:
             self._blink_timer_ms += dt_ms
@@ -396,22 +455,58 @@ class TerritorialGrid:
                 self._blink_timer_ms -= BLINK_STEP_MS
                 self._blink_step += 1
                 if self._blink_step >= BLINK_STEPS:
-                    # Blink complete — apply ownership change
+                    # AI blink complete — apply change
                     col, row = self._blink_tile  # type: ignore[misc]
                     self.grid[row][col] = self._blink_pending
                     self._blink_tile = None
                     self.turn = TurnState.PLAYER_TURN
                     logger.info("🤖 AI blink resolved — turn returns to player")
+                    # Check win
+                    self.winner = check_win(self.grid)
+                    if self.winner:
+                        logger.info("🎉 {} wins!", self.winner.name)
 
     # ------------------------------------------------------------------
     # Rendering
     # ------------------------------------------------------------------
     def render(self) -> None:
-        """Draw the full frame: background, grid tiles, borders, HUD."""
+        """Draw the full frame: background, grid tiles, borders, HUD, banner."""
         self.screen.fill(BACKGROUND_COLOR)
         self._draw_grid()
         self._draw_sidebar()
+        if self.winner is not None:
+            self._draw_winner_banner()
         pygame.display.flip()
+
+    def _draw_winner_banner(self) -> None:
+        """Render a semi-transparent winner overlay centered over the grid."""
+        # Overlay background
+        banner_w, banner_h = 320, 80
+        banner_x = GRID_OFFSET_X + (GRID_COLS * TILE_SIZE - banner_w) // 2
+        banner_y = GRID_OFFSET_Y + (GRID_ROWS * TILE_SIZE - banner_h) // 2
+        overlay = pygame.Surface((banner_w, banner_h))
+        overlay.set_alpha(210)
+        overlay.fill((10, 10, 15))
+        self.screen.blit(overlay, (banner_x, banner_y))
+
+        # Winner text
+        if self.winner == TileState.BLUE:
+            text, color = "BLUE WINS!", TILE_HIGHLIGHT[TileState.BLUE]
+        else:
+            text, color = "RED WINS!", TILE_HIGHLIGHT[TileState.RED]
+
+        font_banner = pygame.font.Font(None, 52)
+        surf = font_banner.render(text, True, color)
+        tx = banner_x + (banner_w - surf.get_width()) // 2
+        ty = banner_y + 10
+        self.screen.blit(surf, (tx, ty))
+
+        # Reset prompt
+        prompt = "ESC to reset"
+        prompt_surf = self.font_small.render(prompt, True, (180, 180, 180))
+        px = banner_x + (banner_w - prompt_surf.get_width()) // 2
+        py = banner_y + banner_h - prompt_surf.get_height() - 8
+        self.screen.blit(prompt_surf, (px, py))
 
     def _draw_grid(self) -> None:
         """
@@ -449,7 +544,7 @@ class TerritorialGrid:
 
 
     def _draw_sidebar(self) -> None:
-        """Render ownership counts and instructions in the left sidebar."""
+        """Render territory counts, progress bars, turn indicator, and controls."""
         blue_count = sum(
             self.grid[r][c] == TileState.BLUE
             for r in range(GRID_ROWS)
@@ -462,9 +557,17 @@ class TerritorialGrid:
         )
         neutral_count = GRID_COLS * GRID_ROWS - blue_count - red_count
 
+        # Progress bar helper: 10 chars wide
+        def pbar(count: int, total: int = WIN_THRESHOLD, width: int = 9) -> str:
+            filled = min(int(count / total * width), width)
+            return "█" * filled + "░" * (width - filled)
+
         sidebar_x = 6
         # Turn indicator
-        if self.turn == TurnState.PLAYER_TURN:
+        if self.winner is not None:
+            turn_text  = "GAME OVER"
+            turn_color = (180, 180, 120)
+        elif self.turn == TurnState.PLAYER_TURN:
             turn_text  = "YOUR TURN"
             turn_color = TILE_HIGHLIGHT[TileState.BLUE]
         else:
@@ -473,14 +576,17 @@ class TerritorialGrid:
 
         lines = [
             ("SLIME CLAN", (180, 180, 120), self.font_large),
-            ("Session 005", (130, 130, 130), self.font_small),
+            ("Session 006", (130, 130, 130), self.font_small),
             ("", SIDEBAR_TEXT_COLOR, self.font_small),
             (turn_text, turn_color, self.font_small),
             ("", SIDEBAR_TEXT_COLOR, self.font_small),
-            ("TERRITORY", (180, 180, 120), self.font_small),
-            (f"  Blue  {blue_count:>3}", TILE_HIGHLIGHT[TileState.BLUE], self.font_small),
-            (f"  Red   {red_count:>3}", TILE_HIGHLIGHT[TileState.RED], self.font_small),
-            (f"  Neutral{neutral_count:>2}", TILE_HIGHLIGHT[TileState.NEUTRAL], self.font_small),
+            ("TO WIN: 60 tiles", (160, 160, 100), self.font_small),
+            ("", SIDEBAR_TEXT_COLOR, self.font_small),
+            (f"Blue {blue_count:>2}/60", TILE_HIGHLIGHT[TileState.BLUE], self.font_small),
+            (pbar(blue_count), TILE_HIGHLIGHT[TileState.BLUE], self.font_small),
+            (f"Red  {red_count:>2}/60", TILE_HIGHLIGHT[TileState.RED], self.font_small),
+            (pbar(red_count), TILE_HIGHLIGHT[TileState.RED], self.font_small),
+            (f"Neutral {neutral_count:>2}", TILE_HIGHLIGHT[TileState.NEUTRAL], self.font_small),
             ("", SIDEBAR_TEXT_COLOR, self.font_small),
             (f"Battles: {self.battles_fought}", SIDEBAR_TEXT_COLOR, self.font_small),
             (f"Last:", SIDEBAR_TEXT_COLOR, self.font_small),
@@ -490,7 +596,7 @@ class TerritorialGrid:
             ("Neutral: claim", SIDEBAR_TEXT_COLOR, self.font_small),
             ("Red: battle", SIDEBAR_TEXT_COLOR, self.font_small),
             ("Blue: owned", SIDEBAR_TEXT_COLOR, self.font_small),
-            ("ESC: quit", SIDEBAR_TEXT_COLOR, self.font_small),
+            ("ESC: quit/reset", SIDEBAR_TEXT_COLOR, self.font_small),
         ]
 
         y = 12
@@ -525,6 +631,21 @@ class TerritorialGrid:
         except Exception as exc:
             logger.exception("💥 Unhandled exception in game loop: {}", exc)
             return 1
+
+    def _reset(self) -> None:
+        """Reset board to seeded starting state. Called on ESC after game over."""
+        for r in range(GRID_ROWS):
+            for c in range(GRID_COLS):
+                self.grid[r][c] = TileState.NEUTRAL
+        seed_initial_state(self.grid)
+        self.winner = None
+        self.turn = TurnState.PLAYER_TURN
+        self._blink_tile = None
+        self._blink_step = 0
+        self._blink_timer_ms = 0.0
+        self.battles_fought = 0
+        self.last_battle_result = "—"
+        logger.info("🔄 Board reset to starting state")
 
     def cleanup(self) -> None:
         """Release pygame resources."""

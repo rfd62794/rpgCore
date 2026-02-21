@@ -26,8 +26,10 @@ from apps.slime_clan.territorial_grid import (
     ai_take_turn,
     ai_choose_action,
     get_tiles_adjacent_to_red,
+    check_win,
     AI_NEUTRAL_BIAS,
     BLINK_STEP_MS,
+    WIN_THRESHOLD,
     GRID_COLS,
     GRID_ROWS,
     TILE_SIZE,
@@ -415,3 +417,94 @@ class TestTurnState:
 
     def test_blink_step_ms_positive(self) -> None:
         assert BLINK_STEP_MS > 0
+
+    def test_player_blinking_state_exists(self) -> None:
+        assert TurnState.PLAYER_BLINKING != TurnState.PLAYER_TURN
+        assert TurnState.PLAYER_BLINKING != TurnState.AI_BLINKING
+
+
+# ---------------------------------------------------------------------------
+# Session 006 — Win Condition & Reset
+# ---------------------------------------------------------------------------
+class TestCheckWin:
+    """check_win() must return the correct winner or None."""
+
+    def _make_grid(self, state: TileState = TileState.NEUTRAL) -> list[list[TileState]]:
+        return [[state] * GRID_COLS for _ in range(GRID_ROWS)]
+
+    def test_no_winner_at_start(self) -> None:
+        grid = self._make_grid(TileState.NEUTRAL)
+        seed_initial_state(grid)
+        assert check_win(grid) is None
+
+    def test_no_winner_below_threshold(self) -> None:
+        grid = self._make_grid(TileState.NEUTRAL)
+        # Give Blue 59 tiles (one short)
+        count = 0
+        for r in range(GRID_ROWS):
+            for c in range(GRID_COLS):
+                if count < WIN_THRESHOLD - 1:
+                    grid[r][c] = TileState.BLUE
+                    count += 1
+        assert check_win(grid) is None
+
+    def test_blue_wins_at_threshold(self) -> None:
+        grid = self._make_grid(TileState.NEUTRAL)
+        # Give Blue exactly WIN_THRESHOLD tiles
+        count = 0
+        for r in range(GRID_ROWS):
+            for c in range(GRID_COLS):
+                if count < WIN_THRESHOLD:
+                    grid[r][c] = TileState.BLUE
+                    count += 1
+        assert check_win(grid) == TileState.BLUE
+
+    def test_red_wins_at_threshold(self) -> None:
+        grid = self._make_grid(TileState.NEUTRAL)
+        count = 0
+        for r in range(GRID_ROWS):
+            for c in range(GRID_COLS):
+                if count < WIN_THRESHOLD:
+                    grid[r][c] = TileState.RED
+                    count += 1
+        assert check_win(grid) == TileState.RED
+
+    def test_custom_threshold(self) -> None:
+        grid = self._make_grid(TileState.NEUTRAL)
+        grid[0][0] = TileState.BLUE
+        assert check_win(grid, threshold=1) == TileState.BLUE
+        assert check_win(grid, threshold=2) is None
+
+    def test_all_neutral_no_winner(self) -> None:
+        grid = self._make_grid(TileState.NEUTRAL)
+        assert check_win(grid) is None
+
+    def test_win_threshold_constant_is_60(self) -> None:
+        assert WIN_THRESHOLD == 60
+
+
+class TestSeedAfterReset:
+    """After a reset (re-seeding), the board must return to correct starting counts."""
+
+    def test_reset_gives_4_blue_4_red_92_neutral(self) -> None:
+        grid = [[TileState.NEUTRAL] * GRID_COLS for _ in range(GRID_ROWS)]
+        # Simulate a played state (all blue)
+        for r in range(GRID_ROWS):
+            for c in range(GRID_COLS):
+                grid[r][c] = TileState.BLUE
+        # Reset via seed_initial_state
+        for r in range(GRID_ROWS):
+            for c in range(GRID_COLS):
+                grid[r][c] = TileState.NEUTRAL
+        seed_initial_state(grid)
+        blue    = sum(grid[r][c] == TileState.BLUE    for r in range(GRID_ROWS) for c in range(GRID_COLS))
+        red     = sum(grid[r][c] == TileState.RED     for r in range(GRID_ROWS) for c in range(GRID_COLS))
+        neutral = sum(grid[r][c] == TileState.NEUTRAL for r in range(GRID_ROWS) for c in range(GRID_COLS))
+        assert blue    == 4
+        assert red     == 4
+        assert neutral == 92
+
+    def test_check_win_false_after_reset(self) -> None:
+        grid = [[TileState.NEUTRAL] * GRID_COLS for _ in range(GRID_ROWS)]
+        seed_initial_state(grid)
+        assert check_win(grid) is None
