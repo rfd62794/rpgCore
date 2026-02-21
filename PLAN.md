@@ -1,37 +1,49 @@
-# Implementation Plan: Session 012 - Overworld Stub
+# Implementation Plan: Session 013 - Auto-Battle Scene
 
 ## Technical Approach
 
 ### 1. Data Structures & State Management
-- Define `NodeState` enum in `src/apps/slime_clan/overworld.py` for possible node ownerships (`HOME`, `RED`, `BLUE`, `CONTESTED`).
-- Create a `MapNode` dataclass containing `id`, `name`, `x`, `y`, `state`, and `connections`.
-- Initialize the graph with 1 Home node and 4 contestable nodes (e.g., "Crash Site", "Northern Wastes", "Scrap Yard", "Eastern Front", "Deep Red Core").
+- Create `src/apps/slime_clan/auto_battle.py`.
+- Define `Shape` (`CIRCLE`, `SQUARE`, `TRIANGLE`) and `Hat` (`SWORD`, `SHIELD`, `STAFF`) Enums.
+- Implement `SlimeUnit` dataclass.
+  - Implement a factory method or pure function `create_slime(name, shape, hat)` to generate units with shape-adjusted stats.
+- Define `Action` and `TurnOrder` semantics to handle combat.
 
-### 2. Overworld Engine (`overworld.py`)
-- Initialize a Pygame window at 640x480.
-- `handle_events()`: Detect clicks within node radii.
-- `update()`: Handle logic and transitions. If a Red/Contested node is clicked, execute the battle transition.
-- `render()`: Draw connection lines between nodes, then draw nodes (distinct shapes/colors based on `NodeState`).
+### 2. Auto-Battle Engine (`auto_battle.py`)
+- Define `Squad` list containing surviving `SlimeUnit`s.
+- `handle_events()`: only checks for Window Quit or ESC.
+- `update()`:
+  - Timer mechanism triggers every 800ms.
+  - Sort all surviving units by speed (fastest first).
+  - Let one unit execute its action.
+  - Advance the pointer; reset pointer if sequence complete.
+  - Check for squad wipe conditions.
+- `render()`:
+  - Draw Blue squad on `x = WINDOW_WIDTH // 6`.
+  - Draw Red squad on `x = WINDOW_WIDTH - WINDOW_WIDTH // 6`.
+  - Utilize `draw_slime` for the core body.
+  - Draw shapes above/on slimes to signify hats (e.g. a small square, triangle, or dot above).
+  - Draw HP bars below each survivor.
 
-### 3. Transition Logic
-- When triggering a battle, use `subprocess.run([sys.executable, "-m", "src.apps.slime_clan.territorial_grid"])` to launch the grid battle, simulating a scene transition without complex engine coupling.
-- Upon completion of the subprocess (simulated win), update the node state to `BLUE`.
+### 3. Combat Logic Functions (Pure functions)
+- `execute_action(actor, allies, enemies)`: Handles the logic where `SWORD` finds enemy min HP to attack, `SHIELD` buffs defense, `STAFF` heals ally min HP.
 
-### 4. Root Launcher (`run_overworld.py`)
-- Very simple 3-line file to import and launch the `Overworld` class game loop.
+### 4. Root Launcher (`run_auto_battle.py`)
+- Python script to launch the auto-combat visualization.
 
 ### 5. Tests
-- Create `tests/unit/test_overworld_state.py`.
-- Write tests for initializing `MapNode` relationships and verifying `NodeState` transitions.
-- Verify existing tests still pass with `pytest`.
+- Create `tests/unit/slime_clan_autobattle_test.py`.
+- Write tests:
+  - `test_slime_stat_generation`
+  - `test_turn_order_sorting`
+  - `test_sword_targets_lowest_hp_enemy`
+  - `test_staff_heals_lowest_hp_ally`
 
 ### 6. Known Limitations
-- **Future: Scene Manager**: The subprocess launch of `territorial_grid.py` is intentional for this stub session, which results in two separate pygame windows. This is acceptable for the stub and will be addressed in a future session when a proper scene transition architecture is wired up.
-- **Battle Results**: The ownership update on return simulates a Blue win regardless of the actual battle outcome. We will wire real result passing in a future session.
+- **Animation Fidelity**: Visualizing actions (like a projectile or sword swing) may be rudimentary (e.g., text popups or simple flashes) to keep within the fast development pace of the stub.
+- **Subprocesses**: Still lacking a unified Scene Manager, so isolated tests run decoupled.
 
 ## Verification Plan
 1. Run `pytest` to ensure test count is >= 79 and all pass.
-2. Execute `python run_overworld.py`.
-3. Verify map renders correctly.
-4. Click a Red node -> see the `territorial_grid` window open.
-5. Close the grid window -> verify the Red node turned Blue on the map.
+2. Execute `python run_auto_battle.py`.
+3. Verify battle loop runs cleanly and autonomously.
