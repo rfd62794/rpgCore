@@ -258,6 +258,40 @@ def ai_take_turn(
 
 
 # ---------------------------------------------------------------------------
+# Procedural obstacle generation (Session 008)
+# ---------------------------------------------------------------------------
+def generate_obstacles(
+    grid: list[list[TileState]],
+    count: int = OBSTACLE_COUNT,
+) -> None:
+    """
+    Place `count` BLOCKED tiles in the neutral zone in-place.
+
+    Protection zones (never blocked):
+      Blue corner: cols 0-2, rows 0-2   (3×3 top-left)
+      Red  corner: cols 7-9, rows 7-9   (3×3 bottom-right)
+
+    Pure function over grid; uses random.sample for deterministic seed-ability.
+    """
+    blue_zone = {(c, r) for r in range(3)     for c in range(3)}
+    red_zone  = {(c, r) for r in range(7, 10) for c in range(7, 10)}
+    protected = blue_zone | red_zone
+
+    candidates = [
+        (c, r)
+        for r in range(GRID_ROWS)
+        for c in range(GRID_COLS)
+        if grid[r][c] == TileState.NEUTRAL and (c, r) not in protected
+    ]
+
+    chosen = random.sample(candidates, min(count, len(candidates)))
+    for col, row in chosen:
+        grid[row][col] = TileState.BLOCKED
+
+    logger.info("🧱 {} obstacle(s) placed in neutral zone", len(chosen))
+
+
+# ---------------------------------------------------------------------------
 # Initial board seeding (Session 003)
 # ---------------------------------------------------------------------------
 def seed_initial_state(grid: list[list[TileState]]) -> None:
@@ -393,10 +427,11 @@ class TerritorialGrid:
         """
         Intent-aware tile interaction (Session 006: queues blink, no immediate grid write).
 
-        Blocked if: turn != PLAYER_TURN, or game is over (winner set).
+        Blocked if: turn != PLAYER_TURN, game over, or tile is BLOCKED.
         NEUTRAL → queues BLUE claim + starts PLAYER_BLINKING
         BLUE    → no action
         RED     → resolve_battle(); queues result + starts PLAYER_BLINKING
+        BLOCKED → impassable, silently ignored
         """
         if self.turn != TurnState.PLAYER_TURN or self.winner is not None:
             return
@@ -407,6 +442,10 @@ class TerritorialGrid:
 
         col, row = result
         state = self.grid[row][col]
+
+        if state == TileState.BLOCKED:
+            return  # impassable — no click count, no blink
+
         self.click_count += 1
 
         if state == TileState.NEUTRAL:
@@ -545,10 +584,11 @@ class TerritorialGrid:
         """
         Draw all 10×10 tiles.
 
-        Special rendering paths (in priority order):
-          1. AI blink tile: color driven by _blink_step (white/original/white)
-          2. Player flash tiles: white for one frame
-          3. Normal tiles: TILE_COLORS fill + TILE_HIGHLIGHT inner ring
+        Priority order:
+          1. Blink tile (player or AI): step-driven color
+          2. Player flash_tiles: white one-frame
+          3. BLOCKED: dark fill + amber X
+          4. Normal: TILE_COLORS fill + TILE_HIGHLIGHT ring
         """
         for row in range(GRID_ROWS):
             for col in range(GRID_COLS):
@@ -558,14 +598,19 @@ class TerritorialGrid:
                 tile_rect = pygame.Rect(x, y, TILE_SIZE, TILE_SIZE)
 
                 if self._blink_tile == (col, row):
-                    # AI blink: step 0=white, step 1=pre-change color, step 2=white
-                    if self._blink_step == 1:
-                        blink_color = TILE_COLORS[self._blink_pre_state]
-                    else:
-                        blink_color = FLASH_COLOR
+                    blink_color = TILE_COLORS[self._blink_pre_state] if self._blink_step == 1 else FLASH_COLOR
                     pygame.draw.rect(self.screen, blink_color, tile_rect)
                 elif (col, row) in self.flash_tiles:
                     pygame.draw.rect(self.screen, FLASH_COLOR, tile_rect)
+                elif state == TileState.BLOCKED:
+                    # Dark fill
+                    pygame.draw.rect(self.screen, TILE_COLORS[TileState.BLOCKED], tile_rect)
+                    # Amber X
+                    m = 10  # margin from tile edge
+                    pygame.draw.line(self.screen, BLOCKED_X_COLOR,
+                                     (x + m, y + m), (x + TILE_SIZE - m, y + TILE_SIZE - m), 2)
+                    pygame.draw.line(self.screen, BLOCKED_X_COLOR,
+                                     (x + TILE_SIZE - m, y + m), (x + m, y + TILE_SIZE - m), 2)
                 else:
                     pygame.draw.rect(self.screen, TILE_COLORS[state], tile_rect)
                     highlight_rect = pygame.Rect(x + 2, y + 2, TILE_SIZE - 4, TILE_SIZE - 4)
@@ -617,9 +662,7 @@ class TerritorialGrid:
 
         # 2. Title block
         s = self.font_title.render("SLIME CLAN", True, (195, 190, 100))
-        t(s, pad, y);  y += s.get_height() + 1
-        s = self.font_label.render("Session 007", True, LABEL_COLOR)
-        t(s, pad, y);  y += s.get_height() + 8
+        t(s, pad, y);  y += s.get_height() + 9
 
         # 3. Turn indicator pill
         if self.winner is not None:
