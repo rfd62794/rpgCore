@@ -194,6 +194,10 @@ class BattleField:
             logger.error(f"❌ Auto-battle call failed: {e}")
 
     def update(self, dt_ms: float) -> None:
+        if not hasattr(self, 'debug_collided'):
+            self.debug_collided = True
+            self._check_collision()
+
         if self.game_over:
             return
             
