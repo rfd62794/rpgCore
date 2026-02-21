@@ -21,8 +21,8 @@ _src = Path(__file__).resolve().parent.parent / "src"
 if str(_src) not in sys.path:
     sys.path.insert(0, str(_src))
 
-from foundation.vector import Vector2
-from engines.body.kinetics import KineticEntity
+from dgt_engine.foundation.vector import Vector2
+from dgt_engine.engines.body.kinetics import KineticEntity
 
 
 # ---------------------------------------------------------------------------
@@ -118,7 +118,7 @@ class TestFrameRender:
     """One simulation frame runs without error."""
 
     def test_single_frame_no_crash(self, ready_slice):
-        from foundation.utils.performance_monitor import initialize_performance_monitor
+        from dgt_engine.foundation.utils.performance_monitor import initialize_performance_monitor
         ready_slice.perf = initialize_performance_monitor(target_fps=60)
         ready_slice.perf.start_frame()
         result = ready_slice.update(1.0 / 60.0)
@@ -126,7 +126,7 @@ class TestFrameRender:
         assert result["frame"] == 1
 
     def test_frame_buffer_not_empty(self, ready_slice):
-        from foundation.utils.performance_monitor import initialize_performance_monitor
+        from dgt_engine.foundation.utils.performance_monitor import initialize_performance_monitor
         ready_slice.perf = initialize_performance_monitor(target_fps=60)
         ready_slice.perf.start_frame()
         ready_slice.update(1.0 / 60.0)

@@ -17,8 +17,8 @@ def test_simple_base_system():
             sys.path.insert(0, str(src_path))
         
         # Import directly
-        from foundation.types import Result
-        from foundation.registry import DGTRegistry
+        from dgt_engine.foundation.types import Result
+        from dgt_engine.foundation.registry import DGTRegistry
         
         print("✅ Foundation imports successful")
         
@@ -57,9 +57,9 @@ def test_simple_base_system():
 def test_simple_race_simulation():
     """Test simple race simulation without complex system"""
     try:
-        from foundation.vector import Vector2
-        from foundation.registry import DGTRegistry
-        from foundation.protocols import EntityStateSnapshot, EntityType
+        from dgt_engine.foundation.vector import Vector2
+        from dgt_engine.foundation.registry import DGTRegistry
+        from dgt_engine.foundation.protocols import EntityStateSnapshot, EntityType
         
         print("✅ Race simulation imports successful")
         
@@ -114,9 +114,9 @@ def test_simple_race_simulation():
 def test_registry_centralization():
     """Test registry centralization functionality"""
     try:
-        from foundation.registry import DGTRegistry, RegistryType
-        from foundation.protocols import WorldStateSnapshot, EntityStateSnapshot, EntityType
-        from foundation.vector import Vector2
+        from dgt_engine.foundation.registry import DGTRegistry, RegistryType
+        from dgt_engine.foundation.protocols import WorldStateSnapshot, EntityStateSnapshot, EntityType
+        from dgt_engine.foundation.vector import Vector2
         
         print("✅ Registry centralization imports successful")
         

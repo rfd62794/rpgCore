@@ -18,7 +18,7 @@ from datetime import datetime
 # Add src to path
 sys.path.append(str(Path(__file__).parent / 'src'))
 
-from foundation.types import Result
+from dgt_engine.foundation.types import Result
 from loguru import logger
 
 

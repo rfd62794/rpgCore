@@ -17,7 +17,7 @@ def test_registry_count_debug():
             sys.path.insert(0, str(src_path))
         
         from apps.tycoon.entities.turtle import create_random_turtle
-        from foundation.registry import DGTRegistry, RegistryType
+        from dgt_engine.foundation.registry import DGTRegistry, RegistryType
         
         print("🔧 Registry count debug imports successful")
         

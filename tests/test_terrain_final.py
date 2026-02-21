@@ -13,8 +13,8 @@ def test_terrain_system():
         if str(src_path) not in sys.path:
             sys.path.insert(0, str(src_path))
         
-        from engines.body.systems.terrain_engine import TerrainEngine, TerrainType, create_balanced_terrain
-        from foundation.registry import DGTRegistry, RegistryType
+        from dgt_engine.engines.body.systems.terrain_engine import TerrainEngine, TerrainType, create_balanced_terrain
+        from dgt_engine.foundation.registry import DGTRegistry, RegistryType
         
         print("✅ Terrain system imports successful")
         

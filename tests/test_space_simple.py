@@ -16,8 +16,8 @@ def test_space_entity_direct():
     """Test space entity directly without complex imports"""
     try:
         # Direct imports to avoid circular dependencies
-        from engines.space.vector2 import Vector2
-        from engines.space.space_entity import SpaceEntity, EntityType
+        from dgt_engine.engines.space.vector2 import Vector2
+        from dgt_engine.engines.space.space_entity import SpaceEntity, EntityType
         from dgt_core.foundation.types import Result
         
         print("✅ Core imports successful")

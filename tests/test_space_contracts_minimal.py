@@ -19,8 +19,8 @@ sys.path.insert(0, str(project_root / "src"))
 # Direct imports to avoid circular dependencies
 try:
     from dgt_core.foundation.types import Result, ValidationResult
-    from engines.space.vector2 import Vector2
-    from engines.space.space_entity import SpaceEntity, EntityType
+    from dgt_engine.engines.space.vector2 import Vector2
+    from dgt_engine.engines.space.space_entity import SpaceEntity, EntityType
     IMPORTS_AVAILABLE = True
     print("✅ Core imports successful")
 except ImportError as e:

@@ -5,7 +5,7 @@ Verifies Option C compliance:
   1. SpaceShip composes KineticEntity (not raw x/y)
   2. Proxy properties delegate correctly
   3. KineticEntity physics are applied during simulation
-  4. VFX modules importable from engines/graphics/fx/
+  4. VFX modules importable from dgt_engine.engines/graphics/fx/
 """
 
 import sys
@@ -18,8 +18,8 @@ if _src not in sys.path:
 
 import math
 import pytest
-from foundation.vector import Vector2
-from engines.body.kinetics import KineticEntity
+from dgt_engine.foundation.vector import Vector2
+from dgt_engine.engines.body.kinetics import KineticEntity
 
 
 # ---------------------------------------------------------------------------
@@ -185,20 +185,20 @@ class TestVFXRelocation:
     """Verify VFX modules are importable from new location."""
 
     def test_particle_effects_import(self):
-        """ParticleEffectsSystem must be importable from engines.graphics.fx."""
-        from engines.graphics.fx.particle_effects import ParticleEffectsSystem
+        """ParticleEffectsSystem must be importable from dgt_engine.engines.graphics.fx."""
+        from dgt_engine.engines.graphics.fx.particle_effects import ParticleEffectsSystem
         system = ParticleEffectsSystem()
         assert system is not None
 
     def test_exhaust_system_import(self):
-        """ExhaustSystem must be importable from engines.graphics.fx."""
-        from engines.graphics.fx.exhaust_system import ExhaustSystem
+        """ExhaustSystem must be importable from dgt_engine.engines.graphics.fx."""
+        from dgt_engine.engines.graphics.fx.exhaust_system import ExhaustSystem
         system = ExhaustSystem()
         assert system is not None
 
     def test_package_level_import(self):
         """Top-level engines.graphics.fx must export both systems."""
-        from engines.graphics.fx import ParticleEffectsSystem, ExhaustSystem
+        from dgt_engine.engines.graphics.fx import ParticleEffectsSystem, ExhaustSystem
         assert ParticleEffectsSystem is not None
         assert ExhaustSystem is not None
 

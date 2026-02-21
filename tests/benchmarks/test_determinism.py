@@ -23,10 +23,10 @@ sys.path.append(str(Path(__file__).parent.parent.parent / "src"))
 
 from apps.space.physics_body import PhysicsBody, PhysicsState
 from apps.space.entities.space_entity import SpaceEntity, EntityType
-from foundation.vector import Vector2
-from foundation.constants import SOVEREIGN_WIDTH, SOVEREIGN_HEIGHT, TARGET_FPS
-from foundation.genetics.genome_engine import TurboGenome
-from foundation.registry import DGTRegistry
+from dgt_engine.foundation.vector import Vector2
+from dgt_engine.foundation.constants import SOVEREIGN_WIDTH, SOVEREIGN_HEIGHT, TARGET_FPS
+from dgt_engine.foundation.genetics.genome_engine import TurboGenome
+from dgt_engine.foundation.registry import DGTRegistry
 
 
 @dataclass

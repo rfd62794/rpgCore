@@ -16,9 +16,9 @@ def test_format_alignment():
         if str(src_path) not in sys.path:
             sys.path.insert(0, str(src_path))
         
-        from foundation.registry import DGTRegistry, RegistryType
-        from foundation.protocols import EntityStateSnapshot, EntityType
-        from foundation.vector import Vector2
+        from dgt_engine.foundation.registry import DGTRegistry, RegistryType
+        from dgt_engine.foundation.protocols import EntityStateSnapshot, EntityType
+        from dgt_engine.foundation.vector import Vector2
         
         print("✅ Format alignment imports successful")
         
@@ -82,7 +82,7 @@ def test_format_alignment():
 def test_sovereign_turtle_creation():
     """Test Sovereign Turtle entity creation and genome synthesis"""
     try:
-        from foundation.genetics.genome_engine import TurboGenome, ShellPatternType, BodyPatternType, LimbShapeType
+        from dgt_engine.foundation.genetics.genome_engine import TurboGenome, ShellPatternType, BodyPatternType, LimbShapeType
         from apps.tycoon.entities.turtle import SovereignTurtle, create_fast_turtle, create_heavy_turtle
         
         print("✅ Turtle creation imports successful")
@@ -240,7 +240,7 @@ def test_registry_integration():
     """Test turtle integration with DGTRegistry"""
     try:
         from apps.tycoon.entities.turtle import create_random_turtle
-        from foundation.registry import DGTRegistry
+        from dgt_engine.foundation.registry import DGTRegistry
         
         print("✅ Registry integration imports successful")
         

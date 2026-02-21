@@ -180,7 +180,7 @@ def test_3_day_simulation():
         from apps.tycoon.systems.economy_engine import create_economy_engine
         from apps.tycoon.systems.stable_manager import create_stable_manager
         from apps.tycoon.entities.turtle import create_random_turtle
-        from foundation.registry import DGTRegistry
+        from dgt_engine.foundation.registry import DGTRegistry
         
         print("✅ 3-Day Simulation imports successful")
         

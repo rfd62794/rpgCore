@@ -16,7 +16,7 @@ def test_terrain_system_debug():
         if str(src_path) not in sys.path:
             sys.path.insert(0, str(src_path))
         
-        from engines.body.systems.terrain_engine import TerrainEngine, TerrainType, create_balanced_terrain
+        from dgt_engine.engines.body.systems.terrain_engine import TerrainEngine, TerrainType, create_balanced_terrain
         
         print("✅ Terrain system imports successful")
         

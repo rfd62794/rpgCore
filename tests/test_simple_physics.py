@@ -12,8 +12,8 @@ def test_simple_physics():
     """Test physics without complex dependencies"""
     try:
         # Test basic imports first
-        from foundation.vector import Vector2
-        from foundation.constants import SOVEREIGN_WIDTH, SOVEREIGN_HEIGHT
+        from dgt_engine.foundation.vector import Vector2
+        from dgt_engine.foundation.constants import SOVEREIGN_WIDTH, SOVEREIGN_HEIGHT
         print("✅ Foundation imports successful")
         
         # Test entity creation

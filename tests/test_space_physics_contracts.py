@@ -23,8 +23,8 @@ from interfaces.protocols import (
     PhysicsProtocol, SpaceEntityProtocol, ScrapProtocol,
     TerminalHandshakeProtocol
 )
-from engines.space.space_entity import SpaceEntity, EntityType
-from engines.space.vector2 import Vector2
+from dgt_engine.engines.space.space_entity import SpaceEntity, EntityType
+from dgt_engine.engines.space.vector2 import Vector2
 
 
 class TestSpaceEntityContracts:
@@ -187,7 +187,7 @@ class TestPhysicsEngineContracts:
         """Test physics engine protocol interface compliance"""
         # This would test the actual physics body implementation
         # For now, we test the interface structure
-        from engines.space.physics_body import PhysicsBody
+        from dgt_engine.engines.space.physics_body import PhysicsBody
         
         physics = PhysicsBody()
         
@@ -224,7 +224,7 @@ class TestScrapSystemContracts:
     
     def test_scrap_protocol_interface(self):
         """Test scrap system protocol interface compliance"""
-        from engines.space.scrap_entity import ScrapEntity, ScrapType
+        from dgt_engine.engines.space.scrap_entity import ScrapEntity, ScrapType
         
         scrap = ScrapEntity(Vector2(80, 72), ScrapType.COMMON)
         
@@ -244,8 +244,8 @@ class TestTerminalHandshakeContracts:
     
     def test_terminal_protocol_interface(self):
         """Test terminal handshake protocol interface compliance"""
-        from engines.space.terminal_handshake import TerminalHandshake
-        from engines.space.asteroids_strategy import AsteroidsStrategy
+        from dgt_engine.engines.space.terminal_handshake import TerminalHandshake
+        from dgt_engine.engines.space.asteroids_strategy import AsteroidsStrategy
         
         strategy = AsteroidsStrategy()
         terminal = TerminalHandshake(strategy)
@@ -262,7 +262,7 @@ class TestDependencyInjectionContracts:
     
     def test_space_di_container(self):
         """Test space engine DI container configuration"""
-        from engines.space.space_di import SpaceEngineContainer
+        from dgt_engine.engines.space.space_di import SpaceEngineContainer
         
         container = SpaceEngineContainer()
         

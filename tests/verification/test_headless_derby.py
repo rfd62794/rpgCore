@@ -25,16 +25,16 @@ if str(src_path) not in sys.path:
     sys.path.insert(0, str(src_path))
 
 try:
-    from foundation.genetics.schema import TurboGenome, LimbShape
-    from foundation.genetics.crossover import calculate_genetic_similarity
-    from foundation.types.race import (
+    from dgt_engine.foundation.genetics.schema import TurboGenome, LimbShape
+    from dgt_engine.foundation.genetics.crossover import calculate_genetic_similarity
+    from dgt_engine.foundation.types.race import (
         TurtleState, RaceSnapshot, RaceConfig, TerrainType,
         create_turtle_state, create_race_snapshot
     )
-    from foundation.types import Result
-    from engines.race import RacePhysicsEngine, create_race_physics_engine
-    from engines.race import TerrainSystem, create_terrain_system
-    from engines.race import RaceArbiter, create_race_arbiter
+    from dgt_engine.foundation.types import Result
+    from dgt_engine.engines.race import RacePhysicsEngine, create_race_physics_engine
+    from dgt_engine.engines.race import TerrainSystem, create_terrain_system
+    from dgt_engine.engines.race import RaceArbiter, create_race_arbiter
 except ImportError as e:
     print(f"❌ Import failed: {e}")
     print("Ensure race engine modules are properly installed")

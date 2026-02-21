@@ -17,12 +17,12 @@ if str(src_path) not in sys.path:
 
 # Direct imports to test individual components
 try:
-    from foundation.genetics.schema import TurboGenome, LimbShape
-    from foundation.types.race import (
+    from dgt_engine.foundation.genetics.schema import TurboGenome, LimbShape
+    from dgt_engine.foundation.types.race import (
         TurtleState, RaceSnapshot, RaceConfig, TerrainType,
         create_turtle_state, create_race_snapshot
     )
-    from foundation.types import Result
+    from dgt_engine.foundation.types import Result
     print("✅ Foundation imports successful")
 except ImportError as e:
     print(f"❌ Foundation import failed: {e}")

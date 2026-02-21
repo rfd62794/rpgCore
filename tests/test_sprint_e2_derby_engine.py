@@ -16,8 +16,8 @@ def test_terrain_system():
         if str(src_path) not in sys.path:
             sys.path.insert(0, str(src_path))
         
-        from engines.body.systems.terrain_engine import TerrainEngine, TerrainType, create_balanced_terrain, create_challenging_terrain
-        from foundation.registry import DGTRegistry, RegistryType
+        from dgt_engine.engines.body.systems.terrain_engine import TerrainEngine, TerrainType, create_balanced_terrain, create_challenging_terrain
+        from dgt_engine.foundation.registry import DGTRegistry, RegistryType
         
         print("✅ Terrain system imports successful")
         
@@ -106,11 +106,11 @@ def test_terrain_system():
 def test_physics_handshake():
     """Test terrain physics handshake with turtle entities"""
     try:
-        from engines.body.systems.race_runner import RaceRunnerSystem, create_race_runner_system
+        from dgt_engine.engines.body.systems.race_runner import RaceRunnerSystem, create_race_runner_system
         from apps.tycoon.entities.turtle import create_fast_turtle, create_heavy_turtle
-        from foundation.registry import DGTRegistry
-        from foundation.vector import Vector2
-        from engines.body.systems.terrain_engine import TerrainType
+        from dgt_engine.foundation.registry import DGTRegistry
+        from dgt_engine.foundation.vector import Vector2
+        from dgt_engine.engines.body.systems.terrain_engine import TerrainType
         
         print("✅ Physics handshake imports successful")
         
@@ -231,10 +231,10 @@ def test_physics_handshake():
 def test_strategic_racing():
     """Test strategic racing with terrain variety"""
     try:
-        from engines.body.systems.race_runner import RaceRunnerSystem, create_race_runner_system
+        from dgt_engine.engines.body.systems.race_runner import RaceRunnerSystem, create_race_runner_system
         from apps.tycoon.entities.turtle import create_random_turtle
-        from foundation.registry import DGTRegistry
-        from foundation.vector import Vector2
+        from dgt_engine.foundation.registry import DGTRegistry
+        from dgt_engine.foundation.vector import Vector2
         
         print("✅ Strategic racing imports successful")
         
@@ -290,7 +290,7 @@ def test_registry_lifecycle_fix():
     """Test that registry lifecycle issues are resolved"""
     try:
         from apps.tycoon.entities.turtle import SovereignTurtle, create_random_turtle
-        from foundation.registry import DGTRegistry, RegistryType
+        from dgt_engine.foundation.registry import DGTRegistry, RegistryType
         
         print("✅ Registry lifecycle test imports successful")
         
@@ -337,8 +337,8 @@ def test_registry_lifecycle_fix():
 def test_terrain_visualization():
     """Test terrain visualization"""
     try:
-        from engines.body.systems.terrain_engine import TerrainEngine, create_challenging_terrain
-        from foundation.registry import DGTRegistry
+        from dgt_engine.engines.body.systems.terrain_engine import TerrainEngine, create_challenging_terrain
+        from dgt_engine.foundation.registry import DGTRegistry
         
         print("✅ Terrain visualization test imports successful")
         
