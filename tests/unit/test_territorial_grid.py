@@ -30,6 +30,7 @@ from apps.slime_clan.territorial_grid import (
     ai_choose_action,
     get_tiles_adjacent_to_red,
     check_win,
+    draw_slime,
     AI_NEUTRAL_BIAS,
     BLINK_STEP_MS,
     WIN_THRESHOLD,
@@ -40,7 +41,10 @@ from apps.slime_clan.territorial_grid import (
     TILE_SIZE,
     GRID_OFFSET_X,
     GRID_OFFSET_Y,
+    SLIME_COLORS,
 )
+
+import pygame
 
 
 # ---------------------------------------------------------------------------
@@ -766,3 +770,46 @@ class TestResolveBattleWeighted:
         _, atk_str, def_str, _ = resolve_battle_weighted(grid, 5, 5, "BLUE", "RED")
         assert atk_str >= 1
         assert def_str >= 1
+
+
+# ---------------------------------------------------------------------------
+# Session 010 — Slime Sprites
+# ---------------------------------------------------------------------------
+class TestDrawSlime:
+    """
+    Session 010: Test that `draw_slime` executes without exceptions for valid inputs.
+    We don't test pixel output, just geometry calculations and pygame interface.
+    """
+
+    @pytest.fixture
+    def test_surface(self) -> pygame.Surface:
+        pygame.init()
+        # Non-displayed surface for drawing tests
+        return pygame.Surface((100, 100))
+
+    def test_draw_slime_valid_inputs_does_not_crash(self, test_surface: pygame.Surface) -> None:
+        """Testing at standard 640x480 simulation size (Tile size 48)"""
+        try:
+            draw_slime(
+                surface=test_surface,
+                cx=50,
+                cy=50,
+                tile_size=48,
+                color=SLIME_COLORS[TileState.BLUE]
+            )
+        except Exception as e:
+            pytest.fail(f"draw_slime raised an exception with valid standard inputs: {e}")
+
+    def test_draw_slime_small_size_graceful(self, test_surface: pygame.Surface) -> None:
+        """Testing at a very small tile size (4px) to ensure no crash from float-to-int truncations."""
+        try:
+            draw_slime(
+                surface=test_surface,
+                cx=50,
+                cy=50,
+                tile_size=4,
+                color=SLIME_COLORS[TileState.RED]
+            )
+        except Exception as e:
+            pytest.fail(f"draw_slime raised an exception with small tile_size=4: {e}")
+

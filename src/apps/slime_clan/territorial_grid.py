@@ -25,6 +25,7 @@ import random
 from pathlib import Path
 from typing import List
 
+import math
 import pygame
 from loguru import logger
 
@@ -135,6 +136,78 @@ LABEL_COLOR: tuple[int, int, int]        = (120, 120, 148)  # muted section labe
 BAR_TRACK: tuple[int, int, int]          = (38,  38,  55)   # progress bar track
 BAR_HEIGHT: int = 7                                          # progress bar px height
 BATTLE_LOG_BG: tuple[int, int, int]      = (25,  18,  38)   # battle log strip bg
+
+# ---------------------------------------------------------------------------
+# Session 010 — Slime Sprites
+# ---------------------------------------------------------------------------
+SLIME_COLORS: dict[TileState, tuple[int, int, int]] = {
+    TileState.BLUE: (50, 160, 255),
+    TileState.RED:  (255, 80, 80),
+}
+
+
+def draw_slime(
+    surface: pygame.Surface,
+    cx: int,
+    cy: int,
+    tile_size: int,
+    color: tuple[int, int, int]
+) -> None:
+    """
+    Session 010: Render a procedural slime sprite at the center (cx, cy).
+    Geometry dynamically scales based on tile_size.
+    Must be a pure drawing function (no external side effects).
+    """
+    if tile_size <= 0:
+        return
+
+    # 1. Body: Filled circle, roughly 87% of tile size (radius ~ 43.5%)
+    body_radius = max(1, int(tile_size * 0.435))
+    pygame.draw.circle(surface, color, (cx, cy), body_radius)
+
+    # 2. Eye: Ellipse, centered slightly above middle
+    # Using 12x18 ratio scaled to a 64px tile
+    eye_rx = max(1, int(tile_size * (12.0 / 64.0)))
+    eye_ry = max(1, int(tile_size * (18.0 / 64.0)))
+    eye_offset_y = max(1, int(tile_size * (6.0 / 64.0)))
+
+    eye_rect = pygame.Rect(
+        cx - eye_rx,
+        cy - eye_offset_y - eye_ry,
+        eye_rx * 2,
+        eye_ry * 2
+    )
+    pygame.draw.ellipse(surface, (255, 255, 255), eye_rect)
+
+    # 3. Pupil: Smaller filled circle, offset left and down inside the eye
+    pupil_radius = max(1, int(tile_size * (8.0 / 64.0)))
+    pupil_cx = cx - max(1, int(tile_size * (2.0 / 64.0)))
+    pupil_cy = cy - eye_offset_y + max(1, int(tile_size * (2.0 / 64.0)))
+    
+    # Ensure pupil radius is not larger than eye_rx
+    pupil_radius = min(pupil_radius, eye_rx)
+    
+    pygame.draw.circle(surface, (20, 20, 20), (pupil_cx, pupil_cy), pupil_radius)
+
+    # 4. Mouth: Quadratic curve
+    # The SVG path M26 48 Q32 52 38 48 creates a downward smile.
+    # We use pygame.draw.arc to approximate this.
+    # In PyGame, angles go counter-clockwise starting from right (0).
+    # Since Y goes down, a smile (bottom of a circle) traverses from right (0) to left (PI) 
+    # going THROUGH the bottom (negative Y-direction? Wait, Y goes down, so 
+    # angle PI to 2 PI actually sweeps the upper part visually in math, but pygame arc
+    # draws the bottom arc from PI to 0 (counter-clockwise path through 3PI/2).
+    # Actually, pygame arc angles are: 0=right, PI/2=up, PI=left, 3PI/2=down.
+    # To draw the bottom curve, we want angles between PI and 0 (2PI)
+    arc_w = max(2, int(tile_size * (12.0 / 64.0)))
+    arc_h = max(2, int(tile_size * (8.0 / 64.0)))
+    arc_x = cx - arc_w // 2
+    arc_y = cy + int(tile_size * (16.0 / 64.0)) - arc_h // 2
+    
+    arc_rect = pygame.Rect(arc_x, arc_y, arc_w, arc_h)
+    
+    # Draw arc from PI (left) to 2*PI (right) -> sweeps the bottom hemisphere
+    pygame.draw.arc(surface, (20, 20, 20), arc_rect, math.pi, 2 * math.pi, max(1, int(tile_size * 0.05)))
 
 
 # ---------------------------------------------------------------------------
@@ -670,6 +743,12 @@ class TerritorialGrid:
                     pygame.draw.rect(self.screen, TILE_COLORS[state], tile_rect)
                     highlight_rect = pygame.Rect(x + 2, y + 2, TILE_SIZE - 4, TILE_SIZE - 4)
                     pygame.draw.rect(self.screen, TILE_HIGHLIGHT[state], highlight_rect, 2)
+
+                    # Session 010: Draw slime sprite if owned by a clan
+                    if state in (TileState.BLUE, TileState.RED):
+                        cx = x + TILE_SIZE // 2
+                        cy = y + TILE_SIZE // 2
+                        draw_slime(self.screen, cx, cy, TILE_SIZE, SLIME_COLORS[state])
 
                 pygame.draw.rect(self.screen, BORDER_COLOR, tile_rect, BORDER_PX)
 
