@@ -63,6 +63,9 @@ class SlimeUnit:
     weaken_amount: int = 0          # How much attack is reduced
     mana_surge_active: bool = False # STAFF: next heal is doubled
     rally_defense_bonus: int = 0    # SHIELD Rally: temporary def boost
+    # Session 017: Mana Resource System
+    mana: int = 3
+    max_mana: int = 5
 
 # ---------------------------------------------------------------------------
 # Pure Functions: Stat Generation
@@ -157,26 +160,28 @@ def execute_action(actor: SlimeUnit, allies: List[SlimeUnit], enemies: List[Slim
 
 
 def _execute_sword(actor: SlimeUnit, allies: List[SlimeUnit], enemies: List[SlimeUnit]) -> str:
-    """SWORD AI: Attack (default), Crit Focus (high HP enemy), Taunt Break (remove enemy taunt)."""
+    """SWORD AI: Attack (default +1 mana), Crit Focus (2 mana), Taunt Break (1 mana)."""
     alive_enemies = [e for e in enemies if e.hp > 0]
     if not alive_enemies:
         return f"{actor.name} finds no enemies to attack."
 
-    # Decision: Taunt Break — if a high-HP enemy is taunting, break it
+    # Decision: Taunt Break (cost 1) — if a high-HP enemy is taunting, break it
     taunted_enemies = [e for e in alive_enemies if e.taunt_active]
     non_taunted_low = [e for e in alive_enemies if not e.taunt_active and e.hp < e.max_hp * 0.4]
-    if taunted_enemies and non_taunted_low:
+    if taunted_enemies and non_taunted_low and actor.mana >= 1:
+        actor.mana -= 1
         target = taunted_enemies[0]
         target.taunt_active = False
-        return f"🔓 {actor.name} uses TAUNT BREAK on {target.name}! Taunt removed."
+        return f"🔓 {actor.name} uses TAUNT BREAK on {target.name}! Taunt removed. ({actor.mana}/{actor.max_mana} MP)"
 
-    # Decision: Crit Focus — if strongest enemy has > 75% HP and we're not already focused
+    # Decision: Crit Focus (cost 2) — if strongest enemy has > 75% HP and we're not already focused
     strongest = max(alive_enemies, key=lambda e: e.hp)
-    if not actor.is_crit_focused and strongest.hp > strongest.max_hp * 0.75 and len(alive_enemies) > 1:
+    if not actor.is_crit_focused and strongest.hp > strongest.max_hp * 0.75 and len(alive_enemies) > 1 and actor.mana >= 2:
+        actor.mana -= 2
         actor.is_crit_focused = True
-        return f"🎯 {actor.name} enters CRIT FOCUS! Next attack is a guaranteed critical."
+        return f"🎯 {actor.name} enters CRIT FOCUS! Next attack is a guaranteed critical. ({actor.mana}/{actor.max_mana} MP)"
 
-    # Default: Attack (with taunt redirection)
+    # Default: Attack (with taunt redirection, generates +1 mana)
     if taunted_enemies:
         target = min(taunted_enemies, key=lambda e: e.hp)
     else:
@@ -191,6 +196,7 @@ def _execute_sword(actor: SlimeUnit, allies: List[SlimeUnit], enemies: List[Slim
         actor.is_crit_focused = False
     
     target.hp = max(0, target.hp - damage)
+    actor.mana = min(actor.max_mana, actor.mana + 1)
     
     if is_crit:
         return f"💥 CRITICAL HIT! {actor.name} attacks {target.name} for {damage} dmg! ({target.hp}/{target.max_hp} HP)"
@@ -198,35 +204,47 @@ def _execute_sword(actor: SlimeUnit, allies: List[SlimeUnit], enemies: List[Slim
 
 
 def _execute_shield(actor: SlimeUnit, allies: List[SlimeUnit], enemies: List[SlimeUnit]) -> str:
-    """SHIELD AI: Taunt (default), Shield Bash (stun), Rally (buff ally)."""
+    """SHIELD AI: Taunt (default +1 mana), Shield Bash (2 mana), Rally (1 mana). Solo: Bash as default."""
     alive_enemies = [e for e in enemies if e.hp > 0]
     alive_allies = [a for a in allies if a.hp > 0 and a.id != actor.id]
+    is_last_alive = len(alive_allies) == 0
     
-    # Decision: Shield Bash — if an enemy STAFF is healing and keeping others alive, stun it
+    # Session 017: SHIELD Solo Behavior — bash lowest HP enemy when last alive
+    if is_last_alive and alive_enemies:
+        target = min(alive_enemies, key=lambda e: e.hp)
+        bash_damage = max(1, actor.attack // 2)
+        target.hp = max(0, target.hp - bash_damage)
+        actor.mana = min(actor.max_mana, actor.mana + 1)
+        return f"🔨 {actor.name} DESPERATE BASH on {target.name} for {bash_damage} dmg! ({target.hp}/{target.max_hp} HP)"
+
+    # Decision: Shield Bash (cost 2) — stun enemy STAFF healers
     enemy_healers = [e for e in alive_enemies if e.hat == Hat.STAFF and e.stunned_turns == 0]
-    if enemy_healers:
+    if enemy_healers and actor.mana >= 2:
+        actor.mana -= 2
         target = enemy_healers[0]
         bash_damage = max(1, actor.attack // 2)
         target.hp = max(0, target.hp - bash_damage)
         target.stunned_turns = 1
         return f"🔨 {actor.name} SHIELD BASHES {target.name} for {bash_damage} dmg + STUN! ({target.hp}/{target.max_hp} HP)"
 
-    # Decision: Rally — if an ally is below 50% HP, boost their defense
+    # Decision: Rally (cost 1) — if an ally is below 50% HP, boost their defense
     wounded_allies = [a for a in alive_allies if a.hp < a.max_hp * 0.5]
-    if wounded_allies:
+    if wounded_allies and actor.mana >= 1:
+        actor.mana -= 1
         target = min(wounded_allies, key=lambda a: a.hp / a.max_hp)
         target.defense += 2
         target.rally_defense_bonus += 2
-        return f"📣 {actor.name} RALLIES {target.name}! (+2 Defense)"
+        return f"📣 {actor.name} RALLIES {target.name}! (+2 Defense) ({actor.mana}/{actor.max_mana} MP)"
 
-    # Default: Taunt
+    # Default: Taunt (generates +1 mana)
     actor.taunt_active = True
     actor.defense += 2
+    actor.mana = min(actor.max_mana, actor.mana + 1)
     return f"🛡️ {actor.name} raises shield! (+2 Def, TAUNTING)"
 
 
 def _execute_staff(actor: SlimeUnit, allies: List[SlimeUnit], enemies: List[SlimeUnit]) -> str:
-    """STAFF AI: Heal (default), Mana Surge (double next heal), Weaken (reduce enemy atk)."""
+    """STAFF AI: Heal (default +1 mana), Mana Surge (3 mana), Weaken (2 mana)."""
     alive_allies = [a for a in allies if a.hp > 0]
     alive_enemies = [e for e in enemies if e.hp > 0]
     
@@ -235,23 +253,25 @@ def _execute_staff(actor: SlimeUnit, allies: List[SlimeUnit], enemies: List[Slim
     total_max = sum(a.max_hp for a in allies)
     squad_hp_pct = total_hp / total_max if total_max > 0 else 1.0
     
-    # Decision: Weaken — if squad is losing (below 40% HP), reduce strongest enemy's attack
-    if squad_hp_pct < 0.4 and alive_enemies:
+    # Decision: Weaken (cost 2) — if squad is losing (below 40% HP)
+    if squad_hp_pct < 0.4 and alive_enemies and actor.mana >= 2:
         strongest_attacker = max(alive_enemies, key=lambda e: e.attack)
         if strongest_attacker.weaken_turns == 0:
+            actor.mana -= 2
             reduce_amt = 2
             strongest_attacker.attack = max(1, strongest_attacker.attack - reduce_amt)
             strongest_attacker.weaken_turns = 2
             strongest_attacker.weaken_amount = reduce_amt
-            return f"🔮 {actor.name} WEAKENS {strongest_attacker.name}! (-{reduce_amt} Atk for 2 turns)"
+            return f"🔮 {actor.name} WEAKENS {strongest_attacker.name}! (-{reduce_amt} Atk for 2 turns) ({actor.mana}/{actor.max_mana} MP)"
 
-    # Decision: Mana Surge — if no ally is badly hurt, prep for a big heal
+    # Decision: Mana Surge (cost 3) — if no ally is badly hurt, prep for a big heal
     worst_ally = min(alive_allies, key=lambda a: a.hp / a.max_hp)
-    if not actor.mana_surge_active and worst_ally.hp > worst_ally.max_hp * 0.6:
+    if not actor.mana_surge_active and worst_ally.hp > worst_ally.max_hp * 0.6 and actor.mana >= 3:
+        actor.mana -= 3
         actor.mana_surge_active = True
-        return f"✨ {actor.name} channels MANA SURGE! Next heal is doubled."
+        return f"✨ {actor.name} channels MANA SURGE! Next heal is doubled. ({actor.mana}/{actor.max_mana} MP)"
 
-    # Default: Heal (lowest HP% ally)
+    # Default: Heal (lowest HP% ally, generates +1 mana)
     target = min(alive_allies, key=lambda a: a.hp / a.max_hp)
     
     missing_hp = target.max_hp - target.hp
@@ -267,6 +287,7 @@ def _execute_staff(actor: SlimeUnit, allies: List[SlimeUnit], enemies: List[Slim
         actor.mana_surge_active = False
     
     target.hp = min(target.max_hp, target.hp + heal_amt)
+    actor.mana = min(actor.max_mana, actor.mana + 1)
     return f"✨ {actor.name} heals {target.name} for {heal_amt} HP! ({target.hp}/{target.max_hp} HP)"
 
 # ---------------------------------------------------------------------------
