@@ -25,21 +25,21 @@ except ImportError as e:
 
 # Test individual race components
 try:
-    from src.dgt_engine.engines.race.physics_engine import RacePhysicsEngine, create_race_physics_engine
+    from src.dgt_engine.systems.race.physics_engine import RacePhysicsEngine, create_race_physics_engine
     print("✅ Physics engine import successful")
 except ImportError as e:
     print(f"❌ Physics engine import failed: {e}")
     sys.exit(1)
 
 try:
-    from src.dgt_engine.engines.race.terrain_system import TerrainSystem, create_terrain_system
+    from src.dgt_engine.systems.race.terrain_system import TerrainSystem, create_terrain_system
     print("✅ Terrain system import successful")
 except ImportError as e:
     print(f"❌ Terrain system import failed: {e}")
     sys.exit(1)
 
 try:
-    from src.dgt_engine.engines.race.race_arbiter import RaceArbiter, create_race_arbiter
+    from src.dgt_engine.systems.race.race_arbiter import RaceArbiter, create_race_arbiter
     print("✅ Race arbiter import successful")
 except ImportError as e:
     print(f"❌ Race arbiter import failed: {e}")
