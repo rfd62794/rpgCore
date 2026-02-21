@@ -100,22 +100,23 @@ class Overworld:
                 return
 
     def _launch_battle(self, node: MapNode) -> None:
-        """Launch the auto_battle scene for the node."""
-        logger.info(f"⚔️  Launching battle for {node.name}...")
+        """Launch the operational battle_field scene for the node."""
+        logger.info(f"⚔️  Deploying forces to {node.name}...")
         
         # Subprocess launch
         try:
             # We assume we are running from the repository root
             base_cmd = [
                 sys.executable, 
-                "-m", "src.apps.slime_clan.auto_battle",
-                "--region", node.name
+                "-m", "src.apps.slime_clan.battle_field",
+                "--region", node.name,
+                "--difficulty", "NORMAL" # Placeholder until difficulty UI is added
             ]
             
-            # Run the battle, wait for it to finish
+            # Run the field map, wait for it to finish
             result = subprocess.run(base_cmd, check=False)
             
-            # auto_battle.py will return 0 for Blue win, 1 for Red win/Draw/Cancel
+            # battle_field.py will return 0 for Blue win, 1 for Red win/Draw/Cancel
             if result.returncode == 0:
                 logger.info(f"🏆 Blue secured {node.name}!")
                 node.state = NodeState.BLUE

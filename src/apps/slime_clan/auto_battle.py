@@ -60,7 +60,7 @@ class SlimeUnit:
 # ---------------------------------------------------------------------------
 # Pure Functions: Stat Generation
 # ---------------------------------------------------------------------------
-def create_slime(unit_id: str, name: str, team: TileState, shape: Shape, hat: Hat) -> SlimeUnit:
+def create_slime(unit_id: str, name: str, team: TileState, shape: Shape, hat: Hat, is_player: bool = False, difficulty_mult: float = 1.0) -> SlimeUnit:
     """Generate a SlimeUnit with stats modified by Shape and Hat."""
     # Base Stats
     hp = 20
@@ -89,6 +89,19 @@ def create_slime(unit_id: str, name: str, team: TileState, shape: Shape, hat: Ha
     elif hat == Hat.STAFF:
         speed += 2
         attack -= 2 # Staff users hit weakly
+
+    # Session 015 Player Bias: Elite Underdogs (+25% stats)
+    if is_player:
+        hp = int(hp * 1.25)
+        attack = int(attack * 1.25)
+        defense = int(defense * 1.25)
+        speed = int(speed * 1.25)
+    else:
+        # Scale enemy stats based on difficulty (-20%, 0%, +20%)
+        hp = max(1, int(hp * difficulty_mult))
+        attack = max(1, int(attack * difficulty_mult))
+        defense = max(1, int(defense * difficulty_mult))
+        speed = max(1, int(speed * difficulty_mult))
 
     return SlimeUnit(
         id=unit_id,
@@ -177,9 +190,9 @@ class AutoBattleScene:
         
         # Hard-coded Player Squad (Blue) per Session 014 Directive
         self.blue_squad = [
-            create_slime("b1", "Rex", TileState.BLUE, Shape.CIRCLE, Hat.SWORD),
-            create_slime("b2", "Brom", TileState.BLUE, Shape.SQUARE, Hat.SHIELD),
-            create_slime("b3", "Pip", TileState.BLUE, Shape.TRIANGLE, Hat.STAFF),
+            create_slime("b1", "Rex", TileState.BLUE, Shape.CIRCLE, Hat.SWORD, is_player=True),
+            create_slime("b2", "Brom", TileState.BLUE, Shape.SQUARE, Hat.SHIELD, is_player=True),
+            create_slime("b3", "Pip", TileState.BLUE, Shape.TRIANGLE, Hat.STAFF, is_player=True),
         ]
         
         self.red_squad = [
