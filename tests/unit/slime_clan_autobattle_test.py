@@ -62,14 +62,16 @@ def test_staff_heals_scales_with_missing_hp():
     a1.hp = 10 # Missing 10 HP
     
     # Heal should be Base (5) + 30% of missing HP (3) = 8
+    # BUT explicitly capped at 30% of max_hp (20 * 0.3) = 6
+    # Final Heal = 6
     
     allies = [actor, a1]
     enemies = []
     
     log = execute_action(actor, allies, enemies)
     
-    assert a1.hp == 18 # 10 + 8 = 18
-    assert "heals A1 for 8" in log
+    assert a1.hp == 16 # 10 + 6 = 16
+    assert "heals A1 for 6" in log
 
 
 def test_shield_taunts_and_clears_taunt():
