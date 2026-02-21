@@ -22,6 +22,8 @@ from apps.slime_clan.territorial_grid import (
     TurnState,
     screen_pos_to_tile,
     resolve_battle,
+    resolve_battle_weighted,
+    compute_battle_strength,
     seed_initial_state,
     generate_obstacles,
     ai_take_turn,
@@ -644,3 +646,123 @@ class TestCheckWinWithObstacles:
 
     def test_win_fraction_constant(self) -> None:
         assert WIN_FRACTION == 0.60
+
+
+# ---------------------------------------------------------------------------
+# Session 009 — Proximity-Weighted Battle System
+# ---------------------------------------------------------------------------
+class TestComputeBattleStrength:
+    """compute_battle_strength() must correctly combine base + proximity bonus."""
+
+    def _make_grid(self, state: TileState = TileState.NEUTRAL) -> list[list[TileState]]:
+        return [[state] * GRID_COLS for _ in range(GRID_ROWS)]
+
+    def test_minimum_strength_is_1(self) -> None:
+        """Even with zero tiles, strength >= 1 to keep probability well-defined."""
+        grid = self._make_grid(TileState.NEUTRAL)
+        assert compute_battle_strength(grid, 5, 5, TileState.BLUE) >= 1
+
+    def test_base_counts_all_owned_tiles(self) -> None:
+        """With no proximity tiles, strength equals total tiles held."""
+        grid = self._make_grid(TileState.NEUTRAL)
+        # Give Blue 10 tiles nowhere near (5,5)
+        for i in range(10):
+            grid[0][i] = TileState.BLUE
+        strength = compute_battle_strength(grid, 5, 5, TileState.BLUE)
+        assert strength == 10
+
+    def test_proximity_bonus_per_adjacent_tile(self) -> None:
+        """Each adjacent tile adds +3 to strength."""
+        grid = self._make_grid(TileState.NEUTRAL)
+        # Contest tile at (5,5); place Blue tiles at all 4 orthogonal neighbors
+        grid[5][5] = TileState.NEUTRAL   # contested
+        grid[4][5] = TileState.BLUE      # above
+        grid[6][5] = TileState.BLUE      # below
+        grid[5][4] = TileState.BLUE      # left
+        grid[5][6] = TileState.BLUE      # right
+        # base=4, proximity=4*3=12 => strength=16
+        strength = compute_battle_strength(grid, 5, 5, TileState.BLUE)
+        assert strength == 16
+
+    def test_corner_tile_limits_adjacency(self) -> None:
+        """A corner tile has at most 2 neighbors, so max proximity bonus is 2*3=6."""
+        grid = self._make_grid(TileState.NEUTRAL)
+        grid[0][1] = TileState.BLUE  # right of corner
+        grid[1][0] = TileState.BLUE  # below corner
+        # Contest tile at (0,0); Blue has 2 adjacent tiles
+        strength = compute_battle_strength(grid, 0, 0, TileState.BLUE)
+        # base=2, proximity=2*3=6 => 8
+        assert strength == 8
+
+    def test_zero_owned_tiles_gives_minimum(self) -> None:
+        """A clan with no tiles returns 1 (min guard)."""
+        grid = self._make_grid(TileState.NEUTRAL)
+        assert compute_battle_strength(grid, 3, 3, TileState.RED) == 1
+
+
+class TestResolveBattleWeighted:
+    """resolve_battle_weighted() must be probabilistic and within correct bounds."""
+
+    def _make_grid(self) -> list[list[TileState]]:
+        return [[TileState.NEUTRAL] * GRID_COLS for _ in range(GRID_ROWS)]
+
+    def test_returns_attacker_or_defender(self) -> None:
+        grid = self._make_grid()
+        grid[0][0] = TileState.BLUE
+        winner, atk_str, def_str, prob = resolve_battle_weighted(grid, 5, 5, "BLUE", "RED")
+        assert winner in ("BLUE", "RED")
+
+    def test_returns_four_tuple(self) -> None:
+        grid = self._make_grid()
+        result = resolve_battle_weighted(grid, 5, 5, "BLUE", "RED")
+        assert len(result) == 4
+        winner, atk_str, def_str, prob = result
+        assert isinstance(winner, str)
+        assert isinstance(atk_str, int)
+        assert isinstance(def_str, int)
+        assert isinstance(prob, float)
+
+    def test_probability_in_range(self) -> None:
+        """Win probability must be strictly between 0 and 1."""
+        grid = self._make_grid()
+        grid[0][0] = TileState.BLUE
+        _, _, _, prob = resolve_battle_weighted(grid, 5, 5, "BLUE", "RED")
+        assert 0.0 < prob < 1.0
+
+    def test_both_outcomes_possible(self) -> None:
+        """Over enough trials, both attacker and defender should win at least once."""
+        grid = self._make_grid()
+        # Equal tiles so 50/50; add one of each to give both a base
+        grid[0][0] = TileState.BLUE
+        grid[9][9] = TileState.RED
+        winners = {resolve_battle_weighted(grid, 5, 5, "BLUE", "RED")[0] for _ in range(100)}
+        assert "BLUE" in winners
+        assert "RED" in winners
+
+    def test_stronger_attacker_wins_more_often(self) -> None:
+        """
+        Blue with heavy territory should win > 70% of the time against isolated Red,
+        over 300 trials.
+        """
+        grid = self._make_grid()
+        # Blue holds 50 tiles, Red holds 1; contest at (5,5) — no adjacency for either
+        count = 0
+        for r in range(GRID_ROWS):
+            for c in range(GRID_COLS):
+                if count < 50:
+                    grid[r][c] = TileState.BLUE
+                    count += 1
+        grid[9][9] = TileState.RED
+        wins = sum(
+            resolve_battle_weighted(grid, 5, 5, "BLUE", "RED")[0] == "BLUE"
+            for _ in range(300)
+        )
+        assert wins > 180, f"Expected Blue to win >60% with dominant territory, got {wins}/300"
+
+    def test_strengths_are_positive(self) -> None:
+        grid = self._make_grid()
+        grid[0][0] = TileState.BLUE
+        grid[9][9] = TileState.RED
+        _, atk_str, def_str, _ = resolve_battle_weighted(grid, 5, 5, "BLUE", "RED")
+        assert atk_str >= 1
+        assert def_str >= 1
