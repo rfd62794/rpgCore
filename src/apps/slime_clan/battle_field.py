@@ -169,24 +169,20 @@ class BattleField:
         base_cmd = [
             sys.executable, 
             "-m", "src.apps.slime_clan.auto_battle",
-            "--region", f"{self.region_name} Skirmish",
+            "--region", f"{self.region_name}_Skirmish",
             "--difficulty", self.difficulty
         ]
         
         logger.info(f"🚀 Executing subprocess: {' '.join(base_cmd)}")
         
         try:
-            result = subprocess.run(base_cmd, capture_output=True, text=True)
+            result = subprocess.run(base_cmd)
             
             if result.returncode == 0:
                 logger.info("🏆 Blue squad won the tactical skirmish! Red token eliminated.")
                 self.red_token.active = False
             else:
                 logger.info(f"💀 Red squad repelled the attack! Blue token eliminated. Exit Code: {result.returncode}")
-                if result.stderr:
-                    logger.error(f"❌ Auto-Battle STDERR:\n{result.stderr}")
-                if result.stdout:
-                    logger.debug(f"ℹ️ Auto-Battle STDOUT:\n{result.stdout}")
                 self.blue_token.active = False
                 self.exit_code = 1
                 self.game_over = True
