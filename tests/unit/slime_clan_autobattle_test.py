@@ -28,55 +28,48 @@ def test_slime_stat_generation():
     assert circle_staff.attack == 3   # base 5 - 2 (hat)
 
 
-def test_sword_targets_lowest_hp_enemy():
+def test_sword_targets_taunted_enemy_over_low_hp():
     actor = create_slime("1", "A", TileState.BLUE, Shape.TRIANGLE, Hat.SWORD)
     actor.attack = 10
     
-    e1 = create_slime("e1", "E1", TileState.RED, Shape.CIRCLE, Hat.SWORD)
-    e1.hp = 15
+    e1 = create_slime("e1", "Squishy", TileState.RED, Shape.CIRCLE, Hat.SWORD)
+    e1.hp = 5
     e1.defense = 0
+    e1.taunt_active = False
     
-    e2 = create_slime("e2", "E2", TileState.RED, Shape.CIRCLE, Hat.SWORD)
-    e2.hp = 5
+    e2 = create_slime("e2", "Tank", TileState.RED, Shape.SQUARE, Hat.SHIELD)
+    e2.hp = 25
     e2.defense = 0
+    e2.taunt_active = True # Taunting tank
     
-    e3 = create_slime("e3", "E3", TileState.RED, Shape.CIRCLE, Hat.SWORD)
-    e3.hp = 25
-    e3.defense = 0
-    
-    enemies = [e1, e2, e3]
+    enemies = [e1, e2]
     allies = [actor]
     
     log = execute_action(actor, allies, enemies)
     
-    # E2 should be attacked and killed (5 - 10 < 0, floored to 0)
-    assert e2.hp == 0
-    assert e1.hp == 15
-    assert e3.hp == 25
-    assert "attacks E2" in log
+    # E2 (Tank) should be attacked despite E1 (Squishy) having lower HP
+    assert e2.hp == 15 # 25 - 10
+    assert e1.hp == 5
+    assert "attacks Tank" in log
 
 
-def test_staff_heals_lowest_hp_ally():
+def test_staff_heals_scales_with_missing_hp():
     actor = create_slime("1", "H", TileState.BLUE, Shape.CIRCLE, Hat.STAFF)
-    actor.attack = 5  # Staff uses attack for heal power
+    actor.attack = 5  # Base heal = max(2, 5) = 5
     
     a1 = create_slime("a1", "A1", TileState.BLUE, Shape.CIRCLE, Hat.SWORD)
     a1.max_hp = 20
-    a1.hp = 10 # 50%
+    a1.hp = 10 # Missing 10 HP
     
-    a2 = create_slime("a2", "A2", TileState.BLUE, Shape.CIRCLE, Hat.SWORD)
-    a2.max_hp = 20
-    a2.hp = 18 # 90%
+    # Heal should be Base (5) + 30% of missing HP (3) = 8
     
-    allies = [actor, a1, a2]
+    allies = [actor, a1]
     enemies = []
     
     log = execute_action(actor, allies, enemies)
     
-    # A1 should be healed (10 + 5 = 15)
-    assert a1.hp == 15
-    assert a2.hp == 18
-    assert "heals A1" in log
+    assert a1.hp == 18 # 10 + 8 = 18
+    assert "heals A1 for 8" in log
 
 
 def test_shield_taunts_and_clears_taunt():
