@@ -1,19 +1,21 @@
 """
-Territorial Grid Prototype — Spec-001, Session 001
+Territorial Grid Prototype — Spec-001, Session 002
 ===================================================
 A 10x10 tile-based territorial map rendered inside the rpgCore game loop.
 Each tile tracks ownership: Neutral, Blue Clan, or Red Clan.
-Left-click a tile to cycle its ownership state.
+
+Session 002 — Contested Tile Logic (intent-aware interaction):
+  NEUTRAL tile  → instant Blue claim (free land, no fight needed)
+  BLUE tile     → no action (already owned)
+  RED tile      → resolve_battle() stub; winner applied to tile
 
 Architecture: Flat module, mirroring simple_visual_asteroids.py loop contract.
   handle_events → update → render → clock.tick(60)
-
-Known Limitation: Ownership cycles NEUTRAL → BLUE → RED → NEUTRAL on repeated
-clicks. Direct RED placement requires two clicks. Intentional for Session 001.
 """
 
 import sys
 import enum
+import random
 from pathlib import Path
 from typing import List
 
@@ -67,6 +69,28 @@ SIDEBAR_TEXT_COLOR: tuple[int, int, int] = (200, 200, 200)
 
 
 # ---------------------------------------------------------------------------
+# Battle resolution stub (Session 002)
+# ---------------------------------------------------------------------------
+def resolve_battle(attacker: str, defender: str) -> str:
+    """
+    Stub battle resolver — returns winner name at random.
+
+    This is the seam for real battle logic in Session 003+.
+    Signature is intentionally simple: plain strings for easy testing.
+
+    Args:
+        attacker: Clan name initiating the attack (e.g. 'BLUE')
+        defender: Clan name defending the tile (e.g. 'RED')
+
+    Returns:
+        The winning clan name — either attacker or defender.
+    """
+    winner = random.choice([attacker, defender])
+    logger.info("⚔️  Battle: {} attacks {} → {} wins", attacker, defender, winner)
+    return winner
+
+
+# ---------------------------------------------------------------------------
 # Pure helper — coordinate mapping (tested independently of pygame)
 # ---------------------------------------------------------------------------
 def screen_pos_to_tile(
@@ -116,7 +140,9 @@ class TerritorialGrid:
         ]
 
         self.running: bool = True
-        self.click_count: int = 0  # simple telemetry shown in sidebar
+        self.click_count: int = 0       # total clicks on the grid
+        self.battles_fought: int = 0    # RED tile attacks attempted
+        self.last_battle_result: str = "—"  # shown in sidebar HUD
 
         # Font for sidebar HUD — fall back gracefully
         try:
@@ -148,21 +174,38 @@ class TerritorialGrid:
                 self._handle_click(event.pos)
 
     def _handle_click(self, pos: tuple[int, int]) -> None:
-        """Cycle the ownership state of the clicked tile."""
+        """
+        Intent-aware tile interaction (Session 002).
+
+        NEUTRAL → instant Blue claim (free land)
+        BLUE    → no action (already owned by player)
+        RED     → resolve_battle(); apply winner to tile
+        """
         result = screen_pos_to_tile(pos[0], pos[1])
         if result is None:
-            return  # click landed in the sidebar — ignore
+            return  # click in sidebar — ignore
 
         col, row = result
-        old_state = self.grid[row][col]
-        new_state = TileState((old_state + 1) % 3)
-        self.grid[row][col] = new_state
+        state = self.grid[row][col]
         self.click_count += 1
 
-        logger.info(
-            "🖱️  Tile ({},{}) flipped: {} → {}",
-            col, row, old_state.name, new_state.name,
-        )
+        if state == TileState.NEUTRAL:
+            # Free land — instant claim, no battle needed
+            self.grid[row][col] = TileState.BLUE
+            logger.info("🏴 Tile ({},{}) claimed: NEUTRAL → BLUE", col, row)
+
+        elif state == TileState.BLUE:
+            # Already owned — do nothing
+            logger.debug("🔵 Tile ({},{}) already owned by Blue — no action", col, row)
+
+        elif state == TileState.RED:
+            # Enemy tile — fight for it
+            self.battles_fought += 1
+            winner = resolve_battle(attacker="BLUE", defender="RED")
+            self.grid[row][col] = TileState.BLUE if winner == "BLUE" else TileState.RED
+            self.last_battle_result = (
+                f"({col},{row}) → {winner} wins"
+            )
 
     # ------------------------------------------------------------------
     # Update (reserved — no logic yet for Session 001)
@@ -223,18 +266,21 @@ class TerritorialGrid:
         sidebar_x = 6
         lines = [
             ("SLIME CLAN", (180, 180, 120), self.font_large),
-            ("Session 001", (130, 130, 130), self.font_small),
+            ("Session 002", (130, 130, 130), self.font_small),
             ("", SIDEBAR_TEXT_COLOR, self.font_small),
             ("TERRITORY", (180, 180, 120), self.font_small),
             (f"  Blue  {blue_count:>3}", TILE_HIGHLIGHT[TileState.BLUE], self.font_small),
             (f"  Red   {red_count:>3}", TILE_HIGHLIGHT[TileState.RED], self.font_small),
             (f"  Neutral{neutral_count:>2}", TILE_HIGHLIGHT[TileState.NEUTRAL], self.font_small),
             ("", SIDEBAR_TEXT_COLOR, self.font_small),
-            (f"Clicks: {self.click_count}", SIDEBAR_TEXT_COLOR, self.font_small),
+            (f"Battles: {self.battles_fought}", SIDEBAR_TEXT_COLOR, self.font_small),
+            (f"Last:", SIDEBAR_TEXT_COLOR, self.font_small),
+            (f" {self.last_battle_result}", (220, 200, 100), self.font_small),
             ("", SIDEBAR_TEXT_COLOR, self.font_small),
             ("CONTROLS", (180, 180, 120), self.font_small),
-            ("L-Click: cycle", SIDEBAR_TEXT_COLOR, self.font_small),
-            ("  tile owner", SIDEBAR_TEXT_COLOR, self.font_small),
+            ("Neutral: claim", SIDEBAR_TEXT_COLOR, self.font_small),
+            ("Red: battle", SIDEBAR_TEXT_COLOR, self.font_small),
+            ("Blue: owned", SIDEBAR_TEXT_COLOR, self.font_small),
             ("ESC: quit", SIDEBAR_TEXT_COLOR, self.font_small),
         ]
 

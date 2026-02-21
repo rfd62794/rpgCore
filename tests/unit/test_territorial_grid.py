@@ -20,6 +20,7 @@ sys.path.insert(0, str(Path(__file__).parent.parent.parent / "src"))
 from apps.slime_clan.territorial_grid import (
     TileState,
     screen_pos_to_tile,
+    resolve_battle,
     GRID_COLS,
     GRID_ROWS,
     TILE_SIZE,
@@ -118,3 +119,64 @@ class TestGridInitialisation:
         grid = [[TileState.NEUTRAL] * GRID_COLS for _ in range(GRID_ROWS)]
         assert len(grid) == GRID_ROWS
         assert all(len(row) == GRID_COLS for row in grid)
+
+
+# ---------------------------------------------------------------------------
+# Session 002 — resolve_battle stub
+# ---------------------------------------------------------------------------
+class TestResolveBattle:
+    """resolve_battle must return one of the two input clan names."""
+
+    def test_returns_attacker_or_defender(self) -> None:
+        result = resolve_battle("BLUE", "RED")
+        assert result in ("BLUE", "RED")
+
+    def test_never_returns_unknown_clan(self) -> None:
+        for _ in range(20):
+            result = resolve_battle("BLUE", "RED")
+            assert result not in ("NEUTRAL", "GREEN", "", None)
+
+    def test_both_outcomes_possible(self) -> None:
+        """Over enough trials both attacker and defender must win at least once."""
+        results = {resolve_battle("BLUE", "RED") for _ in range(100)}
+        assert "BLUE" in results
+        assert "RED" in results
+
+
+# ---------------------------------------------------------------------------
+# Session 002 — Intent-aware click logic (pure state machine, no pygame)
+# ---------------------------------------------------------------------------
+class TestIntentAwareClickLogic:
+    """
+    Verify the intent-aware ownership rules as pure state assertions.
+    We test the rules directly on TileState values — no pygame required.
+    """
+
+    def _apply_click(self, state: TileState) -> TileState:
+        """Replicate the _handle_click intent logic as a pure function."""
+        if state == TileState.NEUTRAL:
+            return TileState.BLUE          # instant claim
+        elif state == TileState.BLUE:
+            return TileState.BLUE          # no-op — already owned
+        elif state == TileState.RED:
+            winner = resolve_battle("BLUE", "RED")
+            return TileState.BLUE if winner == "BLUE" else TileState.RED
+        return state  # unreachable — satisfies type checker
+
+    def test_neutral_click_claims_for_blue(self) -> None:
+        result = self._apply_click(TileState.NEUTRAL)
+        assert result == TileState.BLUE
+
+    def test_blue_click_is_noop(self) -> None:
+        result = self._apply_click(TileState.BLUE)
+        assert result == TileState.BLUE
+
+    def test_red_click_resolves_to_blue_or_red(self) -> None:
+        result = self._apply_click(TileState.RED)
+        assert result in (TileState.BLUE, TileState.RED)
+
+    def test_red_click_never_produces_neutral(self) -> None:
+        for _ in range(20):
+            result = self._apply_click(TileState.RED)
+            assert result != TileState.NEUTRAL
+
