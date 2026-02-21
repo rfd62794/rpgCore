@@ -25,6 +25,10 @@
 - Write tests for initializing `MapNode` relationships and verifying `NodeState` transitions.
 - Verify existing tests still pass with `pytest`.
 
+### 6. Known Limitations
+- **Future: Scene Manager**: The subprocess launch of `territorial_grid.py` is intentional for this stub session, which results in two separate pygame windows. This is acceptable for the stub and will be addressed in a future session when a proper scene transition architecture is wired up.
+- **Battle Results**: The ownership update on return simulates a Blue win regardless of the actual battle outcome. We will wire real result passing in a future session.
+
 ## Verification Plan
 1. Run `pytest` to ensure test count is >= 79 and all pass.
 2. Execute `python run_overworld.py`.
