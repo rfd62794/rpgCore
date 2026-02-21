@@ -24,12 +24,12 @@ if str(src_path) not in sys.path:
     sys.path.insert(0, str(src_path))
 
 try:
-    from foundation.genetics.schema import TurboGenome, create_default_genome, validate_genome_dict
-    from foundation.genetics.crossover import (
+    from dgt_engine.foundation.genetics.schema import TurboGenome, create_default_genome, validate_genome_dict
+    from dgt_engine.foundation.genetics.crossover import (
         mendelian_crossover, blended_crossover, color_pattern_crossover,
         calculate_genetic_similarity, CrossoverConfig
     )
-    from foundation.types import Result
+    from dgt_engine.foundation.types import Result
 except ImportError as e:
     print(f"❌ Import failed: {e}")
     print("Ensure foundation modules are properly installed")
