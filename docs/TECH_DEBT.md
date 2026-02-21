@@ -37,3 +37,15 @@ This creates a fundamentally janky three-window cascading UX. A new PyGame windo
 
 ### Mitigation
 Documented here for resolution in **Session 016 or later**. A unified Scene Manager (`scene_manager.py`) is required. The Scene Manager should initialize a single `pygame.display.set_mode()` instance and pass the common rendering surface and event loop down to state-machine-controlled View instances (`OverworldView`, `BattleFieldView`, `AutoBattleView`) instead of executing entirely separate module processes.
+
+---
+
+## Mana UI Not Visible to Player
+**Logged:** 2026-02-21 (Session 017)
+
+### Description
+The mana resource system (3 start, 5 max) is fully functional in `auto_battle.py` and logged to terminal, but there is no visual mana bar or MP indicator rendered on-screen for the player. The player cannot see mana values during combat — they can only infer resource management from the combat log.
+
+### Mitigation
+Add a mana bar or MP text indicator below each unit's HP bar in `auto_battle.py` rendering. Low priority — the system works correctly without visual feedback.
+
