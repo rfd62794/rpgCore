@@ -20,6 +20,29 @@ def main():
     elif cmd == "boot":
         print(journal.get_boot_block())
 
+    elif cmd == "tasks":
+        parser = argparse.ArgumentParser(description="rpgCore APJ Tasks")
+        parser.add_argument("command") # consume 'tasks'
+        parser.add_argument("--next", action="store_true", help="Print top 5 queued tasks")
+        parser.add_argument("--add", help="Add a new task to Queued section")
+        parser.add_argument("--done", help="Mark a task as completed (matches text)")
+        
+        args = parser.parse_args()
+        
+        if args.next:
+            print("QUEUED TASKS (top 5):")
+            print(journal.get_next_tasks(5))
+        elif args.add:
+            journal.add_task(args.add)
+            print(f"Added task: {args.add}")
+        elif args.done:
+            journal.complete_task(args.done)
+            print(f"Task matching '{args.done}' moved to Completed.")
+        else:
+            # Print full TASKS.md
+            content = journal.load(journal.tasks_path)
+            print(content)
+
     elif cmd == "update":
         # Use argparse for update flags
         parser = argparse.ArgumentParser(description="rpgCore APJ Update")

@@ -43,4 +43,7 @@ You are working on the Slime Clan game within the rpgCore repository (github.com
 - `src/apps/slime_clan/ui/` for rendering
 - `src/shared/` for engine components
 - `src/apps/slime_clan/app.py` is a 31-line launcher.
-- Final step of every session: run `python -m src.tools.apj update` and update all three journal sections to reflect current state. The Overseer should not need to do this manually.
+- Final step of every session:
+  - Run `python -m src.tools.apj tasks --done "completed task"` for each finished item.
+  - Run `python -m src.tools.apj tasks --add "[TAG] description"` for new discoveries.
+  - Run `python -m src.tools.apj update` and update all three journal sections to reflect current state.
