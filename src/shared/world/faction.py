@@ -92,7 +92,27 @@ class FactionManager:
             offsets = [(0,1), (0,-1), (1,0), (-1,0)]
             adj = [(origin[0] + dx, origin[1] + dy) for dx, dy in offsets]
             
+        # Session 025: Behavior-aware expansion
+        # Sort targets based on aggression
+        def expansion_priority(target):
+            owner = self.get_owner(target)
+            if owner is None:
+                return 1 # Neutral is priority 1
+            if owner == faction.id:
+                return 10 # Already owned, no priority
+            
+            # Hostile territory
+            rel = faction.relations.get(owner, FactionRelation.NEUTRAL)
+            if rel in [FactionRelation.HOSTILE, FactionRelation.WAR]:
+                # Aggressive factions (Red) prioritize conflict (priority 0)
+                # Defensive factions (Blue) deprioritize conflict (priority 2)
+                return 0 if faction.aggression_level > 0.6 else 2
+            return 1.5 # Neutral/Other is lower priority
+
+        adj = sorted(adj, key=expansion_priority)
+        # Add slight randomness to equal priorities
         random.shuffle(adj)
+        adj = sorted(adj, key=expansion_priority)
         
         for target in adj:
             tx, ty = target
@@ -108,13 +128,13 @@ class FactionManager:
             if owner is None:
                 # Claim neutral
                 self.claim_territory(faction.id, target, 0.5, turn)
-                logger.debug(f"Faction {faction.name} claimed neutral territory {target}")
-                break
+                logger.info(f"🚩 Faction {faction.name} claimed neutral territory {target}")
+                return # Expand only once per roll
             elif owner != faction.id:
                 # Potential conflict
                 rel = faction.relations.get(owner, FactionRelation.NEUTRAL)
                 if rel in [FactionRelation.HOSTILE, FactionRelation.WAR]:
                     if random.random() < faction.aggression_level * faction.current_power:
                         self.claim_territory(faction.id, target, 0.4, turn)
-                        logger.info(f"Faction {faction.name} conquered {owner} territory {target}")
-                        break
+                        logger.warning(f"⚔️ Faction {faction.name} seized {owner}'s territory at {target}!")
+                        return 
