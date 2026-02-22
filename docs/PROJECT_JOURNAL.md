@@ -1,10 +1,10 @@
 # rpgCore — Project Journal
 
 ## Current State
-352 passing. Space Trader terminal scaffold built with strong typing. Ready for UI phase.
+354 passing. SpaceTraderSession integrated into robust Pygame UI and aliased REPL.
 
 ## In Flight
 None.
 
 ## Next Priority
-Build Pygame UI for Space Trader (market screen, travel map).
+Move on to Dungeon Crawler planning or Next active APJ task.

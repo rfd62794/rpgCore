@@ -101,3 +101,34 @@ def test_encounter_roll_returns_valid_type():
             found_types.add(res["type"])
             
     assert found_types.issubset(set(EncounterSystem.ENCOUNTER_TYPES))
+
+from src.apps.space_trader.session import SpaceTraderSession
+from src.apps.space_trader.run_space_trader import print_map
+
+def test_map_command_shows_neighbors():
+    session = SpaceTraderSession()
+    session.ship.location_id = "port_kelvin"
+    
+    # print_map returns the list of reachable IDs in order
+    map_ids = print_map(session)
+    
+    # Port Kelvin connects to Shallows and Ironmere
+    assert len(map_ids) == 2
+    assert "the_shallows" in map_ids
+    assert "ironmere_station" in map_ids
+
+def test_travel_by_number_alias():
+    session = SpaceTraderSession()
+    session.ship.location_id = "port_kelvin"
+    
+    map_ids = print_map(session)
+    
+    # Simulate user typing "travel 1"
+    target_idx = 0
+    target_id = map_ids[target_idx]
+    
+    res = session.ship.travel(target_id, session.graph, session.encounter_system)
+    
+    assert res["success"] == True
+    assert session.ship.location_id == target_id
+    assert session.ship.fuel == 9

@@ -10,7 +10,6 @@
 - [TOOL] Sprite sheet importer — resurrect from archive, wire to sprite_loader
 - [TOOL] Asset ingestor — rebuild as src/tools/asset_ingestor/
 - [HARVEST] Asset cache — move from game_engine donor to src/shared/assets/cache.py
-- [FEAT] Space Trader — pygame UI, market screen, travel map
 
 ## Backlog
 - [MIGRATE] Slime Clan — migrate to shared UI components
@@ -34,3 +33,4 @@
 ## Completed
 - [x] [TOOL] APJ — task management system integration (2026-02-22)
 - [x] [REFACTOR] Asset restructure — execute moves from ASSET_INVENTORY.md (2026-02-22)
+- [x] [FEAT] Space Trader — pygame UI, market screen, travel map (2026-02-22)
