@@ -21,6 +21,7 @@ def test_resource_generation(mock_overworld):
     # Set node_1 (Scrap Yard) to Blue ownership
     node_1 = mock_overworld.nodes["node_1"]
     mock_overworld.faction_manager.claim_territory("CLAN_BLUE", node_1.coord, 1.0, 0)
+    mock_overworld.faction_manager.expansion_chance = 0.0
     
     mock_overworld.resources = 0
     mock_overworld._end_day()
