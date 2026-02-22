@@ -399,7 +399,10 @@ class BattleFieldScene(Scene):
         self.faction_manager = kwargs.get("faction_manager")
         self.day = kwargs.get("day", 1)
         self.actions_remaining = kwargs.get("actions_remaining", 3)
-        self.stronghold_bonus = kwargs.get("stronghold_bonus", False) # Capture stronghold_bonus
+        self.resources = kwargs.get("resources", 0)
+        self.ship_parts = kwargs.get("ship_parts", 0)
+        self.secured_part_nodes = kwargs.get("secured_part_nodes", [])
+        self.stronghold_bonus = kwargs.get("stronghold_bonus", False)
         self.game_over = False
         self.exit_code = 1
 
