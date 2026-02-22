@@ -19,3 +19,7 @@ This document tracks known, accepted technical debt across the RPGCore repositor
 - **Issue:** `rust_sprite_scanner` extension module is not compiled in standard python environments.
 - **Impact:** The test is currently bypassed via `pytest.importorskip("rust_sprite_scanner")`. We are missing coverage on the Rust performance layer.
 - **Resolution:** Implement a cross-platform compilation step for the `rust/` directory or pre-compiled binaries for the test suite runner.
+
+## 4. Known UI Issues
+- **Last Appointment — NumPad controls not working**: Only top-row number keys (1-5) respond. NumPad keys (KP_1 through KP_5) should be mapped identically. Fix in `appointment_scene.py` input handling.
+- **Last Appointment — Response card text overflow**: Cards need a max character width with forced line breaks. Text that exceeds one line should wrap within the card bounds rather than overflow or truncate. Affects card height calculation in `card_layout.py`.
