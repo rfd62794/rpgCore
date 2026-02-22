@@ -206,8 +206,41 @@ def execute_action(actor: SlimeUnit, allies: List[SlimeUnit], enemies: List[Slim
         return _execute_shield(actor, allies, enemies)
     elif actor.hat == Hat.STAFF:
         return _execute_staff(actor, allies, enemies)
+    elif actor.hat == Hat.NONE:
+        return _execute_none(actor, allies, enemies)
         
     return f"{actor.name} did nothing."
+
+
+def _execute_none(actor: SlimeUnit, allies: List[SlimeUnit], enemies: List[SlimeUnit]) -> str:
+    """NONE AI: Basic unspecialized attacker. Just hits the weakest target."""
+    alive_enemies = [e for e in enemies if e.hp > 0]
+    if not alive_enemies:
+        return f"{actor.name} finds no enemies to attack."
+
+    # Default: Attack (with taunt redirection, generates +1 mana)
+    taunted_enemies = [e for e in alive_enemies if e.taunt_active]
+    if taunted_enemies:
+        target = min(taunted_enemies, key=lambda e: e.hp)
+    else:
+        target = min(alive_enemies, key=lambda e: e.hp)
+        
+    # Session 020: D20 roll + attack modifier for damage
+    roll = _resolver.roll_d20(modifier=actor.attack)
+    base_roll = roll - actor.attack
+    damage = max(1, roll - target.defense)
+    
+    # Crit logic: nat 20 always crits, else 5% chance (lower for unspecialized)
+    is_crit = base_roll == 20 or random.random() < 0.05
+    if is_crit:
+        damage = int(damage * 1.5)
+    
+    target.hp = max(0, target.hp - damage)
+    actor.mana = min(actor.max_mana, actor.mana + 1)
+    
+    if is_crit:
+        return f"💥 {actor.name} lands a solid hit on {target.name} for {damage} dmg! ({target.hp}/{target.max_hp} HP)"
+    return f"👊 {actor.name} bumps {target.name} for {damage} dmg! (🎲{base_roll}+{actor.attack}={roll} vs {target.defense} Def) ({target.hp}/{target.max_hp} HP)"
 
 
 def _execute_sword(actor: SlimeUnit, allies: List[SlimeUnit], enemies: List[SlimeUnit]) -> str:
