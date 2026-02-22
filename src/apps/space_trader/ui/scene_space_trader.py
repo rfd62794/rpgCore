@@ -1,6 +1,6 @@
 import sys
 import pygame
-from src.shared.ui.scene_base import SceneBase
+from src.shared.engine.scene_manager import Scene
 from src.shared.ui.panel import Panel
 from src.shared.ui.label import Label
 from src.shared.ui.button import Button
@@ -9,15 +9,15 @@ from src.shared.ui.scroll_list import ScrollList
 from src.apps.space_trader.session import SpaceTraderSession
 from src.apps.space_trader.ui.hud import SpaceTraderHUD
 
-class SpaceTraderScene(SceneBase):
+class SpaceTraderScene(Scene):
     """Main UI scene orchestrating the visual Space Trader loop."""
     
-    def __init__(self, manager, session: SpaceTraderSession):
-        super().__init__(manager)
+    def __init__(self, manager, session: SpaceTraderSession, **kwargs):
+        super().__init__(manager, **kwargs)
         self.session = session
         
-        self.width = self.manager.screen.get_width()
-        self.height = self.manager.screen.get_height()
+        self.width = self.manager.width
+        self.height = self.manager.height
         
         self.hud = SpaceTraderHUD(session, self.width)
         
@@ -30,6 +30,12 @@ class SpaceTraderScene(SceneBase):
         self.last_message = "Welcome to the frontier."
         
         self._build_ui()
+
+    def on_enter(self, **kwargs) -> None:
+        pass
+
+    def on_exit(self) -> None:
+        pass
 
     def _build_ui(self):
         """Constructs the panels and buttons based on current state."""
@@ -112,15 +118,19 @@ class SpaceTraderScene(SceneBase):
         self.session.price_model.update_daily()
         self._build_ui()
 
-    def handle_event(self, event):
-        if event.type == pygame.QUIT:
-            sys.exit()
-            
-        self.market_list.handle_event(event)
-        for btn in self.buttons:
-            btn.handle_event(event)
+    def handle_events(self, events: list[pygame.event.Event]) -> None:
+        for event in events:
+            if event.type == pygame.QUIT:
+                self.request_quit()
+                
+            self.market_list.handle_event(event)
+            for btn in self.buttons:
+                btn.handle_event(event)
 
-    def draw(self, surface):
+    def update(self, dt_ms: float) -> None:
+        pass
+
+    def render(self, surface: pygame.Surface) -> None:
         surface.fill(self.bg_color)
         
         self.hud.draw(surface)
