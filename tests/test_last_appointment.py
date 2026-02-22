@@ -21,7 +21,7 @@ def test_graph_loading(scene):
     assert scene.current_node.node_id == "beat_1"
     # Beat 1 should have 5 responses
     assert len(scene.available_edges) == 5
-    assert len(scene.graph.nodes) == 5
+    assert len(scene.graph.nodes) == 21
 
 def test_stance_tracking_and_advancement(scene):
     scene.on_enter()
