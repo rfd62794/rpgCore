@@ -122,4 +122,4 @@ def test_handoff_contains_queued_tasks(temp_journal_with_tasks):
 
 def test_get_handoff_protected_floor_updated(temp_journal_with_tasks):
     handoff = temp_journal_with_tasks.get_handoff()
-    assert "PROTECTED FLOOR: 332 passing tests" in handoff
+    assert "PROTECTED FLOOR: 338 passing tests" in handoff
