@@ -48,8 +48,6 @@ def render_overworld_map(surface: pygame.Surface, font: pygame.font.Font, coloni
                 drawn_pairs.add(pair)
 
     # Nodes
-    from src.apps.slime_clan.app import NODE_COLORS, NodeType # Internal import for now, will refactor types soon
-    
     for node in colonies_dict.values():
         owner = faction_manager.get_owner(node.coord)
         color = NODE_COLORS.get(owner, (150, 150, 150))
