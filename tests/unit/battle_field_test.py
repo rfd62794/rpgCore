@@ -1,5 +1,5 @@
 import pytest
-from src.apps.slime_clan.battle_field import BattleField, SquadToken
+from src.apps.slime_clan.scenes.battle_field_scene import BattleFieldScene as BattleField, SquadToken
 from src.apps.slime_clan.territorial_grid import TileState
 import pygame
 
