@@ -1,0 +1,88 @@
+{
+    "beats": [
+        {
+            "id": "beat_1",
+            "prompt": "You sit behind the desk. Your client enters, looking around the dark room. They take a seat.",
+            "responses": [
+                {
+                    "id": "b1_r1",
+                    "text": "I believe we have an appointment.",
+                    "stance": "PROFESSIONAL",
+                    "leads_to": "beat_2"
+                },
+                {
+                    "id": "b1_r2",
+                    "text": "Please don't make this difficult.",
+                    "stance": "WEARY",
+                    "leads_to": "beat_3"
+                },
+                {
+                    "id": "b1_r3",
+                    "text": "You're remarkably calm. That's unusual.",
+                    "stance": "CURIOUS",
+                    "leads_to": "beat_4"
+                },
+                {
+                    "id": "b1_r4",
+                    "text": "I want you to know — I did try to reschedule.",
+                    "stance": "RELUCTANT",
+                    "leads_to": "beat_5"
+                },
+                {
+                    "id": "b1_r5",
+                    "text": "...",
+                    "stance": "MOVED",
+                    "leads_to": "beat_2"
+                }
+            ]
+        },
+        {
+            "id": "beat_2",
+            "prompt": "The conversation continues... (Professional/Moved response)",
+            "responses": [
+                {
+                    "id": "b2_r1",
+                    "text": "[Return to start]",
+                    "stance": "PROFESSIONAL",
+                    "leads_to": "beat_1"
+                }
+            ]
+        },
+        {
+            "id": "beat_3",
+            "prompt": "The conversation continues... (Weary response)",
+            "responses": [
+                {
+                    "id": "b3_r1",
+                    "text": "[Return to start]",
+                    "stance": "WEARY",
+                    "leads_to": "beat_1"
+                }
+            ]
+        },
+        {
+            "id": "beat_4",
+            "prompt": "The conversation continues... (Curious response)",
+            "responses": [
+                {
+                    "id": "b4_r1",
+                    "text": "[Return to start]",
+                    "stance": "CURIOUS",
+                    "leads_to": "beat_1"
+                }
+            ]
+        },
+        {
+            "id": "beat_5",
+            "prompt": "The conversation continues... (Reluctant response)",
+            "responses": [
+                {
+                    "id": "b5_r1",
+                    "text": "[Return to start]",
+                    "stance": "RELUCTANT",
+                    "leads_to": "beat_1"
+                }
+            ]
+        }
+    ]
+}
