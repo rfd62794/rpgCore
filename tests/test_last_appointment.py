@@ -63,9 +63,14 @@ def test_stance_tracking_and_advancement(scene):
     scene.update(16) # state machine step
     
     # Press any key to advance
-    # Wait, the event handler looks for MOUSEBUTTONDOWN or KEYDOWN for skip/advance
-    # We mapped 'advance from NPC_RESPONSE' to the same event handler
-    scene.handle_events([MockEvent(pygame.K_SPACE)])
+    # The event handler uses left click 
+    class MockMouseEvent:
+        def __init__(self, button):
+            import pygame
+            self.type = pygame.MOUSEBUTTONDOWN
+            self.button = button
+            
+    scene.handle_events([MockMouseEvent(1)])
     
     # Fade out finished for text? No, it immediately advances to pending
     # Should advance to beat_2_pro
