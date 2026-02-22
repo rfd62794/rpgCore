@@ -31,3 +31,15 @@ class RenderAdapter(ABC):
     def present(self) -> None:
         """Present the rendered frame to the screen."""
         pass
+
+    @abstractmethod
+    def render_layered_entities(self, layers_dict: Dict[str, List[Dict[str, Any]]]) -> None:
+        """
+        Renders entities categorized by layer bucket:
+        {"background": [...], "midground": [...], "foreground": [...], "hud": [...]}
+        
+        Entity types supported:
+        - Primitives: circle, rect, triangle, line, arc, ellipse
+        - Advanced: text, sprite
+        """
+        pass
