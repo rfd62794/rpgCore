@@ -551,7 +551,7 @@ class TestGameBoyParityIntegration:
         registry = RenderPassRegistry()
         registry.register_pass(PixelViewportPass(PixelViewportConfig(
             width=20, height=18, pixel_scale=1
-        ))
+        )))
         
         # Create mock game state
         mock_game_state = Mock(spec=GameState)

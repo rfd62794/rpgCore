@@ -11,6 +11,7 @@ from pathlib import Path
 # Add src to path
 sys.path.append(str(Path(__file__).parent.parent / 'src'))
 
+from typing import Tuple, Optional
 from dgt_engine.systems.body.cinematics.movie_engine import MovieEngine, EventType
 from dgt_engine.systems.body.pipeline.asset_loader import AssetLoader
 

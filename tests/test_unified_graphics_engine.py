@@ -35,6 +35,9 @@ try:
 except ImportError as e:
     print(f"⚠️ Unified Graphics Engine not available: {e}")
     UNIFIED_ENGINE_AVAILABLE = False
+    TRI_MODAL_AVAILABLE = False
+    LEGACY_AVAILABLE = False
+    RenderDTO = None
 
 # Mock components for testing
 class MockPhysicsComponent:

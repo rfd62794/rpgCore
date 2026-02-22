@@ -12,6 +12,8 @@ import pytest
 import random
 import math
 from typing import Tuple, List
+
+pytest.importorskip("hypothesis")
 from hypothesis import given, strategies as st
 from unittest.mock import Mock, patch
 

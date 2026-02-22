@@ -11,6 +11,8 @@ validation against extreme genetic outliers and rounding errors.
 import pytest
 import random
 from typing import Tuple, List
+
+pytest.importorskip("hypothesis")
 from hypothesis import given, strategies as st
 from pydantic import ValidationError
 
