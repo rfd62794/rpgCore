@@ -50,7 +50,8 @@ class AppointmentScene(Scene):
         FontManager().initialize()
         
     def _load_graph(self):
-        data_path = os.path.join(os.path.dirname(__file__), "..", "data", "appointment.json")
+        # Path from src/apps/last_appointment/scenes/ to assets/demos/last_appointment/
+        data_path = os.path.join(os.path.dirname(__file__), "..", "..", "..", "..", "assets", "demos", "last_appointment", "appointment.json")
         try:
             with open(data_path, 'r', encoding='utf-8') as f:
                 data = json.load(f)
