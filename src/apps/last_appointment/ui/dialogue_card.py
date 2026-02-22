@@ -114,7 +114,7 @@ class DialogueCard:
         # Draw number
         if hasattr(self.num_sur, "set_alpha"):
             self.num_sur.set_alpha(self.fade_alpha)
-        num_pos = (16, (draw_rect.height - self.num_sur.get_height()) // 2)
+        num_pos = (16, (self.visual_rect.height - self.num_sur.get_height()) // 2)
         card_surface.blit(self.num_sur, num_pos)
         
         # Draw wrapped text
