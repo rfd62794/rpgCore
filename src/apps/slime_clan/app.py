@@ -915,9 +915,9 @@ class AutoBattleScene(Scene):
         self.difficulty = kwargs.get("difficulty", "NORMAL")
 
         # Context for return trip to BattleFieldScene
-        self.bf_region = kwargs.get("bf_region", "")
+        self.bf_region = kwargs.get("bf_region", "Unknown")
         self.bf_difficulty = kwargs.get("bf_difficulty", "NORMAL")
-        self.bf_node_id = kwargs.get("bf_node_id", "")
+        self.bf_node_id = kwargs.get("bf_node_id")
         self.bf_nodes = kwargs.get("bf_nodes", {})
         self.faction_manager = kwargs.get("faction_manager")
         self.day = kwargs.get("day", 1)
@@ -929,6 +929,9 @@ class AutoBattleScene(Scene):
         self.player_units = kwargs.get("player_units", [])
         self.colony_manager = kwargs.get("colony_manager")
         self.stronghold_bonus = kwargs.get("stronghold_bonus", False)
+        
+        # Session 029: Track if any blue units were lost
+        self.initial_blue_count = 0
 
         self.turn_count = 0
         self.timer_ms = 0.0
@@ -944,16 +947,20 @@ class AutoBattleScene(Scene):
         if self.difficulty == "EASY": mult = 0.8
         elif self.difficulty == "HARD": mult = 1.2
 
-        self.blue_squad = [
-            self._create_buffed_slime("b1", "Rex", Shape.CIRCLE, Hat.SWORD),
-            self._create_buffed_slime("b2", "Brom", Shape.SQUARE, Hat.SHIELD),
-            self._create_buffed_slime("b3", "Pip", Shape.TRIANGLE, Hat.STAFF),
-        ]
-        # Session 028: Add recruited units
-        for unit in self.player_units:
-            # Recruits are already SlimeUnit instances.
-            # We might need to handle their HP/pos if they persist stats.
-            self.blue_squad.append(unit)
+        if self.player_units:
+            self.blue_squad = []
+            for u in self.player_units:
+                u.team = TileState.BLUE
+                u.hp = u.max_hp
+                self.blue_squad.append(u)
+        else:
+            self.blue_squad = [
+                self._create_buffed_slime("blue_1", "Rex", Shape.CIRCLE, Hat.NONE),
+                self._create_buffed_slime("blue_2", "Brom", Shape.SQUARE, Hat.NONE),
+                self._create_buffed_slime("blue_3", "Pip", Shape.TRIANGLE, Hat.NONE),
+            ]
+        
+        self.initial_blue_count = len(self.blue_squad)
 
         self.red_squad = [
             create_slime("r1", "R-Brute", TileState.RED, Shape.SQUARE, Hat.SWORD, difficulty_mult=mult),
@@ -1046,12 +1053,17 @@ class AutoBattleScene(Scene):
 
     def _return_result(self, result: str) -> None:
         """Transition back to BattleFieldScene with the result."""
+        # Check if any blue units died
+        blue_alive = [u for u in self.blue_squad if u.hp > 0]
+        blue_lost = len(blue_alive) < self.initial_blue_count
+
         self.request_scene("battle_field",
             region=self.bf_region,
             difficulty=self.bf_difficulty,
             node_id=self.bf_node_id,
             nodes=self.bf_nodes,
             auto_battle_result=result,
+            blue_lost=blue_lost,
             faction_manager=self.faction_manager,
             day=self.day,
             actions_remaining=self.actions_remaining,
