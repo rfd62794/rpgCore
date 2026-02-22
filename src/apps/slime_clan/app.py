@@ -115,6 +115,12 @@ class OverworldScene(Scene):
         self.stronghold_bonus = kwargs.get("stronghold_bonus", False)
         self.player_units = kwargs.get("player_units", []) # Session 028 roster
         
+
+        # Session 029: Defection UI State
+        self.defection_queue = []
+        self.current_defection = None
+        self.defection_timer = 0.0
+        
         # Session 027: Unbound Tribal State
         self.tribe_state = kwargs.get("tribe_state", {
             "ashfen": {"approaches": 0, "dispersed": False},
@@ -146,17 +152,41 @@ class OverworldScene(Scene):
 
         # Build connection graph for FactionManager
         self.connection_graph = {}
-        for node in self.nodes.values():
-            self.connection_graph[node.coord] = [self.nodes[conn_id].coord for conn_id in node.connections]
+        for node in self.colony_manager.values():
+            self.connection_graph[node.coord] = [self.colony_manager[conn_id].coord for conn_id in node.connections]
 
         # Apply battle result from returning scenes
         battle_node_id = kwargs.get("battle_node_id")
         battle_won = kwargs.get("battle_won")
-        if battle_node_id and battle_node_id in self.nodes:
-            node = self.nodes[battle_node_id]
+        if battle_node_id and battle_node_id in self.colony_manager:
+            node = self.colony_manager[battle_node_id]
             if battle_won:
                 logger.info(f"🏆 Blue secured {node.name}!")
                 self.faction_manager.claim_territory("CLAN_BLUE", node.coord, 1.0, 0)
+                
+                # Session 029: Sympathy for victory
+                blue_lost = kwargs.get("blue_lost", False)
+                if not blue_lost:
+                    # Find nearest neutral colony
+                    best_col = None
+                    min_dist = 999
+                    for col in self.colony_manager.values():
+                        if col.faction is None and col.id != node.id:
+                            d = abs(col.x - node.x) + abs(col.y - node.y)
+                            if d < min_dist:
+                                min_dist = d
+                                best_col = col
+                    if best_col:
+                        for u in best_col.units:
+                            self.colony_manager.modify_sympathy(u, 3, "flawless victory", best_col)
+
+                # Check for Unbound neighbors to increase sympathy for protection
+                for conn_id in node.connections:
+                    neighbor = self.colony_manager.get_colony(conn_id)
+                    if neighbor and neighbor.faction == "CLAN_YELLOW":
+                        for u in neighbor.units:
+                            self.colony_manager.modify_sympathy(u, 5, "protecting neighbors", neighbor)
+
                 # Session 026: Award ship parts immediately on win
                 if node.node_type == NodeType.SHIP_PARTS and node.id not in self.secured_part_nodes:
                     self.ship_parts += 2
@@ -165,6 +195,20 @@ class OverworldScene(Scene):
             else:
                 logger.info(f"💀 Red held {node.name}.")
                 self.faction_manager.claim_territory("CLAN_RED", node.coord, 1.0, 0)
+                
+                # Session 029: Sympathy for loss/retreat
+                # Find nearest enemy colony
+                best_col = None
+                min_dist = 999
+                for col in self.colony_manager.values():
+                    if col.faction == "CLAN_RED" and col.id != node.id:
+                        d = abs(col.x - node.x) + abs(col.y - node.y)
+                        if d < min_dist:
+                            min_dist = d
+                            best_col = col
+                if best_col:
+                    for u in best_col.units:
+                        self.colony_manager.modify_sympathy(u, -3, "player retreat", best_col)
 
         self.game_over = kwargs.get("game_over", None)
         self.font = pygame.font.Font(None, 24)
@@ -247,6 +291,19 @@ class OverworldScene(Scene):
         self.actions_remaining = self.actions_per_day
         logger.info(f"☀️ Day {self.day} begins!")
 
+        # Session 029: Sympathy Passive Decay & Defection Checks
+        self.colony_manager.apply_passive_decay(self.day)
+        self.defection_queue = self.colony_manager.check_defections()
+        if self.defection_queue:
+            self._process_next_defection()
+
+    def _process_next_defection(self):
+        if self.defection_queue:
+            self.current_defection = self.defection_queue.pop(0)
+            self.defection_timer = 2000.0 # 2 seconds
+            # Actually add the unit to player roster
+            self.player_units.append(self.current_defection["unit"])
+
     def _handle_click(self, pos: tuple[int, int]) -> None:
         mx, my = pos
         for node in self.nodes.values():
@@ -261,6 +318,13 @@ class OverworldScene(Scene):
                     return
 
                 if owner == "CLAN_RED" or (not owner and node.id != "home"):
+                    # Session 029: Penalty for attacking near neutrals
+                    for conn_id in node.connections:
+                        neighbor = self.colony_manager.get_colony(conn_id)
+                        if neighbor and neighbor.faction is None:
+                            for u in neighbor.units:
+                                self.colony_manager.modify_sympathy(u, -10, "collateral fear", neighbor)
+
                     logger.info(f"⚔️  Deploying forces to {node.name}...")
                     self.actions_remaining -= 1
                     
@@ -305,19 +369,40 @@ class OverworldScene(Scene):
         approaches = self.tribe_state[nid]["approaches"]
         colony = self.colony_manager.get_colony(nid)
         
-        # Determine buttons
         btns = [
             ("Observe", (px + 20, py + 110, 120, 30)),
-            ("Approach", (px + 160, py + 110, 120, 30))
+            ("Approach", (px + 160, py + 110, 120, 30)),
+            ("Offer Scrap", (px + 20, py + 145, 120, 30))
         ]
         if approaches >= 3:
-            btns.append(("Wait", (px + 20, py + 145, 120, 30)))
             if colony and colony.units:
                 btns.append(("Recruit...", (px + 160, py + 145, 120, 30)))
             
         for label, rect in btns:
             r = pygame.Rect(rect)
             if r.collidepoint(mx, my):
+                if label == "Offer Scrap":
+                    if self.actions_remaining <= 0:
+                        logger.warning("🚫 No actions for this!")
+                        return True
+                    if self.resources < 5:
+                        logger.warning("❌ Not enough scrap (Need 5)")
+                        return True
+                    
+                    self.actions_remaining -= 1
+                    self.resources -= 5
+                    colony.last_action_day = self.day
+                    for u in colony.units:
+                        self.colony_manager.modify_sympathy(u, 10, "gift of scrap", colony)
+                    
+                    if colony.faction == "CLAN_YELLOW":
+                        logger.success("🎁 The tribe accepts your scrap. Something shifts.")
+                    else:
+                        logger.info(f"🎁 The {colony.faction} soldiers eye your offering cautiously.")
+                    
+                    self.selected_unbound_node = None
+                    return True
+
                 if self.actions_remaining <= 0 and label not in ["Wait", "Recruit..."]:
                     logger.warning("🚫 No actions remaining for this!")
                     return True
@@ -347,6 +432,13 @@ class OverworldScene(Scene):
         return False
 
     def update(self, dt_ms: float) -> None:
+        if self.current_defection:
+            self.defection_timer -= dt_ms
+            if self.defection_timer <= 0:
+                self.current_defection = None
+                self._process_next_defection()
+            return
+
         if self.game_over:
             return
 
@@ -529,6 +621,29 @@ class OverworldScene(Scene):
                 pygame.draw.rect(surface, (100, 100, 150), rect, 1)
                 l_surf = self.font.render(label, True, (255, 255, 255))
                 surface.blit(l_surf, (rect[0] + (rect[2] - l_surf.get_width()) // 2, rect[1] + (rect[3] - l_surf.get_height()) // 2))
+
+        # Session 029: Defection Moment Overlay
+        if self.current_defection:
+            overlay = pygame.Surface((WINDOW_WIDTH, WINDOW_HEIGHT))
+            overlay.fill((10, 10, 20))
+            overlay.set_alpha(230)
+            surface.blit(overlay, (0, 0))
+            
+            unit = self.current_defection["unit"]
+            col_name = self.current_defection["from_colony"]
+            
+            big_f = pygame.font.Font(None, 48)
+            name_surf = big_f.render(unit.name, True, (255, 255, 255))
+            surface.blit(name_surf, ((WINDOW_WIDTH - name_surf.get_width()) // 2, WINDOW_HEIGHT // 2 - 50))
+            
+            flavor1 = f"{unit.name} slips away from {col_name} in the darkness."
+            flavor2 = "By morning they are standing at your fire."
+            
+            f1_surf = self.font.render(flavor1, True, (200, 200, 200))
+            f2_surf = self.font.render(flavor2, True, (200, 200, 200))
+            
+            surface.blit(f1_surf, ((WINDOW_WIDTH - f1_surf.get_width()) // 2, WINDOW_HEIGHT // 2 + 10))
+            surface.blit(f2_surf, ((WINDOW_WIDTH - f2_surf.get_width()) // 2, WINDOW_HEIGHT // 2 + 40))
 
 
 # ===================================================================
