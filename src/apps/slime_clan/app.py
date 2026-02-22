@@ -94,9 +94,11 @@ class OverworldScene(Scene):
             self.nodes = {
                 "home": MapNode("home", "Crash Site", 100, 240, (0, 2), NodeType.SHIP_PARTS, ["node_1"]),
                 "node_1": MapNode("node_1", "Scrap Yard", 250, 150, (1, 2), NodeType.RESOURCE, ["home", "node_2", "node_3"]),
-                "node_2": MapNode("node_2", "Northern Wastes", 400, 100, (2, 1), NodeType.STRONGHOLD, ["node_1", "node_4"]),
-                "node_3": MapNode("node_3", "Eastern Front", 400, 300, (2, 3), NodeType.RECRUITMENT, ["node_1", "node_4"]),
+                "node_2": MapNode("node_2", "Northern Wastes", 400, 100, (2, 1), NodeType.STRONGHOLD, ["node_1", "ashfen", "node_4"]),
+                "node_3": MapNode("node_3", "Eastern Front", 400, 300, (2, 3), NodeType.RECRUITMENT, ["node_1", "rootward", "node_4"]),
                 "node_4": MapNode("node_4", "Deep Red Core", 550, 200, (3, 2), NodeType.RESOURCE, ["node_2", "node_3"]),
+                "ashfen": MapNode("ashfen", "The Ashfen Tribe", 325, 100, (1, 1), NodeType.RECRUITMENT, ["node_2"]),
+                "rootward": MapNode("rootward", "The Rootward Tribe", 325, 300, (1, 3), NodeType.RECRUITMENT, ["node_3"]),
             }
 
         # Session 025/026: Day/Action & Resource State
@@ -107,6 +109,13 @@ class OverworldScene(Scene):
         self.ship_parts = kwargs.get("ship_parts", 0)
         self.secured_part_nodes = set(kwargs.get("secured_part_nodes", []))
         self.stronghold_bonus = kwargs.get("stronghold_bonus", False)
+        
+        # Session 027: Unbound Tribal State
+        self.tribe_state = kwargs.get("tribe_state", {
+            "ashfen": {"approaches": 0, "dispersed": False},
+            "rootward": {"approaches": 0, "dispersed": False}
+        })
+        self.selected_unbound_node: Optional[MapNode] = None
 
         # Session 024: Faction Manager Setup
         self.faction_manager = kwargs.get("faction_manager")

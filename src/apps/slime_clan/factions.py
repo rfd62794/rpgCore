@@ -33,4 +33,18 @@ def get_slime_factions() -> list[Faction]:
         aggression_level=0.3
     )
     
-    return [ember_clan, tide_clan]
+    # The Unbound (YELLOW) - Neutral Tribes
+    unbound_clan = Faction(
+        id="CLAN_YELLOW",
+        name="The Unbound",
+        type=FactionType.ISOLATIONIST,
+        color=(245, 197, 66),  # Yellow #F5C542
+        home_base=(2, 2),      # Central-ish placement for neutral tribes
+        current_power=0.6,
+        territories=[],
+        relations={"CLAN_RED": FactionRelation.NEUTRAL, "CLAN_BLUE": FactionRelation.NEUTRAL},
+        expansion_rate=0.0,    # They never expand
+        aggression_level=0.0   # They never attack
+    )
+    
+    return [ember_clan, tide_clan, unbound_clan]
