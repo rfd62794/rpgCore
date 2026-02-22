@@ -141,9 +141,9 @@ class SpaceTraderScene(Scene):
         self.hud.draw(surface)
         
         for p in self.panels:
-            p.draw(surface)
+            p.render(surface)
             
-        self.market_list.draw(surface)
+        self.market_list.render(surface)
         
         for btn in self.buttons:
-            btn.draw(surface)
+            btn.render(surface)
