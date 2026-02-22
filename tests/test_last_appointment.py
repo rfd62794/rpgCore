@@ -80,3 +80,37 @@ def test_invalid_key_does_not_advance(scene):
     
     # Should remain on beat_1
     assert scene.current_node.node_id == "beat_1"
+
+
+def test_beat_4_loading_and_wildcard_routing(scene):
+    """Verify that Beat 4 loads correctly and wildcards route effectively"""
+    scene.on_enter()
+    
+    # Check that Beat 4 nodes exist
+    stances = ["pro", "weary", "curious", "reluctant", "moved"]
+    for stance in stances:
+        node_id = f"beat_4_{stance}"
+        assert node_id in scene.graph.nodes
+        node = scene.graph.nodes[node_id]
+        
+        # Verify prompt
+        assert node.text == 'The Client states: "You\'ve been doing this alone for a very long time."'
+        
+        # Verify 5 responses exist
+        assert len(node.edges) == 5
+        
+    # Verify Wildcard routing across rivers (Index 4 is the Wildcard)
+    # Professional wildcard -> Curious closing
+    assert scene.graph.nodes["beat_4_pro"].edges[4].target_node == "end_curious"
+    
+    # Weary wildcard -> Moved closing
+    assert scene.graph.nodes["beat_4_weary"].edges[4].target_node == "end_moved"
+    
+    # Curious wildcard -> Moved closing
+    assert scene.graph.nodes["beat_4_curious"].edges[4].target_node == "end_moved"
+    
+    # Reluctant wildcard -> Moved closing
+    assert scene.graph.nodes["beat_4_reluctant"].edges[4].target_node == "end_moved"
+    
+    # Moved wildcard -> Moved closing
+    assert scene.graph.nodes["beat_4_moved"].edges[4].target_node == "end_moved"
