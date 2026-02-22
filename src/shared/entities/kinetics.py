@@ -1,33 +1,14 @@
 """
 KineticBody Component - Newtonian Physics with Toroidal Wrapping
-SRP: Handles velocity, thrust, and screen wrapping for any movable entity
+Refactored to use shared physics pillars.
 """
-
 import math
 from typing import Tuple, Optional
 from dataclasses import dataclass
+from src.shared.physics import Vector2, wrap_position
 
-@dataclass
-class Vector2D:
-    """2D vector for physics calculations"""
-    x: float
-    y: float
-    
-    def __add__(self, other: 'Vector2D') -> 'Vector2D':
-        return Vector2D(self.x + other.x, self.y + other.y)
-    
-    def __mul__(self, scalar: float) -> 'Vector2D':
-        return Vector2D(self.x * scalar, self.y * scalar)
-    
-    def magnitude(self) -> float:
-        return math.sqrt(self.x**2 + self.y**2)
-    
-    def normalize(self) -> 'Vector2D':
-        mag = self.magnitude()
-        if mag == 0:
-            return Vector2D(0, 0)
-        return Vector2D(self.x / mag, self.y / mag)
-
+# Maintain Vector2D alias for backward compatibility for now
+Vector2D = Vector2
 
 @dataclass
 class KineticState:
@@ -45,20 +26,15 @@ class KineticState:
             angular_velocity=self.angular_velocity
         )
 
-
 class KineticBody:
     """
     Drop-in component for Newtonian physics with toroidal screen wrapping.
-    Provides the "floaty" feel essential for arcade classics.
     """
     
     def __init__(self, 
                  initial_position: Optional[Vector2D] = None,
                  initial_velocity: Optional[Vector2D] = None,
                  initial_angle: float = 0.0):
-        """
-        Initialize kinetic body
-        """
         # Default to screen center (160x144)
         self.state = KineticState(
             position=initial_position or Vector2D(80, 72),
@@ -67,26 +43,22 @@ class KineticBody:
         )
         
         # Physics parameters
-        self.thrust_power = 50.0  # Units per second
-        self.rotation_speed = 3.0  # Radians per second
-        self.max_velocity = 200.0  # Maximum velocity magnitude
+        self.thrust_power = 50.0
+        self.rotation_speed = 3.0
+        self.max_velocity = 200.0
         
         # Damping for arcade feel
-        self.velocity_damping = 0.99  # Slight velocity reduction per frame
-        self.angular_damping = 0.95   # Angular velocity reduction
+        self.velocity_damping = 0.99
+        self.angular_damping = 0.95
         
         # Bounds for wrapping
         self.bounds = (160, 144)
         
     def apply_thrust(self, magnitude: float, dt: float) -> None:
-        """
-        Apply thrust in the direction the entity is facing
-        """
         thrust_direction = Vector2D(
             math.cos(self.state.angle),
             math.sin(self.state.angle)
         )
-        
         thrust_force = thrust_direction * (magnitude * self.thrust_power * dt)
         self.state.velocity = self.state.velocity + thrust_force
         
@@ -94,24 +66,20 @@ class KineticBody:
             self.state.velocity = self.state.velocity.normalize() * self.max_velocity
     
     def apply_rotation(self, direction: float, dt: float) -> None:
-        """
-        Apply rotation
-        """
         self.state.angular_velocity = direction * self.rotation_speed
         self.state.angle += self.state.angular_velocity * dt
         self.state.angle = self.state.angle % (2 * math.pi)
     
     def update(self, dt: float) -> None:
-        """
-        Update physics simulation for one time step
-        """
+        # Update position
         self.state.position = self.state.position + (self.state.velocity * dt)
         
-        # Apply toroidal wrapping
-        self.state.position.x = self.state.position.x % self.bounds[0]
-        self.state.position.y = self.state.position.y % self.bounds[1]
+        # Apply toroidal wrapping via shared utility
+        new_x, new_y = wrap_position(self.state.position.x, self.state.position.y, self.bounds[0], self.bounds[1])
+        self.state.position.x = new_x
+        self.state.position.y = new_y
         
-        # Apply damping for arcade feel
+        # Apply damping
         self.state.velocity = self.state.velocity * self.velocity_damping
         self.state.angular_velocity *= self.angular_damping
         
@@ -134,31 +102,16 @@ class KineticBody:
         self.state.velocity = Vector2D(0, 0)
         self.state.angular_velocity = 0.0
 
-# Factory functions for common arcade patterns
+# Factory functions
 def create_player_ship(start_x: float = 80, start_y: float = 72) -> KineticBody:
-    return KineticBody(
-        initial_position=Vector2D(start_x, start_y),
-        initial_angle=0.0
-    )
+    return KineticBody(initial_position=Vector2D(start_x, start_y), initial_angle=0.0)
 
-def create_asteroid(start_x: float, start_y: float, 
-                   velocity_x: float, velocity_y: float) -> KineticBody:
-    return KineticBody(
-        initial_position=Vector2D(start_x, start_y),
-        initial_velocity=Vector2D(velocity_x, velocity_y)
-    )
+def create_asteroid(start_x: float, start_y: float, velocity_x: float, velocity_y: float) -> KineticBody:
+    return KineticBody(initial_position=Vector2D(start_x, start_y), initial_velocity=Vector2D(velocity_x, velocity_y))
 
-def create_projectile(start_x: float, start_y: float, angle: float,
-                     speed: float = 300.0) -> KineticBody:
-    velocity = Vector2D(
-        math.cos(angle) * speed,
-        math.sin(angle) * speed
-    )
-    body = KineticBody(
-        initial_position=Vector2D(start_x, start_y),
-        initial_velocity=velocity,
-        initial_angle=angle
-    )
+def create_projectile(start_x: float, start_y: float, angle: float, speed: float = 300.0) -> KineticBody:
+    velocity = Vector2D(math.cos(angle) * speed, math.sin(angle) * speed)
+    body = KineticBody(initial_position=Vector2D(start_x, start_y), initial_velocity=velocity, initial_angle=angle)
     body.angular_damping = 1.0
     body.velocity_damping = 1.0
     return body
