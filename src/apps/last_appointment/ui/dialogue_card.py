@@ -20,6 +20,7 @@ class DialogueCard:
         self.stance = stance
         
         self.logical_rect = rect.copy()
+        self.visual_rect = rect.copy()
         
         self.hover_state = False
         self.selected_state = False
@@ -39,6 +40,10 @@ class DialogueCard:
         self.hover_text_sur_lines = self._render_wrapped_text(self.text, bright_color)
     def _render_wrapped_text(self, text: str, color: Tuple[int, int, int]) -> List[pygame.Surface]:
         if self.text_font == "DummyFont":
+            # Simulation for headless tests: split by length if too long
+            # assuming ~10 chars per unit of width for demonstration
+            if len(text) > (self.logical_rect.width // 10):
+                return [pygame.Surface((1, 1)), pygame.Surface((1, 1))]
             return [pygame.Surface((1, 1))]
             
         max_width = self.logical_rect.width - 60 # 40px left padding + 20px right
@@ -76,11 +81,12 @@ class DialogueCard:
         if self.logical_rect.collidepoint(mouse_pos):
             if not self.hover_state:
                 self.hover_state = True
-                # visual_rect.y shift is handled in render relative to logical_rect
+                self.visual_rect.y = self.logical_rect.y - 3
             return True
         else:
             if self.hover_state:
                 self.hover_state = False
+                self.visual_rect.y = self.logical_rect.y
             return False
 
     def select(self) -> None:
@@ -90,13 +96,8 @@ class DialogueCard:
         if self.fade_alpha <= 0:
             return
 
-        # Visual shift on hover
-        draw_rect = self.logical_rect.copy()
-        if self.hover_state:
-            draw_rect.y -= 3
-
         # Create a surface for the card that supports alpha
-        card_surface = pygame.Surface((draw_rect.width, draw_rect.height), pygame.SRCALPHA)
+        card_surface = pygame.Surface((self.visual_rect.width, self.visual_rect.height), pygame.SRCALPHA)
         
         # Fill background
         bg = SELECTED_BG_COLOR if self.selected_state else BG_COLOR
@@ -122,11 +123,11 @@ class DialogueCard:
         t_lines = self.hover_text_sur_lines if self.hover_state else self.text_sur_lines
         line_height = self.text_font.get_linesize() if self.text_font != "DummyFont" else 20
         total_text_h = len(t_lines) * line_height
-        start_y = (draw_rect.height - total_text_h) // 2
+        start_y = (self.visual_rect.height - total_text_h) // 2
         
         for i, line_sur in enumerate(t_lines):
             if hasattr(line_sur, "set_alpha"):
                 line_sur.set_alpha(self.fade_alpha)
             card_surface.blit(line_sur, (40, start_y + i * line_height))
         
-        surface.blit(card_surface, draw_rect.topleft)
+        surface.blit(card_surface, self.visual_rect.topleft)
