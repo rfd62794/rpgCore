@@ -77,14 +77,8 @@ def test_stance_tracking_and_advancement(scene):
             
     scene.handle_events([MockMouseEvent(1)])
     
-    # Needs to fade out before switching phase now
-    assert scene.card_layout.is_fading_out == True
-    
-    # Finish fade out
-    for _ in range(60): # ~1 second
-        scene.update(16)
-    
-    # Should advance to beat_2_pro
+    # No cards to fade during NPC_RESPONSE, so no fade out happens.
+    # Should advance to beat_2_pro immediately.
     assert scene.current_node.node_id == "beat_2_pro"
     assert scene.phase == "PROMPT"
     
