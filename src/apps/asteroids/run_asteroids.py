@@ -153,7 +153,7 @@ class AsteroidsGame:
 
 def main():
     parser = argparse.ArgumentParser(description="rpgCore Asteroids")
-    parser.add_argument("--mode", char="human", choices=["human", "watch", "train"], default="human")
+    parser.add_argument("--mode", type=str, choices=["human", "watch", "train"], default="human")
     args = parser.parse_args()
     
     if args.mode == "human":
