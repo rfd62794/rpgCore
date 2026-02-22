@@ -1,3 +1,4 @@
+from typing import Tuple, List, Optional
 import pygame
 from src.shared.rendering.font_manager import FontManager
 
@@ -13,6 +14,29 @@ SELECTED_BG_COLOR = (30, 30, 46)     # #1E1E2E
 NUMBER_COLOR = (102, 102, 128)       # #666680
 
 class DialogueCard:
+    def __init__(self, number: int, text: str, stance: str, rect: pygame.Rect):
+        self.number = number
+        self.text = text
+        self.stance = stance
+        
+        self.logical_rect = rect.copy()
+        
+        self.hover_state = False
+        self.selected_state = False
+        self.fade_alpha = 0
+        
+        self.color = STANCE_COLORS.get(stance.upper(), (200, 200, 200))
+        
+        self._font_mgr = FontManager()
+        self.num_font = self._font_mgr.get_font("Arial", 14)
+        self.text_font = self._font_mgr.get_font("Arial", 20)
+        
+        self.num_sur = self.num_font.render(str(self.number), True, NUMBER_COLOR) if self.num_font != "DummyFont" else pygame.Surface((1, 1))
+        
+        # Pre-render wrapped lines
+        self.text_sur_lines = self._render_wrapped_text(self.text, self.color)
+        bright_color = tuple(min(255, int(c * 1.2)) for c in self.color)
+        self.hover_text_sur_lines = self._render_wrapped_text(self.text, bright_color)
     def _render_wrapped_text(self, text: str, color: Tuple[int, int, int]) -> List[pygame.Surface]:
         if self.text_font == "DummyFont":
             return [pygame.Surface((1, 1))]
