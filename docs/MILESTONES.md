@@ -9,16 +9,19 @@ Three-tier war loop, faction simulation, Day/Action economy, Survivor ending, 11
 ✅ Unbound hiding — no soft-locks
 ⬜ Session 033 — Tribe specialization (Ashfen→STAFF, Rootward→SHIELD)
 ⬜ Session 034 — WASD controls, White player identity, auto-positioning
+⬜ Session 035+ — Bigger map with varied topology
+⬜ Session 035+ — Day/Action economy tuning
+⬜ Session 035+ — Resource generation balance
 
-## Milestone 3 — The Roster
-⬜ Squad management screen
-⬜ Shape and hat assignment for recruits
+## Milestone 3 — The Roster (Design Needed)
+⬜ Squad management screen (UI layout?)
+⬜ Shape and hat assignment for recruits (Mechanics?)
 ⬜ Triangle and Square slime rendering
 ⬜ Named unit persistence across campaign
+⬜ Upkeep constraints (How many units before capacity breaks?)
 
-## Milestone 4 — Three Paths
-⬜ Conqueror ending
-⬜ Unifier ending
+## Milestone 4 — Three Paths (Design Needed)
+⬜ Conqueror ending / Unifier ending triggers (Exclusive or blended?)
 ⬜ Knowledge sharing mechanics
 ⬜ Crystal and resource economy
 
