@@ -1,6 +1,7 @@
 import random
 from dataclasses import dataclass, field
 from typing import List, Dict, Any, Optional
+from loguru import logger
 from src.apps.slime_clan.auto_battle import SlimeUnit, Shape, Hat, create_slime, TileState
 from src.shared.combat.d20_resolver import D20Resolver
 

@@ -1,6 +1,6 @@
 import pytest
 from src.apps.slime_clan.colony import Colony, ColonyManager
-from src.apps.slime_clan.auto_battle import SlimeUnit, TileState, Shape, Hat
+from src.apps.slime_clan.auto_battle import SlimeUnit, TileState, Shape, Hat, create_slime
 from enum import Enum
 
 class MockNodeType(Enum):
