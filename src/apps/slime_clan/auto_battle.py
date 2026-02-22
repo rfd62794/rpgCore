@@ -19,6 +19,9 @@ from loguru import logger
 # Session 020: D20 dice engine for combat resolution
 from src.shared.combat.d20_resolver import D20Resolver
 
+# Session 023: ECS Framework Integration
+from src.game_engine.systems.body.entity_manager import RPGEntity, EntityManager
+
 # Module-level resolver instance (shared across all combat)
 _resolver = D20Resolver()
 
@@ -49,34 +52,60 @@ class Hat(enum.Enum):
     SHIELD = "SHIELD"  # Defender (Taunt)
     STAFF = "STAFF"    # Utility/Healer
 
-@dataclass
-class SlimeUnit:
-    id: str
-    name: str
-    team: TileState
-    shape: Shape
-    hat: Hat
-    hp: int
-    max_hp: int
-    attack: int
-    defense: int
-    speed: int
-    taunt_active: bool = False
-    # Session 016: Status Effect Tracking
-    is_crit_focused: bool = False   # SWORD: next attack is guaranteed crit
-    stunned_turns: int = 0          # SHIELD Bash: skip turn
-    weaken_turns: int = 0           # STAFF Weaken: reduced attack
-    weaken_amount: int = 0          # How much attack is reduced
-    mana_surge_active: bool = False # STAFF: next heal is doubled
-    rally_defense_bonus: int = 0    # SHIELD Rally: temporary def boost
-    # Session 017: Mana Resource System
-    mana: int = 3
-    max_mana: int = 5
+class SlimeUnit(RPGEntity):
+    """
+    Session 023: Migrated to RPGEntity.
+    Inherits from the engine's ECS framework while preserving the Slime Clan interface.
+    """
+    def __init__(self, **kwargs):
+        super().__init__()
+        self.entity_type = "slime_unit"
+        self.team: TileState = None
+        self.shape: Shape = None
+        self.hat: Hat = None
+        self.max_hp: int = 0
+        self.attack: int = 0
+        self.defense: int = 0
+        self.speed: int = 0
+        self.taunt_active: bool = False
+        self.is_crit_focused: bool = False
+        self.stunned_turns: int = 0
+        self.weaken_turns: int = 0
+        self.weaken_amount: int = 0
+        self.mana_surge_active: bool = False
+        self.rally_defense_bonus: int = 0
+        self.max_mana: int = 5
+        self.mana = 3  # RPGEntity field
+
+        # Apply kwargs (important for EntityManager spawning and testing)
+        for k, v in kwargs.items():
+            setattr(self, k, v)
+            if k == 'hp':
+                self.health = v
+
+    @property
+    def hp(self) -> int:
+        """Compatibility property for legacy code and tests."""
+        return self.health
+
+    @hp.setter
+    def hp(self, value: int):
+        self.health = value
+
+    # RPGEntity Lifecycle Wrappers
+    def initialize(self) -> bool:
+        return True
+
+    def tick(self, delta_time: float) -> None:
+        pass
+
+    def shutdown(self) -> None:
+        pass
 
 # ---------------------------------------------------------------------------
 # Pure Functions: Stat Generation
 # ---------------------------------------------------------------------------
-def create_slime(unit_id: str, name: str, team: TileState, shape: Shape, hat: Hat, is_player: bool = False, difficulty_mult: float = 1.0) -> SlimeUnit:
+def create_slime(unit_id: str, name: str, team: TileState, shape: Shape, hat: Hat, is_player: bool = False, difficulty_mult: float = 1.0, manager: Optional[EntityManager] = None) -> SlimeUnit:
     """Generate a SlimeUnit with stats modified by Shape and Hat."""
     # Base Stats
     hp = 20
@@ -118,6 +147,21 @@ def create_slime(unit_id: str, name: str, team: TileState, shape: Shape, hat: Ha
         attack = max(1, int(attack * difficulty_mult))
         defense = max(1, int(defense * difficulty_mult))
         speed = max(1, int(speed * difficulty_mult))
+
+    if manager:
+        result = manager.spawn_entity("slime_unit",
+            id=unit_id,
+            name=name,
+            team=team,
+            shape=shape,
+            hat=hat,
+            hp=hp,
+            max_hp=hp,
+            attack=attack,
+            defense=defense,
+            speed=speed
+        )
+        return result.value
 
     return SlimeUnit(
         id=unit_id,
@@ -330,6 +374,11 @@ class AutoBattleScene:
         self.difficulty = difficulty
         self.turn_count = 0
         
+        self.timer_ms = 0.0
+        self.exit_code = 1 # Default to 1 (Loss/Cancel) if we exit early
+        self.win_close_timer = 0.0 # Timer to auto-close after a winner is declared
+        self.winner: Optional[str] = None
+
         try:
             self.font_name = pygame.font.Font(None, 20)
             self.font_log = pygame.font.Font(None, 24)
@@ -340,10 +389,12 @@ class AutoBattleScene:
             self.font_banner = pygame.font.SysFont("monospace", 36)
 
         self.running = True
-        self.timer_ms = 0.0
-        self.exit_code = 1 # Default to 1 (Loss/Cancel) if we exit early
-        self.win_close_timer = 0.0 # Timer to auto-close after a winner is declared
         
+        # Session 023: EntityManager Setup
+        self.entity_manager = EntityManager()
+        self.entity_manager.initialize()
+        self.entity_manager.register_entity_type("slime_unit", SlimeUnit)
+
         # Parse difficulty multiplier
         mult = 1.0
         if difficulty == "EASY": mult = 0.8
@@ -351,27 +402,81 @@ class AutoBattleScene:
         
         # Hard-coded Player Squad (Blue) per Session 014 Directive
         self.blue_squad = [
-            create_slime("b1", "Rex", TileState.BLUE, Shape.CIRCLE, Hat.SWORD, is_player=True),
-            create_slime("b2", "Brom", TileState.BLUE, Shape.SQUARE, Hat.SHIELD, is_player=True),
-            create_slime("b3", "Pip", TileState.BLUE, Shape.TRIANGLE, Hat.STAFF, is_player=True),
+            create_slime("b1", "Rex", TileState.BLUE, Shape.CIRCLE, Hat.SWORD, is_player=True, manager=self.entity_manager),
+            create_slime("b2", "Brom", TileState.BLUE, Shape.SQUARE, Hat.SHIELD, is_player=True, manager=self.entity_manager),
+            create_slime("b3", "Pip", TileState.BLUE, Shape.TRIANGLE, Hat.STAFF, is_player=True, manager=self.entity_manager),
         ]
         
         self.red_squad = [
-            create_slime("r1", "R-Brute", TileState.RED, Shape.SQUARE, Hat.SWORD, difficulty_mult=mult),
-            create_slime("r2", "R-Scout", TileState.RED, Shape.TRIANGLE, Hat.SWORD, difficulty_mult=mult),
-            create_slime("r3", "R-Cleric", TileState.RED, Shape.CIRCLE, Hat.STAFF, difficulty_mult=mult),
+            create_slime("r1", "R-Brute", TileState.RED, Shape.SQUARE, Hat.SWORD, difficulty_mult=mult, manager=self.entity_manager),
+            create_slime("r2", "R-Scout", TileState.RED, Shape.TRIANGLE, Hat.SWORD, difficulty_mult=mult, manager=self.entity_manager),
+            create_slime("r3", "R-Cleric", TileState.RED, Shape.CIRCLE, Hat.STAFF, difficulty_mult=mult, manager=self.entity_manager),
         ]
         
         self.turn_queue: List[SlimeUnit] = []
         self._build_turn_queue()
         
         self.battle_logs: List[str] = [f"Battle Started in {self.region_name}!"]
-        self.winner: Optional[str] = None
         
         logger.info(f"⚔️ Auto-Battle Initialized for {self.region_name}")
 
-    def _build_turn_queue(self):
-        alive = [u for u in self.blue_squad + self.red_squad if u.hp > 0]
+    def on_enter(self, **kwargs) -> None:
+        self.region_name = kwargs.get("region", "Unknown Region")
+        self.difficulty = kwargs.get("difficulty", "NORMAL")
+
+        # Context for return trip to BattleFieldScene
+        self.bf_region = kwargs.get("bf_region", "")
+        self.bf_difficulty = kwargs.get("bf_difficulty", "NORMAL")
+        self.bf_node_id = kwargs.get("bf_node_id", "")
+        self.bf_nodes = kwargs.get("bf_nodes", {})
+
+        self.turn_count = 0
+        self.timer_ms = 0.0
+        self.winner: Optional[str] = None
+        self.win_close_timer = 0.0
+
+        try:
+            self.font_name = pygame.font.Font(None, 20)
+            self.font_log = pygame.font.Font(None, 24)
+            self.font_banner = pygame.font.Font(None, 52)
+        except Exception:
+            self.font_name = pygame.font.SysFont("monospace", 14)
+            self.font_log = pygame.font.SysFont("monospace", 16)
+            self.font_banner = pygame.font.SysFont("monospace", 36)
+        
+        # Session 023: EntityManager Setup
+        self.entity_manager = EntityManager()
+        self.entity_manager.initialize()
+        self.entity_manager.register_entity_type("slime_unit", SlimeUnit)
+
+        # Difficulty multiplier
+        mult = 1.0
+        if self.difficulty == "EASY": mult = 0.8
+        elif self.difficulty == "HARD": mult = 1.2
+
+        self.blue_squad = [
+            create_slime("b1", "Rex", TileState.BLUE, Shape.CIRCLE, Hat.SWORD, is_player=True, manager=self.entity_manager),
+            create_slime("b2", "Brom", TileState.BLUE, Shape.SQUARE, Hat.SHIELD, is_player=True, manager=self.entity_manager),
+            create_slime("b3", "Pip", TileState.BLUE, Shape.TRIANGLE, Hat.STAFF, is_player=True, manager=self.entity_manager),
+        ]
+        self.red_squad = [
+            create_slime("r1", "R-Brute", TileState.RED, Shape.SQUARE, Hat.SWORD, difficulty_mult=mult, manager=self.entity_manager),
+            create_slime("r2", "R-Scout", TileState.RED, Shape.TRIANGLE, Hat.SWORD, difficulty_mult=mult, manager=self.entity_manager),
+            create_slime("r3", "R-Cleric", TileState.RED, Shape.CIRCLE, Hat.STAFF, difficulty_mult=mult, manager=self.entity_manager),
+        ]
+
+        self.turn_queue: List[SlimeUnit] = []
+        self._build_turn_queue()
+        self.battle_logs: List[str] = [f"Battle Started in {self.region_name}!"]
+
+        logger.info(f"⚔️ Auto-Battle scene entered for {self.region_name}")
+
+    def on_exit(self) -> None:
+        self.entity_manager.shutdown()
+
+    def _build_turn_queue(self) -> None:
+        all_units = self.entity_manager.get_all_active_entities()
+        alive = [u for u in all_units if u.hp > 0]
         # Sort by speed descending
         self.turn_queue = sorted(alive, key=lambda x: x.speed, reverse=True)
         self.turn_count += 1
