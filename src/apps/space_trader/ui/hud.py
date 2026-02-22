@@ -24,8 +24,8 @@ class SpaceTraderHUD:
         loc = self.session.graph.get(self.session.ship.location_id)
         loc_text = f"SYSTEM: {loc.name.upper()} ({loc.faction.upper()})"
         
-        loc_label = Label(loc_text, 20, 10, self.text_color)
-        loc_label.draw(surface)
+        loc_label = Label(pygame.Rect(20, 10, 400, 20), text=loc_text, color=self.text_color)
+        loc_label.render(surface)
         
         # Ship Stats
         stats_text = (
