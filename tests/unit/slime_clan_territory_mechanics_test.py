@@ -69,14 +69,12 @@ def test_stronghold_bonus_logic():
     
     # Case 1: No bonus
     scene.on_enter(stronghold_bonus=False)
-    for unit in scene.blue_squad:
-        # Balanced Circle has base 2 def + 25% player bias = 2.5 -> 2?
-        # Let's check create_slime logic
-        pass
+    # Rex (Circle, Sword) -> Base 2 Def -> 2 * 1.25 = 2.5 -> 2
+    rex = scene.blue_squad[0]
+    assert rex.defense == 2
 
     # Case 2: With bonus
     scene.on_enter(stronghold_bonus=True)
-    # create_buffed_slime adds +1
-    for unit in scene.blue_squad:
-        # Base def...
-        pass
+    # Rex -> Base 2 Def -> 2 + 1 (bonus) = 3
+    rex_buffed = scene.blue_squad[0]
+    assert rex_buffed.defense == 3
