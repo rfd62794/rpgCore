@@ -3,7 +3,7 @@ Shared Physics Kinematics
 SRP: Generalized Newtonian components for entities.
 """
 import math
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import Tuple, Optional
 
 @dataclass
@@ -35,7 +35,7 @@ class Kinematics:
     """Generalized physics state for an entity."""
     position: Vector2
     velocity: Vector2
-    acceleration: Vector2 = Vector2(0, 0)
+    acceleration: Vector2 = field(default_factory=lambda: Vector2(0, 0))
     angle: float = 0.0
     angular_velocity: float = 0.0
     drag: float = 0.0  # Force applied opposite to velocity
