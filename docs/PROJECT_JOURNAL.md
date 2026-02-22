@@ -1,10 +1,10 @@
 # rpgCore — Project Journal
 
 ## Current State
-330 passing tests. PyPro standards absorbed into repository docs and APJ boot block.
+Last Appointment bug fixes (NumPad, text wrap) complete.
 
 ## In Flight
-No active code changes in flight. Repository is now self-describing for agent behavior.
+All tests passing (332 total).
 
 ## Next Priority
-Proceed with Asteroids Phase 2 or TurboShells development using new spec-first standards.
+Onboarding new demos or enhancing existing ones.
