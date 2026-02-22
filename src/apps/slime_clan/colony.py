@@ -80,6 +80,9 @@ class ColonyManager:
     def keys(self):
         return self.colonies.keys()
 
+    def values(self):
+        return self.colonies.values()
+
     def items(self):
         return self.colonies.items()
 
