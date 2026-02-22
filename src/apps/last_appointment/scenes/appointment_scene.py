@@ -221,10 +221,12 @@ class AppointmentScene(Scene):
             self.npc_response_text = npc_response
 
     def _advance_to_pending(self):
+        self.card_layout.cards.clear()
         self.current_node = self.pending_node
         if self.current_node:
             self.target_brightness = float(getattr(self.current_node, "room_brightness", 0))
             self.available_edges = self.graph.get_available_choices()
+            self.text_window.is_finished = False
             self.text_window.set_text(self.current_node.text)
         self.phase = "PROMPT"
         # Delay card loading slightly or wait until text is revealed?
@@ -267,6 +269,7 @@ class AppointmentScene(Scene):
             if self.phase == "PROMPT" and self.npc_response_text:
                 # Moving to NPC Response
                 self.phase = "NPC_RESPONSE"
+                self.text_window.is_finished = False
                 self.text_window.set_text(self.npc_response_text)
             elif self.phase == "PROMPT" and not self.npc_response_text:
                 # Moving to next Prompt natively

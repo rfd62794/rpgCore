@@ -58,14 +58,14 @@ def test_stance_tracking_and_advancement(scene):
     assert scene.card_layout.is_fading_out == True
     
     # Finish fade out
-    scene.update(1000)
+    for _ in range(60): # ~1 second
+        scene.update(16)
+        
     assert scene.phase == "NPC_RESPONSE"
     
     # Simulate text reveal finishing
     scene.text_window.is_finished = True
-    scene.update(16) # Give state machine a tick to detect text is finished and load cards, then start fade
-    for _ in range(120):
-        scene.update(16) # Fade cards in
+    scene.update(16) # Give state machine a tick to detect text is finished
     
     # Press any key to advance
     # The event handler uses left click 
