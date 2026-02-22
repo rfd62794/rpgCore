@@ -17,32 +17,6 @@ from src.apps.slime_clan.ui.overworld_ui import (
     draw_launch_banner, draw_node_labels
 )
 
-class NodeState(enum.Enum):
-    HOME = "HOME"
-    BLUE = "BLUE"
-    RED = "RED"
-    CONTESTED = "CONTESTED"
-
-class NodeType(enum.Enum):
-    RESOURCE = "RESOURCE"
-    RECRUITMENT = "RECRUITMENT"
-    STRONGHOLD = "STRONGHOLD"
-    SHIP_PARTS = "SHIP_PARTS"
-
-NODE_TYPE_LABELS = {
-    NodeType.RESOURCE: "Resource Node",
-    NodeType.RECRUITMENT: "Recruitment Site",
-    NodeType.STRONGHOLD: "Stronghold",
-    NodeType.SHIP_PARTS: "Ship Parts Cache",
-}
-
-NODE_COLORS = {
-    NodeState.HOME: (50, 220, 100),
-    NodeState.BLUE: (30, 110, 220),
-    NodeState.RED: (210, 50, 50),
-    NodeState.CONTESTED: (200, 180, 50),
-}
-
 @dataclass
 class MapNode:
     id: str
