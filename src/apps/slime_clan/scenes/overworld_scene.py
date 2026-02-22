@@ -159,18 +159,48 @@ class OverworldScene(Scene):
     def _end_day(self) -> None:
         self.faction_manager.simulate_step(self.day, connection_graph=self.connection_graph)
         for tid in ["ashfen", "rootward"]:
-            if self.tribe_state[tid]["dispersed"]: continue
+            # Handle Dispersed legacy check just in case, though we are removing it mostly
+            if self.tribe_state[tid].get("dispersed", False): continue
+            
             node = self.nodes[tid]
-            hostile_adj = 0
-            total_adj = len(node.connections)
-            for conn_id in node.connections:
-                conn_node = self.nodes[conn_id]
-                owner = self.faction_manager.get_owner(conn_node.coord)
-                if owner in ["CLAN_RED", "CLAN_BLUE"]:
-                    hostile_adj += 1
-            if hostile_adj >= total_adj:
-                self.tribe_state[tid]["dispersed"] = True
-                self.faction_manager.claim_territory(None, node.coord, 0.0, 0)
+            colony = self.colony_manager.get_colony(tid)
+            if not colony: continue
+            
+            # Check for Re-Emergence or Decay if already hidden
+            if colony.hidden:
+                colony.hidden_turns += 1
+                
+                # Check for adjacent player nodes to emerge
+                player_adj = False
+                for conn_id in node.connections:
+                    if self.faction_manager.get_owner(self.nodes[conn_id].coord) == "CLAN_BLUE":
+                        player_adj = True
+                        break
+                        
+                if player_adj:
+                    colony.hidden = False
+                    colony.hidden_turns = 0
+                    logger.info(f"The {colony.name} returns to their camp. They remember you.")
+                    for u in colony.units:
+                        self.colony_manager.modify_sympathy(u, 5, "the astronaut freed their lands", colony)
+                elif colony.hidden_turns > 10:
+                    # Decay sympathy over prolonged hiding
+                    for u in colony.units:
+                        self.colony_manager.modify_sympathy(u, -2, "prolonged isolation", colony)
+            
+            # Check for Hiding if not hidden
+            else:
+                hostile_adj = 0
+                total_adj = len(node.connections)
+                for conn_id in node.connections:
+                    conn_node = self.nodes[conn_id]
+                    owner = self.faction_manager.get_owner(conn_node.coord)
+                    if owner in ["CLAN_RED", "CLAN_BLUE"]:
+                        hostile_adj += 1
+                        
+                if hostile_adj >= total_adj:
+                    colony.hidden = True
+                    logger.info(f"The {colony.name} has gone into hiding. The war has come too close.")
         bonus = 0
         for node in self.nodes.values():
             if self.faction_manager.get_owner(node.coord) == "CLAN_BLUE":
