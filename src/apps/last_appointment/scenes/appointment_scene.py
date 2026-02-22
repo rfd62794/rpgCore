@@ -252,7 +252,7 @@ class AppointmentScene(Scene):
                 pass
                 
         # Handle the transition after fade out
-        if not self.card_layout.is_fading_out and self.card_layout.cards and self.card_layout.cards[0].fade_alpha == 0:
+        if not self.card_layout.is_fading_in and not self.card_layout.is_fading_out and self.card_layout.cards and self.card_layout.cards[0].fade_alpha == 0:
             # Fade out finished
             self.card_layout.cards.clear()
             
