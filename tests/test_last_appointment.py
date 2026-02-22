@@ -44,8 +44,7 @@ def test_stance_tracking_and_advancement(scene):
     # Let's simulate time passing so cards fade in.
     scene.text_window.is_finished = True
     scene.update(16) # state machine step to trigger load_edges
-    for _ in range(120): # ~2 seconds
-        scene.update(16)
+    scene.update(2000) # 2 seconds to fade in
     
     # Press '1', which corresponds to K_1 and "PROFESSIONAL"
     events = [MockEvent(pygame.K_1)]
@@ -58,8 +57,7 @@ def test_stance_tracking_and_advancement(scene):
     assert scene.card_layout.is_fading_out == True
     
     # Finish fade out
-    for _ in range(60): # ~1 second
-        scene.update(16)
+    scene.update(1000)
         
     assert scene.phase == "NPC_RESPONSE"
     
@@ -85,8 +83,7 @@ def test_stance_tracking_and_advancement(scene):
     # Next prompt loads immediately. Wait for text to finish, then cards.
     scene.text_window.is_finished = True
     scene.update(16) # load cards
-    for _ in range(120):
-        scene.update(16) # Fade cards in
+    scene.update(2000) # Fade cards in
     
     # beat_2_pro has 5 options. Let's pick 1 again (PROFESSIONAL), which leads to beat_3_pro
     events = [MockEvent(pygame.K_1)]
@@ -106,8 +103,7 @@ def test_invalid_key_does_not_advance(scene):
     scene.on_enter()
     scene.text_window.is_finished = True
     scene.update(16)  # load cards 
-    for _ in range(120):
-        scene.update(16) # fade cards in
+    scene.update(2000) # fade cards in
     
     class MockEvent:
         def __init__(self, key):
@@ -195,9 +191,7 @@ def test_card_layout_hover():
     
     assert len(layout.cards) == 2
     
-    # Need to simulate smaller ticks so CardLayout doesn't bypass intermediate states
-    for _ in range(120):
-        layout.update(16)
+    layout.update(2000)
     assert not layout.is_fading_in
     
     # Card 1 rect will be around margin_x (60), y starts at (600//3)*2 = 400
@@ -236,8 +230,7 @@ def test_fade_sequencing():
     assert layout.cards[2].fade_alpha == 0
     
     # Fully settle
-    for _ in range(120):
-        layout.update(16)
+    layout.update(2000)
     assert not layout.is_fading_in
     assert all(c.fade_alpha == 255 for c in layout.cards)
 
