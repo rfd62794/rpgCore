@@ -182,7 +182,11 @@ class AppointmentScene(Scene):
                         
                 elif self.phase == "NPC_RESPONSE":
                     if self.text_window.is_finished:
-                        self.card_layout.start_fade_out()
+                        if self.card_layout.cards:
+                            self.card_layout.start_fade_out()
+                        else:
+                            self.npc_response_text = ""
+                            self._advance_to_pending()
                     else:
                         self.text_window.skip_reveal()
                         
@@ -194,7 +198,11 @@ class AppointmentScene(Scene):
                         self._handle_choice_selection(selected_idx)
                 elif self.phase == "NPC_RESPONSE":
                     if self.text_window.is_finished:
-                        self.card_layout.start_fade_out()
+                        if self.card_layout.cards:
+                            self.card_layout.start_fade_out()
+                        else:
+                            self.npc_response_text = ""
+                            self._advance_to_pending()
                     else:
                         self.text_window.skip_reveal()
 
