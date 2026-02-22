@@ -14,29 +14,25 @@ from typing import Optional, TYPE_CHECKING, Dict, Any
 
 import pygame
 
-from src.shared.engine.base_system import BaseSystem, SystemStatus
+from src.shared.engine.base_system import BaseSystem, SystemStatus, SystemConfig
 from src.shared.engine.system_clock import SystemClock, TimeMode
 
 if TYPE_CHECKING:
     pass
 
 
-class Scene(ABC):
+class Scene(BaseSystem, ABC):
     """
     Abstract base class for all game scenes.
-
-    Every scene implements four lifecycle methods:
-    - on_enter(**kwargs): called when scene becomes active
-    - on_exit(): called when scene is deactivated  
-    - handle_events(events): process pygame events
-    - update(dt_ms): update game state
-    - render(surface): draw to the shared surface
-
-    Scenes signal transitions by setting self.next_scene.
+    Now inherits from BaseSystem for formalized lifecycle management.
     """
 
-    def __init__(self, manager: SceneManager) -> None:
+    def __init__(self, manager: SceneManager, **kwargs) -> None:
+        # BaseSystem initialization
+        super().__init__(SystemConfig(name=self.__class__.__name__))
+        
         self.manager = manager
+        self._kwargs = kwargs  # Stored for initialize -> on_enter
         self.next_scene: Optional[str] = None
         self.next_scene_kwargs: Dict[str, Any] = {}
         self.quit_requested: bool = False
@@ -50,14 +46,33 @@ class Scene(ABC):
         """Request application exit after this frame."""
         self.quit_requested = True
 
+    # ---------------------------------------------------------------------------
+    # BaseSystem Lifecycle Wrappers
+    # ---------------------------------------------------------------------------
+    def initialize(self) -> bool:
+        """Formal initialization. Wraps legacy on_enter."""
+        self.on_enter(**self._kwargs)
+        return True
+
+    def tick(self, delta_time: float) -> None:
+        """Formal update. Wraps legacy update (converting seconds to ms)."""
+        self.update(delta_time * 1000.0)
+
+    def shutdown(self) -> None:
+        """Formal cleanup. Wraps legacy on_exit."""
+        self.on_exit()
+
+    # ---------------------------------------------------------------------------
+    # Legacy/Scene Interface (to be implemented by subclasses)
+    # ---------------------------------------------------------------------------
     @abstractmethod
     def on_enter(self, **kwargs) -> None:
-        """Called when this scene becomes active. Use kwargs for data passing."""
+        """Called during initialize()."""
         pass
 
     @abstractmethod
     def on_exit(self) -> None:
-        """Called when this scene is deactivated. Clean up resources."""
+        """Called during shutdown()."""
         pass
 
     @abstractmethod
@@ -67,7 +82,7 @@ class Scene(ABC):
 
     @abstractmethod
     def update(self, dt_ms: float) -> None:
-        """Update scene state. dt_ms is milliseconds since last frame."""
+        """Update scene state. Called during tick()."""
         pass
 
     @abstractmethod
@@ -99,25 +114,29 @@ class SceneManager:
         
         # Session 021: Formal timing
         self.clock = SystemClock(target_fps=fps, mode=TimeMode.REAL_TIME)
+        
 
     def register(self, name: str, scene_class: type) -> None:
         """Register a scene class by name."""
         self._scenes[name] = scene_class
 
     def switch_to(self, name: str, **kwargs) -> None:
-        """Switch to a registered scene. Calls shutdown/initialize."""
+        """Switch to a registered scene. Calls lifecycle methods."""
         if name not in self._scenes:
             raise ValueError(f"Unknown scene: {name}. Registered: {list(self._scenes.keys())}")
 
         if self._active_scene:
-            self._active_scene.on_exit()
             self._active_scene.shutdown()
+            self._active_scene.status = SystemStatus.STOPPED
 
         scene_class = self._scenes[name]
-        self._active_scene = scene_class(self)
-        self._active_scene.on_enter(**kwargs)
+        self._active_scene = scene_class(self, **kwargs)
+        
         if not self._active_scene.initialize():
-            logger.error(f"Failed to initialize scene: {name}")
+            # Assuming 'logger' is defined elsewhere or will be added.
+            # For now, print to stderr.
+            import sys
+            print(f"ERROR: Failed to initialize scene: {name}", file=sys.stderr)
             self._running = False
         else:
             self._active_scene.status = SystemStatus.RUNNING
@@ -128,7 +147,7 @@ class SceneManager:
         screen = pygame.display.set_mode((self.width, self.height))
         pygame.display.set_caption(self.title)
         
-        # Internal raw clock for calculating elapsed time between frames
+        # Internal raw clock for calculating elapsed time across frames
         raw_clock = pygame.time.Clock()
 
         self.switch_to(initial_scene, **kwargs)
@@ -142,26 +161,23 @@ class SceneManager:
 
             events = pygame.event.get()
 
-            # 2. Update active scene
-            self._active_scene.handle_events(events)
-            
-            # Forward compatibility: handle both update and tick
-            self._active_scene.update(dt * 1000.0) # Keep ms for now
-            self._active_scene.tick(dt)
-            
-            # 3. Render
-            self._active_scene.render(screen)
-            pygame.display.flip()
+            # 2. Update active scene via tick() wrapper
+            if self._active_scene and self._active_scene.is_running():
+                self._active_scene.handle_events(events)
+                self._active_scene.tick(dt)
+                
+                # 3. Render
+                self._active_scene.render(screen)
+                pygame.display.flip()
 
-            # 4. Check for scene transition or quit
-            if self._active_scene.quit_requested:
-                self._running = False
-            elif self._active_scene.next_scene:
-                next_name = self._active_scene.next_scene
-                next_kwargs = self._active_scene.next_scene_kwargs
-                self.switch_to(next_name, **next_kwargs)
+                # 4. Check for scene transition or quit
+                if self._active_scene.quit_requested:
+                    self._running = False
+                elif self._active_scene.next_scene:
+                    next_name = self._active_scene.next_scene
+                    next_kwargs = self._active_scene.next_scene_kwargs
+                    self.switch_to(next_name, **next_kwargs)
 
         if self._active_scene:
-            self._active_scene.on_exit()
             self._active_scene.shutdown()
         pygame.quit()
