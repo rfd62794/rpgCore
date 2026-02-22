@@ -1,10 +1,10 @@
 # rpgCore — Project Journal
 
 ## Current State
-342 passing. Full demo roadmap formalized. Six demos planned across Goals and Milestones.
+352 passing. Space Trader terminal scaffold built with strong typing. Ready for UI phase.
 
 ## In Flight
-Space Trader planning.
+None.
 
 ## Next Priority
-Design Space Trader economy model — what components reuse from Slime Clan and Asteroids.
+Build Pygame UI for Space Trader (market screen, travel map).
