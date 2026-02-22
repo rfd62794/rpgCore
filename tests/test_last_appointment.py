@@ -195,8 +195,8 @@ def test_card_layout_hover():
     layout.skip_animations()
     assert not layout.is_fading_in
     
-    # Card 1 rect will be around margin_x (60), y starts at (600//3)*2 = 400
-    hover_pos = (70, 410)
+    # Card 1 rect will be around margin_x (60), y starts at int(600 * 0.55) = 330
+    hover_pos = (70, 340)
     layout.handle_hover(hover_pos)
     
     assert layout.cards[0].hover_state == True
