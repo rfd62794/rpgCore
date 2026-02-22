@@ -1,0 +1,28 @@
+# Slime Clan — AI Session Protocol
+
+*To be provided at the start of every new Coding Agent session to prevent context drift.*
+
+---
+
+You are working on the Slime Clan game within the rpgCore repository (github.com/rfd62794/rpgCore). Before starting, read these docs:
+
+- `docs/VISION.md` — the north star
+- `docs/ROADMAP.md` — session plan
+- `docs/COLONY_SYSTEM.md` — colony architecture
+- `docs/SCENE_MANAGER.md` — scene contract
+
+## Key facts:
+
+- This is a desktop pygame application on Windows
+- Entry point: `uv run python run_overworld.py`
+- Manual verification means running locally and describing what you see
+- Do NOT use browser tools — this is not a web application
+- Test command: `uv run pytest`
+- Current passing tests: [UPDATE THIS NUMBER]
+- Git identity: rfd62794
+
+## Architecture: 
+- `src/apps/slime_clan/scenes/` for scenes
+- `src/apps/slime_clan/ui/` for rendering
+- `src/shared/` for engine components
+- `src/apps/slime_clan/app.py` is a 31-line launcher.

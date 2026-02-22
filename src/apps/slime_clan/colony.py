@@ -23,6 +23,8 @@ class Colony:
     map_seed: int = field(default_factory=lambda: random.randint(0, 999999))
     history: List[str] = field(default_factory=list)
     last_action_day: int = 1 # Tracking for passive sympathy decay
+    hidden: bool = False
+    hidden_turns: int = 0
 
 class ColonyManager:
     def __init__(self, node_type_enum):
