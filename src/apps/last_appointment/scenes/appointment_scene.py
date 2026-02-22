@@ -255,7 +255,10 @@ class AppointmentScene(Scene):
         if self.phase == "PROMPT":
             # If text finished revealing, load cards if empty
             if self.text_window.is_finished and not self.card_layout.cards:
-                self.card_layout.load_edges(self.available_edges)
+                # Mock a render to get the height for layout
+                dummy_surface = pygame.Surface((1,1))
+                text_bottom_y = self.text_window.render(dummy_surface)
+                self.card_layout.load_edges(self.available_edges, int(text_bottom_y))
         elif self.phase == "NPC_RESPONSE":
             if not self.card_layout.is_fading_out and not self.card_layout.cards and self.npc_response_text:
                 # Text transitioned to NPC response but cards still shown?
@@ -302,17 +305,35 @@ class AppointmentScene(Scene):
         if not is_white and self.vignette_surface:
             surface.blit(self.vignette_surface, (0, 0))
             
+        # Draw subtitle framing
+        subtitle_font = FontManager().get_font("Arial", 14)
+        if subtitle_font != "DummyFont":
+            subtitle_color = (42, 42, 58) # #2A2A3A
+            sub_sur = subtitle_font.render("— Last Appointment —", True, subtitle_color)
+            surface.blit(sub_sur, (self.text_window.x + self.text_window.padding_x, self.text_window.y + self.text_window.padding_y - 30))
+            
         # Draw the main text window (prompt or npc response)
-        self.text_window.render(surface)
+        text_bottom_y = self.text_window.render(surface)
+        
+        # Draw separator line below text
+        separator_color = (42, 42, 58) # #2A2A3A
+        line_y = int(text_bottom_y) + 20
+        pygame.draw.line(surface, separator_color, (self.text_window.x + self.text_window.padding_x, line_y), (self.manager.width - self.text_window.padding_x, line_y), 1)
         
         # Draw stances (bottom right corner, muted italic style)
         stance = self.state_tracker.get_flag("current_stance", "")
         if stance:
             stance_text = stance.capitalize()
-            stance_sur = FontManager().get_font("Arial", 16).render(stance_text, True, (80, 80, 95)) if FontManager().get_font("Arial", 16) != "DummyFont" else pygame.Surface((1,1))
-            sw = stance_sur.get_width()
-            sh = stance_sur.get_height()
-            surface.blit(stance_sur, (self.manager.width - sw - 20, self.manager.height - sh - 20))
+            # Try to get italic, fallback to regular
+            stance_font = FontManager().get_font("Arial_Italic", 16)
+            if stance_font == "DummyFont":
+                 stance_font = FontManager().get_font("Arial", 16)
+            
+            if stance_font != "DummyFont":
+                stance_sur = stance_font.render(stance_text, True, (80, 80, 95))
+                sw = stance_sur.get_width()
+                sh = stance_sur.get_height()
+                surface.blit(stance_sur, (self.manager.width - sw - 20, self.manager.height - sh - 20))
         
         # Render cards if Prompt phase
         if self.phase == "PROMPT" and self.card_layout.cards:
@@ -321,6 +342,6 @@ class AppointmentScene(Scene):
         elif self.phase == "NPC_RESPONSE":
             if self.text_window.is_finished:
                 cont_sur = FontManager().get_font("Arial", 16).render("[Press Any Key to Continue]", True, (100, 100, 100)) if FontManager().get_font("Arial", 16) != "DummyFont" else pygame.Surface((1,1))
-                surface.blit(cont_sur, (80, (self.manager.height // 3) * 2))
+                surface.blit(cont_sur, (80, line_y + 40))
         
 
