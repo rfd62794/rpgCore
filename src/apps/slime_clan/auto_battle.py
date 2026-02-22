@@ -16,6 +16,12 @@ from typing import List, Optional
 import pygame
 from loguru import logger
 
+# Session 020: D20 dice engine for combat resolution
+from src.shared.combat.d20_resolver import D20Resolver
+
+# Module-level resolver instance (shared across all combat)
+_resolver = D20Resolver()
+
 # Import the procedural slime drawer from the strategic layer
 try:
     from src.apps.slime_clan.territorial_grid import draw_slime, SLIME_COLORS, TileState
@@ -187,10 +193,13 @@ def _execute_sword(actor: SlimeUnit, allies: List[SlimeUnit], enemies: List[Slim
     else:
         target = min(alive_enemies, key=lambda e: e.hp)
         
-    damage = max(1, actor.attack - target.defense)
+    # Session 020: D20 roll + attack modifier for damage
+    roll = _resolver.roll_d20(modifier=actor.attack)
+    base_roll = roll - actor.attack  # Extract the raw d20 value
+    damage = max(1, roll - target.defense)
     
-    # Crit logic: guaranteed if focused, else 15% chance
-    is_crit = actor.is_crit_focused or random.random() < 0.15
+    # Crit logic: nat 20 always crits, focused always crits, else 15% chance
+    is_crit = base_roll == 20 or actor.is_crit_focused or random.random() < 0.15
     if is_crit:
         damage = int(damage * 1.75)
         actor.is_crit_focused = False
@@ -198,9 +207,11 @@ def _execute_sword(actor: SlimeUnit, allies: List[SlimeUnit], enemies: List[Slim
     target.hp = max(0, target.hp - damage)
     actor.mana = min(actor.max_mana, actor.mana + 1)
     
+    if base_roll == 20 and is_crit:
+        return f"🎲💥 NAT 20 CRIT! {actor.name} attacks {target.name} for {damage} dmg! ({target.hp}/{target.max_hp} HP)"
     if is_crit:
         return f"💥 CRITICAL HIT! {actor.name} attacks {target.name} for {damage} dmg! ({target.hp}/{target.max_hp} HP)"
-    return f"⚔️ {actor.name} attacks {target.name} for {damage} dmg! ({target.hp}/{target.max_hp} HP)"
+    return f"⚔️ {actor.name} attacks {target.name} for {damage} dmg! (🎲{base_roll}+{actor.attack}={roll} vs {target.defense} Def) ({target.hp}/{target.max_hp} HP)"
 
 
 def _execute_shield(actor: SlimeUnit, allies: List[SlimeUnit], enemies: List[SlimeUnit]) -> str:
@@ -212,7 +223,9 @@ def _execute_shield(actor: SlimeUnit, allies: List[SlimeUnit], enemies: List[Sli
     # Session 017: SHIELD Solo Behavior — bash lowest HP enemy when last alive
     if is_last_alive and alive_enemies:
         target = min(alive_enemies, key=lambda e: e.hp)
-        bash_damage = max(1, actor.attack // 2)
+        # Session 020: Desperate bash uses disadvantage roll
+        roll = _resolver.roll_d20(modifier=actor.attack // 2, disadvantage=True)
+        bash_damage = max(1, roll - target.defense)
         target.hp = max(0, target.hp - bash_damage)
         actor.mana = min(actor.max_mana, actor.mana + 1)
         return f"🔨 {actor.name} DESPERATE BASH on {target.name} for {bash_damage} dmg! ({target.hp}/{target.max_hp} HP)"
@@ -222,7 +235,9 @@ def _execute_shield(actor: SlimeUnit, allies: List[SlimeUnit], enemies: List[Sli
     if enemy_healers and actor.mana >= 2:
         actor.mana -= 2
         target = enemy_healers[0]
-        bash_damage = max(1, actor.attack // 2)
+        # Session 020: Shield bash uses disadvantage roll (clumsy attack)
+        roll = _resolver.roll_d20(modifier=actor.attack // 2, disadvantage=True)
+        bash_damage = max(1, roll - target.defense)
         target.hp = max(0, target.hp - bash_damage)
         target.stunned_turns = 1
         return f"🔨 {actor.name} SHIELD BASHES {target.name} for {bash_damage} dmg + STUN! ({target.hp}/{target.max_hp} HP)"
@@ -258,11 +273,17 @@ def _execute_staff(actor: SlimeUnit, allies: List[SlimeUnit], enemies: List[Slim
         strongest_attacker = max(alive_enemies, key=lambda e: e.attack)
         if strongest_attacker.weaken_turns == 0:
             actor.mana -= 2
-            reduce_amt = 2
+            # Session 020: Ability check vs target defense to determine weaken strength
+            check = _resolver.ability_check(
+                modifier=actor.attack,
+                difficulty_class=10 + strongest_attacker.defense
+            )
+            reduce_amt = 3 if check.success else 1
             strongest_attacker.attack = max(1, strongest_attacker.attack - reduce_amt)
             strongest_attacker.weaken_turns = 2
             strongest_attacker.weaken_amount = reduce_amt
-            return f"🔮 {actor.name} WEAKENS {strongest_attacker.name}! (-{reduce_amt} Atk for 2 turns) ({actor.mana}/{actor.max_mana} MP)"
+            result_str = "STRONG" if check.success else "WEAK"
+            return f"🔮 {actor.name} WEAKENS {strongest_attacker.name}! ({result_str}: -{reduce_amt} Atk for 2 turns) (🎲{check.roll}+{actor.attack}={check.total_score} vs DC {check.difficulty_class}) ({actor.mana}/{actor.max_mana} MP)"
 
     # Decision: Mana Surge (cost 3) — if no ally is badly hurt, prep for a big heal
     worst_ally = min(alive_allies, key=lambda a: a.hp / a.max_hp)
