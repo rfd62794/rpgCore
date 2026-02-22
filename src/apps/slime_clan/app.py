@@ -282,11 +282,49 @@ class OverworldScene(Scene):
 
                 if owner == "CLAN_YELLOW":
                     logger.info(f"🤝 Approaching {node.name}...")
-                    if self.tribe_state[node.id]["dispersed"]:
+                    if self.tribe_state.get(node.id, {}).get("dispersed", False):
                         logger.info("The campsite is empty.")
                     else:
                         self.selected_unbound_node = node
                     return
+
+    def _check_interaction_click(self, pos: tuple[int, int]) -> bool:
+        mx, my = pos
+        # Panel pos: center of screen 
+        pw, ph = 300, 180
+        px, py = (WINDOW_WIDTH - pw) // 2, (WINDOW_HEIGHT - ph) // 2
+        
+        nid = self.selected_unbound_node.id
+        approaches = self.tribe_state[nid]["approaches"]
+        
+        # Determine buttons
+        btns = [
+            ("Observe", (px + 20, py + 110, 120, 30)),
+            ("Approach", (px + 160, py + 110, 120, 30))
+        ]
+        if approaches >= 3:
+            btns.append(("Wait", (px + 90, py + 145, 120, 30)))
+            
+        for label, rect in btns:
+            r = pygame.Rect(rect)
+            if r.collidepoint(mx, my):
+                if self.actions_remaining <= 0 and label != "Wait":
+                    logger.warning("🚫 No actions remaining for this!")
+                    return True
+                
+                if label == "Observe":
+                    self.actions_remaining -= 1
+                    logger.info(f"🔭 You watch the {self.selected_unbound_node.name} from a distance. They notice.")
+                elif label == "Approach":
+                    self.actions_remaining -= 1
+                    self.tribe_state[nid]["approaches"] += 1
+                    logger.info(f"🚶 You approach unarmed. They do not flee. Progress: {self.tribe_state[nid]['approaches']}/3")
+                elif label == "Wait":
+                    logger.info("🧘 You wait. The silence is profound.")
+                
+                self.selected_unbound_node = None # Close panel
+                return True
+        return False
 
     def update(self, dt_ms: float) -> None:
         if self.game_over:
@@ -320,23 +358,30 @@ class OverworldScene(Scene):
 
         for node in self.nodes.values():
             owner = self.faction_manager.get_owner(node.coord)
+            
+            # Base color selection
+            color = NODE_COLORS.get(owner, (150, 150, 150))
             if node.id == "home":
-                color = NODE_COLORS[NodeState.HOME]
-            elif owner == "CLAN_BLUE":
-                color = NODE_COLORS[NodeState.BLUE]
-            elif owner == "CLAN_RED":
-                color = NODE_COLORS[NodeState.RED]
-            else:
-                color = (150, 150, 150) # Neutral gray
+                color = (200, 200, 200) # White for home
 
-            if self.actions_remaining == 0 and node.id != "home":
-                # Grayscale/Faded effect for nodes when out of actions
-                base_color = color
-                grayscale = (base_color[0] + base_color[1] + base_color[2]) // 3
-                color = (grayscale // 2 + 50, grayscale // 2 + 50, grayscale // 2 + 50)
+            # Actions depleted effect (Session 025/026)
+            if self.actions_remaining <= 0 and owner == "CLAN_BLUE" and node.id != "home":
+                color = (130, 130, 130) # Grey out player nodes
 
             pygame.draw.circle(surface, color, (node.x, node.y), NODE_RADIUS)
-            pygame.draw.circle(surface, (255, 255, 255), (node.x, node.y), NODE_RADIUS, 2)
+            
+            # Session 027: Unbound Tribal Marker
+            if owner == "CLAN_YELLOW":
+                # Draw a small white diamond inside
+                pts = [
+                    (node.x, node.y - 8), (node.x + 8, node.y),
+                    (node.x, node.y + 8), (node.x - 8, node.y)
+                ]
+                pygame.draw.polygon(surface, (255, 255, 255), pts)
+
+            # Highlight (Session 024)
+            if owner == "CLAN_RED":
+                pygame.draw.circle(surface, (255, 255, 255), (node.x, node.y), NODE_RADIUS, 2)
             
             # Labels
             label_surf = self.font.render(node.name, True, TEXT_COLOR)
@@ -348,10 +393,19 @@ class OverworldScene(Scene):
             type_label = NODE_TYPE_LABELS[node.node_type]
             type_color = (120, 120, 120)
             
-            # Session 026: Recruitment flavor
+            # Session 026/027: Flavor Text
             if node.node_type == NodeType.RECRUITMENT and owner == "CLAN_BLUE":
                 type_label = "Unbound tribe nearby"
                 type_color = (100, 200, 100)
+            elif owner == "CLAN_YELLOW":
+                nid = node.id
+                approaches = self.tribe_state.get(nid, {}).get("approaches", 0)
+                if approaches >= 3:
+                    type_label = "The tribe is considering you. Return tomorrow."
+                    type_color = (255, 255, 150)
+                else:
+                    type_label = "They watch you from the treeline."
+                    type_color = (200, 200, 100)
 
             type_surf = self.font.render(type_label, True, type_color)
             ty = ly + 18
@@ -410,6 +464,43 @@ class OverworldScene(Scene):
             
             sub = self.font.render("Press ESC to return to title", True, (150, 150, 150))
             surface.blit(sub, ((WINDOW_WIDTH - sub.get_width()) // 2, WINDOW_HEIGHT // 2 + 30))
+
+        # Session 027: Tribal Interaction Panel
+        if self.selected_unbound_node:
+            pw, ph = 300, 180
+            px, py = (WINDOW_WIDTH - pw) // 2, (WINDOW_HEIGHT - ph) // 2
+            pygame.draw.rect(surface, (20, 20, 30), (px, py, pw, ph))
+            pygame.draw.rect(surface, (245, 197, 66), (px, py, pw, ph), 2)
+            
+            title = self.font.render(self.selected_unbound_node.name, True, (245, 197, 66))
+            surface.blit(title, (px + (pw - title.get_width()) // 2, py + 15))
+            
+            nid = self.selected_unbound_node.id
+            approaches = self.tribe_state[nid]["approaches"]
+            
+            flavor = "They watch you silently."
+            if approaches >= 1: flavor = "They acknowledge your presence."
+            if approaches >= 3: flavor = "They are considering you. Return tomorrow."
+            
+            flav_surf = self.font.render(flavor, True, (200, 200, 200))
+            surface.blit(flav_surf, (px + (pw - flav_surf.get_width()) // 2, py + 50))
+            
+            prog_surf = self.font.render(f"Approach Progress: {approaches}/3", True, (150, 150, 150))
+            surface.blit(prog_surf, (px + (pw - prog_surf.get_width()) // 2, py + 75))
+            
+            # Buttons
+            btns = [
+                ("Observe", (px + 20, py + 110, 120, 30)),
+                ("Approach", (px + 160, py + 110, 120, 30))
+            ]
+            if approaches >= 3:
+                btns.append(("Wait", (px + 90, py + 145, 120, 30)))
+                
+            for label, rect in btns:
+                pygame.draw.rect(surface, (40, 40, 60), rect)
+                pygame.draw.rect(surface, (100, 100, 150), rect, 1)
+                l_surf = self.font.render(label, True, (255, 255, 255))
+                surface.blit(l_surf, (rect[0] + (rect[2] - l_surf.get_width()) // 2, rect[1] + (rect[3] - l_surf.get_height()) // 2))
 
 
 # ===================================================================
