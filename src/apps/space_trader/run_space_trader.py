@@ -138,16 +138,12 @@ def main():
         run_repl(session)
     else:
         # Launch Pygame Scene
-        pygame.init()
-        screen = pygame.display.set_mode((1024, 768))
-        pygame.display.set_caption("Space Trader")
-        
         from src.apps.space_trader.ui.scene_space_trader import SpaceTraderScene
         from src.shared.engine.scene_manager import SceneManager
         
-        manager = SceneManager(screen, 60)
-        manager.switch_scene(SpaceTraderScene(manager, session))
-        manager.run()
+        manager = SceneManager(width=1024, height=768, title="Space Trader", fps=60)
+        manager.register("trader", SpaceTraderScene)
+        manager.run("trader", session=session)
 
 if __name__ == "__main__":
     try:
