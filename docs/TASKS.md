@@ -3,7 +3,6 @@
 ## Active
 
 ## Queued
-- [REFACTOR] Asset restructure — execute moves from ASSET_INVENTORY.md
 - [MIGRATE] Last Appointment — migrate to shared UI components
 - [FEAT] TurboShells — frame session, stable management loop
 - [FEAT] Asteroids Phase 2 — NEAT pilot training, watch and train modes
@@ -25,3 +24,4 @@
 
 ## Completed
 - [x] [TOOL] APJ — task management system integration (2026-02-22)
+- [x] [REFACTOR] Asset restructure — execute moves from ASSET_INVENTORY.md (2026-02-22)

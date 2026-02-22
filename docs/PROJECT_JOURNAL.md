@@ -1,10 +1,10 @@
 # rpgCore — Project Journal
 
 ## Current State
-338 passing, 0 failures. Three demos playable. Full shared engine layer established.
+338 passing. Asset restructure complete. Shared and demo assets properly separated.
 
 ## In Flight
-Asset restructure queued.
+APJ Goals and Milestones layer.
 
 ## Next Priority
-Asset restructure — execute ASSET_INVENTORY moves.
+Extend APJ with Goals, Milestones, Phases hierarchy.
