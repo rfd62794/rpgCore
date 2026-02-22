@@ -99,10 +99,13 @@ class OverworldScene(Scene):
                 "node_4": MapNode("node_4", "Deep Red Core", 550, 200, (3, 2), NodeType.RESOURCE, ["node_2", "node_3"]),
             }
 
-        # Session 025: Day/Action State
+        # Session 025/026: Day/Action & Resource State
         self.day = kwargs.get("day", 1)
         self.actions_remaining = kwargs.get("actions_remaining", 3)
         self.actions_per_day = 3
+        self.resources = kwargs.get("resources", 0)
+        self.ship_parts = kwargs.get("ship_parts", 0)
+        self.secured_part_nodes = set(kwargs.get("secured_part_nodes", []))
 
         # Session 024: Faction Manager Setup
         self.faction_manager = kwargs.get("faction_manager")
@@ -135,6 +138,11 @@ class OverworldScene(Scene):
             if battle_won:
                 logger.info(f"🏆 Blue secured {node.name}!")
                 self.faction_manager.claim_territory("CLAN_BLUE", node.coord, 1.0, 0)
+                # Session 026: Award ship parts immediately on win
+                if node.node_type == NodeType.SHIP_PARTS and node.id not in self.secured_part_nodes:
+                    self.ship_parts += 2
+                    self.secured_part_nodes.add(node.id)
+                    logger.info(f"📦 Found ship parts! (+2, total: {self.ship_parts})")
             else:
                 logger.info(f"💀 Red held {node.name}.")
                 self.faction_manager.claim_territory("CLAN_RED", node.coord, 1.0, 0)
@@ -151,8 +159,17 @@ class OverworldScene(Scene):
             if event.type == pygame.QUIT:
                 self.request_quit()
             elif event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
-                self.request_quit()
+                if self.game_over:
+                    self.request_quit() # Back to title technically
+                else:
+                    self.request_quit()
             elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
+                # Session 026: Survivor Launch
+                if self.ship_parts >= 5 and not self.game_over:
+                    logger.info("🚀 Launching ship... Departure initiated.")
+                    self.game_over = "SURVIVOR"
+                    return
+
                 # Check End Day button first
                 if self._check_end_day_click(event.pos):
                     return
@@ -168,6 +185,18 @@ class OverworldScene(Scene):
     def _end_day(self) -> None:
         logger.info(f"⏳ Day {self.day} ends. Factions advance...")
         self.faction_manager.simulate_step(self.day, connection_graph=self.connection_graph)
+        
+        # Session 026: Resource Generation
+        bonus = 0
+        for node in self.nodes.values():
+            if self.faction_manager.get_owner(node.coord) == "CLAN_BLUE":
+                if node.node_type == NodeType.RESOURCE:
+                    bonus += 1
+        
+        if bonus > 0:
+            self.resources += bonus
+            logger.info(f"⚙️  Resource nodes generated +{bonus} (Total: {self.resources})")
+            
         self.day += 1
         self.actions_remaining = self.actions_per_day
         logger.info(f"☀️ Day {self.day} begins!")
@@ -188,6 +217,12 @@ class OverworldScene(Scene):
                 if owner == "CLAN_RED" or (not owner and node.id != "home"):
                     logger.info(f"⚔️  Deploying forces to {node.name}...")
                     self.actions_remaining -= 1
+                    
+                    # Session 026: Stronghold check
+                    stronghold_bonus = (node.node_type == NodeType.STRONGHOLD)
+                    if stronghold_bonus:
+                        logger.info(f"🛡️  Launching from Stronghold: {node.name}! (+1 Defense Bonus)")
+
                     self.request_scene("battle_field",
                         region=node.name,
                         difficulty="NORMAL",
@@ -195,7 +230,11 @@ class OverworldScene(Scene):
                         nodes=self.nodes,
                         faction_manager=self.faction_manager,
                         day=self.day,
-                        actions_remaining=self.actions_remaining
+                        actions_remaining=self.actions_remaining,
+                        resources=self.resources,
+                        ship_parts=self.ship_parts,
+                        secured_part_nodes=list(self.secured_part_nodes),
+                        stronghold_bonus=stronghold_bonus
                     )
                 return
 
@@ -257,18 +296,29 @@ class OverworldScene(Scene):
             
             # Node Type Label (Session 025)
             type_label = NODE_TYPE_LABELS[node.node_type]
-            type_surf = self.font.render(type_label, True, (120, 120, 120))
+            type_color = (120, 120, 120)
+            
+            # Session 026: Recruitment flavor
+            if node.node_type == NodeType.RECRUITMENT and owner == "CLAN_BLUE":
+                type_label = "Unbound tribe nearby"
+                type_color = (100, 200, 100)
+
+            type_surf = self.font.render(type_label, True, type_color)
             ty = ly + 18
             surface.blit(type_surf, (node.x - type_surf.get_width() // 2, ty))
 
-        # HUD (Session 025)
+        # HUD (Session 025/026)
         hud_text = f"Day {self.day}  —  Actions: {self.actions_remaining}/{self.actions_per_day}"
         hud_surf = self.font.render(hud_text, True, (255, 255, 255))
         surface.blit(hud_surf, (20, 20))
         
+        res_text = f"Resources: {self.resources}  |  Ship Parts: {self.ship_parts}/5"
+        res_surf = self.font.render(res_text, True, (150, 200, 255))
+        surface.blit(res_surf, (20, 45))
+
         if self.actions_remaining == 0:
             prompt_surf = self.font.render("No actions remaining — End Day to continue", True, (255, 100, 100))
-            surface.blit(prompt_surf, (20, 45))
+            surface.blit(prompt_surf, (20, 70))
 
         # End Day Button
         btn_x, btn_y, btn_w, btn_h = WINDOW_WIDTH - 140, WINDOW_HEIGHT - 60, 120, 40
@@ -278,22 +328,38 @@ class OverworldScene(Scene):
         btn_label = self.font.render("END DAY", True, (255, 255, 255))
         surface.blit(btn_label, (btn_x + (btn_w - btn_label.get_width()) // 2, btn_y + (btn_h - btn_label.get_height()) // 2))
 
-        if self.game_over:
+        # Session 026: Survivor Ending Check
+        if self.ship_parts >= 5 and not self.game_over:
             banner_w, banner_h = 500, 100
             bx = (WINDOW_WIDTH - banner_w) // 2
-            by = (WINDOW_HEIGHT - banner_h) // 2
-            overlay = pygame.Surface((banner_w, banner_h))
-            overlay.set_alpha(230)
-            overlay.fill((10, 10, 15))
-            surface.blit(overlay, (bx, by))
-            msg = ("Planet Secured - The Slime Clans bow to the Astronaut"
-                   if self.game_over == "WIN"
-                   else "Colony Lost - The Clans have driven you out")
-            color = (100, 200, 255) if self.game_over == "WIN" else (255, 100, 100)
-            surf = self.font.render(msg, True, color)
-            surface.blit(surf, (bx + (banner_w - surf.get_width()) // 2, by + 25))
-            esc_surf = self.font.render("ESC to Exit", True, (150, 150, 150))
-            surface.blit(esc_surf, (bx + (banner_w - esc_surf.get_width()) // 2, by + 60))
+            by = 100
+            pygame.draw.rect(surface, (20, 40, 20), (bx, by, banner_w, banner_h))
+            pygame.draw.rect(surface, (100, 255, 100), (bx, by, banner_w, banner_h), 2)
+            
+            win_txt = self.font.render("SHIP REPAIRED: Survivor Ending Available", True, (150, 255, 150))
+            surface.blit(win_txt, (bx + (banner_w - win_txt.get_width()) // 2, by + 20))
+            
+            launch_hint = self.font.render("Click anywhere to LAUNCH and depart", True, (200, 255, 200))
+            surface.blit(launch_hint, (bx + (banner_w - launch_hint.get_width()) // 2, by + 60))
+
+        if self.game_over:
+            # Game Over / Survivor Banner (Session 026 Minimalist)
+            overlay = pygame.Surface((WINDOW_WIDTH, WINDOW_HEIGHT), pygame.SRCALPHA)
+            overlay.fill((0, 0, 0, 230))
+            surface.blit(overlay, (0, 0))
+            
+            msg = ""
+            if self.game_over == "WIN": msg = "🎉 Planet Secured!"
+            elif self.game_over == "LOSS": msg = "💀 Colony Lost!"
+            elif self.game_over == "SURVIVOR":
+                msg = "The ship shudders to life. You don't look back."
+            
+            big_font = pygame.font.Font(None, 36)
+            txt = big_font.render(msg, True, (255, 255, 255))
+            surface.blit(txt, ((WINDOW_WIDTH - txt.get_width()) // 2, WINDOW_HEIGHT // 2 - 20))
+            
+            sub = self.font.render("Press ESC to return to title", True, (150, 150, 150))
+            surface.blit(sub, ((WINDOW_WIDTH - sub.get_width()) // 2, WINDOW_HEIGHT // 2 + 30))
 
 
 # ===================================================================
