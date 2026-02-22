@@ -106,6 +106,7 @@ class OverworldScene(Scene):
         self.resources = kwargs.get("resources", 0)
         self.ship_parts = kwargs.get("ship_parts", 0)
         self.secured_part_nodes = set(kwargs.get("secured_part_nodes", []))
+        self.stronghold_bonus = kwargs.get("stronghold_bonus", False)
 
         # Session 024: Faction Manager Setup
         self.faction_manager = kwargs.get("faction_manager")
@@ -398,6 +399,7 @@ class BattleFieldScene(Scene):
         self.faction_manager = kwargs.get("faction_manager")
         self.day = kwargs.get("day", 1)
         self.actions_remaining = kwargs.get("actions_remaining", 3)
+        self.stronghold_bonus = kwargs.get("stronghold_bonus", False) # Capture stronghold_bonus
         self.game_over = False
         self.exit_code = 1
 
@@ -506,7 +508,8 @@ class BattleFieldScene(Scene):
             bf_nodes=self.nodes,
             faction_manager=self.faction_manager,
             day=self.day,
-            actions_remaining=self.actions_remaining
+            actions_remaining=self.actions_remaining,
+            stronghold_bonus=self.stronghold_bonus # Pass stronghold_bonus
         )
 
     def _return_to_overworld(self, won: bool) -> None:
@@ -516,7 +519,8 @@ class BattleFieldScene(Scene):
             battle_won=won,
             faction_manager=self.faction_manager,
             day=self.day,
-            actions_remaining=self.actions_remaining
+            actions_remaining=self.actions_remaining,
+            stronghold_bonus=self.stronghold_bonus # Pass stronghold_bonus
         )
 
     def update(self, dt_ms: float) -> None:
@@ -618,6 +622,7 @@ class AutoBattleScene(Scene):
         self.faction_manager = kwargs.get("faction_manager")
         self.day = kwargs.get("day", 1)
         self.actions_remaining = kwargs.get("actions_remaining", 3)
+        self.stronghold_bonus = kwargs.get("stronghold_bonus", False) # Capture stronghold_bonus
 
         self.turn_count = 0
         self.timer_ms = 0.0
@@ -634,9 +639,9 @@ class AutoBattleScene(Scene):
         elif self.difficulty == "HARD": mult = 1.2
 
         self.blue_squad = [
-            create_slime("b1", "Rex", TileState.BLUE, Shape.CIRCLE, Hat.SWORD, is_player=True),
-            create_slime("b2", "Brom", TileState.BLUE, Shape.SQUARE, Hat.SHIELD, is_player=True),
-            create_slime("b3", "Pip", TileState.BLUE, Shape.TRIANGLE, Hat.STAFF, is_player=True),
+            self._create_buffed_slime("b1", "Rex", Shape.CIRCLE, Hat.SWORD),
+            self._create_buffed_slime("b2", "Brom", Shape.SQUARE, Hat.SHIELD),
+            self._create_buffed_slime("b3", "Pip", Shape.TRIANGLE, Hat.STAFF),
         ]
         self.red_squad = [
             create_slime("r1", "R-Brute", TileState.RED, Shape.SQUARE, Hat.SWORD, difficulty_mult=mult),
@@ -720,6 +725,12 @@ class AutoBattleScene(Scene):
             else:
                 self.winner = "RED WINS (TIMEOUT)!"
                 logger.info(f"⌛ Turn Limit. Red wins: {r_pct:.0%} vs {b_pct:.0%}")
+
+    def _create_buffed_slime(self, id: str, name: str, shape: Shape, hat: Hat) -> SlimeUnit:
+        unit = create_slime(id, name, TileState.BLUE, shape, hat, is_player=True)
+        if self.stronghold_bonus:
+            unit.defense += 1 # Tacit bonus from stronghold
+        return unit
 
     def _return_result(self, result: str) -> None:
         """Transition back to BattleFieldScene with the result."""
