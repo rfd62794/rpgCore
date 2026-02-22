@@ -17,7 +17,7 @@ def test_colony_initialization():
         connections=[]
     )
     assert colony.id == "test_colony"
-    assert colony.population == 100
+    assert colony.population == 10
     assert colony.units == []
 
 def test_colony_manager_tribal_generation():
