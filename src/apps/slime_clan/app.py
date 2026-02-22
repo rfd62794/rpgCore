@@ -27,6 +27,7 @@ from src.apps.slime_clan.auto_battle import (
 # Session 024: Faction System Integration
 from src.shared.world.faction import FactionManager, FactionRelation
 from src.apps.slime_clan.factions import get_slime_factions
+from src.apps.slime_clan.colony import Colony, ColonyManager
 
 # ---------------------------------------------------------------------------
 # Shared Constants
@@ -89,17 +90,20 @@ class OverworldScene(Scene):
     """Strategic node map. Click RED/CONTESTED nodes to launch battles."""
 
     def on_enter(self, **kwargs) -> None:
-        self.nodes: Dict[str, MapNode] = kwargs.get("nodes", None)
-        if self.nodes is None:
-            self.nodes = {
-                "home": MapNode("home", "Crash Site", 100, 240, (0, 2), NodeType.SHIP_PARTS, ["node_1"]),
-                "node_1": MapNode("node_1", "Scrap Yard", 250, 150, (1, 2), NodeType.RESOURCE, ["home", "node_2", "node_3"]),
-                "node_2": MapNode("node_2", "Northern Wastes", 400, 100, (2, 1), NodeType.STRONGHOLD, ["node_1", "ashfen", "node_4"]),
-                "node_3": MapNode("node_3", "Eastern Front", 400, 300, (2, 3), NodeType.RECRUITMENT, ["node_1", "rootward", "node_4"]),
-                "node_4": MapNode("node_4", "Deep Red Core", 550, 200, (3, 2), NodeType.RESOURCE, ["node_2", "node_3"]),
-                "ashfen": MapNode("ashfen", "The Ashfen Tribe", 325, 100, (1, 1), NodeType.RECRUITMENT, ["node_2"]),
-                "rootward": MapNode("rootward", "The Rootward Tribe", 325, 300, (1, 3), NodeType.RECRUITMENT, ["node_3"]),
-            }
+        self.colony_manager = kwargs.get("colony_manager")
+        if self.colony_manager is None:
+            self.colony_manager = ColonyManager(NodeType)
+            # Migrate nodes to colonies
+            self.colony_manager.create_colony("home", "Crash Site", 100, 240, (0, 2), NodeType.SHIP_PARTS, ["node_1"], faction="CLAN_BLUE")
+            self.colony_manager.create_colony("node_1", "Scrap Yard", 250, 150, (1, 2), NodeType.RESOURCE, ["home", "node_2", "node_3"])
+            self.colony_manager.create_colony("node_2", "Northern Wastes", 400, 100, (2, 1), NodeType.STRONGHOLD, ["node_1", "ashfen", "node_4"])
+            self.colony_manager.create_colony("node_3", "Eastern Front", 400, 300, (2, 3), NodeType.RECRUITMENT, ["node_1", "rootward", "node_4"])
+            self.colony_manager.create_colony("node_4", "Deep Red Core", 550, 200, (3, 2), NodeType.RESOURCE, ["node_2", "node_3"])
+            self.colony_manager.create_colony("ashfen", "The Ashfen Tribe", 325, 100, (1, 1), NodeType.RECRUITMENT, ["node_2"], faction="CLAN_YELLOW")
+            self.colony_manager.create_colony("rootward", "The Rootward Tribe", 325, 300, (1, 3), NodeType.RECRUITMENT, ["node_3"], faction="CLAN_YELLOW")
+        
+        # Compatibility layer: many methods still look for self.nodes
+        self.nodes = self.colony_manager 
 
         # Session 025/026: Day/Action & Resource State
         self.day = kwargs.get("day", 1)
@@ -109,6 +113,7 @@ class OverworldScene(Scene):
         self.ship_parts = kwargs.get("ship_parts", 0)
         self.secured_part_nodes = set(kwargs.get("secured_part_nodes", []))
         self.stronghold_bonus = kwargs.get("stronghold_bonus", False)
+        self.player_units = kwargs.get("player_units", []) # Session 028 roster
         
         # Session 027: Unbound Tribal State
         self.tribe_state = kwargs.get("tribe_state", {
@@ -124,11 +129,11 @@ class OverworldScene(Scene):
             self.faction_manager = FactionManager()
             for f in factions:
                 self.faction_manager.register_faction(f)
-            # Home base
-            self.faction_manager.claim_territory("CLAN_BLUE", (0, 2), 1.0, 0)
-            # Session 027: Initialize Unbound territories
-            self.faction_manager.claim_territory("CLAN_YELLOW", self.nodes["ashfen"].coord, 1.0, 0)
-            self.faction_manager.claim_territory("CLAN_YELLOW", self.nodes["rootward"].coord, 1.0, 0)
+            # Synchronize FactionManager with ColonyManager ownership
+            for colony in self.colony_manager.values():
+                if colony.faction:
+                    self.faction_manager.claim_territory(colony.faction, colony.coord, 1.0, 0)
+
             # Initial setup: RED owns the core, BLUE owns the yard
             self.faction_manager.claim_territory("CLAN_RED", (3, 2), 1.0, 0) # Core
             self.faction_manager.claim_territory("CLAN_RED", (2, 3), 0.8, 0) # Eastern Front
