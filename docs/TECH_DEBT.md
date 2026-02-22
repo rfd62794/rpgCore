@@ -26,17 +26,11 @@ When these legacy systems are actively developed again in the future, a dedicate
 
 ---
 
-## Lack of Unified Scene Manager
-**Logged:** 2026-02-21 (Session 015)
+## ~~Lack of Unified Scene Manager~~ ✅ RESOLVED
+**Logged:** 2026-02-21 (Session 015) | **Resolved:** 2026-02-21 (Session 019B)
 
-### Description
-The current Three-Tier War System architecture relies on `sys.executable -m` subprocess calls to shift between the three tiers: `overworld.py` -> `battle_field.py` -> `auto_battle.py`.
-
-### Impact & Scope
-This creates a fundamentally janky three-window cascading UX. A new PyGame window spawns for the Operational grid, and a third PyGame window spawns for the Tactical skirmish. While acceptable for a prototype loop, this is not production quality.
-
-### Mitigation
-Documented here for resolution in **Session 016 or later**. A unified Scene Manager (`scene_manager.py`) is required. The Scene Manager should initialize a single `pygame.display.set_mode()` instance and pass the common rendering surface and event loop down to state-machine-controlled View instances (`OverworldView`, `BattleFieldView`, `AutoBattleView`) instead of executing entirely separate module processes.
+### Resolution
+Implemented `src/shared/engine/scene_manager.py` with `Scene` ABC and `SceneManager` state machine. All three tiers (`OverworldScene`, `BattleFieldScene`, `AutoBattleScene`) now run in a single pygame window via `src/apps/slime_clan/app.py`. Zero subprocesses. See `docs/SCENE_MANAGER.md` for the full interface contract.
 
 ---
 

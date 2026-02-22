@@ -42,9 +42,9 @@ self.request_scene("overworld", nodes=self.nodes, game_over=None)
 
 | Name | Class | Status | Purpose |
 |---|---|---|---|
-| `overworld` | `OverworldScene` | ✅ Migrated | Strategic node map, battle launches |
-| `battle_field` | `BattleFieldScene` | 🔲 019B | Tactical grid movement, squad collision |
-| `auto_battle` | `AutoBattleScene` | 🔲 019B | Turn-based combat resolution |
+| `overworld` | `OverworldScene` | ✅ Migrated (019A) | Strategic node map, battle launches |
+| `battle_field` | `BattleFieldScene` | ✅ Migrated (019B) | Tactical grid movement, squad collision |
+| `auto_battle` | `AutoBattleScene` | ✅ Migrated (019B) | Turn-based combat resolution |
 
 ## Future Scenes
 
