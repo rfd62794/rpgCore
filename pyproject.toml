@@ -53,8 +53,9 @@ line-length = 88
 target-version = ['py312']
 
 [tool.pytest.ini_options]
-# testpaths = ["tests"]
-# python_files = ["test_shared_*.py", "test_last_appointment.py", "test_sovereign_surface.py", "slime_clan_*.py", "test_overworld.py", "test_battle_field.py", "test_scene_manager.py"]
+testpaths = ["tests"]
+norecursedirs = ["archive", "scripts", "docs", "logs", "tests/verification", "tests/benchmarks", "tests/integration"]
+python_files = ["test_*.py", "*_test.py"]
 pythonpath = ["."]
 
 [tool.isort]
