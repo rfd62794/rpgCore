@@ -8,7 +8,8 @@ STANCE_COLORS = {
     "RELUCTANT": (204, 153, 68),     # #CC9944
     "MOVED": (170, 136, 187)         # #AA88BB
 }
-BG_COLOR = (26, 26, 36)              # #1A1A24
+BG_COLOR = (18, 18, 30)              # #12121E
+SELECTED_BG_COLOR = (30, 30, 46)     # #1E1E2E
 NUMBER_COLOR = (102, 102, 128)       # #666680
 
 class DialogueCard:
@@ -64,26 +65,27 @@ class DialogueCard:
         card_surface = pygame.Surface((self.visual_rect.width, self.visual_rect.height), pygame.SRCALPHA)
         
         # Fill background
-        card_surface.fill((*BG_COLOR, self.fade_alpha))
+        if self.selected_state:
+            card_surface.fill((*SELECTED_BG_COLOR, self.fade_alpha))
+        else:
+            card_surface.fill((*BG_COLOR, self.fade_alpha))
         
         # Borders and fill depending on state
         if self.selected_state:
-            # Filled background (15% opacity)
-            fill_color = (*self.color, min(int(0.15 * 255), self.fade_alpha))
-            card_surface.fill(fill_color)
+            # Full border, lightened background
             border_alpha = min(255, self.fade_alpha)
             pygame.draw.rect(card_surface, (*self.color, border_alpha), card_surface.get_rect(), 2)
         elif self.hover_state:
-            # 80% opacity border
-            border_alpha = min(int(0.8 * 255), self.fade_alpha)
+            # 90% opacity border
+            border_alpha = min(int(0.9 * 255), self.fade_alpha)
             pygame.draw.rect(card_surface, (*self.color, border_alpha), card_surface.get_rect(), 2)
         else:
-            # 40% opacity border
-            border_alpha = min(int(0.4 * 255), self.fade_alpha)
-            pygame.draw.rect(card_surface, (*self.color, border_alpha), card_surface.get_rect(), 1)
+            # 50% opacity border
+            border_alpha = min(int(0.5 * 255), self.fade_alpha)
+            pygame.draw.rect(card_surface, (*self.color, border_alpha), card_surface.get_rect(), 2)
             
-        # Draw number (top left)
-        num_pos = (8, 4)
+        # Draw number (left aligned, vertically centered)
+        num_pos = (16, (self.visual_rect.height - self.num_sur.get_height()) // 2)
         if hasattr(self.num_sur, "set_alpha"):
             self.num_sur.set_alpha(self.fade_alpha)
         card_surface.blit(self.num_sur, num_pos)
@@ -93,7 +95,8 @@ class DialogueCard:
         if hasattr(t_sur, "set_alpha"):
             t_sur.set_alpha(self.fade_alpha)
             
-        text_x = 30 # some padding after number
+        # Text starts 40px from left edge (room for number + padding)
+        text_x = 40 
         text_y = (self.visual_rect.height - t_sur.get_height()) // 2
         card_surface.blit(t_sur, (text_x, text_y))
         

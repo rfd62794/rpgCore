@@ -21,12 +21,40 @@ class CardLayout:
         self.is_fading_in = False
         self.is_fading_out = False
         
-    def load_edges(self, edges: List[Edge]) -> None:
+    def load_edges(self, edges: List[Edge], text_window_bottom: int = 0) -> None:
         self.cards.clear()
         
-        # Bottom third
-        start_y = (self.height // 3) * 2
+        # Calculate available space
+        # Start cards at 55% of screen height
+        base_start_y = int(self.height * 0.55)
+        # Ensure start_y is at least below the text window
+        start_y = max(base_start_y, text_window_bottom + 20)
+        
+        available_height = self.height - start_y - 20 # 20px bottom padding
+        num_cards = len(edges)
+        
+        if num_cards == 0:
+            return
+            
+        # Try optimal sizes
+        desired_card_height = 44
+        desired_spacing = 8
         card_width = self.width - (self.margin_x * 2)
+        
+        total_needed = (num_cards * desired_card_height) + ((num_cards - 1) * desired_spacing)
+        
+        if total_needed > available_height:
+            # We need to squeeze them
+            # Reduce spacing first down to 2px
+            desired_spacing = max(2, int((available_height - (num_cards * desired_card_height)) / max(1, num_cards - 1)))
+            total_after_spacing = (num_cards * desired_card_height) + ((num_cards - 1) * desired_spacing)
+            
+            # If still too big, reduce card height
+            if total_after_spacing > available_height:
+                desired_card_height = int((available_height - ((num_cards - 1) * desired_spacing)) / num_cards)
+                
+        self.card_height = desired_card_height
+        self.spacing = desired_spacing
         
         for i, edge in enumerate(edges):
             y_pos = start_y + (i * (self.card_height + self.spacing))

@@ -47,15 +47,15 @@ class TextWindow:
                 self.revealed_count = len(self.full_text)
                 self.is_finished = True
 
-    def render(self, surface: 'pygame.Surface') -> None:
+    def render(self, surface: 'pygame.Surface') -> float:
         if not self.full_text:
-            return
+            return self.y + self.padding_y
             
         display_text = self.full_text[:int(self.revealed_count)]
         font = FontManager().get_font(self.font_name, self.font_size)
         
         if font == "DummyFont":
-            return # Skip rendering in headless tests
+            return self.y + self.padding_y # Skip rendering in headless tests
             
         words = display_text.split(' ')
         lines = []
@@ -90,6 +90,8 @@ class TextWindow:
             rendered = font.render(line, True, self.color)
             surface.blit(rendered, (start_x, current_y))
             current_y += line_height
+            
+        return current_y
 
     def skip_reveal(self) -> None:
         self.revealed_count = len(self.full_text)
