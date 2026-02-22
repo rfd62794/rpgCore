@@ -49,16 +49,16 @@ class ColonyManager:
 
     def _generate_tribal_units(self, colony: Colony):
         # Generate 3 named units
-        names = random.sample(self.name_pool, 3)
-        for name in names:
+        available_names = list(self.name_pool)
+        random.shuffle(available_names)
+        
+        for i in range(3):
+            name = available_names.pop()
             shape = random.choice(list(Shape))
             hat = random.choice(list(Hat))
             unit = create_slime(f"{colony.id}_{name}", name, TileState.BLUE, shape, hat, is_player=True)
             # Astronaut sympathy starts at 20
-            # SlimeUnit doesn't have sympathy in its class yet, we'll store it in a metadata dict or similar if needed,
-            # but the prompt says "each unit gets a sympathy score toward the astronaut starting at 20/100"
-            # We'll add a 'sympathy' attribute to SlimeUnit or handle it dynamically.
-            unit.sympathy = 20 
+            setattr(unit, "sympathy", 20)
             colony.units.append(unit)
         colony.history.append(f"Colony founded by {colony.original_faction}. Tribal units gathered.")
 
@@ -76,3 +76,12 @@ class ColonyManager:
             if colony.coord == coord:
                 colony.faction = faction
                 break
+
+    def values(self):
+        return self.colonies.values()
+
+    def __getitem__(self, key):
+        return self.colonies[key]
+
+    def __contains__(self, key):
+        return key in self.colonies
