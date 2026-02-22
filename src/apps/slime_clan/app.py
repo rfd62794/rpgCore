@@ -667,6 +667,10 @@ class BattleFieldScene(Scene):
             faction_manager=self.faction_manager,
             day=self.day,
             actions_remaining=self.actions_remaining,
+            resources=self.resources,
+            ship_parts=self.ship_parts,
+            secured_part_nodes=self.secured_part_nodes,
+            tribe_state=self.tribe_state,
             stronghold_bonus=self.stronghold_bonus # Pass stronghold_bonus
         )
 
@@ -766,6 +770,7 @@ class AutoBattleScene(Scene):
         self.bf_difficulty = kwargs.get("bf_difficulty", "NORMAL")
         self.bf_node_id = kwargs.get("bf_node_id", "")
         self.bf_nodes = kwargs.get("bf_nodes", {})
+        self.faction_manager = kwargs.get("faction_manager")
         self.day = kwargs.get("day", 1)
         self.actions_remaining = kwargs.get("actions_remaining", 3)
         self.resources = kwargs.get("resources", 0)
