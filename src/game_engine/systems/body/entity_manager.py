@@ -367,8 +367,14 @@ class EntityManager(BaseSystem):
     def _apply_template_properties(self, entity: Entity, template: Any) -> None:
         """Apply properties from template to entity."""
         # 1. Apply base properties
-        for key, value in template.base_properties.items():
-            if hasattr(entity, key):
+        if hasattr(template, 'base_properties'):
+            properties = template.base_properties.items()
+        else:
+            from dataclasses import asdict
+            properties = asdict(template).items() if hasattr(template, "__dataclass_fields__") else vars(template).items()
+            
+        for key, value in properties:
+            if hasattr(entity, key) and key not in ('template_id', 'entity_type', 'display_name'):
                 setattr(entity, key, value)
         
         # 2. Add components
@@ -402,7 +408,13 @@ class EntityManager(BaseSystem):
             if registry is None:
                 return Result(success=False, error="No template registry set. Call set_template_registry() first.")
 
-            template = registry.get_template(template_id)
+            if hasattr(registry, 'get_template'):
+                template = registry.get_template(template_id)
+            elif hasattr(registry, 'get'):
+                template = registry.get(template_id)
+            else:
+                return Result(success=False, error="Invalid template registry")
+
             if template is None:
                 return Result(success=False, error=f"Template not found: {template_id}")
 
