@@ -11,12 +11,6 @@ from src.apps.slime_clan.auto_battle import (
 )
 from src.apps.slime_clan.ui.battle_ui import render_autobattle
 
-def get_shape_str(shape: Shape) -> str:
-    return {"CIRCLE": "C", "SQUARE": "S", "TRIANGLE": "T"}.get(shape.value, "?")
-
-def get_hat_str(hat: Hat) -> str:
-    return {"NONE": " ", "SWORD": "⚔", "SHIELD": "🛡", "STAFF": "✨"}.get(hat.value, "?")
-
 class AutoBattleScene(Scene):
     """3v3 auto-battler. Returns win/loss via scene transition."""
 
