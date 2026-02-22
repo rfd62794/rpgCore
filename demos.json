@@ -35,7 +35,7 @@
             "description": "Action roguelike. Survive the belt. Every run changes you.",
             "module": "src.apps.asteroids.run_asteroids",
             "entry": "main",
-            "status": "stub",
+            "status": "playable",
             "genre": "action"
         }
     ]
