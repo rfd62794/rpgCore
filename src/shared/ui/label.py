@@ -92,6 +92,12 @@ class Label(UIComponent):
             
             y_offset += line_height
 
+    def get_required_height(self) -> int:
+        """Calculate the height needed to display all lines."""
+        if not self.font or not self._rendered_lines:
+            return 0
+        return len(self._rendered_lines) * self.font.get_linesize()
+
     def update(self, dt_ms: int) -> None:
         pass
 

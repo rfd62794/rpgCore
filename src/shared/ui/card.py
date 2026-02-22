@@ -110,3 +110,9 @@ class Card(Button):
         if self.fade_alpha > 0:
             for child in self.children:
                 child.render(surface)
+
+    def get_required_height(self) -> int:
+        """Calculate height based on wrapped text label."""
+        # Padding top (10) + label height + padding bottom (10)
+        # Minimum height of 40 to avoid tiny cards
+        return max(40, self.text_label.get_required_height() + 20)

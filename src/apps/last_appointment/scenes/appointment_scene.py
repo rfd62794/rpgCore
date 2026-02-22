@@ -175,9 +175,12 @@ class AppointmentScene(Scene):
                     self.request_quit()
                 
                 if self.phase == "PROMPT":
-                    # Handling choices 1-5 via keyboard
+                    # Handling choices 1-5 via keyboard (Top row and NumPad)
                     if pygame.K_1 <= event.key <= pygame.K_5:
                         idx = event.key - pygame.K_1
+                        self._handle_choice_selection(idx)
+                    elif pygame.K_KP1 <= event.key <= pygame.K_KP5:
+                        idx = event.key - pygame.K_KP1
                         self._handle_choice_selection(idx)
                         
                 elif self.phase == "NPC_RESPONSE":

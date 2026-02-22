@@ -96,9 +96,11 @@ class Button(Panel):
                 
         # Optional keyboard number trigger
         elif event.type == pygame.KEYDOWN and self.keyboard_index is not None:
-            # Shift indices maps 1->K_1
-            target_key = getattr(pygame, f"K_{self.keyboard_index}", None)
-            if event.key == target_key and self.on_click:
+            # Check both top-row and KP_ equivalents
+            main_key = getattr(pygame, f"K_{self.keyboard_index}", None)
+            kp_key = getattr(pygame, f"K_KP_{self.keyboard_index}", None)
+            
+            if (event.key == main_key or (kp_key is not None and event.key == kp_key)) and self.on_click:
                 self.on_click()
                 return True
                 

@@ -33,35 +33,34 @@ class CardLayout(UIComponent):
         if not items:
             return
             
-        # Calculate dynamic height fitting
-        num_cards = len(items)
-        available_h = self.rect.height
-        total_spacing = self.spacing * (num_cards - 1)
-        card_h = (available_h - total_spacing) // num_cards
-        
-        # Squeeze if too large
-        if card_h > 80:
-            card_h = 80
-            
         current_y = self.rect.y
         
         for i, item in enumerate(items):
-            card_rect = pygame.Rect(self.rect.x, current_y, self.rect.width, card_h)
+            # Temporary rect to calculate required height
+            temp_rect = pygame.Rect(self.rect.x, current_y, self.rect.width, 40)
             
             def make_callback(idx=i):
                 return lambda: self._on_card_click(idx)
                 
             color = item.get("accent_color", (100, 100, 120))
             card = Card(
-                rect=card_rect,
+                rect=temp_rect,
                 number=i + 1,
                 text=item["text"],
                 stance_color=color,
                 on_click=make_callback()
             )
+            
+            # Recalculate height based on text content
+            card_h = card.get_required_height()
+            card.rect.height = card_h
+            
             card.fade_alpha = 0.0 # Start invisible for animation
             self.cards.append(card)
             current_y += card_h + self.spacing
+            
+        self._fade_timer = 0
+        self._is_animating = True
             
         self._fade_timer = 0
         self._is_animating = True
