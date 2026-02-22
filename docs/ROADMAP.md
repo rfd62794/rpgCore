@@ -29,6 +29,11 @@
 - **Composition Selection**: Player selects 3 slimes from a roster to form their squad.
 - **Starter Roster**: Begins with Rex, Brom, and Pip. Expandable through future unlocks.
 
+## Session 033 — Unbound Specialization
+- **Tribe Characterization**: Unbound recruits naturally adopt hats based on their origin colony rather than always spawning as `Hat.NONE`.
+- **Ashfen Tribe**: Leans toward STAFF (healers, caretakers).
+- **Rootward Tribe**: Leans toward SHIELD (defenders of territory).
+
 ---
 
 ## Future — rpgCore Integration

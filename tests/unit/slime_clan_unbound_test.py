@@ -67,9 +67,11 @@ def test_wait_interaction_unlock(mock_overworld):
     assert mock_overworld.actions_remaining == 1 # Wait costs 0
     assert mock_overworld.tribe_state["ashfen"]["approaches"] == 3
 
-def test_dispersal_logic(mock_overworld):
+def test_hiding_logic(mock_overworld):
     tid = "ashfen"
     node = mock_overworld.nodes[tid]
+    colony = mock_overworld.colony_manager.get_colony(tid)
+    
     # Ashfen only has one connection: "node_2"
     conn_id = "node_2"
     conn_node = mock_overworld.nodes[conn_id]
@@ -77,8 +79,9 @@ def test_dispersal_logic(mock_overworld):
     # Surround it (Red takes node_2)
     mock_overworld.faction_manager.claim_territory("CLAN_RED", conn_node.coord, 1.0, 0)
     
-    mock_overworld.tribe_state[tid]["dispersed"] = False
+    colony.hidden = False
     mock_overworld._end_day()
     
-    assert mock_overworld.tribe_state[tid]["dispersed"] is True
-    assert mock_overworld.faction_manager.get_owner(node.coord) is None # Node is neutral now
+    assert colony.hidden is True
+    # The territory owner should still be CLAN_YELLOW (they just went into hiding, they didn't lose the node permanently to nobody)
+    assert mock_overworld.faction_manager.get_owner(node.coord) == "CLAN_YELLOW"
