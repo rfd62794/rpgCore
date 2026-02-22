@@ -51,16 +51,16 @@ def test_stance_tracking_and_advancement(scene):
     # Press any key to advance
     scene.handle_events([MockEvent(pygame.K_SPACE)])
     
-    # Should advance to beat_2
-    assert scene.current_node.node_id == "beat_2"
+    # Should advance to beat_2_pro
+    assert scene.current_node.node_id == "beat_2_pro"
     assert scene.phase == "PROMPT"
     
-    # Moving back to beat 1 from beat 2 requires pressing K_1 again
+    # beat_2_pro has 5 options. Let's pick 1 again (PROFESSIONAL), which leads to beat_3_pro
     events = [MockEvent(pygame.K_1)]
     scene.handle_events(events)
     
-    # Beat 2's option has NO npc_response, so it advances immediately
-    assert scene.current_node.node_id == "beat_1"
+    # Beat 2's options do NOT have npc_response in the current JSON, so they advance immediately
+    assert scene.current_node.node_id == "beat_3_pro"
     assert scene.phase == "PROMPT"
 
 def test_invalid_key_does_not_advance(scene):
