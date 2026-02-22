@@ -2,6 +2,7 @@
 **Date:** 2026-02-21 (Session 018)
 **Scope:** Deep read-only invariant audit of all rendering, drawing, and visual output systems across the repository.
 
+> **Update:** As of late Session 018, Rendering Consolidation is complete. Godot, Terminal, and PPU shims have been preserved in `archive/rendering_donors/`. Sovereign Surface pattern is extracted to `shared/rendering/sovereign_surface.py`. PyGameRenderer is upgraded with LayerCompositor, FontManager, and SpriteLoader.
 ---
 
 ## 1. Complete Rendering Inventory
