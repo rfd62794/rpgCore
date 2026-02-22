@@ -3,6 +3,17 @@ from typing import List, Dict, Any, Optional
 from src.apps.slime_clan.constants import *
 from src.apps.slime_clan.territorial_grid import draw_slime, SLIME_COLORS, TileState
 
+def get_shape_str(shape: Any) -> str:
+    """Helper for AutoBattle rendering."""
+    # We use .value if it's an Enum, otherwise stringify
+    val = getattr(shape, "value", str(shape))
+    return {"CIRCLE": "C", "SQUARE": "S", "TRIANGLE": "T"}.get(val, "?")
+
+def get_hat_str(hat: Any) -> str:
+    """Helper for AutoBattle rendering."""
+    val = getattr(hat, "value", str(hat))
+    return {"NONE": " ", "SWORD": "⚔", "SHIELD": "🛡", "STAFF": "✨"}.get(val, "?")
+
 def render_battlefield(surface: pygame.Surface, font_ui: pygame.font.Font, font_token: pygame.font.Font, font_banner: pygame.font.Font, 
                       region_name: str, grid: List[List[Any]], blue_token: Any, red_token: Any, 
                       game_over: bool, exit_code: int):
@@ -129,7 +140,6 @@ def _draw_unit(surface: pygame.Surface, font_name: pygame.font.Font, unit: Any, 
     pygame.draw.rect(surface, hp_color, (bx, by, fill_w, bar_h))
 
     # Indicators (Shapes & Hats)
-    from src.apps.slime_clan.scenes.auto_battle_scene import get_shape_str, get_hat_str # Internal for now
     ind_str = f"[{get_shape_str(unit.shape)}] {get_hat_str(unit.hat)}"
     ind_surf = font_name.render(ind_str, True, (150, 150, 150))
     surface.blit(ind_surf, (x - ind_surf.get_width() // 2, by + 8))
