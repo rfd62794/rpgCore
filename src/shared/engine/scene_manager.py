@@ -13,6 +13,7 @@ from abc import ABC, abstractmethod
 from typing import Optional, TYPE_CHECKING, Dict, Any
 
 import pygame
+from loguru import logger
 
 from src.shared.engine.base_system import BaseSystem, SystemStatus, SystemConfig
 from src.shared.engine.system_clock import SystemClock, TimeMode
@@ -133,10 +134,7 @@ class SceneManager:
         self._active_scene = scene_class(self, **kwargs)
         
         if not self._active_scene.initialize():
-            # Assuming 'logger' is defined elsewhere or will be added.
-            # For now, print to stderr.
-            import sys
-            print(f"ERROR: Failed to initialize scene: {name}", file=sys.stderr)
+            logger.error(f"Failed to initialize scene: {name}")
             self._running = False
         else:
             self._active_scene.status = SystemStatus.RUNNING
