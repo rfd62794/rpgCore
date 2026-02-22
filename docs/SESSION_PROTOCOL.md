@@ -6,6 +6,7 @@
 
 You are working on the Slime Clan game within the rpgCore repository (github.com/rfd62794/rpgCore). Before starting, read these docs:
 
+- `docs/RPGCORE_CONSTITUTION.md` — engine law, demo structure, repository context (READ FIRST)
 - `docs/VISION.md` — the north star
 - `docs/ROADMAP.md` — session plan
 - `docs/COLONY_SYSTEM.md` — colony architecture
