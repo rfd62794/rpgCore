@@ -127,8 +127,8 @@ class OverworldScene(Scene):
             # Home base
             self.faction_manager.claim_territory("CLAN_BLUE", (0, 2), 1.0, 0)
             # Session 027: Initialize Unbound territories
-            self.faction_manager.claim_territory("CLAN_YELLOW", (1, 1), 1.0, 0) # Ashfen
-            self.faction_manager.claim_territory("CLAN_YELLOW", (1, 3), 1.0, 0) # Rootward
+            self.faction_manager.claim_territory("CLAN_YELLOW", self.nodes["ashfen"].coord, 1.0, 0)
+            self.faction_manager.claim_territory("CLAN_YELLOW", self.nodes["rootward"].coord, 1.0, 0)
             # Initial setup: RED owns the core, BLUE owns the yard
             self.faction_manager.claim_territory("CLAN_RED", (3, 2), 1.0, 0) # Core
             self.faction_manager.claim_territory("CLAN_RED", (2, 3), 0.8, 0) # Eastern Front
@@ -542,6 +542,7 @@ class BattleFieldScene(Scene):
         self.resources = kwargs.get("resources", 0)
         self.ship_parts = kwargs.get("ship_parts", 0)
         self.secured_part_nodes = kwargs.get("secured_part_nodes", [])
+        self.tribe_state = kwargs.get("tribe_state", {})
         self.stronghold_bonus = kwargs.get("stronghold_bonus", False)
         self.game_over = False
         self.exit_code = 1
@@ -889,6 +890,7 @@ class AutoBattleScene(Scene):
             resources=self.resources,
             ship_parts=self.ship_parts,
             secured_part_nodes=self.secured_part_nodes,
+            tribe_state=self.tribe_state,
             stronghold_bonus=self.stronghold_bonus
         )
 
