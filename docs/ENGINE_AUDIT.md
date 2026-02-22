@@ -8,6 +8,8 @@
 | D20Resolver | `game_engine/engines/d20_core.py` | `src/shared/combat/d20_resolver.py` | ✅ Extracted, 11 tests |
 | BaseSystem | `game_engine/foundation/base_system.py` | `src/shared/engine/base_system.py` | ✅ Extracted |
 | SystemClock | `game_engine/core/clock.py` | `src/shared/engine/system_clock.py` | ✅ Extracted |
+| NarrativeEngine | `dgt_engine/narrative/` | `src/shared/narrative/` | ✅ Extracted (Graph, Registry, Tracker) |
+| RenderAdapters | `game_engine/engines/pygame_bridge.py` | `src/shared/rendering/` | ✅ Extracted (PyGameRenderer) |
 
 ---
 
