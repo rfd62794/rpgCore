@@ -37,6 +37,15 @@
             "entry": "main",
             "status": "playable",
             "genre": "action"
+        },
+        {
+            "id": "space_trader",
+            "name": "Space Trader",
+            "description": "Simple economy simulation. Travel safely, buy low, sell high.",
+            "module": "src.apps.space_trader.run_space_trader",
+            "entry": "main",
+            "status": "development",
+            "genre": "simulation"
         }
     ]
 }
