@@ -49,96 +49,53 @@ class FactionConflict:
 
 class FactionManager:
     """
-    Manages faction simulation, territorial expansion, and persistence.
+    Manages faction simulation, territorial expansion, and persistence (in-memory).
     """
-    def __init__(self, db_path: str = "data/factions.sqlite"):
-        self.db_path = db_path
-        os.makedirs(os.path.dirname(db_path), exist_ok=True)
-        self._initialize_database()
+    def __init__(self):
         self.factions: Dict[str, Faction] = {}
+        self.territories: Dict[Tuple[int, int], str] = {} # {coord: faction_id}
         self.conflicts: List[FactionConflict] = []
         
         # Sim params
         self.expansion_chance = 0.3
         
-    def _initialize_database(self):
-        with sqlite3.connect(self.db_path) as conn:
-            conn.execute("""
-                CREATE TABLE IF NOT EXISTS factions (
-                    id TEXT PRIMARY KEY,
-                    name TEXT NOT NULL,
-                    type TEXT NOT NULL,
-                    color TEXT NOT NULL,
-                    home_base TEXT NOT NULL,
-                    current_power REAL,
-                    territories TEXT,
-                    relations TEXT,
-                    expansion_rate REAL,
-                    aggression_level REAL,
-                    last_action_turn INTEGER
-                )
-            """)
-            conn.execute("""
-                CREATE TABLE IF NOT EXISTS territories (
-                    coordinate TEXT PRIMARY KEY,
-                    faction_id TEXT NOT NULL,
-                    strength REAL,
-                    acquired_turn INTEGER
-                )
-            """)
-            conn.commit()
-
     def register_faction(self, faction: Faction):
         self.factions[faction.id] = faction
-        self._save_faction(faction)
         self.claim_territory(faction.id, faction.home_base, 1.0, 0)
 
-    def _save_faction(self, faction: Faction):
-        with sqlite3.connect(self.db_path) as conn:
-            conn.execute("""
-                INSERT OR REPLACE INTO factions VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-            """, (
-                faction.id, faction.name, faction.type.value, str(faction.color),
-                f"{faction.home_base[0]},{faction.home_base[1]}",
-                faction.current_power, json.dumps(faction.territories),
-                json.dumps({k: v.value for k, v in faction.relations.items()}),
-                faction.expansion_rate, faction.aggression_level, faction.last_action_turn
-            ))
-
     def claim_territory(self, faction_id: str, coord: Tuple[int, int], strength: float, turn: int):
-        coord_key = f"{coord[0]},{coord[1]}"
-        with sqlite3.connect(self.db_path) as conn:
-            conn.execute("INSERT OR REPLACE INTO territories VALUES (?, ?, ?, ?)",
-                        (coord_key, faction_id, strength, turn))
+        self.territories[coord] = faction_id
         
         if faction_id in self.factions:
             if coord not in self.factions[faction_id].territories:
                 self.factions[faction_id].territories.append(coord)
 
     def get_owner(self, coord: Tuple[int, int]) -> Optional[str]:
-        coord_key = f"{coord[0]},{coord[1]}"
-        with sqlite3.connect(self.db_path) as conn:
-            cursor = conn.execute("SELECT faction_id FROM territories WHERE coordinate = ?", (coord_key,))
-            row = cursor.fetchone()
-            return row[0] if row else None
+        return self.territories.get(coord)
 
-    def simulate_step(self, current_turn: int, world_bounds: Optional[Tuple[int, int, int, int]] = None):
+    def simulate_step(self, current_turn: int, world_bounds: Optional[Tuple[int, int, int, int]] = None, connection_graph: Optional[Dict[Tuple[int, int], List[Tuple[int, int]]]] = None):
         """Perform one simulation tick."""
         for fid, faction in self.factions.items():
             if random.random() < self.expansion_chance * faction.expansion_rate:
-                self._expand_faction(faction, current_turn, world_bounds)
+                self._expand_faction(faction, current_turn, world_bounds, connection_graph)
 
-    def _expand_faction(self, faction: Faction, turn: int, bounds: Optional[Tuple[int, int, int, int]]):
+    def _expand_faction(self, faction: Faction, turn: int, bounds: Optional[Tuple[int, int, int, int]], connection_graph: Optional[Dict[Tuple[int, int], List[Tuple[int, int]]]]):
         if not faction.territories:
             return
             
         # Try to expand from a random existing territory
         origin = random.choice(faction.territories)
-        adj = [(0,1), (0,-1), (1,0), (-1,0)]
+        
+        if connection_graph:
+            adj = connection_graph.get(origin, [])
+        else:
+            offsets = [(0,1), (0,-1), (1,0), (-1,0)]
+            adj = [(origin[0] + dx, origin[1] + dy) for dx, dy in offsets]
+            
         random.shuffle(adj)
         
-        for dx, dy in adj:
-            tx, ty = origin[0] + dx, origin[1] + dy
+        for target in adj:
+            tx, ty = target
             
             # Check bounds if provided
             if bounds:
@@ -146,7 +103,6 @@ class FactionManager:
                 if not (min_x <= tx <= max_x and min_y <= ty <= max_y):
                     continue
             
-            target = (tx, ty)
             owner = self.get_owner(target)
             
             if owner is None:
@@ -155,8 +111,7 @@ class FactionManager:
                 logger.debug(f"Faction {faction.name} claimed neutral territory {target}")
                 break
             elif owner != faction.id:
-                # Potential conflict - Simplified Slime Clan logic: 
-                # Factions don't auto-conquer each other unless powerful
+                # Potential conflict
                 rel = faction.relations.get(owner, FactionRelation.NEUTRAL)
                 if rel in [FactionRelation.HOSTILE, FactionRelation.WAR]:
                     if random.random() < faction.aggression_level * faction.current_power:

@@ -24,6 +24,10 @@ from src.apps.slime_clan.auto_battle import (
     Shape, Hat, SlimeUnit, create_slime, execute_action
 )
 
+# Session 024: Faction System Integration
+from src.shared.world.faction import FactionManager, FactionRelation
+from src.apps.slime_clan.factions import get_slime_factions
+
 # ---------------------------------------------------------------------------
 # Shared Constants
 # ---------------------------------------------------------------------------
@@ -61,7 +65,7 @@ class MapNode:
     name: str
     x: int
     y: int
-    state: NodeState
+    coord: tuple[int, int] # Grid coordinate for Faction simulation
     connections: List[str] = field(default_factory=list)
 
 
@@ -72,12 +76,33 @@ class OverworldScene(Scene):
         self.nodes: Dict[str, MapNode] = kwargs.get("nodes", None)
         if self.nodes is None:
             self.nodes = {
-                "home": MapNode("home", "Crash Site", 100, 240, NodeState.HOME, ["node_1"]),
-                "node_1": MapNode("node_1", "Scrap Yard", 250, 150, NodeState.BLUE, ["home", "node_2", "node_3"]),
-                "node_2": MapNode("node_2", "Northern Wastes", 400, 100, NodeState.CONTESTED, ["node_1", "node_4"]),
-                "node_3": MapNode("node_3", "Eastern Front", 400, 300, NodeState.RED, ["node_1", "node_4"]),
-                "node_4": MapNode("node_4", "Deep Red Core", 550, 200, NodeState.RED, ["node_2", "node_3"]),
+                "home": MapNode("home", "Crash Site", 100, 240, (0, 2), ["node_1"]),
+                "node_1": MapNode("node_1", "Scrap Yard", 250, 150, (1, 2), ["home", "node_2", "node_3"]),
+                "node_2": MapNode("node_2", "Northern Wastes", 400, 100, (2, 1), ["node_1", "node_4"]),
+                "node_3": MapNode("node_3", "Eastern Front", 400, 300, (2, 3), ["node_1", "node_4"]),
+                "node_4": MapNode("node_4", "Deep Red Core", 550, 200, (3, 2), ["node_2", "node_3"]),
             }
+
+        # Session 024: Faction Manager Setup
+        self.faction_manager = kwargs.get("faction_manager")
+        if self.faction_manager is None:
+            self.faction_manager = FactionManager()
+            for f in get_slime_factions():
+                self.faction_manager.register_faction(f)
+            # Initial setup: RED owns the core, BLUE owns the yard
+            self.faction_manager.claim_territory("CLAN_RED", (3, 2), 1.0, 0) # Core
+            self.faction_manager.claim_territory("CLAN_RED", (2, 3), 0.8, 0) # Eastern Front
+            self.faction_manager.claim_territory("CLAN_BLUE", (1, 2), 0.8, 0) # Scrap Yard
+            # Home is protected or neutral but logically Blue starting point
+            self.faction_manager.claim_territory("CLAN_BLUE", (0, 2), 1.0, 0)
+
+        self.sim_timer = 0.0
+        self.sim_interval = 5000.0 # 5 seconds
+
+        # Build connection graph for FactionManager
+        self.connection_graph = {}
+        for node in self.nodes.values():
+            self.connection_graph[node.coord] = [self.nodes[conn_id].coord for conn_id in node.connections]
 
         # Apply battle result from returning scenes
         battle_node_id = kwargs.get("battle_node_id")
@@ -86,11 +111,10 @@ class OverworldScene(Scene):
             node = self.nodes[battle_node_id]
             if battle_won:
                 logger.info(f"🏆 Blue secured {node.name}!")
-                node.state = NodeState.BLUE
+                self.faction_manager.claim_territory("CLAN_BLUE", node.coord, 1.0, 0)
             else:
                 logger.info(f"💀 Red held {node.name}.")
-                if node.state == NodeState.CONTESTED:
-                    node.state = NodeState.RED
+                self.faction_manager.claim_territory("CLAN_RED", node.coord, 1.0, 0)
 
         self.game_over = kwargs.get("game_over", None)
         self.font = pygame.font.Font(None, 24)
@@ -113,22 +137,33 @@ class OverworldScene(Scene):
         for node in self.nodes.values():
             dist = math.hypot(mx - node.x, my - node.y)
             if dist <= NODE_RADIUS:
-                logger.info(f"📍 Clicked node: {node.name} ({node.state.value})")
-                if node.state in (NodeState.RED, NodeState.CONTESTED):
+                owner = self.faction_manager.get_owner(node.coord)
+                status = owner if owner else "NEUTRAL"
+                logger.info(f"📍 Clicked node: {node.name} ({status})")
+                if owner == "CLAN_RED" or (not owner and node.id != "home"):
                     logger.info(f"⚔️  Deploying forces to {node.name}...")
                     self.request_scene("battle_field",
                         region=node.name,
                         difficulty="NORMAL",
                         node_id=node.id,
                         nodes=self.nodes,
+                        faction_manager=self.faction_manager
                     )
                 return
 
     def update(self, dt_ms: float) -> None:
         if self.game_over:
             return
-        red_count = sum(1 for n in self.nodes.values() if n.id != "home" and n.state == NodeState.RED)
-        blue_count = sum(1 for n in self.nodes.values() if n.id != "home" and n.state == NodeState.BLUE)
+
+        # Session 024: Passive Simulation Tick
+        self.sim_timer += dt_ms
+        if self.sim_timer >= self.sim_interval:
+            self.sim_timer = 0
+            self.faction_manager.simulate_step(0, connection_graph=self.connection_graph)
+            logger.debug("🌍 World Simulation Ticked")
+
+        red_count = sum(1 for n in self.nodes.values() if n.id != "home" and self.faction_manager.get_owner(n.coord) == "CLAN_RED")
+        blue_count = sum(1 for n in self.nodes.values() if n.id != "home" and self.faction_manager.get_owner(n.coord) == "CLAN_BLUE")
         if blue_count >= 4:
             self.game_over = "WIN"
             logger.info("🎉 Planet Secured!")
@@ -151,7 +186,16 @@ class OverworldScene(Scene):
                     drawn_pairs.add(pair)
 
         for node in self.nodes.values():
-            color = NODE_COLORS[node.state]
+            owner = self.faction_manager.get_owner(node.coord)
+            if node.id == "home":
+                color = NODE_COLORS[NodeState.HOME]
+            elif owner == "CLAN_BLUE":
+                color = NODE_COLORS[NodeState.BLUE]
+            elif owner == "CLAN_RED":
+                color = NODE_COLORS[NodeState.RED]
+            else:
+                color = (150, 150, 150) # Neutral gray
+
             pygame.draw.circle(surface, color, (node.x, node.y), NODE_RADIUS)
             pygame.draw.circle(surface, (255, 255, 255), (node.x, node.y), NODE_RADIUS, 2)
             label_surf = self.font.render(node.name, True, TEXT_COLOR)
@@ -210,6 +254,7 @@ class BattleFieldScene(Scene):
         self.difficulty = kwargs.get("difficulty", "NORMAL")
         self.node_id = kwargs.get("node_id", "")
         self.nodes = kwargs.get("nodes", {})  # Overworld nodes to pass back
+        self.faction_manager = kwargs.get("faction_manager")
         self.game_over = False
         self.exit_code = 1
 
@@ -316,6 +361,7 @@ class BattleFieldScene(Scene):
             bf_difficulty=self.difficulty,
             bf_node_id=self.node_id,
             bf_nodes=self.nodes,
+            faction_manager=self.faction_manager
         )
 
     def _return_to_overworld(self, won: bool) -> None:
@@ -323,6 +369,7 @@ class BattleFieldScene(Scene):
             nodes=self.nodes,
             battle_node_id=self.node_id,
             battle_won=won,
+            faction_manager=self.faction_manager
         )
 
     def update(self, dt_ms: float) -> None:
@@ -421,6 +468,7 @@ class AutoBattleScene(Scene):
         self.bf_difficulty = kwargs.get("bf_difficulty", "NORMAL")
         self.bf_node_id = kwargs.get("bf_node_id", "")
         self.bf_nodes = kwargs.get("bf_nodes", {})
+        self.faction_manager = kwargs.get("faction_manager")
 
         self.turn_count = 0
         self.timer_ms = 0.0
@@ -532,6 +580,7 @@ class AutoBattleScene(Scene):
             node_id=self.bf_node_id,
             nodes=self.bf_nodes,
             auto_battle_result=result,
+            faction_manager=self.faction_manager
         )
 
     def _get_shape_str(self, shape: Shape) -> str:
