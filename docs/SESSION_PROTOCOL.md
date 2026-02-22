@@ -17,6 +17,7 @@ Read the output before reading anything else.
 - No `print()` statements in `src/`. Use `logging` or `Rich` for CLI output.
 - All commands must be Windows PowerShell safe.
 - Artifact first: update docs and journal before closing a session.
+- Stub tests (e.g., `assert 0 == 1`, `pass`) are strictly prohibited in the protected test suite. Either write a real assertion or use `@pytest.mark.skip`.
 
 ---
 
