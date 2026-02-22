@@ -3,6 +3,16 @@ import math
 from typing import List, Dict, Any, Optional, Set
 from src.apps.slime_clan.constants import *
 
+_LABEL_RECTS = []
+
+FACTION_COLORS = {
+    "CLAN_RED": {"fill": (139, 26, 26), "border": (204, 51, 51)},
+    "CLAN_BLUE": {"fill": (26, 58, 92), "border": (51, 102, 204)},
+    "CLAN_YELLOW": {"fill": (42, 42, 26), "border": (245, 197, 66)},
+    "ASTRONAUT": {"fill": (42, 42, 42), "border": (255, 255, 255)},
+    None: {"fill": (58, 58, 74), "border": (106, 106, 138)}
+}
+
 def draw_overworld_hud(surface: pygame.Surface, font: pygame.font.Font, day: int, actions: int, actions_max: int, resources: int, ship_parts: int, roster_count: int):
     """Pure render for Overworld HUD."""
     hud_text = f"Day {day}  —  Actions: {actions}/{actions_max}"
@@ -36,6 +46,9 @@ def render_overworld_map(surface: pygame.Surface, font: pygame.font.Font, coloni
     """Pure render for the entire map layer."""
     surface.fill(OVERWORLD_BG)
     
+    global _LABEL_RECTS
+    _LABEL_RECTS.clear()
+    
     # Connections
     drawn_pairs = set()
     for col in colonies_dict.values():
@@ -44,42 +57,84 @@ def render_overworld_map(surface: pygame.Surface, font: pygame.font.Font, coloni
             if not conn_node: continue
             pair = tuple(sorted([col.id, conn_id]))
             if pair not in drawn_pairs:
-                pygame.draw.line(surface, LINE_COLOR, (col.x, col.y), (conn_node.x, conn_node.y), 3)
+                line_color = LINE_COLOR
+                if col.faction and conn_node.faction and col.faction != conn_node.faction:
+                    line_color = (74, 26, 26)  # Dark red for tension
+                pygame.draw.line(surface, line_color, (col.x, col.y), (conn_node.x, conn_node.y), 3)
                 drawn_pairs.add(pair)
 
     # Nodes
     for node in colonies_dict.values():
         owner = faction_manager.get_owner(node.coord)
-        color = NODE_COLORS.get(owner, (150, 150, 150))
-        if node.id == "home": color = (200, 200, 200)
+        fc = FACTION_COLORS.get(owner, FACTION_COLORS[None])
+        fill_color = fc["fill"]
+        border_color = fc["border"]
         
-        if actions_remaining <= 0 and owner == "CLAN_BLUE" and node.id != "home":
-            color = (130, 130, 130)
+        if node.id == "home":
+            fill_color = (42, 42, 42)
+            border_color = (255, 255, 255)
+            
+        radius = NODE_RADIUS
+        if getattr(node, "node_type", None) and getattr(node.node_type, "name", "") == "STRONGHOLD":
+            radius = int(NODE_RADIUS * 1.15)
+            
+        pygame.draw.circle(surface, fill_color, (node.x, node.y), radius)
 
-        pygame.draw.circle(surface, color, (node.x, node.y), NODE_RADIUS)
-        
+        # Draw markers BEFORE borders
         if owner == "CLAN_YELLOW":
             pts = [(node.x, node.y - 8), (node.x + 8, node.y), (node.x, node.y + 8), (node.x - 8, node.y)]
-            pygame.draw.polygon(surface, (255, 255, 255), pts)
-
-        if owner == "CLAN_RED":
-            pygame.draw.circle(surface, (255, 255, 255), (node.x, node.y), NODE_RADIUS, 2)
+            pygame.draw.polygon(surface, border_color, pts, 0)
             
+        if getattr(node, "node_type", None):
+            nt_name = getattr(node.node_type, "name", "")
+            if nt_name == "SHIP_PARTS":
+                pts = [(node.x, node.y - 6), (node.x + 6, node.y), (node.x, node.y + 6), (node.x - 6, node.y)]
+                pygame.draw.polygon(surface, border_color, pts, 0)
+            elif nt_name == "RESOURCE":
+                pygame.draw.circle(surface, border_color, (node.x, node.y - 5), 2)
+                pygame.draw.circle(surface, border_color, (node.x - 4, node.y + 3), 2)
+                pygame.draw.circle(surface, border_color, (node.x + 4, node.y + 3), 2)
+                
+        # Main border
+        pygame.draw.circle(surface, border_color, (node.x, node.y), radius, 2)
+        
+        # Outer rings or markers
+        if getattr(node, "node_type", None) and getattr(node.node_type, "name", "") == "RECRUITMENT":
+            pygame.draw.circle(surface, border_color, (node.x, node.y), radius + 6, 1)
+
+        # Home visual: small inverted triangle (fill white #FFFFFF)
+        if node.id == "home":
+            tri_pts = [(node.x - 6, node.y - radius - 2), (node.x + 6, node.y - radius - 2), (node.x, node.y - radius - 10)]
+            pygame.draw.polygon(surface, (255, 255, 255), tri_pts)
+
         # Labels
         label_surf = font.render(node.name, True, TEXT_COLOR)
         lx = node.x - label_surf.get_width() // 2
-        ly = node.y + NODE_RADIUS + 5
-        surface.blit(label_surf, (lx, ly))
+        ly = node.y + radius + 5
+        
+        label_rect = pygame.Rect(lx, ly, label_surf.get_width(), label_surf.get_height())
+        while label_rect.collidelist(_LABEL_RECTS) != -1:
+            label_rect.y += 15
+        
+        _LABEL_RECTS.append(label_rect)
+        surface.blit(label_surf, label_rect.topleft)
 
-        # Type/State Label (The logic for label text should probably be passed in to keep this pure)
-        # But for now we'll pass the specific label text list or dict to maps.
         pass
 
 def draw_node_labels(surface: pygame.Surface, font: pygame.font.Font, node: Any, label_text: str, label_color: tuple):
-    lx = node.x - font.size(label_text)[0] // 2
-    ly = node.y + NODE_RADIUS + 23
+    global _LABEL_RECTS
     surf = font.render(label_text, True, label_color)
-    surface.blit(surf, (lx, ly))
+    lx = node.x - surf.get_width() // 2
+    
+    radius = int(NODE_RADIUS * 1.15) if getattr(node, "node_type", None) and getattr(node.node_type, "name", "") == "STRONGHOLD" else NODE_RADIUS
+    ly = node.y + radius + 5
+    
+    label_rect = pygame.Rect(lx, ly, surf.get_width(), surf.get_height())
+    while label_rect.collidelist(_LABEL_RECTS) != -1:
+        label_rect.y += 15
+        
+    _LABEL_RECTS.append(label_rect)
+    surface.blit(surf, label_rect.topleft)
 
 def draw_end_day_button(surface: pygame.Surface, font: pygame.font.Font):
     btn_x, btn_y, btn_w, btn_h = WINDOW_WIDTH - 140, WINDOW_HEIGHT - 60, 120, 40
