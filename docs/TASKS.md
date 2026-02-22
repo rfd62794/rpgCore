@@ -21,6 +21,14 @@
 - [TOOL] APJ — dialogue editor for appointment.json style graphs
 - [FEAT] Pygame splash screen launcher
 - [FEAT] Color palette / theme system in assets/shared/themes/
+- [PLAN] Space Trader — design economy model, location graph, cargo system
+- [PLAN] Space Trader — identify which Slime Clan and Asteroids components reuse directly
+- [PLAN] Dungeon Crawler — design room system, encounter types, loot tables
+- [PLAN] Creature Collector — design genetics display, battle flow, capture mechanic
+- [PLAN] TurboShells — design breeding UI, stable view, race loop
+- [HARVEST] Shared economy system — buy/sell/price variance for Space Trader and future demos
+- [HARVEST] Procedural room generator — for Dungeon Crawler and Asteroids roguelike
+- [HARVEST] Inventory system — items, cargo, loot for Space Trader and Dungeon Crawler
 
 ## Completed
 - [x] [TOOL] APJ — task management system integration (2026-02-22)

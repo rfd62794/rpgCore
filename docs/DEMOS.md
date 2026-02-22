@@ -44,3 +44,30 @@ This document outlines the design pillars, core loops, current status, and engin
   - Will stress-test real-time physics and collision layers.
   - Proves high-framerate rendering pipelines and particle systems.
   - Validates the `EntityTemplateRegistry` for rapid enemy/projectile spawning and despawning.
+
+## 5. Space Trader
+**Status:** Planned
+**Genre:** Simple economy simulation
+
+- **Core Loop:** Travel safely → Buy low → Manage cargo → Sell high → Upgrade ship.
+- **Design Pillars:** Simple economy, location-based prices, deterministic but tense travel risks.
+- **Core Memory:** Palm Pilot Space Trader, bus rides, simple fun.
+- **Engine Proofs:** Shows high reuse efficiency (uses Slime Clan map territory and Asteroids combat loops).
+
+## 6. Dungeon Crawler
+**Status:** Planned
+**Genre:** Tactical RPG progression
+
+- **Core Loop:** Enter room → Procedural encounter / Tactical combat → Collect loot → Dig deeper.
+- **Design Pillars:** Tactical combat, procedural rooms, loot and progression. Draws from Final Fantasy structure and Diablo's feel.
+- **Core Memory:** Final Fantasy tactics meets Diablo loot.
+- **Engine Proofs:** Deep validation of D20 resolution, procedural generation systems, and dynamic inventory handling.
+
+## 7. Creature Collector
+**Status:** Planned
+**Genre:** Breeding and combat RPG
+
+- **Core Loop:** Explore → Battle → Capture / Breed → Mix genetics → Build team.
+- **Design Pillars:** Genetics-driven inheritance, deep status combat, meaningful long-term relationship tracking.
+- **Core Memory:** Pokemon meets Dragon Quest Monsters.
+- **Engine Proofs:** The ultimate crucible for shared systems—uses genetics, D20 combat, relationships, and grid exploration all at once.
