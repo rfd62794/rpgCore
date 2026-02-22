@@ -274,6 +274,7 @@ class OverworldScene(Scene):
                         difficulty="NORMAL",
                         node_id=node.id,
                         nodes=self.nodes,
+                        colony_manager=self.colony_manager, # Pass ColonyManager
                         faction_manager=self.faction_manager,
                         day=self.day,
                         actions_remaining=self.actions_remaining,
@@ -281,7 +282,8 @@ class OverworldScene(Scene):
                         ship_parts=self.ship_parts,
                         secured_part_nodes=list(self.secured_part_nodes),
                         stronghold_bonus=stronghold_bonus,
-                        tribe_state=self.tribe_state
+                        tribe_state=self.tribe_state,
+                        player_units=self.player_units # Pass player roster
                     )
                 return
 
@@ -824,6 +826,12 @@ class AutoBattleScene(Scene):
             self._create_buffed_slime("b2", "Brom", Shape.SQUARE, Hat.SHIELD),
             self._create_buffed_slime("b3", "Pip", Shape.TRIANGLE, Hat.STAFF),
         ]
+        # Session 028: Add recruited units
+        for unit in self.player_units:
+            # Recruits are already SlimeUnit instances.
+            # We might need to handle their HP/pos if they persist stats.
+            self.blue_squad.append(unit)
+
         self.red_squad = [
             create_slime("r1", "R-Brute", TileState.RED, Shape.SQUARE, Hat.SWORD, difficulty_mult=mult),
             create_slime("r2", "R-Scout", TileState.RED, Shape.TRIANGLE, Hat.SWORD, difficulty_mult=mult),
@@ -928,6 +936,8 @@ class AutoBattleScene(Scene):
             ship_parts=self.ship_parts,
             secured_part_nodes=self.secured_part_nodes,
             tribe_state=self.tribe_state,
+            player_units=self.player_units,
+            colony_manager=self.colony_manager,
             stronghold_bonus=self.stronghold_bonus
         )
 
