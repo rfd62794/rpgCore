@@ -1,25 +1,23 @@
 import sys
-from src.apps.space_trader.world.location_graph import LocationGraph
-from src.apps.space_trader.world.encounter import EncounterSystem
-from src.apps.space_trader.economy.price_model import PriceModel
-from src.apps.space_trader.economy.market import Market
-from src.apps.space_trader.player.ship import PlayerShip
+import argparse
+import pygame
+from src.apps.space_trader.session import SpaceTraderSession
 
-def print_status(ship: PlayerShip, graph: LocationGraph):
-    loc = graph.get(ship.location_id)
+def print_status(session: SpaceTraderSession):
+    loc = session.graph.get(session.ship.location_id)
     print("\n" + "="*40)
     print(f" LOCATION : {loc.name} ({loc.faction.title()})")
     print(f" DESC     : {loc.description}")
-    print(f" CREDITS  : {ship.credits} cr")
-    print(f" FUEL     : {ship.fuel} / {ship.max_fuel}")
-    print(f" CARGO    : {ship.cargo.space_used()} / {ship.cargo.capacity}")
-    if ship.cargo.contents:
-        for item, qty in ship.cargo.contents.items():
+    print(f" CREDITS  : {session.ship.credits} cr")
+    print(f" FUEL     : {session.ship.fuel} / {session.ship.max_fuel}")
+    print(f" CARGO    : {session.ship.cargo.space_used()} / {session.ship.cargo.capacity}")
+    if session.ship.cargo.contents:
+        for item, qty in session.ship.cargo.contents.items():
             print(f"            - {qty}x {item}")
     print("="*40)
 
-def print_market(ship: PlayerShip, market: Market):
-    listings = market.get_listings(ship.location_id)
+def print_market(session: SpaceTraderSession):
+    listings = session.market.get_listings(session.ship.location_id)
     if not listings:
         print("\n [ Market Closed / No Goods Available ]")
         return
@@ -30,27 +28,34 @@ def print_market(ship: PlayerShip, market: Market):
     for l in listings:
         print(f"{l['good'].title():<10} | {l['buy_price']:<10} | {l['sell_price']:<10}")
         
-def print_travel(ship: PlayerShip, graph: LocationGraph):
-    loc = graph.get(ship.location_id)
-    print("\n--- NAV COMPUTER ---")
-    print("Available Jumps (Requires 1 Fuel):")
-    for conn in loc.connections:
-        n = graph.get(conn)
-        print(f"  - {n.id} ({n.name})")
+def print_map(session: SpaceTraderSession) -> list[str]:
+    loc = session.graph.get(session.ship.location_id)
+    print("\n--- NAVIGATION MAP ---")
+    print(f"Current: {loc.name} ({loc.faction.title()})")
+    print("Reachable:")
+    neighbors = session.graph.neighbors(loc.id)
+    ordered_ids = []
+    
+    for i, n in enumerate(neighbors):
+        num_str = f"[{i+1}]"
+        # Extract faction string formatting
+        fac_str = f"— {n.faction.title()}"
+        risk_str = f"— {session.get_risk_level(n.id)}"
+        print(f"  {num_str} {n.name:<18} {fac_str:<15} {risk_str}")
+        ordered_ids.append(n.id)
+        
+    print("Fuel cost: 1 per jump")
+    return ordered_ids
 
-def main():
+def run_repl(session: SpaceTraderSession):
     print("Initializing Space Trader REPL...")
-    graph = LocationGraph()
-    price_model = PriceModel(graph)
-    market = Market(price_model)
-    encounter_system = EncounterSystem()
-    ship = PlayerShip()
-
     print("\n[ SYSTEM ONLINE ]")
+    
+    map_ids = [] # Cache the last map order for aliases
 
     while True:
-        print_status(ship, graph)
-        print("\nCOMMANDS: [status, market, buy <good> <qty>, sell <good> <qty>, travel <node_id>, refuel, quit]")
+        print_status(session)
+        print("\nCOMMANDS: [status, map, market, buy <good> <qty>, sell <good> <qty>, travel <node_id_or_number>, refuel, quit]")
         cmd_input = input(">> ").strip().lower()
         
         parts = cmd_input.split()
@@ -65,14 +70,16 @@ def main():
         elif cmd == "status":
             continue
         elif cmd == "market":
-            print_market(ship, market)
+            print_market(session)
+        elif cmd == "map":
+            map_ids = print_map(session)
         elif cmd == "refuel":
-            cost = (ship.max_fuel - ship.fuel) * 5
+            cost = (session.ship.max_fuel - session.ship.fuel) * 5
             if cost == 0:
                 print("Fuel tanks already full.")
-            elif ship.credits >= cost:
-                ship.credits -= cost
-                ship.fuel = ship.max_fuel
+            elif session.ship.credits >= cost:
+                session.ship.credits -= cost
+                session.ship.fuel = session.ship.max_fuel
                 print(f"Refueled for {cost} cr.")
             else:
                 print(f"Cannot afford fuel (need {cost} cr).")
@@ -80,8 +87,8 @@ def main():
             good = parts[1]
             try:
                 qty = int(parts[2])
-                res = market.buy(ship.location_id, good, qty, ship.cargo, ship.credits)
-                ship.credits = res["credits"]
+                res = session.market.buy(session.ship.location_id, good, qty, session.ship.cargo, session.ship.credits)
+                session.ship.credits = res["credits"]
                 print("\n-> " + res["message"])
             except ValueError:
                 print("Invalid quantity.")
@@ -89,22 +96,58 @@ def main():
             good = parts[1]
             try:
                 qty = int(parts[2])
-                res = market.sell(ship.location_id, good, qty, ship.cargo, ship.credits)
-                ship.credits = res["credits"]
+                res = session.market.sell(session.ship.location_id, good, qty, session.ship.cargo, session.ship.credits)
+                session.ship.credits = res["credits"]
                 print("\n-> " + res["message"])
             except ValueError:
                 print("Invalid quantity.")
         elif cmd == "travel" and len(parts) == 2:
             target = parts[1]
-            res = ship.travel(target, graph, encounter_system)
+            
+            # Check for number alias
+            if target.isdigit():
+                idx = int(target) - 1
+                if 0 <= idx < len(map_ids):
+                    target = map_ids[idx]
+                else:
+                    print("Invalid map index. Type 'map' to see active numbers.")
+                    continue
+                    
+            res = session.ship.travel(target, session.graph, session.encounter_system)
             print("\n-> " + res["message"])
             if res.get("encounter"):
                 print("!!! ALERT !!! " + res["encounter"]["message"])
             
             # Reseed economy params on travel
-            price_model.update_daily()
+            session.price_model.update_daily()
+            
+            # Clear map alias cache on move
+            map_ids = []
+            
         else:
             print("Unknown command format.")
+
+def main():
+    parser = argparse.ArgumentParser(description="rpgCore Space Trader")
+    parser.add_argument("--terminal", action="store_true", help="Launch in text REPL mode instead of graphical Pygame mode.")
+    args, _ = parser.parse_known_args()
+    
+    session = SpaceTraderSession()
+    
+    if args.terminal:
+        run_repl(session)
+    else:
+        # Launch Pygame Scene
+        pygame.init()
+        screen = pygame.display.set_mode((1024, 768))
+        pygame.display.set_caption("Space Trader")
+        
+        from src.apps.space_trader.ui.scene_space_trader import SpaceTraderScene
+        from src.shared.engine.scene_manager import SceneManager
+        
+        manager = SceneManager(screen, 60)
+        manager.switch_scene(SpaceTraderScene(manager, session))
+        manager.run()
 
 if __name__ == "__main__":
     try:
