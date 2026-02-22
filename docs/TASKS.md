@@ -10,6 +10,12 @@
 - [TOOL] Sprite sheet importer — resurrect from archive, wire to sprite_loader
 - [TOOL] Asset ingestor — rebuild as src/tools/asset_ingestor/
 - [HARVEST] Asset cache — move from game_engine donor to src/shared/assets/cache.py
+- [POLISH] Space Trader — button controls and keyboard navigation
+- [POLISH] Space Trader — buy/sell cost comparison with gain/loss display
+- [POLISH] Space Trader — pirate and random event handling in pygame UI
+- [FEAT] Space Trader — clickable node map for travel
+- [POLISH] Space Trader — UI refinement and economy balancing
+- [FIX] Scene vs SceneBase mismatch — document correct pattern in SESSION_PROTOCOL so future demos don't repeat it
 
 ## Backlog
 - [MIGRATE] Slime Clan — migrate to shared UI components

@@ -44,6 +44,10 @@ You are working on the Slime Clan game within the rpgCore repository (github.com
 - `src/apps/slime_clan/scenes/` for scenes
 - `src/apps/slime_clan/ui/` for rendering
 - `src/shared/` for engine components
+
+New pygame scenes must inherit from `src.shared.engine.scene_manager.Scene` 
+not `src.shared.ui.scene_base.SceneBase`. Register via `manager.register()` 
+and launch via `manager.run()`. See `space_trader` for reference.
 - `src/apps/slime_clan/app.py` is a 31-line launcher.
 - Final step of every session:
   - Run `python -m src.tools.apj tasks --done "completed task"` for each finished item.

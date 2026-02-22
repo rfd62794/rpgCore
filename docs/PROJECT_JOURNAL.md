@@ -1,10 +1,10 @@
 # rpgCore — Project Journal
 
 ## Current State
-354 passing. SpaceTraderSession integrated into robust Pygame UI and aliased REPL.
+354 passing, 0 failures. Four demos playable: Slime Clan, Last Appointment, Asteroids, Space Trader. Shared engine layer complete. APJ hierarchy live with Goals, Milestones, Tasks.
 
 ## In Flight
-None.
+Space Trader polish queued — 5 tasks logged.
 
 ## Next Priority
-Move on to Dungeon Crawler planning or Next active APJ task.
+Space Trader polish pass or Dungeon Crawler planning.
