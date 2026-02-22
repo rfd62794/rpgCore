@@ -53,8 +53,8 @@ line-length = 88
 target-version = ['py312']
 
 [tool.pytest.ini_options]
-testpaths = ["tests/unit", "tests/shared_narrative", "tests/shared_rendering", "tests/last_appointment"]
-python_files = ["test_*.py", "slime_clan_*.py"]
+testpaths = ["tests"]
+python_files = ["test_shared_*.py", "test_last_appointment.py", "test_sovereign_surface.py", "slime_clan_*.py", "test_overworld.py", "test_battle_field.py", "test_scene_manager.py"]
 pythonpath = ["."]
 
 [tool.isort]
