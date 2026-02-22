@@ -10,13 +10,16 @@ from src.shared.narrative.state_tracker import StateTracker
 from src.shared.narrative.keyword_registry import KeywordRegistry
 from src.shared.rendering.font_manager import FontManager
 
+from src.apps.last_appointment.ui.text_window import TextWindow
+
 STANCE_COLORS = {
-    "PROFESSIONAL": (200, 200, 200),
-    "WEARY": (150, 150, 150),
-    "CURIOUS": (100, 200, 255),
-    "RELUCTANT": (200, 150, 100),
-    "MOVED": (255, 200, 200)
+    "PROFESSIONAL": (200, 200, 212), # #C8C8D4
+    "WEARY": (136, 153, 170),        # #8899AA
+    "CURIOUS": (136, 187, 204),      # #88BBCC
+    "RELUCTANT": (204, 153, 68),     # #CC9944
+    "MOVED": (170, 136, 187)         # #AA88BB
 }
+NUMBER_COLOR = (102, 102, 128)       # #666680
 
 class AppointmentScene(Scene):
     def __init__(self, manager: SceneManager, **kwargs):
@@ -26,6 +29,13 @@ class AppointmentScene(Scene):
         self.graph = ConversationGraph(self.state_tracker, self.keyword_registry)
         self.current_node = None
         self.available_edges: List[Edge] = []
+        
+        self.phase = "PROMPT" # PROMPT or NPC_RESPONSE
+        self.pending_node = None
+        self.npc_response_text = ""
+        
+        # Initialize text window
+        self.text_window = TextWindow(0, 0, manager.width, slow_reveal=True, reveal_speed=40.0)
         
         # UI rendering needs FontManager
         FontManager().initialize()
@@ -39,17 +49,14 @@ class AppointmentScene(Scene):
             for beat in data.get("beats", []):
                 edges = []
                 for resp in beat.get("responses", []):
-                    # Store stance required/set locally if we want, but for now just as flags
                     stance = resp.get("stance", "PROFESSIONAL")
+                    npc_res = resp.get("npc_response", "")
                     edge = Edge(
                         target_node=resp["leads_to"],
                         text=resp["text"]
                     )
-                    # We can use the edge text and stance down in render, but Edge class
-                    # doesn't natively store stance. We can patch it later or just parse here.
-                    # For simplicity, let's inject stance dynamically or just let it be.
-                    # Let's add a custom attribute to edge for the demo
                     edge.stance = stance
+                    edge.npc_response = npc_res
                     edges.append(edge)
                     
                 node = Node(
@@ -62,6 +69,7 @@ class AppointmentScene(Scene):
             self.current_node = self.graph.start("beat_1")
             if self.current_node:
                 self.available_edges = self.graph.get_available_choices()
+                self.text_window.set_text(self.current_node.text)
         except Exception as e:
             logger.error(f"Failed to load appointment.json: {e}")
 
@@ -80,23 +88,43 @@ class AppointmentScene(Scene):
                 if event.key == pygame.K_ESCAPE:
                     self.request_quit()
                 
-                # Handling choices 1-5
-                if pygame.K_1 <= event.key <= pygame.K_5:
-                    idx = event.key - pygame.K_1
-                    if idx < len(self.available_edges):
-                        selected = self.available_edges[idx]
-                        stance = getattr(selected, "stance", "PROFESSIONAL")
-                        logger.info(f"Player selected '{selected.text}' with stance {stance}")
-                        
-                        # Set stance
-                        self.state_tracker.set_flag("current_stance", stance)
-                        
-                        self.current_node = self.graph.make_choice(selected)
-                        if self.current_node:
-                            self.available_edges = self.graph.get_available_choices()
+                if self.phase == "PROMPT":
+                    # Handling choices 1-5
+                    if pygame.K_1 <= event.key <= pygame.K_5:
+                        idx = event.key - pygame.K_1
+                        if idx < len(self.available_edges):
+                            selected = self.available_edges[idx]
+                            stance = getattr(selected, "stance", "PROFESSIONAL")
+                            npc_response = getattr(selected, "npc_response", "")
+                            
+                            self.state_tracker.set_flag("current_stance", stance)
+                            
+                            self.pending_node = self.graph.make_choice(selected)
+                            
+                            if npc_response:
+                                self.phase = "NPC_RESPONSE"
+                                self.npc_response_text = npc_response
+                                self.text_window.set_text(self.npc_response_text)
+                            else:
+                                # Advance immediately if no pending response
+                                self._advance_to_pending()
+                elif self.phase == "NPC_RESPONSE":
+                    if self.text_window.is_finished:
+                        # Advance to next prompt
+                        self._advance_to_pending()
+                    else:
+                        # Skip reveal
+                        self.text_window.skip_reveal()
+
+    def _advance_to_pending(self):
+        self.current_node = self.pending_node
+        if self.current_node:
+            self.available_edges = self.graph.get_available_choices()
+            self.text_window.set_text(self.current_node.text)
+        self.phase = "PROMPT"
 
     def update(self, dt_ms: float) -> None:
-        pass
+        self.text_window.update(dt_ms)
 
     def render(self, surface: pygame.Surface) -> None:
         surface.fill((10, 10, 18))  # Dark room: #0A0A12
@@ -106,23 +134,48 @@ class AppointmentScene(Scene):
             surface.blit(text_sur, (50, 50))
             return
             
-        # Draw prompt
-        prompt_sur = FontManager().render_text(self.current_node.text, "Arial", 28, (230, 230, 230))
-        prompt_x = (self.manager.width - prompt_sur.get_width()) // 2
-        surface.blit(prompt_sur, (prompt_x, 150))
+        # Draw the main text window (prompt or npc response)
+        self.text_window.render(surface)
         
-        # Draw stances (for debug/flavor)
-        stance = self.state_tracker.get_flag("current_stance", "NONE")
-        stance_sur = FontManager().render_text(f"Stance: {stance}", "Arial", 16, (100, 100, 100))
-        surface.blit(stance_sur, (20, 20))
+        # Draw stances (bottom right corner, muted italic style)
+        stance = self.state_tracker.get_flag("current_stance", "")
+        if stance:
+            # We mock italics if font manager doesn't natively support it by using a distinct font or just color
+            # Since PyGame sysfonts can be italicized, but FontManager currently doesn't expose it,
+            # we draw it minimal and muted. Let's just use Arial 16, very dark grey.
+            stance_text = stance.capitalize()
+            stance_sur = FontManager().render_text(stance_text, "Arial", 16, (80, 80, 95))
+            sw = stance_sur.get_width()
+            sh = stance_sur.get_height()
+            surface.blit(stance_sur, (self.manager.width - sw - 20, self.manager.height - sh - 20))
         
-        # Draw responses
-        start_y = 350
-        for i, edge in enumerate(self.available_edges):
-            stance = getattr(edge, "stance", "PROFESSIONAL")
-            color = STANCE_COLORS.get(stance, (200, 200, 200))
-            
-            choice_text = f"[{i+1}] {edge.text} ({stance})"
-            edge_sur = FontManager().render_text(choice_text, "Arial", 20, color)
-            
-            surface.blit(edge_sur, (80, start_y + i * 40))
+        if self.phase == "PROMPT":
+            # Draw responses at bottom third
+            start_y = (self.manager.height // 3) * 2
+            for i, edge in enumerate(self.available_edges):
+                stance = getattr(edge, "stance", "PROFESSIONAL")
+                color = STANCE_COLORS.get(stance, (200, 200, 200))
+                
+                # Render number in grey
+                num_text = f"[{i+1}] "
+                num_sur = FontManager().render_text(num_text, "Arial", 20, NUMBER_COLOR)
+                
+                # Render response in stance color
+                resp_sur = FontManager().render_text(edge.text, "Arial", 20, color)
+                
+                # Assume mouse isn't currently tracked, so no hover highlight yet, unless we query it.
+                # To query mouse for hover highlight:
+                mouse_x, mouse_y = pygame.mouse.get_pos()
+                resp_rect = pygame.Rect(80, start_y + i * 40, num_sur.get_width() + resp_sur.get_width(), max(num_sur.get_height(), resp_sur.get_height()))
+                
+                if resp_rect.collidepoint(mouse_x, mouse_y):
+                    # Brighten color
+                    bright_color = tuple(min(255, int(c * 1.2)) for c in color)
+                    resp_sur = FontManager().render_text(edge.text, "Arial", 20, bright_color)
+                
+                surface.blit(num_sur, (80, start_y + i * 40))
+                surface.blit(resp_sur, (80 + num_sur.get_width(), start_y + i * 40))
+        elif self.phase == "NPC_RESPONSE":
+            if self.text_window.is_finished:
+                cont_sur = FontManager().render_text("[Press Any Key to Continue]", "Arial", 16, (100, 100, 100))
+                surface.blit(cont_sur, (80, (self.manager.height // 3) * 2))
