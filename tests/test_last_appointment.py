@@ -93,8 +93,8 @@ def test_stance_tracking_and_advancement(scene):
     # Beat 2's options do NOT have npc_response in the current JSON.
     # It will trigger fade out first.
     assert scene.card_layout.is_fading_out == True
-    for _ in range(60):
-        scene.update(16) # Finish fade out
+    scene.card_layout.skip_animations()
+    scene.update(16) # state machine clears cards and advances
     
     # It advances immediately
     assert scene.current_node.node_id == "beat_3_pro"
