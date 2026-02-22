@@ -35,15 +35,14 @@ def test_approach_interaction(mock_overworld):
     mock_overworld.actions_remaining = 3
     
     # Simulate clicking "Approach" button
-    # Panel center: (800//2, 600//2) = (400, 300)
-    # Approach button rect in code: (px + 160, py + 110, 120, 30)
-    # px = (800-300)//2 = 250, py = (600-180)//2 = 210
-    # Approach button: (250+160, 210+110, 120, 30) -> (410, 320, 120, 30)
+    # Panel center: (640//2, 480//2)
+    # px = (640-300)//2 = 170, py = (480-180)//2 = 150
+    # Approach button: (170+160, 150+110, 120, 30) -> (330, 260, 120, 30)
     
     class MockEvent:
         type = pygame.MOUSEBUTTONDOWN
         button = 1
-        pos = (415, 325) # Inside button
+        pos = (335, 265) # Inside button
         
     mock_overworld.handle_events([MockEvent()])
     
