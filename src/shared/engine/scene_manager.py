@@ -10,12 +10,15 @@ Extracted from the dgt_engine heartbeat pattern, stripped to essentials.
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
-from typing import Optional, TYPE_CHECKING
+from typing import Optional, TYPE_CHECKING, Dict, Any
 
 import pygame
 
+from src.shared.engine.base_system import BaseSystem, SystemStatus
+from src.shared.engine.system_clock import SystemClock, TimeMode
+
 if TYPE_CHECKING:
-    from typing import Dict, Any
+    pass
 
 
 class Scene(ABC):
@@ -93,44 +96,64 @@ class SceneManager:
         self._scenes: Dict[str, type] = {}
         self._active_scene: Optional[Scene] = None
         self._running = False
+        
+        # Session 021: Formal timing
+        self.clock = SystemClock(target_fps=fps, mode=TimeMode.REAL_TIME)
 
     def register(self, name: str, scene_class: type) -> None:
         """Register a scene class by name."""
         self._scenes[name] = scene_class
 
     def switch_to(self, name: str, **kwargs) -> None:
-        """Switch to a registered scene. Calls on_exit/on_enter."""
+        """Switch to a registered scene. Calls shutdown/initialize."""
         if name not in self._scenes:
             raise ValueError(f"Unknown scene: {name}. Registered: {list(self._scenes.keys())}")
 
         if self._active_scene:
             self._active_scene.on_exit()
+            self._active_scene.shutdown()
 
         scene_class = self._scenes[name]
         self._active_scene = scene_class(self)
         self._active_scene.on_enter(**kwargs)
+        if not self._active_scene.initialize():
+            logger.error(f"Failed to initialize scene: {name}")
+            self._running = False
+        else:
+            self._active_scene.status = SystemStatus.RUNNING
 
     def run(self, initial_scene: str, **kwargs) -> None:
         """Main loop. Initialize pygame, enter initial scene, and loop."""
         pygame.init()
         screen = pygame.display.set_mode((self.width, self.height))
         pygame.display.set_caption(self.title)
-        clock = pygame.time.Clock()
+        
+        # Internal raw clock for calculating elapsed time between frames
+        raw_clock = pygame.time.Clock()
 
         self.switch_to(initial_scene, **kwargs)
         self._running = True
 
         while self._running:
-            dt_ms = clock.tick(self.fps)
+            # 1. Update timing
+            elapsed_ms = raw_clock.tick(self.fps)
+            self.clock.update(elapsed_ms / 1000.0)
+            dt = self.clock.delta_time
+
             events = pygame.event.get()
 
-            # Let the active scene process
+            # 2. Update active scene
             self._active_scene.handle_events(events)
-            self._active_scene.update(dt_ms)
+            
+            # Forward compatibility: handle both update and tick
+            self._active_scene.update(dt * 1000.0) # Keep ms for now
+            self._active_scene.tick(dt)
+            
+            # 3. Render
             self._active_scene.render(screen)
             pygame.display.flip()
 
-            # Check for scene transition or quit
+            # 4. Check for scene transition or quit
             if self._active_scene.quit_requested:
                 self._running = False
             elif self._active_scene.next_scene:
@@ -140,4 +163,5 @@ class SceneManager:
 
         if self._active_scene:
             self._active_scene.on_exit()
+            self._active_scene.shutdown()
         pygame.quit()
