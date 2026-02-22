@@ -55,11 +55,11 @@ def test_wait_interaction_unlock(mock_overworld):
     mock_overworld.selected_unbound_node = mock_overworld.nodes["ashfen"]
     mock_overworld.actions_remaining = 1
     
-    # Wait button: (px + 90, py + 145, 120, 30) -> (250+90, 210+145, 120, 30) -> (340, 355, 120, 30)
+    # Wait button: (px + 90, py + 145, 120, 30) -> (170+90, 150+145, 120, 30) -> (260, 295, 120, 30)
     class MockEvent:
         type = pygame.MOUSEBUTTONDOWN
         button = 1
-        pos = (345, 360)
+        pos = (265, 300)
         
     mock_overworld.handle_events([MockEvent()])
     
