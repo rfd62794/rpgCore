@@ -52,3 +52,19 @@ def test_update_section_persists(temp_journal):
     # Reload to verify file write
     new_journal = Journal(root_dir=temp_journal.root_dir)
     assert new_journal.get_section("In Flight") == "Building APJ."
+def test_get_handoff_contains_environment(temp_journal):
+    handoff = temp_journal.get_handoff()
+    assert "ENVIRONMENT: Windows (PowerShell/CMD)" in handoff
+    assert "Do NOT use: cp, mv, rm, touch, grep, ls" in handoff
+
+def test_get_boot_block_contains_environment(temp_journal):
+    boot = temp_journal.get_boot_block()
+    assert "rpgCore — Agent Boot Sequence" in boot
+    assert "ENVIRONMENT: Windows PowerShell" in boot
+    assert "STEP 0 — Verify orientation" in boot
+
+def test_update_current_flag_via_cli_simulation(temp_journal):
+    # Simulating the CLI update with flag
+    new_content = "327 passing tests. Shared physics, input, spawner base established. APJ boot command live."
+    temp_journal.update_section("Current State", new_content)
+    assert temp_journal.get_section("Current State") == new_content

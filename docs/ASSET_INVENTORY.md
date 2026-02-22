@@ -66,3 +66,20 @@ assets/
 2. Move all `assets/configs/*` -> `assets/shared/configs/*`
 3. Move `src/apps/last_appointment/data/appointment.json` -> `assets/demos/last_appointment/appointment.json`
 4. Move `assets/entities/space_entities.yaml` -> `assets/demos/asteroids/space_entities.yaml`
+
+## Section 5: Particle and VFX Systems
+
+An audit of `src/` and `archive/` reveals several dormant or fragmented visual effects systems, mostly tied to the legacy `dgt_engine` and `game_engine` donor archives.
+
+### 1. Active Donor Logic (`src/`)
+- **`src/game_engine/systems/graphics/fx/particle_effects.py`**: Foundation for particle pools and basic behaviors (fade, drift).
+- **`src/dgt_engine/systems/graphics/fx/exhaust_system.py`**: A specialized particle system for engine trails, wired to ship kinetics.
+- **`src/dgt_engine/systems/graphics/fx/fx_system.py`**: An orchestrator that manages multiple effect emitters.
+
+### 2. Archived Legacy (`archive/`)
+- **`archive/legacy_root_2026/scripts/test_phase_d_step6_particle_effects.py`**: High-coverage test suite for the legacy particle system.
+- **`archive/legacy_refactor_2026/assets/animations.yaml`**: Configuration file defining animation sequences and frame timings.
+
+### 3. Recommendations
+- **Extraction Needed**: Harvest `ParticleEmitter` and `ExhaustSystem` from `src/dgt_engine/` into a new `src/shared/rendering/fx/` pillar.
+- **Generalization**: The existing systems are heavily tied to "ships". They should be generalized to support generic "impact", "explosion", and "ui spark" effects for other demos.

@@ -42,7 +42,7 @@ class Journal:
         with open(self.full_path, "w", encoding="utf-8") as f:
             f.write(updated_content)
 
-    def get_handoff(self, test_floor: int = 312) -> str:
+    def get_handoff(self, test_floor: int = 327) -> str:
         """Builds a formatted handoff string."""
         date_str = datetime.now().strftime("%Y-%m-%d")
         curr_state = self.get_section("Current State")
@@ -52,6 +52,12 @@ class Journal:
         handoff = f"""═══════════════════════════════════════
 rpgCore Agent Handoff — {date_str}
 ═══════════════════════════════════════
+ENVIRONMENT: Windows (PowerShell/CMD)
+  All commands use: python, uv run pytest, copy, move
+  Do NOT use: cp, mv, rm, touch, grep, ls
+  Path separator: backslash
+  Line endings: CRLF
+
 READ FIRST:
   docs/RPGCORE_CONSTITUTION.md
   docs/SESSION_PROTOCOL.md
@@ -69,3 +75,34 @@ PROTECTED FLOOR: {test_floor} passing tests
   Verify with: uv run pytest
 ═══════════════════════════════════════"""
         return handoff
+
+    def get_boot_block(self, test_floor: int = 327) -> str:
+        """Prints a complete agent onboarding block."""
+        date_str = datetime.now().strftime("%Y-%m-%d")
+        cwd = os.getcwd()
+        
+        boot = f"""═══════════════════════════════════════
+rpgCore — Agent Boot Sequence
+═══════════════════════════════════════
+ENVIRONMENT: Windows PowerShell
+REPO: {cwd}
+
+STEP 0 — Verify orientation:
+  python -m src.tools.apj handoff
+
+STEP 1 — Read these documents in order:
+  docs/RPGCORE_CONSTITUTION.md
+  docs/SESSION_PROTOCOL.md
+  docs/PROJECT_JOURNAL.md
+
+STEP 2 — Verify test floor:
+  uv run pytest
+
+STEP 3 — Confirm understanding before acting:
+  State current floor, what is in flight, next priority.
+  Wait for Overseer confirmation before writing any code.
+
+PROTECTED FLOOR: {test_floor} passing tests
+SESSION DATE: {date_str}
+═══════════════════════════════════════"""
+        return boot

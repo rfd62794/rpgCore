@@ -1,11 +1,12 @@
 import sys
+import argparse
 from src.tools.apj.journal import Journal
 
 def main():
     journal = Journal()
     
     if len(sys.argv) < 2:
-        print("Usage: python -m src.tools.apj [status|update|handoff]")
+        print("Usage: python -m src.tools.apj [status|update|handoff|boot]")
         return
 
     cmd = sys.argv[1].lower()
@@ -15,8 +16,37 @@ def main():
     
     elif cmd == "handoff":
         print(journal.get_handoff())
+        
+    elif cmd == "boot":
+        print(journal.get_boot_block())
 
     elif cmd == "update":
+        # Use argparse for update flags
+        parser = argparse.ArgumentParser(description="rpgCore APJ Update")
+        parser.add_argument("command") # consume 'update'
+        parser.add_argument("--current", help="New content for Current State")
+        parser.add_argument("--inflight", help="New content for In Flight")
+        parser.add_argument("--next", help="New content for Next Priority")
+        
+        args = parser.parse_args()
+        
+        # Mapping for flags to section names
+        flag_map = {
+            "current": ("Current State", args.current),
+            "inflight": ("In Flight", args.inflight),
+            "next": ("Next Priority", args.next)
+        }
+        
+        # If any flags provided, skip interactive loop
+        if any([args.current, args.inflight, args.next]):
+            for section_key in ["current", "inflight", "next"]:
+                name, content = flag_map[section_key]
+                if content:
+                    journal.update_section(name, content)
+                    print(f"Section '{name}' updated via flag.")
+            return
+
+        # Interactive Mode fallback
         sections = ["Current State", "In Flight", "Next Priority"]
         for section in sections:
             current = journal.get_section(section)
