@@ -120,15 +120,19 @@ class OverworldScene(Scene):
         # Session 024: Faction Manager Setup
         self.faction_manager = kwargs.get("faction_manager")
         if self.faction_manager is None:
+            factions = get_slime_factions()
             self.faction_manager = FactionManager()
-            for f in get_slime_factions():
+            for f in factions:
                 self.faction_manager.register_faction(f)
+            # Home base
+            self.faction_manager.claim_territory("CLAN_BLUE", (0, 2), 1.0, 0)
+            # Session 027: Initialize Unbound territories
+            self.faction_manager.claim_territory("CLAN_YELLOW", (1, 1), 1.0, 0) # Ashfen
+            self.faction_manager.claim_territory("CLAN_YELLOW", (1, 3), 1.0, 0) # Rootward
             # Initial setup: RED owns the core, BLUE owns the yard
             self.faction_manager.claim_territory("CLAN_RED", (3, 2), 1.0, 0) # Core
             self.faction_manager.claim_territory("CLAN_RED", (2, 3), 0.8, 0) # Eastern Front
             self.faction_manager.claim_territory("CLAN_BLUE", (1, 2), 0.8, 0) # Scrap Yard
-            # Home is protected or neutral but logically Blue starting point
-            self.faction_manager.claim_territory("CLAN_BLUE", (0, 2), 1.0, 0)
 
         # Initial setup removed from here if manager exists
         # Sim params (Session 024 real-time timer removed)
@@ -174,6 +178,13 @@ class OverworldScene(Scene):
                 else:
                     self.request_quit()
             elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
+                # Session 027: Interaction Panel check
+                if self.selected_unbound_node:
+                    if self._check_interaction_click(event.pos):
+                        return
+                    else:
+                        self.selected_unbound_node = None # Close panel on miss
+
                 # Session 026: Survivor Launch
                 if self.ship_parts >= 5 and not self.game_over:
                     logger.info("🚀 Launching ship... Departure initiated.")
@@ -196,6 +207,26 @@ class OverworldScene(Scene):
         logger.info(f"⏳ Day {self.day} ends. Factions advance...")
         self.faction_manager.simulate_step(self.day, connection_graph=self.connection_graph)
         
+        # Session 027: Tribal Encroachment & Dispersal
+        for tid in ["ashfen", "rootward"]:
+            if self.tribe_state[tid]["dispersed"]: continue
+            node = self.nodes[tid]
+            hostile_adj = 0
+            total_adj = len(node.connections)
+            for conn_id in node.connections:
+                conn_node = self.nodes[conn_id]
+                owner = self.faction_manager.get_owner(conn_node.coord)
+                if owner in ["CLAN_RED", "CLAN_BLUE"]: # Hostile to tribes
+                    hostile_adj += 1
+            
+            if hostile_adj > 0 and not self.tribe_state[tid]["dispersed"]:
+                logger.warning(f"⚠️  Pressure building on {node.name}. Factions encroaching...")
+            
+            if hostile_adj >= total_adj:
+                self.tribe_state[tid]["dispersed"] = True
+                self.faction_manager.claim_territory(None, node.coord, 0.0, 0) # Tribe flees
+                logger.error(f"💨 {node.name} has dispersed. They will not return.")
+
         # Session 026: Resource Generation
         bonus = 0
         for node in self.nodes.values():
@@ -244,9 +275,18 @@ class OverworldScene(Scene):
                         resources=self.resources,
                         ship_parts=self.ship_parts,
                         secured_part_nodes=list(self.secured_part_nodes),
-                        stronghold_bonus=stronghold_bonus
+                        stronghold_bonus=stronghold_bonus,
+                        tribe_state=self.tribe_state
                     )
                 return
+
+                if owner == "CLAN_YELLOW":
+                    logger.info(f"🤝 Approaching {node.name}...")
+                    if self.tribe_state[node.id]["dispersed"]:
+                        logger.info("The campsite is empty.")
+                    else:
+                        self.selected_unbound_node = node
+                    return
 
     def update(self, dt_ms: float) -> None:
         if self.game_over:
