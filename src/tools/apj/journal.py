@@ -42,7 +42,7 @@ class Journal:
         with open(self.full_path, "w", encoding="utf-8") as f:
             f.write(updated_content)
 
-    def get_handoff(self, test_floor: int = 327) -> str:
+    def get_handoff(self, test_floor: int = 330) -> str:
         """Builds a formatted handoff string."""
         date_str = datetime.now().strftime("%Y-%m-%d")
         curr_state = self.get_section("Current State")
@@ -76,7 +76,7 @@ PROTECTED FLOOR: {test_floor} passing tests
 ═══════════════════════════════════════"""
         return handoff
 
-    def get_boot_block(self, test_floor: int = 327) -> str:
+    def get_boot_block(self, test_floor: int = 330) -> str:
         """Prints a complete agent onboarding block."""
         date_str = datetime.now().strftime("%Y-%m-%d")
         cwd = os.getcwd()
