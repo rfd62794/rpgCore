@@ -2,6 +2,11 @@
 
 *To be provided at the start of every new Coding Agent session to prevent context drift.*
 
+## Step 0 — Orient
+Run: `python -m src.tools.apj handoff`
+This prints current project state, what is in flight, and next priority. 
+Read the output before reading anything else.
+
 ---
 
 You are working on the Slime Clan game within the rpgCore repository (github.com/rfd62794/rpgCore). Before starting, read these docs:
