@@ -83,10 +83,11 @@ class CardLayout:
                 self.is_fading_out = False
                 
     def skip_animations(self) -> None:
+        target_alpha = 0 if self.is_fading_out else 255
         self.is_fading_in = False
         self.is_fading_out = False
         for card in self.cards:
-            card.fade_alpha = 255
+            card.fade_alpha = target_alpha
                 
     def handle_hover(self, mouse_pos: tuple[int, int]) -> None:
         # Don't allow hover interactions if we are still fading in sequence
