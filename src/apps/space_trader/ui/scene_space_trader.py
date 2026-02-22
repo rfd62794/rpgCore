@@ -45,25 +45,25 @@ class SpaceTraderScene(Scene):
         y_offset = self.hud.height + 20
         
         # 1. Location Panel (Top Left)
-        loc_panel = Panel(20, y_offset, 400, 150, self.panel_bg)
+        loc_panel = Panel(pygame.Rect(20, y_offset, 400, 150), bg_color=self.panel_bg)
         loc = self.session.graph.get(self.session.ship.location_id)
-        loc_panel.add_element(Label(f"Location: {loc.name}", 15, 15, self.text_color))
-        loc_panel.add_element(Label(f"Desc: {loc.description}", 15, 45, self.text_color))
-        loc_panel.add_element(Label(f"Msg: {self.last_message}", 15, 100, (255, 200, 100)))
+        loc_panel.add_child(Label(pygame.Rect(20 + 15, y_offset + 15, 370, 20), text=f"Location: {loc.name}", font_size=20, color=self.text_color))
+        loc_panel.add_child(Label(pygame.Rect(20 + 15, y_offset + 40, 370, 40), text=f"Desc: {loc.description}", font_size=18, color=self.text_color))
+        loc_panel.add_child(Label(pygame.Rect(20 + 15, y_offset + 90, 370, 40), text=f"Msg: {self.last_message}", font_size=18, color=(255, 200, 100)))
         self.panels.append(loc_panel)
         
         # 2. Ship Inventory (Top Right)
-        inv_panel = Panel(self.width - 320, y_offset, 300, 300, self.panel_bg)
-        inv_panel.add_element(Label("Cargo Manifest:", 15, 15, self.text_color))
-        cy = 45
+        inv_panel = Panel(pygame.Rect(self.width - 320, y_offset, 300, 300), bg_color=self.panel_bg)
+        inv_panel.add_child(Label(pygame.Rect(self.width - 320 + 15, y_offset + 15, 270, 20), text="Cargo Manifest:", font_size=20, color=self.text_color))
+        cy = y_offset + 45
         for item, qty in self.session.ship.cargo.contents.items():
-            inv_panel.add_element(Label(f"- {qty}x {item.title()}", 25, cy, self.text_color))
+            inv_panel.add_child(Label(pygame.Rect(self.width - 320 + 25, cy, 250, 25), text=f"- {qty}x {item.title()}", font_size=18, color=self.text_color))
             cy += 30
         self.panels.append(inv_panel)
         
         # 3. Market List (Center Left)
         market_rect = pygame.Rect(20, y_offset + 170, 600, 300)
-        self.market_list = ScrollList(market_rect, self.panel_bg)
+        self.market_list = ScrollList(market_rect, bg_color=self.panel_bg)
         
         listings = self.session.market.get_listings(self.session.ship.location_id)
         for l in listings:
@@ -74,14 +74,14 @@ class SpaceTraderScene(Scene):
         # Buy/Sell buttons for market
         bx = 640
         by = y_offset + 170
-        btn_buy = Button(bx, by, 100, 40, "Buy 1", self._handle_buy)
-        btn_sell = Button(bx, by + 50, 100, 40, "Sell 1", self._handle_sell)
+        btn_buy = Button(pygame.Rect(bx, by, 100, 40), text="Buy 1", on_click=self._handle_buy)
+        btn_sell = Button(pygame.Rect(bx, by + 50, 100, 40), text="Sell 1", on_click=self._handle_sell)
         self.buttons.extend([btn_buy, btn_sell])
         
         # 4. Navigation Panel (Bottom)
         nav_y = self.height - 150
-        nav_panel = Panel(20, nav_y, self.width - 40, 130, self.panel_bg)
-        nav_panel.add_element(Label("Navigation Computer - Select Destination:", 15, 15, self.text_color))
+        nav_panel = Panel(pygame.Rect(20, nav_y, self.width - 40, 130), bg_color=self.panel_bg)
+        nav_panel.add_child(Label(pygame.Rect(20 + 15, nav_y + 15, self.width - 70, 20), text="Navigation Computer - Select Destination:", font_size=20, color=self.text_color))
         self.panels.append(nav_panel)
         
         neighbors = self.session.graph.neighbors(self.session.ship.location_id)
@@ -89,7 +89,7 @@ class SpaceTraderScene(Scene):
         for n in neighbors:
             risk = self.session.get_risk_level(n.id)
             btn_text = f"{n.name} [{risk}]"
-            btn = Button(nx, nav_y + 50, 240, 50, btn_text, lambda tgt=n.id: self._handle_travel(tgt))
+            btn = Button(pygame.Rect(nx, nav_y + 50, 240, 50), text=btn_text, on_click=lambda tgt=n.id: self._handle_travel(tgt))
             self.buttons.append(btn)
             nx += 260
 
