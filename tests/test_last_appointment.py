@@ -41,17 +41,27 @@ def test_stance_tracking_and_advancement(scene):
     events = [MockEvent(pygame.K_1)]
     scene.handle_events(events)
     
+    # Should flag the stance and move to NPC_RESPONSE phase
+    assert scene.state_tracker.get_flag("current_stance", "") == "PROFESSIONAL"
+    assert scene.phase == "NPC_RESPONSE"
+    
+    # Simulate text reveal finishing
+    scene.text_window.is_finished = True
+    
+    # Press any key to advance
+    scene.handle_events([MockEvent(pygame.K_SPACE)])
+    
     # Should advance to beat_2
     assert scene.current_node.node_id == "beat_2"
+    assert scene.phase == "PROMPT"
     
-    # Should flag the stance
-    assert scene.state_tracker.get_flag("current_stance", "") == "PROFESSIONAL"
-    
-    # Moving back to beat 1 from beat 2 requires pressing K_1 again (the only option)
+    # Moving back to beat 1 from beat 2 requires pressing K_1 again
     events = [MockEvent(pygame.K_1)]
     scene.handle_events(events)
     
+    # Beat 2's option has NO npc_response, so it advances immediately
     assert scene.current_node.node_id == "beat_1"
+    assert scene.phase == "PROMPT"
 
 def test_invalid_key_does_not_advance(scene):
     scene.on_enter()
