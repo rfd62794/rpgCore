@@ -51,6 +51,21 @@ class NodeState(enum.Enum):
     CONTESTED = "CONTESTED"
 
 
+class NodeType(enum.Enum):
+    RESOURCE = "RESOURCE"
+    RECRUITMENT = "RECRUITMENT"
+    STRONGHOLD = "STRONGHOLD"
+    SHIP_PARTS = "SHIP_PARTS"
+
+
+NODE_TYPE_LABELS = {
+    NodeType.RESOURCE: "Resource Node",
+    NodeType.RECRUITMENT: "Recruitment Site",
+    NodeType.STRONGHOLD: "Stronghold",
+    NodeType.SHIP_PARTS: "Ship Parts Cache",
+}
+
+
 NODE_COLORS = {
     NodeState.HOME: (50, 220, 100),
     NodeState.BLUE: (30, 110, 220),
@@ -66,6 +81,7 @@ class MapNode:
     x: int
     y: int
     coord: tuple[int, int] # Grid coordinate for Faction simulation
+    node_type: NodeType
     connections: List[str] = field(default_factory=list)
 
 
@@ -76,12 +92,17 @@ class OverworldScene(Scene):
         self.nodes: Dict[str, MapNode] = kwargs.get("nodes", None)
         if self.nodes is None:
             self.nodes = {
-                "home": MapNode("home", "Crash Site", 100, 240, (0, 2), ["node_1"]),
-                "node_1": MapNode("node_1", "Scrap Yard", 250, 150, (1, 2), ["home", "node_2", "node_3"]),
-                "node_2": MapNode("node_2", "Northern Wastes", 400, 100, (2, 1), ["node_1", "node_4"]),
-                "node_3": MapNode("node_3", "Eastern Front", 400, 300, (2, 3), ["node_1", "node_4"]),
-                "node_4": MapNode("node_4", "Deep Red Core", 550, 200, (3, 2), ["node_2", "node_3"]),
+                "home": MapNode("home", "Crash Site", 100, 240, (0, 2), NodeType.SHIP_PARTS, ["node_1"]),
+                "node_1": MapNode("node_1", "Scrap Yard", 250, 150, (1, 2), NodeType.RESOURCE, ["home", "node_2", "node_3"]),
+                "node_2": MapNode("node_2", "Northern Wastes", 400, 100, (2, 1), NodeType.STRONGHOLD, ["node_1", "node_4"]),
+                "node_3": MapNode("node_3", "Eastern Front", 400, 300, (2, 3), NodeType.RECRUITMENT, ["node_1", "node_4"]),
+                "node_4": MapNode("node_4", "Deep Red Core", 550, 200, (3, 2), NodeType.RESOURCE, ["node_2", "node_3"]),
             }
+
+        # Session 025: Day/Action State
+        self.day = kwargs.get("day", 1)
+        self.actions_remaining = kwargs.get("actions_remaining", 3)
+        self.actions_per_day = 3
 
         # Session 024: Faction Manager Setup
         self.faction_manager = kwargs.get("faction_manager")
@@ -96,8 +117,10 @@ class OverworldScene(Scene):
             # Home is protected or neutral but logically Blue starting point
             self.faction_manager.claim_territory("CLAN_BLUE", (0, 2), 1.0, 0)
 
-        self.sim_timer = 0.0
-        self.sim_interval = 5000.0 # 5 seconds
+        # Initial setup removed from here if manager exists
+        # Sim params (Session 024 real-time timer removed)
+        # self.sim_timer = 0.0
+        # self.sim_interval = 5000.0 # 5 seconds
 
         # Build connection graph for FactionManager
         self.connection_graph = {}
@@ -130,7 +153,24 @@ class OverworldScene(Scene):
             elif event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
                 self.request_quit()
             elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
+                # Check End Day button first
+                if self._check_end_day_click(event.pos):
+                    return
                 self._handle_click(event.pos)
+
+    def _check_end_day_click(self, pos: tuple[int, int]) -> bool:
+        bx, by, bw, bh = WINDOW_WIDTH - 140, WINDOW_HEIGHT - 60, 120, 40
+        if bx <= pos[0] <= bx + bw and by <= pos[1] <= by + bh:
+            self._end_day()
+            return True
+        return False
+
+    def _end_day(self) -> None:
+        logger.info(f"⏳ Day {self.day} ends. Factions advance...")
+        self.faction_manager.simulate_step(self.day, connection_graph=self.connection_graph)
+        self.day += 1
+        self.actions_remaining = self.actions_per_day
+        logger.info(f"☀️ Day {self.day} begins!")
 
     def _handle_click(self, pos: tuple[int, int]) -> None:
         mx, my = pos
@@ -140,14 +180,22 @@ class OverworldScene(Scene):
                 owner = self.faction_manager.get_owner(node.coord)
                 status = owner if owner else "NEUTRAL"
                 logger.info(f"📍 Clicked node: {node.name} ({status})")
+                
+                if self.actions_remaining <= 0:
+                    logger.warning("🚫 No actions remaining! Click 'End Day' to continue.")
+                    return
+
                 if owner == "CLAN_RED" or (not owner and node.id != "home"):
                     logger.info(f"⚔️  Deploying forces to {node.name}...")
+                    self.actions_remaining -= 1
                     self.request_scene("battle_field",
                         region=node.name,
                         difficulty="NORMAL",
                         node_id=node.id,
                         nodes=self.nodes,
-                        faction_manager=self.faction_manager
+                        faction_manager=self.faction_manager,
+                        day=self.day,
+                        actions_remaining=self.actions_remaining
                     )
                 return
 
@@ -155,12 +203,8 @@ class OverworldScene(Scene):
         if self.game_over:
             return
 
-        # Session 024: Passive Simulation Tick
-        self.sim_timer += dt_ms
-        if self.sim_timer >= self.sim_interval:
-            self.sim_timer = 0
-            self.faction_manager.simulate_step(0, connection_graph=self.connection_graph)
-            logger.debug("🌍 World Simulation Ticked")
+        # Session 025: Real-time simulation tick removed.
+        # Factions now only simulate in _end_day()
 
         red_count = sum(1 for n in self.nodes.values() if n.id != "home" and self.faction_manager.get_owner(n.coord) == "CLAN_RED")
         blue_count = sum(1 for n in self.nodes.values() if n.id != "home" and self.faction_manager.get_owner(n.coord) == "CLAN_BLUE")
@@ -196,12 +240,43 @@ class OverworldScene(Scene):
             else:
                 color = (150, 150, 150) # Neutral gray
 
+            if self.actions_remaining == 0 and node.id != "home":
+                # Grayscale/Faded effect for nodes when out of actions
+                base_color = color
+                grayscale = (base_color[0] + base_color[1] + base_color[2]) // 3
+                color = (grayscale // 2 + 50, grayscale // 2 + 50, grayscale // 2 + 50)
+
             pygame.draw.circle(surface, color, (node.x, node.y), NODE_RADIUS)
             pygame.draw.circle(surface, (255, 255, 255), (node.x, node.y), NODE_RADIUS, 2)
+            
+            # Labels
             label_surf = self.font.render(node.name, True, TEXT_COLOR)
             lx = node.x - label_surf.get_width() // 2
-            ly = node.y + NODE_RADIUS + 10
+            ly = node.y + NODE_RADIUS + 5
             surface.blit(label_surf, (lx, ly))
+            
+            # Node Type Label (Session 025)
+            type_label = NODE_TYPE_LABELS[node.node_type]
+            type_surf = self.font.render(type_label, True, (120, 120, 120))
+            ty = ly + 18
+            surface.blit(type_surf, (node.x - type_surf.get_width() // 2, ty))
+
+        # HUD (Session 025)
+        hud_text = f"Day {self.day}  —  Actions: {self.actions_remaining}/{self.actions_per_day}"
+        hud_surf = self.font.render(hud_text, True, (255, 255, 255))
+        surface.blit(hud_surf, (20, 20))
+        
+        if self.actions_remaining == 0:
+            prompt_surf = self.font.render("No actions remaining — End Day to continue", True, (255, 100, 100))
+            surface.blit(prompt_surf, (20, 45))
+
+        # End Day Button
+        btn_x, btn_y, btn_w, btn_h = WINDOW_WIDTH - 140, WINDOW_HEIGHT - 60, 120, 40
+        btn_rect = pygame.Rect(btn_x, btn_y, btn_w, btn_h)
+        pygame.draw.rect(surface, (40, 60, 100), btn_rect) # Blue-ish button
+        pygame.draw.rect(surface, (100, 150, 255), btn_rect, 2) # Border
+        btn_label = self.font.render("END DAY", True, (255, 255, 255))
+        surface.blit(btn_label, (btn_x + (btn_w - btn_label.get_width()) // 2, btn_y + (btn_h - btn_label.get_height()) // 2))
 
         if self.game_over:
             banner_w, banner_h = 500, 100
@@ -255,6 +330,8 @@ class BattleFieldScene(Scene):
         self.node_id = kwargs.get("node_id", "")
         self.nodes = kwargs.get("nodes", {})  # Overworld nodes to pass back
         self.faction_manager = kwargs.get("faction_manager")
+        self.day = kwargs.get("day", 1)
+        self.actions_remaining = kwargs.get("actions_remaining", 3)
         self.game_over = False
         self.exit_code = 1
 
@@ -361,7 +438,9 @@ class BattleFieldScene(Scene):
             bf_difficulty=self.difficulty,
             bf_node_id=self.node_id,
             bf_nodes=self.nodes,
-            faction_manager=self.faction_manager
+            faction_manager=self.faction_manager,
+            day=self.day,
+            actions_remaining=self.actions_remaining
         )
 
     def _return_to_overworld(self, won: bool) -> None:
@@ -369,7 +448,9 @@ class BattleFieldScene(Scene):
             nodes=self.nodes,
             battle_node_id=self.node_id,
             battle_won=won,
-            faction_manager=self.faction_manager
+            faction_manager=self.faction_manager,
+            day=self.day,
+            actions_remaining=self.actions_remaining
         )
 
     def update(self, dt_ms: float) -> None:
@@ -469,6 +550,8 @@ class AutoBattleScene(Scene):
         self.bf_node_id = kwargs.get("bf_node_id", "")
         self.bf_nodes = kwargs.get("bf_nodes", {})
         self.faction_manager = kwargs.get("faction_manager")
+        self.day = kwargs.get("day", 1)
+        self.actions_remaining = kwargs.get("actions_remaining", 3)
 
         self.turn_count = 0
         self.timer_ms = 0.0
@@ -580,7 +663,9 @@ class AutoBattleScene(Scene):
             node_id=self.bf_node_id,
             nodes=self.bf_nodes,
             auto_battle_result=result,
-            faction_manager=self.faction_manager
+            faction_manager=self.faction_manager,
+            day=self.day,
+            actions_remaining=self.actions_remaining
         )
 
     def _get_shape_str(self, shape: Shape) -> str:
