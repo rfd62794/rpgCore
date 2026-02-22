@@ -1,6 +1,7 @@
 import pytest
 import pygame
-from src.apps.slime_clan.app import OverworldScene, MapNode, NodeType
+from src.apps.slime_clan.scenes.overworld_scene import OverworldScene, MapNode
+from src.apps.slime_clan.constants import NodeType
 from src.shared.world.faction import FactionManager
 
 @pytest.fixture
