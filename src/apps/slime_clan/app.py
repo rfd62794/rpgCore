@@ -703,6 +703,8 @@ class BattleFieldScene(Scene):
             ship_parts=self.ship_parts,
             secured_part_nodes=self.secured_part_nodes,
             tribe_state=self.tribe_state,
+            player_units=self.player_units,
+            colony_manager=self.colony_manager,
             stronghold_bonus=self.stronghold_bonus # Pass stronghold_bonus
         )
 
