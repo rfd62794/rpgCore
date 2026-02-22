@@ -1,45 +1,21 @@
-# Technical Debt & Known Issues
+# Technical Debt
 
-## Test Suite Import Path Failures (`dgt_engine` Refactor)
-**Logged:** 2026-02-21 (Session 013)
+This document tracks known, accepted technical debt across the RPGCore repository. Items here are explicitly acknowledged to prevent them from blocking current feature development, but are slated for future resolution.
 
-### Description
-A prior architectural refactor moved the `foundation` and `engines` directories into a new namespace package `dgt_engine`. 
-The `tests/` directory was not fully updated to reflect this change, leaving substantial technical debt in the test suite.
+## 1. Pydantic V1 Deprecations
+- **Location:** `src/dgt_engine` and `src/game_engine` config schemas and validators.
+- **Issue:** Using Pydantic V1 style `@validator` and `Config` classes (e.g., `PydanticDeprecatedSince20` warnings).
+- **Impact:** These will break when RPGCore migrates to Pydantic V3.
+- **Resolution:** Migrate to Pydantic V2 style `@field_validator` and `ConfigDict`.
 
-### Affected Areas
-Approximately 73+ tests are currently failing due to stale import paths or outdated `sys.path.insert` hacks.
-The primary affected directories are:
-*   `tests/stress/`
-*   `tests/verification/`
-*   `tests/integration/`
-*   `tests/benchmarks/`
+## 2. Test Suite Assert vs Return Warnings
+- **Location:** Multiple test files (e.g., `test_sprint_d_orchestration.py`, `test_theater_mode.py`, `test_registry_snapshots.py`).
+- **Issue:** `PytestReturnNotNoneWarning` generated because test functions are returning boolean values instead of asserting them.
+- **Impact:** Clutters pytest output with warnings.
+- **Resolution:** Change `return X` to `assert X` ensuring `None` is implicitly returned by the test methods.
 
-### Impact & Scope
-These failures are **out of scope** for the current `slime_clan` application development. 
-The errors do not indicate broken logic in the underlying engines, but merely broken import references in the test files themselves.
-
-### Mitigation
-To prevent these pre-existing failures from blocking CI/CD or local verification of new features, `pyproject.toml` has been configured with `testpaths = ["tests/unit"]` to isolate `uv run pytest` to the actively maintained, verified unit test scope.
-
-When these legacy systems are actively developed again in the future, a dedicated "Janitor Session" should be spun up to patch the remaining `from engines...` and `sys.path` injection statements.
-
----
-
-## ~~Lack of Unified Scene Manager~~ ✅ RESOLVED
-**Logged:** 2026-02-21 (Session 015) | **Resolved:** 2026-02-21 (Session 019B)
-
-### Resolution
-Implemented `src/shared/engine/scene_manager.py` with `Scene` ABC and `SceneManager` state machine. All three tiers (`OverworldScene`, `BattleFieldScene`, `AutoBattleScene`) now run in a single pygame window via `src/apps/slime_clan/app.py`. Zero subprocesses. See `docs/SCENE_MANAGER.md` for the full interface contract.
-
----
-
-## Mana UI Not Visible to Player
-**Logged:** 2026-02-21 (Session 017)
-
-### Description
-The mana resource system (3 start, 5 max) is fully functional in `auto_battle.py` and logged to terminal, but there is no visual mana bar or MP indicator rendered on-screen for the player. The player cannot see mana values during combat — they can only infer resource management from the combat log.
-
-### Mitigation
-Add a mana bar or MP text indicator below each unit's HP bar in `auto_battle.py` rendering. Low priority — the system works correctly without visual feedback.
-
+## 3. Uncompiled Rust Extensions
+- **Location:** `tests/test_rust_sprite_scanner.py`
+- **Issue:** `rust_sprite_scanner` extension module is not compiled in standard python environments.
+- **Impact:** The test is currently bypassed via `pytest.importorskip("rust_sprite_scanner")`. We are missing coverage on the Rust performance layer.
+- **Resolution:** Implement a cross-platform compilation step for the `rust/` directory or pre-compiled binaries for the test suite runner.
