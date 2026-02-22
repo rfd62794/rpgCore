@@ -11,9 +11,13 @@
   Criteria: TurboShells launches with core loop running
 
 ## Queued
-- [ ] M6 — Creature Collector demo frame (Goals: G2)
-  Criteria: genetics + combat + exploration stubbed
-- [ ] M7 — Dungeon Crawler demo frame (Goals: G3)
-  Criteria: procedural room + D20 encounter running
-- [ ] M8 — Portfolio pass (Goals: G5)
-  Criteria: README, screenshots, two demos polished
+- [ ] M6 — Space Trader demo frame (Goals: G6, G1)
+  Criteria: locations, economy, travel, one encounter type running
+- [ ] M7 — TurboShells core loop (Goals: G9, G4)
+  Criteria: breeding, stable, single race running
+- [ ] M8 — Dungeon Crawler frame (Goals: G7, G4)
+  Criteria: one procedural room, one D20 encounter, basic loot
+- [ ] M9 — Creature Collector frame (Goals: G8, G4)
+  Criteria: one creature, genetics visible, one battle
+- [ ] M10 — Portfolio pass (Goals: G5)
+  Criteria: three demos polished, README with screenshots

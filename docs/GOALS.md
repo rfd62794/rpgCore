@@ -19,3 +19,22 @@ No demo leaves the engine weaker than it found it.
 ## G5 — Portfolio Readiness
 Three demos polished enough to show a hiring manager.
 Clean repo, honest tests, compelling README.
+
+## G6 — Space Trader Demo
+Simple economy, location-based prices, travel risk.
+Reuses Slime Clan territory and Asteroids combat systems.
+Core memory: Palm Pilot Space Trader, bus rides, simple fun.
+
+## G7 — Dungeon Crawler Demo
+Tactical combat, procedural rooms, loot and progression.
+Draws from Final Fantasy structure and Diablo's feel.
+Proves D20 depth, procedural generation, inventory systems.
+
+## G8 — Creature Collector Demo
+Genetics, combat, exploration, relationship tracking.
+Draws from Pokemon and Dragon Quest Monsters.
+Proves the deepest expression of shared systems together.
+
+## G9 — TurboShells Phoenix
+Genetic breeding, stable management, racing simulation.
+The demo that was always planned, still waiting its moment.
