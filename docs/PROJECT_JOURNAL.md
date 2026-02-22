@@ -1,10 +1,10 @@
 # rpgCore — Project Journal
 
 ## Current State
-338 passing. Asset restructure complete. Shared and demo assets properly separated.
+342 passing. APJ Goals and Milestones hierarchy integrated with metadata-driven tracker.
 
 ## In Flight
-APJ Goals and Milestones layer.
+None.
 
 ## Next Priority
-Extend APJ with Goals, Milestones, Phases hierarchy.
+Portfolio Readiness phase or deeper Creature Collector/Dungeon Crawler frame implementation.

@@ -6,7 +6,7 @@ def main():
     journal = Journal()
     
     if len(sys.argv) < 2:
-        print("Usage: python -m src.tools.apj [status|update|handoff|boot]")
+        print("Usage: python -m src.tools.apj [status|update|handoff|boot|tasks|goals|milestones]")
         return
 
     cmd = sys.argv[1].lower()
@@ -20,6 +20,27 @@ def main():
     elif cmd == "boot":
         print(journal.get_boot_block())
 
+    elif cmd == "goals":
+        content = journal.load(journal.goals_path)
+        print(content)
+
+    elif cmd == "milestones":
+        parser = argparse.ArgumentParser(description="rpgCore APJ Milestones")
+        parser.add_argument("command") # consume 'milestones'
+        parser.add_argument("--done", help="Mark a milestone as completed (matches text)")
+        
+        args, _ = parser.parse_known_args()
+        
+        if args.done:
+            success = journal.complete_milestone(args.done)
+            if success:
+                print(f"Milestone matching '{args.done}' moved to Completed.")
+            else:
+                print(f"Milestone matching '{args.done}' not found.")
+        else:
+            content = journal.load(journal.milestones_path)
+            print(content)
+
     elif cmd == "tasks":
         parser = argparse.ArgumentParser(description="rpgCore APJ Tasks")
         parser.add_argument("command") # consume 'tasks'
@@ -27,7 +48,7 @@ def main():
         parser.add_argument("--add", help="Add a new task to Queued section")
         parser.add_argument("--done", help="Mark a task as completed (matches text)")
         
-        args = parser.parse_args()
+        args, _ = parser.parse_known_args()
         
         if args.next:
             print("QUEUED TASKS (top 5):")
@@ -36,8 +57,11 @@ def main():
             journal.add_task(args.add)
             print(f"Added task: {args.add}")
         elif args.done:
-            journal.complete_task(args.done)
-            print(f"Task matching '{args.done}' moved to Completed.")
+            success = journal.complete_task(args.done)
+            if success:
+                print(f"Task matching '{args.done}' moved to Completed.")
+            else:
+                print(f"Task matching '{args.done}' not found.")
         else:
             # Print full TASKS.md
             content = journal.load(journal.tasks_path)
@@ -51,7 +75,7 @@ def main():
         parser.add_argument("--inflight", help="New content for In Flight")
         parser.add_argument("--next", help="New content for Next Priority")
         
-        args = parser.parse_args()
+        args, _ = parser.parse_known_args()
         
         # Mapping for flags to section names
         flag_map = {
