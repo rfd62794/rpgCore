@@ -6,24 +6,34 @@ The Scene Manager provides a single-window state machine for the Slime Clan appl
 
 ## Scene Interface Contract
 
-Every scene must implement these methods:
+Every scene must implement these methods (orchestrated by the `BaseSystem` lifecycle):
 
 ```python
 class MyScene(Scene):
+    def initialize(self) -> bool:
+        """Formal engine initialization. Calls on_enter() by default."""
+        return super().initialize()
+
+    def tick(self, delta_time: float) -> None:
+        """Formal engine update. Calls update(dt_ms) by default."""
+        super().tick(delta_time)
+
+    def shutdown(self) -> None:
+        """Formal engine cleanup. Calls on_exit() by default."""
+        super().shutdown()
+
+    # --- Legacy/Wrapped interface ---
     def on_enter(self, **kwargs) -> None:
-        """Initialize state. Receive data from the previous scene via kwargs."""
-
-    def on_exit(self) -> None:
-        """Clean up. Called before the next scene's on_enter."""
-
-    def handle_events(self, events: list[pygame.event.Event]) -> None:
-        """Process input events for this frame."""
+        """Initialize state. Receive data via kwargs."""
 
     def update(self, dt_ms: float) -> None:
-        """Advance game logic. dt_ms = milliseconds since last frame."""
+        """Advance game logic. dt_ms = milliseconds."""
 
     def render(self, surface: pygame.Surface) -> None:
-        """Draw to the shared surface. Do NOT call pygame.display.flip()."""
+        """Draw to the shared surface."""
+
+    def on_exit(self) -> None:
+        """Clean up resources."""
 ```
 
 ## Scene Transitions
