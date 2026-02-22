@@ -42,7 +42,7 @@ class Journal:
         with open(self.full_path, "w", encoding="utf-8") as f:
             f.write(updated_content)
 
-    def get_handoff(self, test_floor: int = 307) -> str:
+    def get_handoff(self, test_floor: int = 312) -> str:
         """Builds a formatted handoff string."""
         date_str = datetime.now().strftime("%Y-%m-%d")
         curr_state = self.get_section("Current State")
