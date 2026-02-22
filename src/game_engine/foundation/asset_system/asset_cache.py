@@ -61,7 +61,6 @@ class AssetCache:
             return None
 
         if self._is_expired(asset_id):
-            print(f"DEBUG: {asset_id} expired at {time.monotonic()}")
             self._remove(asset_id)
             self._misses += 1
             return None
@@ -69,19 +68,6 @@ class AssetCache:
         self._cache.move_to_end(asset_id)
         self._hits += 1
         return self._cache[asset_id]
-
-    # ... [rest of methods] ...
-
-    def _is_expired(self, asset_id: str) -> bool:
-        """Check if an asset has exceeded its TTL."""
-        if self._ttl is None:
-            return False
-        now = time.monotonic()
-        start = self._timestamps[asset_id]
-        elapsed = now - start
-        is_expired = elapsed > self._ttl
-        print(f"DEBUG: asset={asset_id} now={now} start={start} elapsed={elapsed} ttl={self._ttl} expired={is_expired}")
-        return is_expired
 
     def put(self, asset_id: str, asset: Asset) -> None:
         """
@@ -187,7 +173,7 @@ class AssetCache:
         if self._ttl is None:
             return False
         elapsed = time.monotonic() - self._timestamps[asset_id]
-        return elapsed > self._ttl
+        return elapsed >= self._ttl
 
     def __len__(self) -> int:
         return len(self._cache)

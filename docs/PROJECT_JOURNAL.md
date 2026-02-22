@@ -1,10 +1,10 @@
 # rpgCore — Project Journal
 
 ## Current State
-APJ Tasks system live. Backlog management via docs/TASKS.md. 337 passing tests.
+338 passing, 0 failures. TTL cache bug fixed. Task system live.
 
 ## In Flight
-None.
+Asset restructure queued.
 
 ## Next Priority
-Executing asset restructure and shared UI migrations.
+Asset restructure — execute ASSET_INVENTORY moves.
