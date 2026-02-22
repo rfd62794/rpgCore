@@ -37,34 +37,59 @@ def test_stance_tracking_and_advancement(scene):
             
     import pygame
     
+    # CardLayout needs to finish fading in before it accepts input conceptually, 
+    # but keyboard input in the scene currently bypasses that check:
+    # "if pygame.K_1 <= event.key <= pygame.K_5: ... self._handle_choice_selection(idx)"
+    # Wait, _handle_choice_selection checks `not self.card_layout.is_fading_in`.
+    # Let's simulate time passing so cards fade in.
+    scene.update(2000) # 2 seconds
+    
     # Press '1', which corresponds to K_1 and "PROFESSIONAL"
     events = [MockEvent(pygame.K_1)]
     scene.handle_events(events)
     
     # Should flag the stance and move to NPC_RESPONSE phase
     assert scene.state_tracker.get_flag("current_stance", "") == "PROFESSIONAL"
+    
+    # Needs to fade out before switching phase now
+    assert scene.card_layout.is_fading_out == True
+    
+    # Finish fade out
+    scene.update(1000)
     assert scene.phase == "NPC_RESPONSE"
     
     # Simulate text reveal finishing
     scene.text_window.is_finished = True
+    scene.update(16) # state machine step
     
     # Press any key to advance
+    # Wait, the event handler looks for MOUSEBUTTONDOWN or KEYDOWN for skip/advance
+    # We mapped 'advance from NPC_RESPONSE' to the same event handler
     scene.handle_events([MockEvent(pygame.K_SPACE)])
     
+    # Fade out finished for text? No, it immediately advances to pending
     # Should advance to beat_2_pro
     assert scene.current_node.node_id == "beat_2_pro"
     assert scene.phase == "PROMPT"
+    
+    scene.update(2000) # Fade cards in
     
     # beat_2_pro has 5 options. Let's pick 1 again (PROFESSIONAL), which leads to beat_3_pro
     events = [MockEvent(pygame.K_1)]
     scene.handle_events(events)
     
-    # Beat 2's options do NOT have npc_response in the current JSON, so they advance immediately
+    # Beat 2's options do NOT have npc_response in the current JSON.
+    # It will trigger fade out first.
+    assert scene.card_layout.is_fading_out == True
+    scene.update(1000) # Finish fade out
+    
+    # It advances immediately
     assert scene.current_node.node_id == "beat_3_pro"
     assert scene.phase == "PROMPT"
 
 def test_invalid_key_does_not_advance(scene):
     scene.on_enter()
+    scene.update(2000) # fade cards in
     
     class MockEvent:
         def __init__(self, key):
@@ -114,3 +139,85 @@ def test_beat_4_loading_and_wildcard_routing(scene):
     
     # Moved wildcard -> Moved closing
     assert scene.graph.nodes["beat_4_moved"].edges[4].target_node == "end_moved"
+
+def test_dialogue_card_state():
+    import pygame
+    from src.apps.last_appointment.ui.dialogue_card import DialogueCard
+    pygame.font.init() # Ensure font is initialized for mock
+    rect = pygame.Rect(10, 10, 100, 40)
+    card = DialogueCard(1, "Test text", "WEARY", rect)
+    
+    assert card.hover_state == False
+    assert card.selected_state == False
+    
+    # Test Hover
+    is_hovered = card.handle_hover((20, 20))
+    assert is_hovered == True
+    assert card.hover_state == True
+    assert card.visual_rect.y == 7 # 3px shift
+    
+    # Test Un-hover
+    is_hovered = card.handle_hover((200, 200))
+    assert is_hovered == False
+    assert card.hover_state == False
+    assert card.visual_rect.y == 10
+    
+    # Test Select
+    card.select()
+    assert card.selected_state == True
+
+def test_card_layout_hover():
+    import pygame
+    from src.apps.last_appointment.ui.card_layout import CardLayout
+    from src.shared.narrative.conversation_graph import Edge
+    
+    layout = CardLayout(800, 600)
+    edges = [Edge("target_1", "Response 1"), Edge("target_2", "Response 2")]
+    layout.load_edges(edges)
+    
+    assert len(layout.cards) == 2
+    
+    # Finish fade in
+    layout.update(2000)
+    assert not layout.is_fading_in
+    
+    # Card 1 rect will be around margin_x (60), y starts at (600//3)*2 = 400
+    hover_pos = (70, 410)
+    layout.handle_hover(hover_pos)
+    
+    assert layout.cards[0].hover_state == True
+    assert layout.cards[1].hover_state == False
+    
+    # Click card 0
+    idx = layout.handle_click(hover_pos)
+    assert idx == 0
+    assert layout.cards[0].selected_state == True
+
+def test_fade_sequencing():
+    from src.apps.last_appointment.ui.card_layout import CardLayout
+    from src.shared.narrative.conversation_graph import Edge
+    
+    layout = CardLayout(800, 600)
+    edges = [Edge(f"target_{i}", f"Response {i}") for i in range(5)]
+    layout.load_edges(edges)
+    
+    # Initial state
+    assert layout.is_fading_in == True
+    assert all(c.fade_alpha == 0 for c in layout.cards)
+    
+    # Advance to just after card 0 starts, but before card 1 starts
+    layout.update(100) # 0.1s
+    assert layout.cards[0].fade_alpha > 0 
+    assert layout.cards[1].fade_alpha == 0
+    
+    # Advance to card 1 appearing
+    layout.update(100) # 0.2s total (card 1 starts at 0.15s)
+    assert layout.cards[0].fade_alpha > 0
+    assert layout.cards[1].fade_alpha > 0
+    assert layout.cards[2].fade_alpha == 0
+    
+    # Fully settle
+    layout.update(2000)
+    assert not layout.is_fading_in
+    assert all(c.fade_alpha == 255 for c in layout.cards)
+

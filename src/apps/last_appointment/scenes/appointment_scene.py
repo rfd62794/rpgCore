@@ -11,6 +11,7 @@ from src.shared.narrative.keyword_registry import KeywordRegistry
 from src.shared.rendering.font_manager import FontManager
 
 from src.apps.last_appointment.ui.text_window import TextWindow
+from src.apps.last_appointment.ui.card_layout import CardLayout
 
 STANCE_COLORS = {
     "PROFESSIONAL": (200, 200, 212), # #C8C8D4
@@ -34,8 +35,16 @@ class AppointmentScene(Scene):
         self.pending_node = None
         self.npc_response_text = ""
         
-        # Initialize text window
+        # Initialize UI components
         self.text_window = TextWindow(0, 0, manager.width, slow_reveal=True, reveal_speed=40.0)
+        self.card_layout = CardLayout(manager.width, manager.height)
+        
+        # Room vignette interpolation state
+        self.current_brightness = 0.0
+        self.target_brightness = 0.0
+        
+        # Pre-render vignette gradient
+        self.vignette_surface = None
         
         # UI rendering needs FontManager
         FontManager().initialize()
@@ -78,11 +87,81 @@ class AppointmentScene(Scene):
     def on_enter(self, **kwargs) -> None:
         logger.info("Entering AppointmentScene")
         self._load_graph()
+        
+        # Set initial brightness
+        if self.current_node:
+            self.current_brightness = float(getattr(self.current_node, "room_brightness", 0))
+            self.target_brightness = self.current_brightness
+        
+        # Create vignette surface
+        self._build_vignette()
 
     def on_exit(self) -> None:
         logger.info("Exiting AppointmentScene")
 
+    def _build_vignette(self) -> None:
+        """Builds a radial gradient surface for the vignette effect."""
+        w, h = self.manager.width, self.manager.height
+        self.vignette_surface = pygame.Surface((w, h), pygame.SRCALPHA)
+        center_x, center_y = w // 2, h // 2
+        
+        # Max distance from center to corner
+        max_dist = ((w/2)**2 + (h/2)**2) ** 0.5
+        
+        # At brightness 0: Pure black vignette at edges.
+        # At brightness 50: Golden candlelight, partial vignette.
+        # At brightness 100: Morning light, bright warm wash over everything.
+        
+        for y in range(h):
+            for x in range(w):
+                dx = x - center_x
+                dy = y - center_y
+                dist = (dx**2 + dy**2) ** 0.5
+                normalized_dist = min(1.0, dist / max_dist)
+                
+                # Base vignette alpha driven by distance
+                # Edges are darker/more opaque vignette
+                # Center is clear (alpha 0)
+                
+                # Vignette color and intensity shifts based on brightness
+                if self.current_brightness <= 50:
+                    # 0 to 50: Pure black to candlelight
+                    factor = self.current_brightness / 50.0
+                    # Color shifts from black to a warm orange
+                    r = int(0 + (180 - 0) * factor)
+                    g = int(0 + (100 - 0) * factor)
+                    b = int(0 + (30 - 0) * factor)
+                    
+                    # Alpha at edge decreases slightly as it brightens
+                    edge_alpha = int(255 - (factor * 100))
+                else:
+                    # 50 to 100: Candlelight to Morning Light
+                    factor = (self.current_brightness - 50.0) / 50.0
+                    r = int(180 + (255 - 180) * factor)
+                    g = int(100 + (240 - 100) * factor)
+                    b = int(30 + (200 - 30) * factor)
+                    
+                    # Alpha becomes a wash rather than a vignette edge
+                    # Morning light starts to fill the center too
+                    edge_alpha = int(155 - (factor * 155))
+                    
+                
+                # Apply distance to alpha (non-linear for better gradient)
+                intensity = normalized_dist ** 1.5
+                alpha = int(edge_alpha * intensity)
+                
+                # At high brightness, add a base wash regardless of distance
+                if self.current_brightness > 50:
+                    wash_factor = (self.current_brightness - 50.0) / 50.0
+                    base_wash = int(40 * wash_factor)
+                    alpha = max(base_wash, alpha)
+                    
+                self.vignette_surface.set_at((x, y), (r, g, b, alpha))
+
     def handle_events(self, events: list[pygame.event.Event]) -> None:
+        mouse_pos = pygame.mouse.get_pos()
+        self.card_layout.handle_hover(mouse_pos)
+        
         for event in events:
             if event.type == pygame.QUIT:
                 self.request_quit()
@@ -91,42 +170,98 @@ class AppointmentScene(Scene):
                     self.request_quit()
                 
                 if self.phase == "PROMPT":
-                    # Handling choices 1-5
+                    # Handling choices 1-5 via keyboard
                     if pygame.K_1 <= event.key <= pygame.K_5:
                         idx = event.key - pygame.K_1
-                        if idx < len(self.available_edges):
-                            selected = self.available_edges[idx]
-                            stance = getattr(selected, "stance", "PROFESSIONAL")
-                            npc_response = getattr(selected, "npc_response", "")
-                            
-                            self.state_tracker.set_flag("current_stance", stance)
-                            
-                            self.pending_node = self.graph.make_choice(selected)
-                            
-                            if npc_response:
-                                self.phase = "NPC_RESPONSE"
-                                self.npc_response_text = npc_response
-                                self.text_window.set_text(self.npc_response_text)
-                            else:
-                                # Advance immediately if no pending response
-                                self._advance_to_pending()
+                        self._handle_choice_selection(idx)
+                        
                 elif self.phase == "NPC_RESPONSE":
                     if self.text_window.is_finished:
-                        # Advance to next prompt
-                        self._advance_to_pending()
+                        self.card_layout.start_fade_out()
                     else:
-                        # Skip reveal
                         self.text_window.skip_reveal()
+                        
+            elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
+                # Left click
+                if self.phase == "PROMPT":
+                    selected_idx = self.card_layout.handle_click(mouse_pos)
+                    if selected_idx is not None:
+                        self._handle_choice_selection(selected_idx)
+                elif self.phase == "NPC_RESPONSE":
+                    if self.text_window.is_finished:
+                        self.card_layout.start_fade_out()
+                    else:
+                        self.text_window.skip_reveal()
+
+    def _handle_choice_selection(self, idx: int) -> None:
+        if idx < len(self.available_edges) and not self.card_layout.is_fading_in and not self.card_layout.is_fading_out:
+            selected = self.available_edges[idx]
+            stance = getattr(selected, "stance", "PROFESSIONAL")
+            npc_response = getattr(selected, "npc_response", "")
+            
+            self.state_tracker.set_flag("current_stance", stance)
+            
+            self.pending_node = self.graph.make_choice(selected)
+            
+            # Start fading the cards out
+            self.card_layout.start_fade_out()
+            self.npc_response_text = npc_response
 
     def _advance_to_pending(self):
         self.current_node = self.pending_node
         if self.current_node:
+            self.target_brightness = float(getattr(self.current_node, "room_brightness", 0))
             self.available_edges = self.graph.get_available_choices()
             self.text_window.set_text(self.current_node.text)
         self.phase = "PROMPT"
+        # Delay card loading slightly or wait until text is revealed?
+        # Re-evaluating: Prompt text exists on new node immediately, 
+        # but responses shouldn't show until the Prompt is finished? 
+        # Actually specs says "Cards only appear after NPC response is fully displayed" - we might need to adjust logic
+        # if the text_window is the PROMPT or the NPC response...
+        # Let's say cards fade in once the current text block (which might be the prompt itself if no NPC response) finishes.
 
     def update(self, dt_ms: float) -> None:
+        # Interpolate brightness
+        if abs(self.current_brightness - self.target_brightness) > 0.5:
+            # Shift 20 units per second
+            sign = 1 if self.target_brightness > self.current_brightness else -1
+            self.current_brightness += sign * 20.0 * (dt_ms / 1000.0)
+            if sign == 1 and self.current_brightness > self.target_brightness:
+                self.current_brightness = self.target_brightness
+            elif sign == -1 and self.current_brightness < self.target_brightness:
+                self.current_brightness = self.target_brightness
+            self._build_vignette()
+
         self.text_window.update(dt_ms)
+        self.card_layout.update(dt_ms)
+        
+        # State machine shifts
+        if self.phase == "PROMPT":
+            # If text finished revealing, load cards if empty
+            if self.text_window.is_finished and not self.card_layout.cards:
+                self.card_layout.load_edges(self.available_edges)
+        elif self.phase == "NPC_RESPONSE":
+            if not self.card_layout.is_fading_out and not self.card_layout.cards and self.npc_response_text:
+                # Text transitioned to NPC response but cards still shown?
+                pass
+                
+        # Handle the transition after fade out
+        if not self.card_layout.is_fading_out and self.card_layout.cards and self.card_layout.cards[0].fade_alpha == 0:
+            # Fade out finished
+            self.card_layout.cards.clear()
+            
+            if self.phase == "PROMPT" and self.npc_response_text:
+                # Moving to NPC Response
+                self.phase = "NPC_RESPONSE"
+                self.text_window.set_text(self.npc_response_text)
+            elif self.phase == "PROMPT" and not self.npc_response_text:
+                # Moving to next Prompt natively
+                self._advance_to_pending()
+            elif self.phase == "NPC_RESPONSE":
+                # Moving from NPC response to next Prompt
+                self.npc_response_text = ""
+                self._advance_to_pending()
 
     def render(self, surface: pygame.Surface) -> None:
         if not self.current_node:
@@ -142,13 +277,14 @@ class AppointmentScene(Scene):
             bg_color = (255, 255, 255)
             self.text_window.color = (30, 30, 35) # Make text dark and visible
         else:
-            r = min(255, 10 + int(1.5 * brightness))
-            g = min(255, 10 + int(1.5 * brightness))
-            b = min(255, 18 + int(1.5 * brightness))
-            bg_color = (r, g, b)
+            bg_color = (10, 10, 18) # Base dark room
             self.text_window.color = (200, 200, 212) # Default text color
             
         surface.fill(bg_color)
+        
+        # Draw dynamic vignette over the background
+        if not is_white and self.vignette_surface:
+            surface.blit(self.vignette_surface, (0, 0))
             
         # Draw the main text window (prompt or npc response)
         self.text_window.render(surface)
@@ -156,42 +292,19 @@ class AppointmentScene(Scene):
         # Draw stances (bottom right corner, muted italic style)
         stance = self.state_tracker.get_flag("current_stance", "")
         if stance:
-            # We mock italics if font manager doesn't natively support it by using a distinct font or just color
-            # Since PyGame sysfonts can be italicized, but FontManager currently doesn't expose it,
-            # we draw it minimal and muted. Let's just use Arial 16, very dark grey.
             stance_text = stance.capitalize()
-            stance_sur = FontManager().render_text(stance_text, "Arial", 16, (80, 80, 95))
+            stance_sur = FontManager().get_font("Arial", 16).render(stance_text, True, (80, 80, 95)) if FontManager().get_font("Arial", 16) != "DummyFont" else pygame.Surface((1,1))
             sw = stance_sur.get_width()
             sh = stance_sur.get_height()
             surface.blit(stance_sur, (self.manager.width - sw - 20, self.manager.height - sh - 20))
         
-        if self.phase == "PROMPT":
-            # Draw responses at bottom third
-            start_y = (self.manager.height // 3) * 2
-            for i, edge in enumerate(self.available_edges):
-                stance = getattr(edge, "stance", "PROFESSIONAL")
-                color = STANCE_COLORS.get(stance, (200, 200, 200))
-                
-                # Render number in grey
-                num_text = f"[{i+1}] "
-                num_sur = FontManager().render_text(num_text, "Arial", 20, NUMBER_COLOR)
-                
-                # Render response in stance color
-                resp_sur = FontManager().render_text(edge.text, "Arial", 20, color)
-                
-                # Assume mouse isn't currently tracked, so no hover highlight yet, unless we query it.
-                # To query mouse for hover highlight:
-                mouse_x, mouse_y = pygame.mouse.get_pos()
-                resp_rect = pygame.Rect(80, start_y + i * 40, num_sur.get_width() + resp_sur.get_width(), max(num_sur.get_height(), resp_sur.get_height()))
-                
-                if resp_rect.collidepoint(mouse_x, mouse_y):
-                    # Brighten color
-                    bright_color = tuple(min(255, int(c * 1.2)) for c in color)
-                    resp_sur = FontManager().render_text(edge.text, "Arial", 20, bright_color)
-                
-                surface.blit(num_sur, (80, start_y + i * 40))
-                surface.blit(resp_sur, (80 + num_sur.get_width(), start_y + i * 40))
+        # Render cards if Prompt phase
+        if self.phase == "PROMPT" and self.card_layout.cards:
+            self.card_layout.render(surface)
+            
         elif self.phase == "NPC_RESPONSE":
             if self.text_window.is_finished:
-                cont_sur = FontManager().render_text("[Press Any Key to Continue]", "Arial", 16, (100, 100, 100))
+                cont_sur = FontManager().get_font("Arial", 16).render("[Press Any Key to Continue]", True, (100, 100, 100)) if FontManager().get_font("Arial", 16) != "DummyFont" else pygame.Surface((1,1))
                 surface.blit(cont_sur, (80, (self.manager.height // 3) * 2))
+        
+
