@@ -77,11 +77,20 @@ class ColonyManager:
                 colony.faction = faction
                 break
 
-    def values(self):
-        return self.colonies.values()
+    def keys(self):
+        return self.colonies.keys()
+
+    def items(self):
+        return self.colonies.items()
+
+    def __iter__(self):
+        return iter(self.colonies)
 
     def __getitem__(self, key):
         return self.colonies[key]
 
     def __contains__(self, key):
         return key in self.colonies
+
+    def __len__(self):
+        return len(self.colonies)
