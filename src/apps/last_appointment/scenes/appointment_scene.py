@@ -159,7 +159,12 @@ class AppointmentScene(Scene):
                 self.vignette_surface.set_at((x, y), (r, g, b, alpha))
 
     def handle_events(self, events: list[pygame.event.Event]) -> None:
-        mouse_pos = pygame.mouse.get_pos()
+        try:
+            mouse_pos = pygame.mouse.get_pos()
+        except pygame.error:
+            # Fallback for headless test environments
+            mouse_pos = (0, 0)
+            
         self.card_layout.handle_hover(mouse_pos)
         
         for event in events:
