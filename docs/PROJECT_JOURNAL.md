@@ -1,10 +1,10 @@
 # rpgCore — Project Journal
 
 ## Current State
-Last Appointment bug fixes (NumPad, text wrap) complete.
+APJ Tasks system live. Backlog management via docs/TASKS.md. 337 passing tests.
 
 ## In Flight
-All tests passing (332 total).
+None.
 
 ## Next Priority
-Onboarding new demos or enhancing existing ones.
+Executing asset restructure and shared UI migrations.

@@ -1,7 +1,6 @@
 # rpgCore — Task Backlog
 
 ## Active
-- [TOOL] APJ — task management system integration
 
 ## Queued
 - [REFACTOR] Asset restructure — execute moves from ASSET_INVENTORY.md
@@ -24,3 +23,4 @@
 - [FEAT] Color palette / theme system in assets/shared/themes/
 
 ## Completed
+- [x] [TOOL] APJ — task management system integration (2026-02-22)
