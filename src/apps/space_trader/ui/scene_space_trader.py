@@ -65,11 +65,14 @@ class SpaceTraderScene(Scene):
         market_rect = pygame.Rect(20, y_offset + 170, 600, 300)
         self.market_list = ScrollList(market_rect, bg_color=self.panel_bg)
         
-        listings = self.session.market.get_listings(self.session.ship.location_id)
-        for l in listings:
+        self.current_listings = self.session.market.get_listings(self.session.ship.location_id)
+        display_items = []
+        for l in self.current_listings:
             good = l['good']
             row_text = f"{good.title():<15} | Buy: {l['buy_price']:<5} | Sell: {l['sell_price']:<5}"
-            self.market_list.add_item(row_text, value=good)
+            display_items.append(row_text)
+            
+        self.market_list.load_items(display_items)
             
         # Buy/Sell buttons for market
         bx = 640
@@ -94,16 +97,18 @@ class SpaceTraderScene(Scene):
             nx += 260
 
     def _handle_buy(self):
-        selected = self.market_list.get_selected_value()
-        if selected:
+        idx = self.market_list.selected_index
+        if 0 <= idx < len(self.current_listings):
+            selected = self.current_listings[idx]['good']
             res = self.session.market.buy(self.session.ship.location_id, selected, 1, self.session.ship.cargo, self.session.ship.credits)
             self.session.ship.credits = res["credits"]
             self.last_message = res["message"]
             self._build_ui()
 
     def _handle_sell(self):
-        selected = self.market_list.get_selected_value()
-        if selected:
+        idx = self.market_list.selected_index
+        if 0 <= idx < len(self.current_listings):
+            selected = self.current_listings[idx]['good']
             res = self.session.market.sell(self.session.ship.location_id, selected, 1, self.session.ship.cargo, self.session.ship.credits)
             self.session.ship.credits = res["credits"]
             self.last_message = res["message"]
