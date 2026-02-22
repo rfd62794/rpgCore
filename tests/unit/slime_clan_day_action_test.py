@@ -7,7 +7,10 @@ from src.shared.world.faction import FactionManager
 def mock_overworld():
     pygame.init()
     pygame.font.init()
-    scene = OverworldScene()
+    # Mocking SceneManager
+    from unittest.mock import MagicMock
+    mock_manager = MagicMock()
+    scene = OverworldScene(manager=mock_manager)
     # Mocking faction manager to avoid DB issues if any
     scene.faction_manager = FactionManager()
     scene.on_enter()
