@@ -41,10 +41,10 @@ def test_stance_tracking_and_advancement(scene):
     # but keyboard input in the scene currently bypasses that check:
     # "if pygame.K_1 <= event.key <= pygame.K_5: ... self._handle_choice_selection(idx)"
     # Wait, _handle_choice_selection checks `not self.card_layout.is_fading_in`.
-    # Let's simulate time passing so cards fade in.
-    scene.text_window.is_finished = True
+    # Let's cleanly skip animations.
+    scene.text_window.skip_reveal()
     scene.update(16) # state machine step to trigger load_edges
-    scene.update(2000) # 2 seconds to fade in
+    scene.card_layout.skip_animations()
     
     # Press '1', which corresponds to K_1 and "PROFESSIONAL"
     events = [MockEvent(pygame.K_1)]
@@ -57,12 +57,13 @@ def test_stance_tracking_and_advancement(scene):
     assert scene.card_layout.is_fading_out == True
     
     # Finish fade out
-    scene.update(1000)
+    scene.card_layout.skip_animations()
+    scene.update(16) # Let state machine process the clear
         
     assert scene.phase == "NPC_RESPONSE"
     
     # Simulate text reveal finishing
-    scene.text_window.is_finished = True
+    scene.text_window.skip_reveal()
     scene.update(16) # Give state machine a tick to detect text is finished
     
     # Press any key to advance
@@ -81,9 +82,9 @@ def test_stance_tracking_and_advancement(scene):
     assert scene.phase == "PROMPT"
     
     # Next prompt loads immediately. Wait for text to finish, then cards.
-    scene.text_window.is_finished = True
+    scene.text_window.skip_reveal()
     scene.update(16) # load cards
-    scene.update(2000) # Fade cards in
+    scene.card_layout.skip_animations()
     
     # beat_2_pro has 5 options. Let's pick 1 again (PROFESSIONAL), which leads to beat_3_pro
     events = [MockEvent(pygame.K_1)]
@@ -101,9 +102,9 @@ def test_stance_tracking_and_advancement(scene):
 
 def test_invalid_key_does_not_advance(scene):
     scene.on_enter()
-    scene.text_window.is_finished = True
+    scene.text_window.skip_reveal()
     scene.update(16)  # load cards 
-    scene.update(2000) # fade cards in
+    scene.card_layout.skip_animations()
     
     class MockEvent:
         def __init__(self, key):
