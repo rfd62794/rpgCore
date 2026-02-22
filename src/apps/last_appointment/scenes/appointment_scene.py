@@ -64,6 +64,8 @@ class AppointmentScene(Scene):
                     text=beat["prompt"],
                     edges=edges
                 )
+                node.room_brightness = beat.get("room_brightness", 0)
+                node.white_room = beat.get("white_room", False)
                 self.graph.add_node(node)
                 
             self.current_node = self.graph.start("beat_1")
@@ -127,12 +129,26 @@ class AppointmentScene(Scene):
         self.text_window.update(dt_ms)
 
     def render(self, surface: pygame.Surface) -> None:
-        surface.fill((10, 10, 18))  # Dark room: #0A0A12
-        
         if not self.current_node:
+            surface.fill((10, 10, 18))
             text_sur = FontManager().render_text("No conversation loaded.", "Arial", 24, (255, 0, 0))
             surface.blit(text_sur, (50, 50))
             return
+            
+        brightness = getattr(self.current_node, "room_brightness", 0)
+        is_white = getattr(self.current_node, "white_room", False)
+        
+        if is_white:
+            bg_color = (255, 255, 255)
+            self.text_window.color = (30, 30, 35) # Make text dark and visible
+        else:
+            r = min(255, 10 + int(1.5 * brightness))
+            g = min(255, 10 + int(1.5 * brightness))
+            b = min(255, 18 + int(1.5 * brightness))
+            bg_color = (r, g, b)
+            self.text_window.color = (200, 200, 212) # Default text color
+            
+        surface.fill(bg_color)
             
         # Draw the main text window (prompt or npc response)
         self.text_window.render(surface)
