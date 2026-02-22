@@ -962,13 +962,17 @@ class AutoBattleScene(Scene):
 
         # Blue squad (left)
         bx = WINDOW_WIDTH // 6
+        blue_count = len(self.blue_squad)
         for i, unit in enumerate(self.blue_squad):
-            self._draw_unit(surface, unit, bx, center_y + (i - 1) * spacing)
+            offset = i - (blue_count - 1) / 2
+            self._draw_unit(surface, unit, bx, center_y + offset * spacing)
 
         # Red squad (right)
         rx = WINDOW_WIDTH - WINDOW_WIDTH // 6
+        red_count = len(self.red_squad)
         for i, unit in enumerate(self.red_squad):
-            self._draw_unit(surface, unit, rx, center_y + (i - 1) * spacing)
+            offset = i - (red_count - 1) / 2
+            self._draw_unit(surface, unit, rx, center_y + offset * spacing)
 
         # Battle logs
         log_y = WINDOW_HEIGHT - 120
