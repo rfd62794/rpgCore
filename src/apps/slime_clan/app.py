@@ -413,6 +413,8 @@ class OverworldScene(Scene):
                 elif label == "Approach":
                     self.actions_remaining -= 1
                     self.tribe_state[nid]["approaches"] += 1
+                    for u in colony.units:
+                        self.colony_manager.modify_sympathy(u, 5, "direct approach", colony)
                     logger.info(f"🚶 You approach unarmed. They do not flee. Progress: {self.tribe_state[nid]['approaches']}/3")
                 elif label == "Wait":
                     logger.info("🧘 You wait. The silence is profound.")
