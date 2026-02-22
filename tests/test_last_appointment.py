@@ -192,7 +192,7 @@ def test_card_layout_hover():
     
     assert len(layout.cards) == 2
     
-    layout.update(2000)
+    layout.skip_animations()
     assert not layout.is_fading_in
     
     # Card 1 rect will be around margin_x (60), y starts at (600//3)*2 = 400
@@ -231,7 +231,7 @@ def test_fade_sequencing():
     assert layout.cards[2].fade_alpha == 0
     
     # Fully settle
-    layout.update(2000)
+    layout.skip_animations()
     assert not layout.is_fading_in
     assert all(c.fade_alpha == 255 for c in layout.cards)
 
