@@ -7,6 +7,17 @@ Run: `python -m src.tools.apj handoff`
 This prints current project state, what is in flight, and next priority. 
 Read the output before reading anything else.
 
+## Agent Behavior Standards
+- Always use `uv run` for execution. Never activate venv manually.
+- Spec-first: No code written until plan is confirmed by Overseer in the IMPLEMENTATION PLAN artifact.
+- Present significant architectural decisions as three options:
+    - **Headlong**: Direct engineering, fastest path.
+    - **Divert**: Side-step, different approach to the same goal.
+    - **Alt**: The better way, may change the question.
+- No `print()` statements in `src/`. Use `logging` or `Rich` for CLI output.
+- All commands must be Windows PowerShell safe.
+- Artifact first: update docs and journal before closing a session.
+
 ---
 
 You are working on the Slime Clan game within the rpgCore repository (github.com/rfd62794/rpgCore). Before starting, read these docs:

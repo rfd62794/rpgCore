@@ -102,6 +102,13 @@ STEP 3 — Confirm understanding before acting:
   State current floor, what is in flight, next priority.
   Wait for Overseer confirmation before writing any code.
 
+AGENT STANDARDS:
+  Use: uv run pytest, uv run python
+  No print() in src/ — use logging
+  Spec before code — confirm plan with Overseer first
+  Present options as: Headlong / Divert / Alt
+  Final step: python -m src.tools.apj update --current "..." --inflight "..." --next "..."
+
 PROTECTED FLOOR: {test_floor} passing tests
 SESSION DATE: {date_str}
 ═══════════════════════════════════════"""

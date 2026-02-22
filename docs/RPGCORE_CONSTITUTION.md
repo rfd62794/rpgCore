@@ -14,6 +14,7 @@ rpgCore is a shared game engine and collection of demos built by one developer a
 2. Demos live in `src/apps/`. Each demo is self-contained above the shared layer. Demos consume shared systems. They do not reimplement them.
 3. Nothing gets built twice. If it exists in shared you use it. If it doesn't exist in shared and two demos need it, you extract it into shared before building it again.
 4. `src/tools/` serve the developer, never the player.
+5. No code before the plan. Present significant architectural decisions as options (Headlong / Divert / Alt), confirm with Overseer, THEN implement.
 
 ## The Fourth Pillar — src/tools/
 - Tools are developer-facing. They are not consumed at runtime by players.

@@ -23,3 +23,11 @@ This document tracks known, accepted technical debt across the RPGCore repositor
 ## 4. Known UI Issues
 - **Last Appointment — NumPad controls not working**: Only top-row number keys (1-5) respond. NumPad keys (KP_1 through KP_5) should be mapped identically. Fix in `appointment_scene.py` input handling.
 - **Last Appointment — Response card text overflow**: Cards need a max character width with forced line breaks. Text that exceeds one line should wrap within the card bounds rather than overflow or truncate. Affects card height calculation in `card_layout.py`.
+
+## 5. Code Quality Standards
+
+These items represent patterns that are being phased out in favor of higher engineering standards.
+
+- **`print()` statements in `src/`**: Legacy debugging output should be replaced with `loguru` or `Rich` consoles for structured and aesthetically consistent CLI output.
+- **Pydantic V1 Validators**: `dgt_engine` and `game_engine` (donor archives) still use V1 syntax. New harvest work must migrate these to V2.
+- **Incomplete Type Hinting**: Several older `shared/` modules lack full type coverage. New edits to these modules should include type enforcement.

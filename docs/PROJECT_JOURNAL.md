@@ -1,10 +1,10 @@
 # rpgCore — Project Journal
 
 ## Current State
-330 passing tests. Shared physics, input, spawner base established. APJ boot command live.
+330 passing tests. PyPro standards absorbed into repository docs and APJ boot block.
 
 ## In Flight
-Particle system audit documented. Asteroids Phase 2 NEAT queued.
+No active code changes in flight. Repository is now self-describing for agent behavior.
 
 ## Next Priority
-Review particle audit findings. Begin TurboShells frame or Asteroids Phase 2.
+Proceed with Asteroids Phase 2 or TurboShells development using new spec-first standards.
