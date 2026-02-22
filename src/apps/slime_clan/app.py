@@ -301,6 +301,7 @@ class OverworldScene(Scene):
         
         nid = self.selected_unbound_node.id
         approaches = self.tribe_state[nid]["approaches"]
+        colony = self.colony_manager.get_colony(nid)
         
         # Determine buttons
         btns = [
@@ -308,12 +309,14 @@ class OverworldScene(Scene):
             ("Approach", (px + 160, py + 110, 120, 30))
         ]
         if approaches >= 3:
-            btns.append(("Wait", (px + 90, py + 145, 120, 30)))
+            btns.append(("Wait", (px + 20, py + 145, 120, 30)))
+            if colony and colony.units:
+                btns.append(("Recruit...", (px + 160, py + 145, 120, 30)))
             
         for label, rect in btns:
             r = pygame.Rect(rect)
             if r.collidepoint(mx, my):
-                if self.actions_remaining <= 0 and label != "Wait":
+                if self.actions_remaining <= 0 and label not in ["Wait", "Recruit..."]:
                     logger.warning("🚫 No actions remaining for this!")
                     return True
                 
@@ -326,6 +329,16 @@ class OverworldScene(Scene):
                     logger.info(f"🚶 You approach unarmed. They do not flee. Progress: {self.tribe_state[nid]['approaches']}/3")
                 elif label == "Wait":
                     logger.info("🧘 You wait. The silence is profound.")
+                elif label == "Recruit...":
+                    # Part 2: First Recruitment
+                    if colony and colony.units:
+                        # Pick unit with highest sympathy
+                        selected_unit = max(colony.units, key=lambda u: getattr(u, "sympathy", 0))
+                        colony.units.remove(selected_unit)
+                        self.player_units.append(selected_unit)
+                        logger.success(f"🤝 {selected_unit.name} steps forward from {colony.name}. They have chosen you.")
+                    else:
+                        logger.info("The tribe has no one left to send.")
                 
                 self.selected_unbound_node = None # Close panel
                 return True
@@ -425,9 +438,13 @@ class OverworldScene(Scene):
         res_surf = self.font.render(res_text, True, (150, 200, 255))
         surface.blit(res_surf, (20, 45))
 
+        roster_text = f"Roster: {len(self.player_units)}"
+        roster_surf = self.font.render(roster_text, True, (200, 255, 200))
+        surface.blit(roster_surf, (20, 70))
+
         if self.actions_remaining == 0:
             prompt_surf = self.font.render("No actions remaining — End Day to continue", True, (255, 100, 100))
-            surface.blit(prompt_surf, (20, 70))
+            surface.blit(prompt_surf, (20, 95))
 
         # End Day Button
         btn_x, btn_y, btn_w, btn_h = WINDOW_WIDTH - 140, WINDOW_HEIGHT - 60, 120, 40
@@ -499,7 +516,11 @@ class OverworldScene(Scene):
                 ("Approach", (px + 160, py + 110, 120, 30))
             ]
             if approaches >= 3:
-                btns.append(("Wait", (px + 90, py + 145, 120, 30)))
+                btns.append(("Wait", (px + 20, py + 145, 120, 30)))
+                # Show recruitment option if colony has units
+                colony = self.colony_manager.get_colony(nid)
+                if colony and colony.units:
+                    btns.append(("Recruit", (px + 160, py + 145, 120, 30)))
                 
             for label, rect in btns:
                 pygame.draw.rect(surface, (40, 40, 60), rect)
