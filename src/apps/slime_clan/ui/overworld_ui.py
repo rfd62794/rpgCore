@@ -78,6 +78,24 @@ def render_overworld_map(surface: pygame.Surface, font: pygame.font.Font, coloni
         if getattr(node, "node_type", None) and getattr(node.node_type, "name", "") == "STRONGHOLD":
             radius = int(NODE_RADIUS * 1.15)
             
+        # If hidden, dim the colors by mixing 60% background color to simulate 40% opacity
+        if getattr(node, "hidden", False):
+            bg_r, bg_g, bg_b = OVERWORLD_BG
+            
+            fr, fg, fb = fill_color
+            fill_color = (
+                int(fr * 0.4 + bg_r * 0.6),
+                int(fg * 0.4 + bg_g * 0.6),
+                int(fb * 0.4 + bg_b * 0.6)
+            )
+            
+            br, bg_c, bb = border_color
+            border_color = (
+                int(br * 0.4 + bg_r * 0.6),
+                int(bg_c * 0.4 + bg_g * 0.6),
+                int(bb * 0.4 + bg_b * 0.6)
+            )
+            
         pygame.draw.circle(surface, fill_color, (node.x, node.y), radius)
 
         # Draw markers BEFORE borders
@@ -144,7 +162,7 @@ def draw_end_day_button(surface: pygame.Surface, font: pygame.font.Font):
     btn_label = font.render("END DAY", True, (255, 255, 255))
     surface.blit(btn_label, (btn_x + (btn_w - btn_label.get_width()) // 2, btn_y + (btn_h - btn_label.get_height()) // 2))
 
-def draw_interaction_panel(surface: pygame.Surface, font: pygame.font.Font, node_name: str, approaches: int, btns: List[tuple]):
+def draw_interaction_panel(surface: pygame.Surface, font: pygame.font.Font, node_name: str, approaches: int, btns: List[tuple], is_hidden: bool = False):
     pw, ph = 300, 180
     px, py = (WINDOW_WIDTH - pw) // 2, (WINDOW_HEIGHT - ph) // 2
     pygame.draw.rect(surface, (20, 20, 30), (px, py, pw, ph))
@@ -153,15 +171,19 @@ def draw_interaction_panel(surface: pygame.Surface, font: pygame.font.Font, node
     title = font.render(node_name, True, (245, 197, 66))
     surface.blit(title, (px + (pw - title.get_width()) // 2, py + 15))
     
-    flavor = "They watch you silently."
-    if approaches >= 1: flavor = "They acknowledge your presence."
-    if approaches >= 3: flavor = "They are considering you. Return tomorrow."
-    
+    if is_hidden:
+        flavor = "They have gone into hiding."
+    else:
+        flavor = "They watch you silently."
+        if approaches >= 1: flavor = "They acknowledge your presence."
+        if approaches >= 3: flavor = "They are considering you. Return tomorrow."
+        
     flav_surf = font.render(flavor, True, (200, 200, 200))
     surface.blit(flav_surf, (px + (pw - flav_surf.get_width()) // 2, py + 50))
     
-    prog_surf = font.render(f"Approach Progress: {approaches}/3", True, (150, 150, 150))
-    surface.blit(prog_surf, (px + (pw - prog_surf.get_width()) // 2, py + 75))
+    if not is_hidden:
+        prog_surf = font.render(f"Approach Progress: {approaches}/3", True, (150, 150, 150))
+        surface.blit(prog_surf, (px + (pw - prog_surf.get_width()) // 2, py + 75))
     
     for label, rect in btns:
         pygame.draw.rect(surface, (40, 40, 60), rect)

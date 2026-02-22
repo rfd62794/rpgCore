@@ -265,19 +265,26 @@ class OverworldScene(Scene):
         nid = self.selected_unbound_node.id
         approaches = self.tribe_state[nid]["approaches"]
         colony = self.colony_manager.get_colony(nid)
-        btns = [("Observe", (px + 20, py + 110, 120, 30)), ("Approach", (px + 160, py + 110, 120, 30)), ("Offer Scrap", (px + 20, py + 145, 120, 30))]
-        if approaches >= 3 and colony and colony.units:
-            btns.append(("Recruit...", (px + 160, py + 145, 120, 30)))
+        
+        btns = []
+        if colony and colony.hidden:
+            btns = [("Offer Scrap", (px + 90, py + 110, 120, 30))]
+        else:
+            btns = [("Observe", (px + 20, py + 110, 120, 30)), ("Approach", (px + 160, py + 110, 120, 30)), ("Offer Scrap", (px + 20, py + 145, 120, 30))]
+            if approaches >= 3 and colony and colony.units:
+                btns.append(("Recruit...", (px + 160, py + 145, 120, 30)))
+                
         for label, rect in btns:
             r = pygame.Rect(rect)
             if r.collidepoint(mx, my):
                 if label == "Offer Scrap":
-                    if self.actions_remaining > 0 and self.resources >= 5:
+                    if self.actions_remaining > 0 and self.resources >= 2:
                         self.actions_remaining -= 1
-                        self.resources -= 5
-                        colony.last_action_day = self.day
-                        for u in colony.units:
-                            self.colony_manager.modify_sympathy(u, 10, "gift of scrap", colony)
+                        self.resources -= 2
+                        if colony:
+                            colony.last_action_day = self.day
+                            for u in colony.units:
+                                self.colony_manager.modify_sympathy(u, 10, "gift of scrap", colony)
                         self.selected_unbound_node = None
                         return True
                     return True
@@ -288,8 +295,9 @@ class OverworldScene(Scene):
                 elif label == "Approach":
                     self.actions_remaining -= 1
                     self.tribe_state[nid]["approaches"] += 1
-                    for u in colony.units:
-                        self.colony_manager.modify_sympathy(u, 5, "direct approach", colony)
+                    if colony:
+                        for u in colony.units:
+                            self.colony_manager.modify_sympathy(u, 5, "direct approach", colony)
                 elif label == "Recruit...":
                     if colony and colony.units:
                         selected_unit = max(colony.units, key=lambda u: getattr(u, "sympathy", 0))
@@ -321,15 +329,23 @@ class OverworldScene(Scene):
             owner = self.faction_manager.get_owner(node.coord)
             type_label = NODE_TYPE_LABELS[node.node_type]
             type_color = (120, 120, 120)
-            if node.node_type == NodeType.RECRUITMENT and owner == "CLAN_BLUE":
-                type_label = "Unbound tribe nearby"; type_color = (100, 200, 100)
+            
+            if node.hidden:
+                type_label = "They have gone into hiding."
+                type_color = (150, 150, 100)
+            elif node.node_type == NodeType.RECRUITMENT and owner == "CLAN_BLUE":
+                type_label = "Unbound tribe nearby"
+                type_color = (100, 200, 100)
             elif owner == "CLAN_YELLOW":
                 nid = node.id
                 approaches = self.tribe_state.get(nid, {}).get("approaches", 0)
                 if approaches >= 3:
-                    type_label = "The tribe is considering you. Return tomorrow."; type_color = (255, 255, 150)
+                    type_label = "The tribe is considering you. Return tomorrow."
+                    type_color = (255, 255, 150)
                 else:
-                    type_label = "They watch you from the treeline."; type_color = (200, 200, 100)
+                    type_label = "They watch you from the treeline."
+                    type_color = (200, 200, 100)
+                    
             draw_node_labels(surface, self.font, node, type_label, type_color)
 
         draw_overworld_hud(surface, self.font, self.day, self.actions_remaining, self.actions_per_day, self.resources, self.ship_parts, len(self.player_units))
@@ -345,19 +361,22 @@ class OverworldScene(Scene):
             nid = self.selected_unbound_node.id
             approaches = self.tribe_state[nid]["approaches"]
             colony = self.colony_manager.get_colony(nid)
-            btns = [("Observe", (0,0,0,0)), ("Approach", (0,0,0,0)), ("Offer Scrap", (0,0,0,0))] # Dummy rects, logic moved to _check_interaction_click
-            # Actually we need real rects for the drawing. 
-            # Letting the UI function handle rect generation based on a center point might be cleaner.
             pw, ph = 300, 180
             px, py = (WINDOW_WIDTH - pw) // 2, (WINDOW_HEIGHT - ph) // 2
-            btns = [
-                ("Observe", (px + 20, py + 110, 120, 30)),
-                ("Approach", (px + 160, py + 110, 120, 30)),
-                ("Offer Scrap", (px + 20, py + 145, 120, 30))
-            ]
-            if approaches >= 3 and colony and colony.units:
-                btns.append(("Recruit...", (px + 160, py + 145, 120, 30)))
-            draw_interaction_panel(surface, self.font, self.selected_unbound_node.name, approaches, btns)
+            
+            btns = []
+            if colony and colony.hidden:
+                btns = [("Offer Scrap", (px + 90, py + 110, 120, 30))]
+                draw_interaction_panel(surface, self.font, "Abandoned Camp", approaches, btns, is_hidden=True)
+            else:
+                btns = [
+                    ("Observe", (px + 20, py + 110, 120, 30)),
+                    ("Approach", (px + 160, py + 110, 120, 30)),
+                    ("Offer Scrap", (px + 20, py + 145, 120, 30))
+                ]
+                if approaches >= 3 and colony and colony.units:
+                    btns.append(("Recruit...", (px + 160, py + 145, 120, 30)))
+                draw_interaction_panel(surface, self.font, self.selected_unbound_node.name, approaches, btns)
             
         if self.current_defection:
             render_defection_moment(surface, self.font, self.current_defection["unit"].name, self.current_defection["from_colony"])
