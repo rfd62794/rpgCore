@@ -1,10 +1,10 @@
 # rpgCore — Project Journal
 
 ## Current State
-342 passing. APJ Goals and Milestones hierarchy integrated with metadata-driven tracker.
+342 passing. Full demo roadmap formalized. Six demos planned across Goals and Milestones.
 
 ## In Flight
-None.
+Space Trader planning.
 
 ## Next Priority
-Portfolio Readiness phase or deeper Creature Collector/Dungeon Crawler frame implementation.
+Design Space Trader economy model — what components reuse from Slime Clan and Asteroids.
