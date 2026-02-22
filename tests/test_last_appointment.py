@@ -42,7 +42,9 @@ def test_stance_tracking_and_advancement(scene):
     # "if pygame.K_1 <= event.key <= pygame.K_5: ... self._handle_choice_selection(idx)"
     # Wait, _handle_choice_selection checks `not self.card_layout.is_fading_in`.
     # Let's simulate time passing so cards fade in.
-    scene.update(2000) # 2 seconds
+    scene.text_window.is_finished = True
+    scene.update(100)  # load cards
+    scene.update(2000) # 2 seconds to fade in
     
     # Press '1', which corresponds to K_1 and "PROFESSIONAL"
     events = [MockEvent(pygame.K_1)]
@@ -60,7 +62,8 @@ def test_stance_tracking_and_advancement(scene):
     
     # Simulate text reveal finishing
     scene.text_window.is_finished = True
-    scene.update(16) # state machine step
+    scene.update(100) # Give state machine a tick to detect text is finished and load cards, then start fade
+    scene.update(2000) # Fade cards in
     
     # Press any key to advance
     # The event handler uses left click 
@@ -72,11 +75,19 @@ def test_stance_tracking_and_advancement(scene):
             
     scene.handle_events([MockMouseEvent(1)])
     
-    # Fade out finished for text? No, it immediately advances to pending
+    # Needs to fade out before switching phase now
+    assert scene.card_layout.is_fading_out == True
+    
+    # Finish fade out
+    scene.update(1000)
+    
     # Should advance to beat_2_pro
     assert scene.current_node.node_id == "beat_2_pro"
     assert scene.phase == "PROMPT"
     
+    # Next prompt loads immediately. Wait for text to finish, then cards.
+    scene.text_window.is_finished = True
+    scene.update(100) # load cards
     scene.update(2000) # Fade cards in
     
     # beat_2_pro has 5 options. Let's pick 1 again (PROFESSIONAL), which leads to beat_3_pro
@@ -94,6 +105,8 @@ def test_stance_tracking_and_advancement(scene):
 
 def test_invalid_key_does_not_advance(scene):
     scene.on_enter()
+    scene.text_window.is_finished = True
+    scene.update(100)  # load cards
     scene.update(2000) # fade cards in
     
     class MockEvent:
