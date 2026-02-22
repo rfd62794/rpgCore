@@ -68,3 +68,58 @@ def test_update_current_flag_via_cli_simulation(temp_journal):
     new_content = "327 passing tests. Shared physics, input, spawner base established. APJ boot command live."
     temp_journal.update_section("Current State", new_content)
     assert temp_journal.get_section("Current State") == new_content
+@pytest.fixture
+def temp_journal_with_tasks(tmp_path):
+    journal_dir = tmp_path / "docs"
+    journal_dir.mkdir(exist_ok=True)
+    
+    # Journal file
+    journal_file = journal_dir / "PROJECT_JOURNAL.md"
+    journal_file.write_text("# rpgCore — Project Journal\n\n## Current State\nState.\n\n## In Flight\nFlight.\n\n## Next Priority\nPriority.\n", encoding="utf-8")
+    
+    # Tasks file
+    tasks_file = journal_dir / "TASKS.md"
+    tasks_content = "# rpgCore — Task Backlog\n\n## Active\n- [TOOL] APJ\n\n## Queued\n- [FEAT] Task 1\n- [FEAT] Task 2\n- [FEAT] Task 3\n- [FEAT] Task 4\n\n## Backlog\n\n## Completed\n"
+    tasks_file.write_text(tasks_content, encoding="utf-8")
+    
+    return Journal(root_dir=str(tmp_path))
+
+def test_tasks_file_loads(temp_journal_with_tasks):
+    content = temp_journal_with_tasks.load(temp_journal_with_tasks.tasks_path)
+    assert "# rpgCore — Task Backlog" in content
+
+def test_tasks_add_appends_to_queued(temp_journal_with_tasks):
+    temp_journal_with_tasks.add_task("[FEAT] Task 5")
+    queued = temp_journal_with_tasks.get_section("Queued", temp_journal_with_tasks.tasks_path)
+    assert "- [FEAT] Task 5" in queued
+
+def test_tasks_done_moves_to_completed(temp_journal_with_tasks):
+    # Setup: ensure Task 1 is there
+    queued = temp_journal_with_tasks.get_section("Queued", temp_journal_with_tasks.tasks_path)
+    assert "Task 1" in queued
+    
+    temp_journal_with_tasks.complete_task("Task 1")
+    
+    # Check it's gone from Queued
+    queued_after = temp_journal_with_tasks.get_section("Queued", temp_journal_with_tasks.tasks_path)
+    assert "Task 1" not in queued_after
+    
+    # Check it's in Completed
+    completed = temp_journal_with_tasks.get_section("Completed", temp_journal_with_tasks.tasks_path)
+    assert "Task 1" in completed
+
+def test_get_next_tasks_returns_top_three(temp_journal_with_tasks):
+    next_tasks = temp_journal_with_tasks.get_next_tasks(3)
+    assert "1. [FEAT] Task 1" in next_tasks
+    assert "2. [FEAT] Task 2" in next_tasks
+    assert "3. [FEAT] Task 3" in next_tasks
+    assert "4. [FEAT] Task 4" not in next_tasks
+
+def test_handoff_contains_queued_tasks(temp_journal_with_tasks):
+    handoff = temp_journal_with_tasks.get_handoff()
+    assert "QUEUED TASKS (top 3):" in handoff
+    assert "1. [FEAT] Task 1" in handoff
+
+def test_get_handoff_protected_floor_updated(temp_journal_with_tasks):
+    handoff = temp_journal_with_tasks.get_handoff()
+    assert "PROTECTED FLOOR: 332 passing tests" in handoff
