@@ -7,7 +7,7 @@ import json
 import time
 import yaml
 from pathlib import Path
-from typing import Dict, List, Optional, Union, Any
+from typing import Dict, List, Optional, Union, Any, Tuple
 from dataclasses import dataclass, asdict
 from PIL import Image
 from loguru import logger

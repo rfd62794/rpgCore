@@ -11,6 +11,8 @@ from loguru import logger
 # Import the module under test
 import sys
 sys.path.insert(0, str(Path(__file__).parent.parent))
+
+rust_sprite_scanner = pytest.importorskip("rust_sprite_scanner")
 from rust_sprite_scanner import RustSpriteScanner, RUST_AVAILABLE
 
 
