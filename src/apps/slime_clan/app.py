@@ -571,6 +571,8 @@ class BattleFieldScene(Scene):
         self.ship_parts = kwargs.get("ship_parts", 0)
         self.secured_part_nodes = kwargs.get("secured_part_nodes", [])
         self.tribe_state = kwargs.get("tribe_state", {})
+        self.player_units = kwargs.get("player_units", [])
+        self.colony_manager = kwargs.get("colony_manager")
         self.stronghold_bonus = kwargs.get("stronghold_bonus", False)
         self.game_over = False
         self.exit_code = 1
