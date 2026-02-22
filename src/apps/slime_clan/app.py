@@ -742,7 +742,11 @@ class AutoBattleScene(Scene):
             auto_battle_result=result,
             faction_manager=self.faction_manager,
             day=self.day,
-            actions_remaining=self.actions_remaining
+            actions_remaining=self.actions_remaining,
+            resources=self.resources,
+            ship_parts=self.ship_parts,
+            secured_part_nodes=self.secured_part_nodes,
+            stronghold_bonus=self.stronghold_bonus
         )
 
     def _get_shape_str(self, shape: Shape) -> str:
