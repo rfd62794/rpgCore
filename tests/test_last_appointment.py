@@ -235,3 +235,37 @@ def test_fade_sequencing():
     assert not layout.is_fading_in
     assert all(c.fade_alpha == 255 for c in layout.cards)
 
+def test_numpad_keys_map_to_actions(scene):
+    scene.on_enter()
+    scene.text_window.skip_reveal()
+    scene.update(16)
+    scene.card_layout.skip_animations()
+    
+    import pygame
+    class MockEvent:
+        def __init__(self, key):
+            self.type = pygame.KEYDOWN
+            self.key = key
+            
+    # Press KP_1 (NumPad 1)
+    scene.handle_events([MockEvent(pygame.K_KP1)])
+    
+    # Should trigger choice 1 (PROFESSIONAL)
+    assert scene.state_tracker.get_flag("current_stance", "") == "PROFESSIONAL"
+    assert scene.card_layout.is_fading_out == True
+
+def test_card_text_wraps_at_max_width():
+    import pygame
+    from src.apps.last_appointment.ui.dialogue_card import DialogueCard
+    pygame.font.init()
+    
+    # Large enough width but very long text
+    rect = pygame.Rect(0, 0, 200, 44)
+    long_text = "This is a very long text that should definitely wrap into multiple lines when rendered in a card with limited width."
+    card = DialogueCard(1, long_text, "PROFESSIONAL", rect)
+    
+    # The number of lines should be greater than 1
+    assert len(card.text_sur_lines) > 1
+    
+    # Height should be greater than the default 44
+    assert card.get_required_height() > 44

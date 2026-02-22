@@ -36,35 +36,23 @@ class CardLayout:
         if num_cards == 0:
             return
             
-        # Try optimal sizes
-        desired_card_height = 44
-        desired_spacing = 8
+        current_y = start_y
         card_width = self.width - (self.margin_x * 2)
         
-        total_needed = (num_cards * desired_card_height) + ((num_cards - 1) * desired_spacing)
-        
-        if total_needed > available_height:
-            # We need to squeeze them
-            # Reduce spacing first down to 2px
-            desired_spacing = max(2, int((available_height - (num_cards * desired_card_height)) / max(1, num_cards - 1)))
-            total_after_spacing = (num_cards * desired_card_height) + ((num_cards - 1) * desired_spacing)
-            
-            # If still too big, reduce card height
-            if total_after_spacing > available_height:
-                desired_card_height = int((available_height - ((num_cards - 1) * desired_spacing)) / num_cards)
-                
-        self.card_height = desired_card_height
-        self.spacing = desired_spacing
-        
         for i, edge in enumerate(edges):
-            y_pos = start_y + (i * (self.card_height + self.spacing))
-            rect = pygame.Rect(self.margin_x, y_pos, card_width, self.card_height)
-            
+            # Temporary rect to calculate height
+            temp_rect = pygame.Rect(self.margin_x, current_y, card_width, 44)
             stance = getattr(edge, "stance", "PROFESSIONAL")
             
-            card = DialogueCard(i + 1, edge.text, stance, rect)
+            card = DialogueCard(i + 1, edge.text, stance, temp_rect)
+            
+            # Recalculate based on wrap
+            h = card.get_required_height()
+            card.logical_rect.height = h
+            
             card.fade_alpha = 0
             self.cards.append(card)
+            current_y += h + self.spacing
             
         self.active_time = 0.0
         self.is_fading_in = True
