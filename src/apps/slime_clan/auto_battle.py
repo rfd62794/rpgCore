@@ -48,6 +48,7 @@ class Shape(enum.Enum):
     TRIANGLE = "TRIANGLE"  # +Speed, -Defense
 
 class Hat(enum.Enum):
+    NONE = "NONE"      # No specialization
     SWORD = "SWORD"    # Attacker
     SHIELD = "SHIELD"  # Defender (Taunt)
     STAFF = "STAFF"    # Utility/Healer
