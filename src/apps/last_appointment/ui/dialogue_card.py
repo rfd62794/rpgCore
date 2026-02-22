@@ -70,9 +70,7 @@ class DialogueCard:
 
     def get_required_height(self) -> int:
         """Calculate total height needed for wrapped text."""
-        if self.text_font == "DummyFont":
-            return 44
-        line_height = self.text_font.get_linesize()
+        line_height = self.text_font.get_linesize() if self.text_font != "DummyFont" else 20
         padding = 16
         return max(44, (len(self.text_sur_lines) * line_height) + padding)
 
