@@ -53,9 +53,9 @@ line-length = 88
 target-version = ['py312']
 
 [tool.pytest.ini_options]
-testpaths = ["tests"]
+testpaths = ["tests/unit", "tests/shared_narrative", "tests/shared_rendering", "tests/last_appointment"]
+python_files = ["test_*.py", "slime_clan_*.py"]
 pythonpath = ["."]
-addopts = "--ignore=tests/verification"
 
 [tool.isort]
 profile = "black"
