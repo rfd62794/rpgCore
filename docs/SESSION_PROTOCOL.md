@@ -18,6 +18,7 @@ Read the output before reading anything else.
 - All commands must be Windows PowerShell safe.
 - Artifact first: update docs and journal before closing a session.
 - Stub tests (e.g., `assert 0 == 1`, `pass`) are strictly prohibited in the protected test suite. Either write a real assertion or use `@pytest.mark.skip`.
+- File move directives require explicit verification. Moves must be visually confirmed with `Get-ChildItem` (or similar tools) to ensure success *before* any source code path references are updated.
 
 ---
 
