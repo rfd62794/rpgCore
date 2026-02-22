@@ -10,6 +10,7 @@
 - [HARVEST] Particle system — harvest from dgt_engine and game_engine donor archives
 - [TOOL] Sprite sheet importer — resurrect from archive, wire to sprite_loader
 - [TOOL] Asset ingestor — rebuild as src/tools/asset_ingestor/
+- [HARVEST] Asset cache — move from game_engine donor to src/shared/assets/cache.py
 
 ## Backlog
 - [MIGRATE] Slime Clan — migrate to shared UI components

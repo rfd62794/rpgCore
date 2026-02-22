@@ -87,7 +87,7 @@ class Journal:
             new_completed = completed + f"\n{completed_entry}"
             self.update_section("Completed", new_completed, self.tasks_path)
 
-    def get_handoff(self, test_floor: int = 332) -> str:
+    def get_handoff(self, test_floor: int = 338) -> str:
         """Builds a formatted handoff string."""
         date_str = datetime.now().strftime("%Y-%m-%d")
         curr_state = self.get_section("Current State")
@@ -125,7 +125,7 @@ PROTECTED FLOOR: {test_floor} passing tests
 ═══════════════════════════════════════"""
         return handoff
 
-    def get_boot_block(self, test_floor: int = 332) -> str:
+    def get_boot_block(self, test_floor: int = 338) -> str:
         """Prints a complete agent onboarding block."""
         date_str = datetime.now().strftime("%Y-%m-%d")
         cwd = os.getcwd()

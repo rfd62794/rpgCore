@@ -1,7 +1,7 @@
 # rpgCore — Project Journal
 
 ## Current State
-338 passing, 0 failures. TTL cache bug fixed. Task system live.
+338 passing, 0 failures. Three demos playable. Full shared engine layer established.
 
 ## In Flight
 Asset restructure queued.
