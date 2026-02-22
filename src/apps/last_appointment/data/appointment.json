@@ -28,7 +28,7 @@
                 },
                 {
                     "id": "b1_r4",
-                    "text": "I want you to know — I did try to reschedule.",
+                    "text": "I want you to know \u2014 I did try to reschedule.",
                     "stance": "RELUCTANT",
                     "npc_response": "I know. The paperwork was... extensive.",
                     "leads_to": "beat_2_reluctant"
@@ -184,7 +184,7 @@
                 },
                 {
                     "id": "b2_reluctant_5",
-                    "text": "...I tried to reschedule. The paperwork—",
+                    "text": "...I tried to reschedule. The paperwork\u2014",
                     "stance": "MOVED",
                     "leads_to": "beat_3_moved"
                 }
@@ -414,64 +414,184 @@
         },
         {
             "id": "beat_4_pro",
-            "prompt": "The Argument (Stub)",
+            "prompt": "The Client states: \"You've been doing this alone for a very long time.\"",
             "room_brightness": 75,
             "responses": [
                 {
                     "id": "b4_pro_1",
-                    "text": "[Advance to End]",
+                    "text": "The work doesn't require company.",
                     "stance": "PROFESSIONAL",
                     "leads_to": "end_pro"
-                }
-            ]
-        },
-        {
-            "id": "beat_4_weary",
-            "prompt": "The Argument (Stub)",
-            "room_brightness": 75,
-            "responses": [
+                },
                 {
-                    "id": "b4_weary_1",
-                    "text": "[Advance to End]",
-                    "stance": "WEARY",
-                    "leads_to": "end_weary"
-                }
-            ]
-        },
-        {
-            "id": "beat_4_curious",
-            "prompt": "The Argument (Stub)",
-            "room_brightness": 75,
-            "responses": [
+                    "id": "b4_pro_2",
+                    "text": "That's the nature of the position.",
+                    "stance": "PROFESSIONAL",
+                    "leads_to": "end_pro"
+                },
                 {
-                    "id": "b4_curious_1",
-                    "text": "[Advance to End]",
+                    "id": "b4_pro_3",
+                    "text": "Everyone is alone in the ways that matter.",
+                    "stance": "PROFESSIONAL",
+                    "leads_to": "end_pro"
+                },
+                {
+                    "id": "b4_pro_4",
+                    "text": "\"I hadn't noticed.\" \u2014 Said flatly. Neither of them believe it.",
+                    "stance": "PROFESSIONAL",
+                    "leads_to": "end_pro"
+                },
+                {
+                    "id": "b4_pro_5",
+                    "text": "A very long silence. Then: \"Yes.\" Just that. The first honest answer of the appointment.",
                     "stance": "CURIOUS",
                     "leads_to": "end_curious"
                 }
             ]
         },
         {
+            "id": "beat_4_weary",
+            "prompt": "The Client states: \"You've been doing this alone for a very long time.\"",
+            "room_brightness": 75,
+            "responses": [
+                {
+                    "id": "b4_weary_1",
+                    "text": "You get used to it.",
+                    "stance": "WEARY",
+                    "leads_to": "end_weary"
+                },
+                {
+                    "id": "b4_weary_2",
+                    "text": "It's easier that way.",
+                    "stance": "WEARY",
+                    "leads_to": "end_weary"
+                },
+                {
+                    "id": "b4_weary_3",
+                    "text": "Alone is simpler. Things don't leave when they were never there.",
+                    "stance": "WEARY",
+                    "leads_to": "end_weary"
+                },
+                {
+                    "id": "b4_weary_4",
+                    "text": "\"I know.\" \u2014 Too quiet. Too quick.",
+                    "stance": "WEARY",
+                    "leads_to": "end_weary"
+                },
+                {
+                    "id": "b4_weary_5",
+                    "text": "\"I didn't used to mind.\" A beat. \"I'm not sure when that changed.\"",
+                    "stance": "MOVED",
+                    "leads_to": "end_moved"
+                }
+            ]
+        },
+        {
+            "id": "beat_4_curious",
+            "prompt": "The Client states: \"You've been doing this alone for a very long time.\"",
+            "room_brightness": 75,
+            "responses": [
+                {
+                    "id": "b4_curious_1",
+                    "text": "I've had the company of every soul that ever lived. In a sense.",
+                    "stance": "CURIOUS",
+                    "leads_to": "end_curious"
+                },
+                {
+                    "id": "b4_curious_2",
+                    "text": "Observation doesn't require companionship.",
+                    "stance": "CURIOUS",
+                    "leads_to": "end_curious"
+                },
+                {
+                    "id": "b4_curious_3",
+                    "text": "Curiosity is better company than most.",
+                    "stance": "CURIOUS",
+                    "leads_to": "end_curious"
+                },
+                {
+                    "id": "b4_curious_4",
+                    "text": "\"Yes. It's been interesting.\" \u2014 Interesting. The word doing enormous work.",
+                    "stance": "CURIOUS",
+                    "leads_to": "end_curious"
+                },
+                {
+                    "id": "b4_curious_5",
+                    "text": "\"I never thought to call it that.\" Looking at the brightening room. \"Alone.\"",
+                    "stance": "MOVED",
+                    "leads_to": "end_moved"
+                }
+            ]
+        },
+        {
             "id": "beat_4_reluctant",
-            "prompt": "The Argument (Stub)",
+            "prompt": "The Client states: \"You've been doing this alone for a very long time.\"",
             "room_brightness": 75,
             "responses": [
                 {
                     "id": "b4_reluctant_1",
-                    "text": "[Advance to End]",
+                    "text": "I didn't choose the position.",
                     "stance": "RELUCTANT",
                     "leads_to": "end_reluctant"
+                },
+                {
+                    "id": "b4_reluctant_2",
+                    "text": "That's not something I'm able to change.",
+                    "stance": "RELUCTANT",
+                    "leads_to": "end_reluctant"
+                },
+                {
+                    "id": "b4_reluctant_3",
+                    "text": "Everyone is alone. I just have better visibility of it.",
+                    "stance": "RELUCTANT",
+                    "leads_to": "end_reluctant"
+                },
+                {
+                    "id": "b4_reluctant_4",
+                    "text": "\"Don't.\" Said sharply. First real emotion of the appointment. \"Please.\"",
+                    "stance": "RELUCTANT",
+                    "leads_to": "end_reluctant"
+                },
+                {
+                    "id": "b4_reluctant_5",
+                    "text": "\"Was it supposed to be different?\" Not rhetorical. Actually asking. The room noticeably brighter.",
+                    "stance": "MOVED",
+                    "leads_to": "end_moved"
                 }
             ]
         },
         {
             "id": "beat_4_moved",
-            "prompt": "The Argument (Stub)",
+            "prompt": "The Client states: \"You've been doing this alone for a very long time.\"",
             "room_brightness": 75,
             "responses": [
                 {
                     "id": "b4_moved_1",
-                    "text": "[Advance to End]",
+                    "text": "I've had moments. Brief ones. They helped while they lasted.",
+                    "stance": "MOVED",
+                    "leads_to": "end_moved"
+                },
+                {
+                    "id": "b4_moved_2",
+                    "text": "I manage.",
+                    "stance": "MOVED",
+                    "leads_to": "end_moved"
+                },
+                {
+                    "id": "b4_moved_3",
+                    "text": "Alone is the correct distance for this kind of work.",
+                    "stance": "MOVED",
+                    "leads_to": "end_moved"
+                },
+                {
+                    "id": "b4_moved_4",
+                    "text": "Nothing. You look at your hands. The file. The room. \"Yes.\"",
+                    "stance": "MOVED",
+                    "leads_to": "end_moved"
+                },
+                {
+                    "id": "b4_moved_5",
+                    "text": "\"You knew that.\" Not accusatory. Just recognizing something. \"You've always known that.\" The room almost white now.",
                     "stance": "MOVED",
                     "leads_to": "end_moved"
                 }

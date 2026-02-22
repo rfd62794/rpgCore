@@ -116,8 +116,44 @@ River 5 — Moved:
 * Ugly: "Nobody asks Death what Death is afraid of."
 * Wildcard: You don't answer. You look at the room. It's brighter than it was. You both notice. Neither says anything.
 
-### Beat 4 — The Argument (TODO)
-They make a point Death can't immediately counter. Stub for next session.
+### Beat 4 — The Argument
+The Client's statement is the same across all five rivers:
+"You've been doing this alone for a very long time."
+
+River 1 — Professional:
+* Good: "The work doesn't require company."
+* Neutral: "That's the nature of the position."
+* Bad: "Everyone is alone in the ways that matter."
+* Ugly: "I hadn't noticed." — Said flatly. Neither of them believe it.
+* Wildcard: A very long silence. Then: "Yes." Just that. The first honest answer of the appointment.
+
+River 2 — Weary:
+* Good: "You get used to it."
+* Neutral: "It's easier that way."
+* Bad: "Alone is simpler. Things don't leave when they were never there."
+* Ugly: "I know." — Too quiet. Too quick.
+* Wildcard: "I didn't used to mind." A beat. "I'm not sure when that changed."
+
+River 3 — Curious:
+* Good: "I've had the company of every soul that ever lived. In a sense."
+* Neutral: "Observation doesn't require companionship."
+* Bad: "Curiosity is better company than most."
+* Ugly: "Yes. It's been interesting." — Interesting. The word doing enormous work.
+* Wildcard: "I never thought to call it that." Looking at the brightening room. "Alone."
+
+River 4 — Reluctant:
+* Good: "I didn't choose the position."
+* Neutral: "That's not something I'm able to change."
+* Bad: "Everyone is alone. I just have better visibility of it."
+* Ugly: "Don't." Said sharply. First real emotion of the appointment. "Please."
+* Wildcard: "Was it supposed to be different?" Not rhetorical. Actually asking. The room noticeably brighter.
+
+River 5 — Moved:
+* Good: "I've had moments. Brief ones. They helped while they lasted."
+* Neutral: "I manage."
+* Bad: "Alone is the correct distance for this kind of work."
+* Ugly: Nothing. You look at your hands. The file. The room. "Yes."
+* Wildcard: "You knew that." Not accusatory. Just recognizing something. "You've always known that." The room almost white now.
 
 ### Beat 5 — The Close
 No closing question. The room goes white. The file closes. One line per river.
