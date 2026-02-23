@@ -18,6 +18,9 @@ class Floor:
         if current is None:
             self.current_room_id = room_id
             target.reveal()
+            for conn_id in target.connections:
+                if conn_id in self.rooms:
+                    self.rooms[conn_id].reveal()
             return True
 
         if target.id in current.connections and target.is_accessible():
