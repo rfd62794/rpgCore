@@ -75,3 +75,31 @@ The Dungeon Crawler demo blends the turn-based tactical depth, party dynamics, a
 - [ ] One D20 encounter runs to completion.
 - [ ] One piece of loot drops and enters inventory.
 - [ ] Player can die and restart.
+
+## 9. Torch System — Forward Pressure Mechanic
+
+The Torch is a Key Item — occupies its own dedicated slot, 
+never competes with backpack inventory.
+
+Rules:
+- One torch lights one floor
+- Torch burns continuously — no camping, no stalling
+- Running out mid-floor triggers darkness penalty (combat 
+  disadvantage, no loot identification)
+- Escape Rope consumed instantly — torch preserved
+
+Progression:
+- Start: 1 torch slot
+- Unlock at chest: 2 slots, then 3, then 4
+- Deeper floors require more torches to explore fully
+
+Design intent: Torches are the Estus Flask of the Green Box 
+dungeon. Capacity upgrades are the primary meta-progression 
+between runs alongside chest-banked gear.
+
+## 10. Floor Completion & UI
+Instead of adding a hunger penalty, the game tracks floor completion as an informational progress metric.
+- E.g., `Floor 2 — Rooms: 4/9 explored`
+- Represented visually: `[■■■■□□□□□]`
+- Informs the player's choice to push or extract without forcing it.
+
