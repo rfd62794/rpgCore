@@ -20,14 +20,10 @@ from src.shared.combat.d20_resolver import D20Resolver
 from src.shared.engine.scene_manager import SceneManager
 from src.apps.dungeon_crawler.ui.dungeon_session import DungeonSession
 from src.apps.dungeon_crawler.ui.scene_the_room import TheRoomScene
-# Note: The following will be created in subsequent steps
-# from src.apps.dungeon_crawler.ui.scene_dungeon_room import DungeonRoomScene
-# from src.apps.dungeon_crawler.ui.scene_inventory import InventoryOverlay
 
 logging.basicConfig(level=logging.ERROR) # Suppress normal engine logs in REPL
 
 class DungeonCrawlerREPL(cmd.Cmd):
-    # ... (Keep existing REPL code) ...
     intro = "Welcome to the Dungeon Crawler REPL.\nType 'help' or '?' to list commands.\n"
     prompt = "\n(Crawler) "
     
@@ -420,7 +416,7 @@ def main():
         # Launch Pygame UI
         session = DungeonSession()
         
-        # Local imports to avoid circular deps if they occur, though not strictly needed here
+        # Local imports to avoid circular deps if they occur
         from src.apps.dungeon_crawler.ui.scene_dungeon_room import DungeonRoomScene
         from src.apps.dungeon_crawler.ui.scene_inventory import InventoryOverlay
 
@@ -433,4 +429,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
