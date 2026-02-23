@@ -1,10 +1,10 @@
 # rpgCore — Project Journal
 
 ## Current State
-369 passing. Dungeon Crawler Phase 1 implemented. TurnOrderManager, Inventory system, world generation, and hub completed.
+Torch System added to DUNGEON_CRAWLER_DESIGN.md. 378 tests passing.
 
 ## In Flight
 None.
 
 ## Next Priority
-Review Phase 1 REPL implementation and plan pygame UI scaffold.
+Waiting for user priority on Phase 2 UI tasks.
