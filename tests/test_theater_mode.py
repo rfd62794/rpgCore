@@ -27,9 +27,8 @@ def test_theater_mode():
     
     # Create default Forest Gate sequence
     sequence_result = movie_engine.create_forest_gate_sequence()
-    if not sequence_result.success:
-        print(f"❌ Failed to create sequence: {sequence_result.error}")
-        return False
+    assert sequence_result.success, f"Failed to create sequence: {sequence_result.error}"
+
     
     sequence = sequence_result.value
     print(f"✅ Created sequence: {sequence.title}")
@@ -37,9 +36,8 @@ def test_theater_mode():
     
     # Start sequence
     start_result = movie_engine.start_sequence(sequence)
-    if not start_result.success:
-        print(f"❌ Failed to start sequence: {start_result.error}")
-        return False
+    assert start_result.success, f"Failed to start sequence: {start_result.error}"
+
     
     print("✅ Sequence started")
     
@@ -117,7 +115,8 @@ def test_theater_mode():
         print("\n✅ Sequence stopped successfully")
     
     print("\n🎬 Theater Mode Test Complete!")
-    return True
+    assert True
+
 
 
 def test_three_tier_compliance():
@@ -132,8 +131,8 @@ def test_three_tier_compliance():
         print("✅ Tier 1 Foundation imports successful")
         print(f"   Sovereign constraints: {SOVEREIGN_WIDTH}x{SOVEREIGN_HEIGHT}")
     except ImportError as e:
-        print(f"❌ Tier 1 Foundation import failed: {e}")
-        return False
+        assert False, f"Tier 1 Foundation import failed: {e}"
+
     
     # Test Tier 2 Engine imports
     try:
@@ -141,8 +140,8 @@ def test_three_tier_compliance():
         from dgt_engine.systems.body.pipeline.asset_loader import AssetLoader
         print("✅ Tier 2 Engine imports successful")
     except ImportError as e:
-        print(f"❌ Tier 2 Engine import failed: {e}")
-        return False
+        assert False, f"Tier 2 Engine import failed: {e}"
+
     
     # Test Tier 3 Application imports
     try:
@@ -152,11 +151,12 @@ def test_three_tier_compliance():
         scenario_path = "src/apps/space/scenarios/premiere_voyage.json"
         print("✅ Tier 3 Application imports successful")
     except ImportError as e:
-        print(f"❌ Tier 3 Application import failed: {e}")
-        return False
+        assert False, f"Tier 3 Application import failed: {e}"
+
     
     print("✅ Three-Tier Architecture compliance verified")
-    return True
+    assert True
+
 
 
 if __name__ == "__main__":
