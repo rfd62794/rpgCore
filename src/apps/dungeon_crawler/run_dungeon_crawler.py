@@ -3,6 +3,8 @@ import os
 import json
 import logging
 import random
+import argparse
+import sys
 from pathlib import Path
 
 from src.apps.dungeon_crawler.world.room_generator import RoomGenerator
@@ -15,9 +17,17 @@ from src.shared.items.loot_table import LootTable
 from src.shared.combat.turn_order import TurnOrderManager
 from src.shared.combat.d20_resolver import D20Resolver
 
+from src.shared.engine.scene_manager import SceneManager
+from src.apps.dungeon_crawler.ui.dungeon_session import DungeonSession
+from src.apps.dungeon_crawler.ui.scene_the_room import TheRoomScene
+# Note: The following will be created in subsequent steps
+# from src.apps.dungeon_crawler.ui.scene_dungeon_room import DungeonRoomScene
+# from src.apps.dungeon_crawler.ui.scene_inventory import InventoryOverlay
+
 logging.basicConfig(level=logging.ERROR) # Suppress normal engine logs in REPL
 
 class DungeonCrawlerREPL(cmd.Cmd):
+    # ... (Keep existing REPL code) ...
     intro = "Welcome to the Dungeon Crawler REPL.\nType 'help' or '?' to list commands.\n"
     prompt = "\n(Crawler) "
     
@@ -400,7 +410,27 @@ class DungeonCrawlerREPL(cmd.Cmd):
         self.end_looting()
 
 def main():
-    DungeonCrawlerREPL().cmdloop()
+    parser = argparse.ArgumentParser(description="rpgCore — Dungeon Crawler")
+    parser.add_argument("--terminal", action="store_true", help="Launch in terminal REPL mode")
+    args = parser.parse_args()
+
+    if args.terminal:
+        DungeonCrawlerREPL().cmdloop()
+    else:
+        # Launch Pygame UI
+        session = DungeonSession()
+        
+        # Local imports to avoid circular deps if they occur, though not strictly needed here
+        from src.apps.dungeon_crawler.ui.scene_dungeon_room import DungeonRoomScene
+        from src.apps.dungeon_crawler.ui.scene_inventory import InventoryOverlay
+
+        manager = SceneManager(width=800, height=600, title="rpgCore — Dungeon Crawler")
+        manager.register("the_room", TheRoomScene)
+        manager.register("dungeon_room", DungeonRoomScene)
+        manager.register("inventory", InventoryOverlay)
+        
+        manager.run("the_room", session=session)
 
 if __name__ == "__main__":
     main()
+
