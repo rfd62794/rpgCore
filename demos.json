@@ -46,6 +46,15 @@
             "entry": "main",
             "status": "development",
             "genre": "simulation"
+        },
+        {
+            "id": "dungeon_crawler",
+            "name": "Dungeon Crawler",
+            "description": "Tactical combat, procedural rooms, loot and progression.",
+            "module": "src.apps.dungeon_crawler.run_dungeon_crawler",
+            "entry": "main",
+            "status": "development",
+            "genre": "rpg"
         }
     ]
 }
