@@ -65,3 +65,24 @@ The technical architecture required in `src/shared/` to support this design:
   - Schema for the persistent AP save-file, unlock graph definitions, and unlocked modifier getters.
 - `src/shared/ui/character_sheet.py`
   - Reusable pygame rendering code for the paper doll + stat panel that can be dropped into any demo's UI overlay.
+
+---
+
+## 6. Hall of Ancestors
+Each run generates a named hero (e.g., "Aldric the Fighter"). On death or extraction, their name, class, floors reached, and notable kills are recorded permanently in The Room.
+
+Inspired by *Rogue Legacy's* family tree — death has memory. The Hall is visible from The Room hub, a wall of names. 
+- **Cost to implement**: minimal. 
+- **Emotional weight**: significant.
+
+## 7. Ascension Depth Gates
+To prevent farming Floor 1 indefinitely for full progression, some meta-unlocks require proving depth proficiency before they can be purchased:
+
+- **Torch Slot 2**: Available from start.
+- **Torch Slot 3**: Requires Floor 2 cleared once.
+- **Torch Slot 4**: Requires Floor 3 cleared once.
+- **Advanced Classes**: Requires Floor 2 cleared once.
+- **Paragon Bonuses**: Requires Floor 3 cleared once.
+
+This creates natural difficulty gates without artificial walls, ensuring the player has the "keys" to deeper content only after proving they can handle the intermediate layers.
+
