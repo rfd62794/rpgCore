@@ -102,3 +102,58 @@ def test_escape_rope_consumed_on_use():
     success = hub.restock_escape_rope(cost=50, gold=10)
     assert success is False
     assert hub.has_escape_rope is False
+
+def test_stance_starts_aggressive():
+    enemy = Enemy("test_enemy", "Slime", "tactical", {"hp": 10, "attack": 10}, LootTable())
+    assert enemy.stance_controller.current.value == "aggressive"
+
+def test_stance_transitions_defensive_at_half_hp():
+    enemy = Enemy("test_enemy", "Slime", "tactical", {"max_hp": 10, "hp": 10, "attack": 10}, LootTable())
+    
+    enemy.stats["hp"] = 5
+    changed = enemy.evaluate_stance()
+    
+    assert changed is True
+    assert enemy.stance_controller.current.value == "defensive"
+
+def test_stance_mindless_flees_at_quarter_hp():
+    enemy = Enemy("test_enemy", "Slime", "mindless", {"max_hp": 10, "hp": 10, "attack": 10}, LootTable())
+    
+    enemy.stats["hp"] = 2
+    changed = enemy.evaluate_stance()
+    
+    assert changed is True
+    assert enemy.stance_controller.current.value == "fleeing"
+
+def test_stance_tactical_never_flees():
+    enemy = Enemy("test_enemy", "Slime", "tactical", {"max_hp": 10, "hp": 10, "attack": 10}, LootTable())
+    
+    # 1 HP is well below 25%
+    enemy.stats["hp"] = 1
+    enemy.evaluate_stance()
+    
+    assert enemy.stance_controller.current.value == "defensive"
+
+def test_stance_modifiers_affect_effective_stat():
+    enemy = Enemy("test_enemy", "Slime", "tactical", {"max_hp": 10, "hp": 10, "attack": 10}, LootTable())
+    
+    # Aggressive attack normally
+    assert enemy.get_effective_stat("attack") == 12
+    
+    # Drop HP to trigger defensive
+    enemy.stats["hp"] = 5
+    enemy.evaluate_stance()
+    
+    # Defensive attack
+    assert enemy.get_effective_stat("attack") == 8
+
+def test_enemy_stance_evaluation_on_damage():
+    enemy = Enemy("test_enemy", "Slime", "tactical", {"max_hp": 10, "hp": 10, "attack": 10}, LootTable())
+    
+    # Taking damage manually
+    enemy.stats["hp"] -= 6
+    
+    # Should transition to defensive
+    changed = enemy.evaluate_stance()
+    assert changed is True
+    assert enemy.stance_controller.current.value == "defensive"
