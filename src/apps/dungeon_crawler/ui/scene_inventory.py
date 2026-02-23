@@ -75,7 +75,8 @@ class InventoryOverlay(Scene):
 
     def _handle_close(self):
         # Return to previous scene
-        self.request_scene("the_room") # Simple fallback, could be smarter if tracked history
+        self.request_scene("the_room", session=self.session) # Simple fallback, could be smarter if tracked history
+
 
     def handle_events(self, events: list[pygame.event.Event]) -> None:
         for event in events:

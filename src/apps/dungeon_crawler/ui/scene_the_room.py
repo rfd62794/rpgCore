@@ -71,14 +71,15 @@ class TheRoomScene(Scene):
         self.buttons.append(btn_rope)
 
     def _handle_chest(self):
-        self.request_scene("inventory")
+        self.request_scene("inventory", session=self.session)
 
     def _handle_descend(self):
         if not self.session.hero:
             self.session.start_run("fighter") # Default to fighter for now
         else:
             self.session.descend()
-        self.request_scene("dungeon_room")
+        self.request_scene("dungeon_room", session=self.session)
+
 
     def handle_events(self, events: list[pygame.event.Event]) -> None:
         for event in events:

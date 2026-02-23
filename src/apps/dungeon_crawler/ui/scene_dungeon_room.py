@@ -88,7 +88,7 @@ class DungeonRoomScene(Scene):
 
     def _handle_flee(self):
         logger.info("🏃 Flee requested")
-        self.request_scene("the_room")
+        self.request_scene("the_room", session=self.session)
 
     def _handle_move(self, target_id: str):
         if self.session.floor.move_to(target_id):
@@ -99,7 +99,8 @@ class DungeonRoomScene(Scene):
             if event.type == pygame.QUIT:
                 self.request_quit()
             elif event.type == pygame.KEYDOWN and event.key == pygame.K_i:
-                self.request_scene("inventory")
+                self.request_scene("inventory", session=self.session)
+
                 
             for btn in self.buttons:
                 btn.handle_event(event)
