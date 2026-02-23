@@ -1,10 +1,10 @@
 # rpgCore — Project Journal
 
 ## Current State
-Torch System added to DUNGEON_CRAWLER_DESIGN.md. 378 tests passing.
+Dungeon Crawler Pygame UI implemented with The Room hub, dungeon room scene, and inventory overlay. All 385 tests passing.
 
 ## In Flight
-None.
+None — Session complete.
 
 ## Next Priority
-Waiting for user priority on Phase 2 UI tasks.
+[FEAT] Sprite-based room layout and Kenney/OGA asset ingestion.

@@ -16,6 +16,8 @@
 - [FEAT] Space Trader — clickable node map for travel
 - [POLISH] Space Trader — UI refinement and economy balancing
 - [FIX] Scene vs SceneBase mismatch — document correct pattern in SESSION_PROTOCOL so future demos don't repeat it
+- [FEAT] Dungeon Crawler — implement sprite-based room layout (Hero, Slime patrol, Exit flag)
+- [ASSET] Dungeon Crawler — ingest Kenney and OGA sprite packs (Dungeon, LPC, Urban)
 
 ## Backlog
 - [MIGRATE] Slime Clan — migrate to shared UI components
