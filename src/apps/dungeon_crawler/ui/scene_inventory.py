@@ -86,12 +86,12 @@ class InventoryOverlay(Scene):
                 
             for btn in self.buttons:
                 btn.handle_event(event)
+
     def update(self, dt_ms: float) -> None:
         pass
 
     def render(self, surface: pygame.Surface) -> None:
-        # Full screen dimmed overlay if desired, but surface is already the full screen
-        # We can draw a semi-transparent black rect over the whole thing first
+        # Full screen dimmed overlay if desired
         overlay = pygame.Surface((self.manager.width, self.manager.height), pygame.SRCALPHA)
         overlay.fill((0, 0, 0, 150))
         surface.blit(overlay, (0, 0))
