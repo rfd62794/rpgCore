@@ -405,12 +405,13 @@ class DungeonCrawlerREPL(cmd.Cmd):
             return
         self.end_looting()
 
-def main():
+def main(args=None):
     parser = argparse.ArgumentParser(description="rpgCore — Dungeon Crawler")
     parser.add_argument("--terminal", action="store_true", help="Launch in terminal REPL mode")
-    args = parser.parse_args()
+    # Use parse_known_args to avoid crashing on launcher arguments like --run
+    parsed_args, _ = parser.parse_known_args(args)
 
-    if args.terminal:
+    if parsed_args.terminal:
         DungeonCrawlerREPL().cmdloop()
     else:
         # Launch Pygame UI
