@@ -31,6 +31,10 @@ class CombatSceneBase(Scene):
         self.turn_label = Label(pygame.Rect(10, 10, 400, 20), text="Turn Order: ...")
         self.turn_panel.add_child(self.turn_label)
 
+    def on_exit(self) -> None:
+        """Cleanup logic."""
+        pass
+
     def on_combat_enter(self, **kwargs):
         pass
 

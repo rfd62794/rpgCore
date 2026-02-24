@@ -36,6 +36,10 @@ class HubScene(Scene):
             btn = Button(btn_rect, text=name, on_click=lambda sid=scene_id: self.request_scene(sid))
             self.ui_components.append(btn)
 
+    def on_exit(self) -> None:
+        """Cleanup logic."""
+        pass
+
     def handle_events(self, events: List[pygame.event.Event]) -> None:
         for event in events:
             if event.type == pygame.QUIT:

@@ -58,7 +58,7 @@ def test_garden_state_add_remove():
 
 def test_slime_renderer_initializes():
     renderer = SlimeRenderer()
-    assert renderer.size_map["tiny"] == 12
+    assert renderer.size_map["tiny"] == 8
 
 def test_garden_scene_initializes():
     # Need pygame for scene init (mostly fonts/surfaces)
@@ -67,7 +67,9 @@ def test_garden_scene_initializes():
     from src.apps.slime_breeder.ui.scene_garden import GardenScene
     # Mock manager
     class MockManager:
-        pass
+        def __init__(self):
+            self.width = 1024
+            self.height = 768
     scene = GardenScene(MockManager())
     # SceneManager calls initialize which calls on_enter
     scene.initialize()

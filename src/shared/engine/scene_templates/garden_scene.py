@@ -33,6 +33,10 @@ class GardenSceneBase(Scene):
         self.action_bar = Panel(self.bar_rect, bg_color=(30, 30, 40))
         self.ui_components.append(self.action_bar)
 
+    def on_exit(self) -> None:
+        """Cleanup logic."""
+        pass
+
     def on_garden_enter(self, **kwargs):
         """Hook for subclasses to add extra UI components."""
         pass
