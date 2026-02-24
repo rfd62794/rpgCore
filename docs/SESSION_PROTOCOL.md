@@ -22,6 +22,14 @@ Read the output before reading anything else.
 
 ---
 
+## Combat Standards
+- **Always** inherit from `CombatSceneBase` for any turn-based combat.
+- **5v5 Layout** is the engine mandatory standard (5 slots party, 5 slots enemy).
+- **TurnOrderManager** and **D20Resolver** must be used for turn tracking and resolution.
+- Never implement custom layout or resolution patterns in demo-specific code.
+
+---
+
 You are working on the Slime Clan game within the rpgCore repository (github.com/rfd62794/rpgCore). Before starting, read these docs:
 
 - `docs/RPGCORE_CONSTITUTION.md` — engine law, demo structure, repository context (READ FIRST)
