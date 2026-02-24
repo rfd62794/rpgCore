@@ -45,9 +45,16 @@ You are working on the Slime Clan game within the rpgCore repository (github.com
 - `src/apps/slime_clan/ui/` for rendering
 - `src/shared/` for engine components
 
-New pygame scenes must inherit from `src.shared.engine.scene_manager.Scene` 
-not `src.shared.ui.scene_base.SceneBase`. Register via `manager.register()` 
-and launch via `manager.run()`. See `space_trader` for reference.
+## UI Patterns
+Before building any new scene:
+1. Read `docs/SCENE_TEMPLATE_GUIDE.md`
+2. Identify the correct template base class (Hub, Garden, Combat)
+3. Inherit from template class, not `Scene` directly
+4. Never rebuild layout patterns that templates already provide
+
+New pygame scenes must inherit from a template in `src.shared.engine.scene_templates`
+(e.g., `HubScene`, `GardenSceneBase`, `CombatSceneBase`) instead of `Scene` directly. 
+Register via `manager.register()` and launch via `manager.run()`.
 - `src/apps/slime_clan/app.py` is a 31-line launcher.
 - Final step of every session:
   - Run `python -m src.tools.apj tasks --done "completed task"` for each finished item.
