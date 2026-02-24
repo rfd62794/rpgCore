@@ -32,9 +32,6 @@ def test_combat_attack_button_resolves_turn(mock_session, manager):
     # Hero turn is active by default in on_enter if speeds match
     initial_hp = scene.enemies[0].stats["hp"]
     
-    # Simulate attack click
-    scene._handle_player_attack()
-    
     # Logic: if hit, HP degrades (or stays same if miss)
     # We want to verify that next_turn was called
     with patch.object(scene, '_next_turn') as mock_next:
