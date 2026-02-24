@@ -53,7 +53,7 @@ class DungeonCombatScene(CombatSceneBase):
         self.active_actor_id = self.session.turn_manager.next_turn()
         
         # Update Turn Order Bar
-        order_str = " → ".join(self.session.turn_manager.order)
+        order_str = " → ".join(self.session.turn_manager.get_order())
         self.turn_label.text = f"Turn Sequence: {order_str}"
         
         # Enable/Disable buttons
