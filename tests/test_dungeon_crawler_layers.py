@@ -68,7 +68,7 @@ def test_combat_victory_clears_enemy_tile(mock_session, manager):
 def test_combat_defeat_records_ancestor(mock_session, manager):
     pygame.init()
     # We test the combat scene's defeat handler
-    scene = DungeonCombatScene(manager, mock_session)
+    scene = DungeonCombatScene(manager, session=mock_session)
     
     with patch.object(mock_session, 'end_run') as mock_end_run:
         scene._handle_defeat()
