@@ -1,10 +1,10 @@
 # rpgCore — Project Journal
 
 ## Current State
-392 passing. Six Aspects live. Slime Breeder garden rendering, buttons fixed, visual variety, scene templates created.
+397 passing. Dungeon Crawler room visuals implemented with grid, slime patrol, and exit flag. Scene Templates live.
 
 ## In Flight
-Slime Breeder polish.
+Dungeon Crawler expansion.
 
 ## Next Priority
-Scene template adoption across all demos, then Dungeon Crawler visual polish.
+Procedural dungeon layouts, then looting system.

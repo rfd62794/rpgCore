@@ -19,9 +19,9 @@
 - [FEAT] Dungeon Crawler — implement sprite-based room layout (Hero, Slime patrol, Exit flag)
 - [ASSET] Dungeon Crawler — ingest Kenney and OGA sprite packs (Dungeon, LPC, Urban)
 - [DESIGN] Ambient systems — day cycle, weather, fishing, crafting as shared texture
-- [POLISH] Slime Breeder — breeding UI, trait inheritance visualization
 - [FEAT] Slime Breeder — save/load garden persistence
 - [FEAT] Slime Breeder — slime personality emergence over time
+- [FEAT] Dungeon Crawler — proc-gen floor layouts and connection logic
 
 ## Backlog
 - [MIGRATE] Slime Clan — migrate to shared UI components
@@ -46,3 +46,4 @@
 - [x] [TOOL] APJ — task management system integration (2026-02-22)
 - [x] [REFACTOR] Asset restructure — execute moves from ASSET_INVENTORY.md (2026-02-22)
 - [x] [FEAT] Space Trader — pygame UI, market screen, travel map (2026-02-22)
+- [x] [POLISH] Slime Breeder — breeding UI, trait inheritance visualization (2026-02-23)
