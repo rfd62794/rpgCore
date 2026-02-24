@@ -1,10 +1,10 @@
 # rpgCore — Project Journal
 
 ## Current State
-402 passing. FF-style 8/62/15 layout live. SlimeRenderer integrated. Layout bones fixed.
+402 passing. Layout proportions fixed (8/Mid/15). Turn names mapped.
 
 ## In Flight
 None.
 
 ## Next Priority
-FF-style combat polish: damage numbers, portraits.
+Inventory and Loot system expansion.
