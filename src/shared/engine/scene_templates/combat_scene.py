@@ -5,14 +5,15 @@ from src.shared.engine.scene_manager import Scene
 from src.shared.ui.panel import Panel
 from src.shared.ui.label import Label
 from src.shared.ui.button import Button
+from loguru import logger
 
 class CombatSceneBase(Scene):
     """
     Standard template for turn-based 5v5 combat.
     Proportions (FF-Style):
     - Top: 8% (Turn Order)
-    - Middle: 62% (Party Slots | Action Log | Enemy Slots)
     - Bottom: 15% (Button Bar)
+    - Middle: Remainder (Party Slots | Action Log | Enemy Slots)
     """
     def __init__(self, manager, **kwargs):
         super().__init__(manager, **kwargs)
@@ -28,9 +29,19 @@ class CombatSceneBase(Scene):
         
         self.ui_components = []
         self.padding = 8
+        self.font_n = None
+        self.font_s = None
+        self.font_l = None
 
     def on_enter(self, **kwargs) -> None:
         self.width, self.height = self.manager.width, self.manager.height
+        logger.info(f"Combat scene window size: {self.width}x{self.height}")
+        
+        # Initialize fonts
+        self.font_n = pygame.font.SysFont(None, 20) # Name
+        self.font_s = pygame.font.SysFont(None, 16) # Stance
+        self.font_l = pygame.font.SysFont(None, 16) # Log
+        
         self._calculate_layout()
         self._setup_combat_ui()
         self.on_combat_enter(**kwargs)
@@ -39,10 +50,11 @@ class CombatSceneBase(Scene):
         w, h = self.width, self.height
         p = self.padding
         
-        # Heights
+        # Proportions
         self.top_h = int(h * 0.08)
         self.bottom_h = int(h * 0.15)
-        self.mid_h = int(h * 0.62)
+        # Mid occupies everything between
+        self.mid_h = h - self.top_h - self.bottom_h - (2 * p)
         
         # Widths
         self.side_w = int(w * 0.25)
@@ -57,6 +69,8 @@ class CombatSceneBase(Scene):
         self.log_rect = pygame.Rect(self.side_w + p, self.mid_rect.y, self.center_w - 2*p, self.mid_h)
         self.enemy_rect = pygame.Rect(self.side_w + self.center_w + p, self.mid_rect.y, self.side_w - 2*p, self.mid_h)
 
+        logger.debug(f"Layout: Top={self.top_h}px, Mid={self.mid_h}px, Bottom={self.bottom_h}px")
+
     def _setup_combat_ui(self):
         self.ui_components = []
         
@@ -68,7 +82,7 @@ class CombatSceneBase(Scene):
         # 2. Turn Order Display (Top)
         self.turn_panel = Panel(self.top_rect, bg_color=(15, 15, 15))
         self.ui_components.append(self.turn_panel)
-        self.turn_label_active = Label(pygame.Rect(20, self.top_h//2 - 10, self.width//2, 20), text="Turn: ...", font_size=18)
+        self.turn_label_active = Label(pygame.Rect(20, self.top_h//2 - 10, self.width//2 - 40, 20), text="Turn: ...", font_size=18, align="left")
         self.turn_label_next = Label(pygame.Rect(self.width//2, self.top_h//2 - 10, self.width//2 - 20, 20), text="Next: ...", font_size=18, align="right")
         self.turn_panel.add_child(self.turn_label_active)
         self.turn_panel.add_child(self.turn_label_next)
@@ -129,6 +143,7 @@ class CombatSceneBase(Scene):
             surface.blit(overlay, (0, 0))
 
     def _render_slots(self, surface: pygame.Surface):
+        # Dynamically fit slots into mid_h
         slot_h = (self.mid_h // 5) - self.padding
         
         # Render Party (Left)
@@ -168,39 +183,35 @@ class CombatSceneBase(Scene):
         max_hp = stats.get("max_hp", 1)
         
         # Text (Name at top)
-        font_n = pygame.font.SysFont(None, 18)
-        img_n = font_n.render(name, True, (240, 240, 240))
+        img_n = self.font_n.render(name, True, (240, 240, 240))
         surface.blit(img_n, (x + 8, y + 6))
         
         # HP Bar (Bottom)
         bar_w = w - 16
-        bar_h = 6
-        bar_rect = pygame.Rect(x + 8, y + h - 12, bar_w, bar_h)
+        bar_h = min(8, h // 8)
+        bar_rect = pygame.Rect(x + 8, y + h - (bar_h + 8), bar_w, bar_h)
         pygame.draw.rect(surface, (80, 20, 20), bar_rect)
         if max_hp > 0:
             fill_w = int(bar_w * (max(0, hp) / max_hp))
-            pygame.draw.rect(surface, (40, 180, 40), (x+8, y + h - 12, fill_w, bar_h))
+            pygame.draw.rect(surface, (40, 180, 40), (x+8, y + h - (bar_h + 8), fill_w, bar_h))
 
         # Stance (Middle for enemies)
         if side == "enemy":
-            font_s = pygame.font.SysFont(None, 14)
             stance = stats.get("stance", "NEUTRAL").upper()
-            img_s = font_s.render(stance, True, (150, 150, 180))
-            surface.blit(img_s, (x + 8, y + h // 2 - 4))
+            img_s = self.font_s.render(stance, True, (150, 150, 180))
+            # Offset it slightly down from name
+            surface.blit(img_s, (x + 8, y + 24))
 
     def _render_log_content(self, surface: pygame.Surface):
         rect = self.log_rect
-        font = pygame.font.SysFont(None, 14)
         visible_msgs = self.log_messages[-6:]
         
         for i, msg in enumerate(visible_msgs):
-            # Calculate fade (older messages are more transparent)
-            # Since we iterate from top to bottom of the 6 lines:
-            # i=0 is oldest, i=5 is newest
+            # Calculate fade
             alpha = int(100 + (i * 155 // 5)) # 100 to 255
             color = (alpha, alpha, alpha)
             
-            img = font.render(f"> {msg}", True, color)
+            img = self.font_l.render(f"> {msg}", True, color)
             surface.blit(img, (rect.x + 10, rect.y + 10 + i * 18))
 
     def on_exit(self) -> None:

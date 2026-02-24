@@ -76,8 +76,8 @@ class DungeonCombatScene(CombatSceneBase):
         order = self.session.turn_manager.get_order()
         
         # Update Turn Order Labels
-        active_name = "None"
-        next_name = "None"
+        active_name = "—"
+        next_name = "—"
         
         # Helper to find name from ID
         def get_name(eid):
@@ -90,8 +90,8 @@ class DungeonCombatScene(CombatSceneBase):
             if len(order) > 1:
                 next_name = get_name(order[1])
         
-        self.turn_label_active.text = f"Turn: {active_name}"
-        self.turn_label_next.text = f"Next: {next_name}"
+        self.turn_label_active.set_text(f"Turn: {active_name}")
+        self.turn_label_next.set_text(f"Next: {next_name}")
         
         # Enable/Disable buttons
         can_act = (self.active_actor_id == "hero")
@@ -114,8 +114,9 @@ class DungeonCombatScene(CombatSceneBase):
                 old_x = entity.entity.kinematics.position.x
                 old_y = entity.entity.kinematics.position.y
                 
+                # Render higher up in the slot to avoid overlapping stance text
                 entity.entity.kinematics.position.x = x + w // 2
-                entity.entity.kinematics.position.y = y + h // 2
+                entity.entity.kinematics.position.y = y + h // 3 + 4
                 
                 # Render (centered)
                 self.slime_renderer.render(surface, entity.entity)
