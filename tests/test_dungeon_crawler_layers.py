@@ -8,8 +8,10 @@ from src.apps.dungeon_crawler.entities.hero import Hero
 
 @pytest.fixture
 def mock_session():
+    from src.shared.combat.turn_order import TurnOrderManager
     session = DungeonSession()
     session.hero = Hero("TestHero", "fighter")
+    session.turn_manager = TurnOrderManager()
     session.floor = MagicMock()
     room = MagicMock()
     room.id = "room_1"
@@ -73,7 +75,7 @@ def test_combat_defeat_records_ancestor(mock_session, manager):
     
     with patch.object(mock_session, 'end_run') as mock_end_run:
         scene._handle_defeat()
-        mock_end_run.assert_called_once_with(cause="Killed in combat")
+        mock_end_run.assert_called_once_with(cause="Killed by Slime")
     pygame.quit()
 
 def test_flag_appears_after_last_enemy_defeated(mock_session, manager):
