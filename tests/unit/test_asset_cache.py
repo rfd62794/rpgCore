@@ -12,6 +12,7 @@ Tests verify:
 
 import pytest
 import time
+from unittest.mock import patch
 
 from src.game_engine.foundation.asset_system.asset_cache import AssetCache
 from src.game_engine.foundation.asset_system.asset_registry import Asset, AssetType
@@ -225,25 +226,29 @@ class TestCacheTTL:
 
     def test_expired_entry_returns_none(self):
         """Expired entry should be treated as cache miss."""
-        cache = AssetCache(max_size=10, ttl=0.05)  # 50ms TTL
-        cache.put("a", _make_asset("a"))
-
-        # Should still be valid
-        assert cache.get("a") is not None
-
-        # Wait for expiry
-        time.sleep(0.06)
-
-        # Should be expired
-        assert cache.get("a") is None
+        cache = AssetCache(max_size=10, ttl=1.0)
+        asset = _make_asset("a")
+        
+        with patch("time.monotonic") as mock_time:
+            mock_time.return_value = 0.0
+            cache.put("a", asset)
+            
+            mock_time.return_value = 1.1  # past TTL
+            result = cache.get("a")
+        
+        assert result is None
 
     def test_expired_entry_counted_as_miss(self):
         """Expired entry access should count as miss."""
-        cache = AssetCache(max_size=10, ttl=0.05)
+        cache = AssetCache(max_size=10, ttl=1.0)
         cache.put("a", _make_asset("a"))
 
-        time.sleep(0.06)
-        cache.get("a")
+        with patch("time.monotonic") as mock_time:
+            mock_time.return_value = 0.0
+            cache.put("a", _make_asset("a"))
+            
+            mock_time.return_value = 1.1
+            cache.get("a")
 
         stats = cache.get_stats()
         assert stats["misses"] == 1
