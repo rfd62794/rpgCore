@@ -110,9 +110,10 @@ class DungeonCombatScene(CombatSceneBase):
         if entity and side == "enemy" and entity.entity:
             # We need to temporarily set kinematics pos for the renderer
             # centered in the slot middle-upper area
-            old_pos = None
             if hasattr(entity.entity, "kinematics"):
-                old_pos = entity.entity.kinematics.position.copy()
+                old_x = entity.entity.kinematics.position.x
+                old_y = entity.entity.kinematics.position.y
+                
                 entity.entity.kinematics.position.x = x + w // 2
                 entity.entity.kinematics.position.y = y + h // 2
                 
@@ -120,7 +121,8 @@ class DungeonCombatScene(CombatSceneBase):
                 self.slime_renderer.render(surface, entity.entity)
                 
                 # Restore
-                entity.entity.kinematics.position = old_pos
+                entity.entity.kinematics.position.x = old_x
+                entity.entity.kinematics.position.y = old_y
 
     def _handle_player_attack(self):
         if self.active_actor_id != "hero": return
