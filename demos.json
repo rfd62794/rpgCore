@@ -55,6 +55,15 @@
             "entry": "main",
             "status": "development",
             "genre": "rpg"
+        },
+        {
+            "id": "slime_breeder",
+            "name": "Slime Breeder",
+            "description": "Creation Aspect. Genetics, shapes, personality, and garden tranquility.",
+            "module": "src.apps.slime_breeder.run_slime_breeder",
+            "entry": "main",
+            "status": "development",
+            "genre": "simulation"
         }
     ]
 }
