@@ -62,16 +62,15 @@ class DungeonSession:
             "name": self.hero.name,
             "class": self.hero.class_type,
             "floor": self.floor.depth if self.floor else 1,
-            "kills": 0, # TODO: Track kills
+            "kills": 0, # Could be expanded later
             "cause": cause
         }
         self.ancestors.append(ancestor_record)
         
-        # Bank XP or Gold? (Ascension logic would go here)
-        # For now, just reset
+        # Reset but keep ancestors list
         self.hero = None
         self.floor = None
         self.turn_manager = None
 
     def get_ancestor_list(self) -> List[str]:
-        return [f"{a['name']} ({a['class']}) - Floor {a['floor']}" for a in self.ancestors]
+        return [f"{a['name']} ({a['class']}) - Floor {a['floor']} ({a['cause']})" for a in self.ancestors]

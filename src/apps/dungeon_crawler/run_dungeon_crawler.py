@@ -420,11 +420,13 @@ def main(args=None):
         # Local imports to avoid circular deps if they occur
         from src.apps.dungeon_crawler.ui.scene_dungeon_room import DungeonRoomScene
         from src.apps.dungeon_crawler.ui.scene_inventory import InventoryOverlay
+        from src.apps.dungeon_crawler.ui.scene_dungeon_combat import DungeonCombatScene
 
         manager = SceneManager(width=800, height=600, title="rpgCore — Dungeon Crawler")
         manager.register("the_room", TheRoomScene)
         manager.register("dungeon_room", DungeonRoomScene)
         manager.register("inventory", InventoryOverlay)
+        manager.register("dungeon_combat", DungeonCombatScene)
         
         manager.run("the_room", session=session)
 
