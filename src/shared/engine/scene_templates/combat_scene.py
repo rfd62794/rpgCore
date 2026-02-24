@@ -9,11 +9,10 @@ from src.shared.ui.button import Button
 class CombatSceneBase(Scene):
     """
     Standard template for turn-based 5v5 combat.
-    Features:
-    - Top bar: Turn info and metadata
-    - Middle: 5 Party slots | Action Log | 5 Enemy slots
-    - Bottom: Action Bar
-    - Logic: log_messages, turn tracking, hit/miss flashes
+    Proportions (FF-Style):
+    - Top: 8% (Turn Order)
+    - Middle: 62% (Party Slots | Action Log | Enemy Slots)
+    - Bottom: 15% (Button Bar)
     """
     def __init__(self, manager, **kwargs):
         super().__init__(manager, **kwargs)
@@ -28,35 +27,58 @@ class CombatSceneBase(Scene):
         self.flash_color: Optional[tuple] = None
         
         self.ui_components = []
+        self.padding = 8
 
     def on_enter(self, **kwargs) -> None:
         self.width, self.height = self.manager.width, self.manager.height
+        self._calculate_layout()
         self._setup_combat_ui()
         self.on_combat_enter(**kwargs)
 
-    def _setup_combat_ui(self):
+    def _calculate_layout(self):
         w, h = self.width, self.height
+        p = self.padding
+        
+        # Heights
+        self.top_h = int(h * 0.08)
+        self.bottom_h = int(h * 0.15)
+        self.mid_h = int(h * 0.62)
+        
+        # Widths
+        self.side_w = int(w * 0.25)
+        self.center_w = int(w * 0.50)
+        
+        # Rects
+        self.top_rect = pygame.Rect(0, 0, w, self.top_h)
+        self.mid_rect = pygame.Rect(0, self.top_h + p, w, self.mid_h)
+        self.bottom_rect = pygame.Rect(0, h - self.bottom_h, w, self.bottom_h)
+        
+        self.party_rect = pygame.Rect(p, self.mid_rect.y, self.side_w - 2*p, self.mid_h)
+        self.log_rect = pygame.Rect(self.side_w + p, self.mid_rect.y, self.center_w - 2*p, self.mid_h)
+        self.enemy_rect = pygame.Rect(self.side_w + self.center_w + p, self.mid_rect.y, self.side_w - 2*p, self.mid_h)
+
+    def _setup_combat_ui(self):
         self.ui_components = []
         
-        # 1. Action Bar (Bottom) - 100px height
-        bar_h = 100
-        self.action_panel = Panel(pygame.Rect(0, h - bar_h, w, bar_h), bg_color=(25, 20, 20))
+        # 1. Action Bar (Bottom)
+        self.action_panel = Panel(self.bottom_rect, bg_color=(25, 20, 20))
         self.ui_components.append(self.action_panel)
         self._setup_action_buttons()
         
-        # 2. Turn Order Display (Top) - 50px height
-        self.turn_panel = Panel(pygame.Rect(0, 0, w, 50), bg_color=(15, 15, 15))
+        # 2. Turn Order Display (Top)
+        self.turn_panel = Panel(self.top_rect, bg_color=(15, 15, 15))
         self.ui_components.append(self.turn_panel)
-        self.turn_label = Label(pygame.Rect(20, 15, w - 40, 20), text="Turn Order: ...", font_size=18)
-        self.turn_panel.add_child(self.turn_label)
+        self.turn_label_active = Label(pygame.Rect(20, self.top_h//2 - 10, self.width//2, 20), text="Turn: ...", font_size=18)
+        self.turn_label_next = Label(pygame.Rect(self.width//2, self.top_h//2 - 10, self.width//2 - 20, 20), text="Next: ...", font_size=18, align="right")
+        self.turn_panel.add_child(self.turn_label_active)
+        self.turn_panel.add_child(self.turn_label_next)
         
-        # 3. Action Log (Center) - 200px width
-        log_w = 260
-        self.log_panel = Panel(pygame.Rect((w - log_w)//2, 70, log_w, h - bar_h - 90), bg_color=(20, 20, 25))
+        # 3. Action Log (Center)
+        self.log_panel = Panel(self.log_rect, bg_color=(20, 20, 25))
         self.ui_components.append(self.log_panel)
 
     def _setup_action_buttons(self):
-        """Subclasses can override to add specific buttons."""
+        """Standard buttons evenly spaced."""
         pass
 
     def on_combat_enter(self, **kwargs):
@@ -90,7 +112,7 @@ class CombatSceneBase(Scene):
             comp.update(int(dt_ms))
 
     def render(self, surface: pygame.Surface) -> None:
-        surface.fill((20, 10, 10)) # Darker background
+        surface.fill((20, 10, 15))
         
         self._render_slots(surface)
         
@@ -102,63 +124,84 @@ class CombatSceneBase(Scene):
         # Draw Flash
         if self.flash_color and self.flash_timer > 0:
             overlay = pygame.Surface((self.width, self.height), pygame.SRCALPHA)
-            alpha = int(100 * (self.flash_timer / 0.2)) # Fade out
+            alpha = int(100 * (self.flash_timer / 0.2))
             overlay.fill((*self.flash_color, alpha))
             surface.blit(overlay, (0, 0))
 
     def _render_slots(self, surface: pygame.Surface):
-        w, h = self.width, self.height
-        slot_h = 80
-        start_y = 80
-        gap = 10
+        slot_h = (self.mid_h // 5) - self.padding
         
         # Render Party (Left)
         for i in range(5):
-            y = start_y + i * (slot_h + gap)
-            self._draw_unit_slot(surface, 50, y, self.party[i], side="party")
+            y = self.party_rect.y + i * (slot_h + self.padding)
+            self._draw_unit_slot(surface, self.party_rect.x, y, self.party_rect.width, slot_h, self.party[i], side="party")
             
         # Render Enemies (Right)
         for i in range(5):
-            y = start_y + i * (slot_h + gap)
-            self._draw_unit_slot(surface, w - 210, y, self.enemies[i], side="enemy")
+            y = self.enemy_rect.y + i * (slot_h + self.padding)
+            self._draw_unit_slot(surface, self.enemy_rect.x, y, self.enemy_rect.width, slot_h, self.enemies[i], side="enemy")
 
-    def _draw_unit_slot(self, surface: pygame.Surface, x: int, y: int, entity: Optional[Any], side: str):
-        rect = pygame.Rect(x, y, 160, 80)
-        bg_col = (40, 30, 30) if side == "party" else (30, 30, 40)
-        pygame.draw.rect(surface, bg_col, rect)
-        pygame.draw.rect(surface, (60, 60, 70), rect, 1)
+    def _draw_unit_slot(self, surface: pygame.Surface, x: int, y: int, w: int, h: int, entity: Optional[Any], side: str):
+        rect = pygame.Rect(x, y, w, h)
         
-        if entity:
-            # Highlight Active
-            if getattr(entity, "id", None) == self.active_actor_id:
-                pygame.draw.rect(surface, (255, 165, 0), rect, 3) # Orange
-            # Highlight Target
-            if getattr(entity, "id", None) == self.target_actor_id:
-                pygame.draw.rect(surface, (255, 50, 50), rect, 3) # Red
-                
-            # Name and HP
-            name = getattr(entity, "name", "Unit")
-            stats = getattr(entity, "stats", {})
-            hp = stats.get("hp", 0)
-            max_hp = stats.get("max_hp", 1)
-            
-            # Simple HP Bar within slot
-            bar_rect = pygame.Rect(x + 10, y + 55, 140, 8)
-            pygame.draw.rect(surface, (100, 20, 20), bar_rect)
-            if max_hp > 0:
-                pygame.draw.rect(surface, (50, 200, 50), (x+10, y+55, int(140 * (hp/max_hp)), 8))
-            
-            # Text
-            font = pygame.font.SysFont(None, 20)
-            img = font.render(name, True, (250, 250, 250))
-            surface.blit(img, (x + 10, y + 10))
+        # Base slot look
+        if not entity:
+            pygame.draw.rect(surface, (25, 25, 30), rect)
+            pygame.draw.rect(surface, (40, 40, 45), rect, 1)
+            return
+
+        bg_col = (45, 35, 35) if side == "party" else (35, 35, 50)
+        pygame.draw.rect(surface, bg_col, rect)
+        
+        # Highlights
+        if getattr(entity, "id", None) == self.active_actor_id:
+            pygame.draw.rect(surface, (255, 165, 0), rect, 2)
+        elif getattr(entity, "id", None) == self.target_actor_id:
+            pygame.draw.rect(surface, (255, 50, 50), rect, 2)
+        else:
+            pygame.draw.rect(surface, (70, 70, 80), rect, 1)
+        
+        # Name and HP
+        name = getattr(entity, "name", "Unit")
+        stats = getattr(entity, "stats", {})
+        hp = stats.get("hp", 0)
+        max_hp = stats.get("max_hp", 1)
+        
+        # Text (Name at top)
+        font_n = pygame.font.SysFont(None, 18)
+        img_n = font_n.render(name, True, (240, 240, 240))
+        surface.blit(img_n, (x + 8, y + 6))
+        
+        # HP Bar (Bottom)
+        bar_w = w - 16
+        bar_h = 6
+        bar_rect = pygame.Rect(x + 8, y + h - 12, bar_w, bar_h)
+        pygame.draw.rect(surface, (80, 20, 20), bar_rect)
+        if max_hp > 0:
+            fill_w = int(bar_w * (max(0, hp) / max_hp))
+            pygame.draw.rect(surface, (40, 180, 40), (x+8, y + h - 12, fill_w, bar_h))
+
+        # Stance (Middle for enemies)
+        if side == "enemy":
+            font_s = pygame.font.SysFont(None, 14)
+            stance = stats.get("stance", "NEUTRAL").upper()
+            img_s = font_s.render(stance, True, (150, 150, 180))
+            surface.blit(img_s, (x + 8, y + h // 2 - 4))
 
     def _render_log_content(self, surface: pygame.Surface):
-        rect = self.log_panel.rect
-        font = pygame.font.SysFont(None, 18)
-        for i, msg in enumerate(self.log_messages[-12:]):
-            img = font.render(f"> {msg}", True, (180, 180, 180))
-            surface.blit(img, (rect.x + 10, rect.y + 10 + i * 20))
+        rect = self.log_rect
+        font = pygame.font.SysFont(None, 14)
+        visible_msgs = self.log_messages[-6:]
+        
+        for i, msg in enumerate(visible_msgs):
+            # Calculate fade (older messages are more transparent)
+            # Since we iterate from top to bottom of the 6 lines:
+            # i=0 is oldest, i=5 is newest
+            alpha = int(100 + (i * 155 // 5)) # 100 to 255
+            color = (alpha, alpha, alpha)
+            
+            img = font.render(f"> {msg}", True, color)
+            surface.blit(img, (rect.x + 10, rect.y + 10 + i * 18))
 
     def on_exit(self) -> None:
         pass
