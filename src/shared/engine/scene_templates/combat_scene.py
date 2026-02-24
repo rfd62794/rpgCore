@@ -34,7 +34,9 @@ class CombatSceneBase(Scene):
         self.font_l = None
 
     def on_enter(self, **kwargs) -> None:
-        self.width, self.height = self.manager.width, self.manager.height
+        self.width = self.manager.width
+        self.height = self.manager.height
+        print(f"DEBUG: Pygame Window Height detected as {self.height}px")
         logger.info(f"Combat scene window size: {self.width}x{self.height}")
         
         # Initialize fonts
@@ -50,11 +52,12 @@ class CombatSceneBase(Scene):
         w, h = self.width, self.height
         p = self.padding
         
-        # Proportions
-        self.top_h = int(h * 0.08)
+        # Proportions - prioritized from bottom up
         self.bottom_h = int(h * 0.15)
-        # Mid occupies everything between
-        self.mid_h = h - self.top_h - self.bottom_h - (2 * p)
+        self.top_h = int(h * 0.08)
+        
+        # Mid occupies everything between (with top padding for slots)
+        self.mid_h = h - self.top_h - self.bottom_h - (3 * p)
         
         # Widths
         self.side_w = int(w * 0.25)
@@ -62,14 +65,14 @@ class CombatSceneBase(Scene):
         
         # Rects
         self.top_rect = pygame.Rect(0, 0, w, self.top_h)
-        self.mid_rect = pygame.Rect(0, self.top_h + p, w, self.mid_h)
         self.bottom_rect = pygame.Rect(0, h - self.bottom_h, w, self.bottom_h)
+        self.mid_rect = pygame.Rect(0, self.top_h + 2*p, w, self.mid_h)
         
         self.party_rect = pygame.Rect(p, self.mid_rect.y, self.side_w - 2*p, self.mid_h)
         self.log_rect = pygame.Rect(self.side_w + p, self.mid_rect.y, self.center_w - 2*p, self.mid_h)
         self.enemy_rect = pygame.Rect(self.side_w + self.center_w + p, self.mid_rect.y, self.side_w - 2*p, self.mid_h)
 
-        logger.debug(f"Layout: Top={self.top_h}px, Mid={self.mid_h}px, Bottom={self.bottom_h}px")
+        logger.debug(f"Layout Refined: Top={self.top_h}px, Mid={self.mid_h}px, Bottom={self.bottom_rect.y}px (h={self.bottom_h}px)")
 
     def _setup_combat_ui(self):
         self.ui_components = []
