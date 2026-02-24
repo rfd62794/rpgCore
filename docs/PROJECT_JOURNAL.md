@@ -1,10 +1,10 @@
 # rpgCore — Project Journal
 
 ## Current State
-397 passing. Dungeon Crawler room visuals implemented with grid, slime patrol, and exit flag. Scene Templates live.
+397 passing. Dungeon Crawler room refactored to two-layer system (Exploration/Combat). Collision triggers battle sub-scene. Ancestor tracking live.
 
 ## In Flight
-Dungeon Crawler expansion.
+Procedural dungeon layouts and looting.
 
 ## Next Priority
-Procedural dungeon layouts, then looting system.
+Inventory management and item identification.
