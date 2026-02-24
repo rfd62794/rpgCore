@@ -4,6 +4,7 @@ from src.shared.genetics import SlimeGenome, breed, generate_random
 from src.apps.slime_breeder.entities.slime import Slime
 from src.apps.slime_breeder.garden.garden_state import GardenState
 from src.apps.slime_breeder.ui.slime_renderer import SlimeRenderer
+from src.shared.physics import Vector2
 
 def test_genome_generates_valid_traits():
     genome = generate_random()
@@ -34,10 +35,12 @@ def test_mutation_occurs_within_bounds():
 def test_slime_personality_affects_velocity():
     genome = generate_random()
     genome.energy = 1.0
+    genome.curiosity = 1.0
     slime = Slime("Fast", genome, (100, 100))
+    slime._wander_timer = 10.0 # Prevent logic from resetting target
     
     # High energy slime should move after update if it has a target
-    slime._target_pos = pygame.Vector2(200, 200)
+    slime._target_pos = Vector2(200, 200)
     slime.update(0.1)
     assert slime.kinematics.velocity.magnitude() > 0
 

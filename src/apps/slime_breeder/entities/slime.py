@@ -13,9 +13,9 @@ class Slime:
         # Physics
         self.kinematics = Kinematics(
             position=Vector2(*position),
-            velocity=Vector2(0, 0),
-            max_speed=50.0 + (self.genome.energy * 150.0) # Energy affects speed
+            velocity=Vector2(0, 0)
         )
+        self.max_speed = 50.0 + (self.genome.energy * 150.0) # Energy affects speed
         
         self.mood = "happy"
         self._target_pos: Optional[Vector2] = None
@@ -63,6 +63,11 @@ class Slime:
         
         # Apply force to velocity (simplistic integration)
         self.kinematics.velocity += target_force * dt
+        
+        # Clamp speed
+        speed = self.kinematics.velocity.magnitude()
+        if speed > self.max_speed:
+            self.kinematics.velocity = self.kinematics.velocity.normalize() * self.max_speed
         
         # Update position
         self.kinematics.update(dt)
