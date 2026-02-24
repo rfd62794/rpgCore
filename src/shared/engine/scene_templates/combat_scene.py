@@ -112,10 +112,14 @@ class CombatSceneBase(Scene):
 
     def handle_events(self, events: List[pygame.event.Event]) -> None:
         for event in events:
+            if event.type in [pygame.MOUSEBUTTONDOWN, pygame.MOUSEBUTTONUP, pygame.MOUSEMOTION]:
+                print(f"DEBUG EVENT: {event.type}, pos: {getattr(event, 'pos', None)}")
             if event.type == pygame.QUIT:
                 self.request_quit()
             for comp in reversed(self.ui_components):
                 if hasattr(comp, "handle_event") and comp.handle_event(event):
+                    if event.type in [pygame.MOUSEBUTTONDOWN, pygame.MOUSEBUTTONUP]:
+                        print(f"DEBUG: Event consumed by {comp}")
                     break
 
     def update(self, dt_ms: float) -> None:
