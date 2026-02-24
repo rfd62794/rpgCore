@@ -29,6 +29,7 @@ class SlimeRenderer:
         color = slime.genome.base_color
         p_color = slime.genome.pattern_color
         shape = slime.genome.shape
+        seed = sum(color) # Deterministic seed based on color
         
         # 1. Base Shape
         if shape == "round":
@@ -52,7 +53,6 @@ class SlimeRenderer:
         elif shape == "amorphous":
             # Circle with 4-6 random wobble points
             points = []
-            seed = sum(color) # Determinisitic wobble based on color
             num_points = 12
             for i in range(num_points):
                 angle = math.radians(i * (360 / num_points))
