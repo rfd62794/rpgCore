@@ -10,6 +10,7 @@ def mock_session():
     from src.shared.combat.turn_order import TurnOrderManager
     session = DungeonSession()
     session.hero = Hero("TestHero", "fighter")
+    session.hero.stats["speed"] = 10 # Ensure hero acts first
     session.turn_manager = TurnOrderManager()
     session.floor = MagicMock()
     session.floor.depth = 1
