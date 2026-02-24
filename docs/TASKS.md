@@ -18,6 +18,10 @@
 - [FIX] Scene vs SceneBase mismatch — document correct pattern in SESSION_PROTOCOL so future demos don't repeat it
 - [FEAT] Dungeon Crawler — implement sprite-based room layout (Hero, Slime patrol, Exit flag)
 - [ASSET] Dungeon Crawler — ingest Kenney and OGA sprite packs (Dungeon, LPC, Urban)
+- [DESIGN] Ambient systems — day cycle, weather, fishing, crafting as shared texture
+- [POLISH] Slime Breeder — breeding UI, trait inheritance visualization
+- [FEAT] Slime Breeder — save/load garden persistence
+- [FEAT] Slime Breeder — slime personality emergence over time
 
 ## Backlog
 - [MIGRATE] Slime Clan — migrate to shared UI components

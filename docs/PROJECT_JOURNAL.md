@@ -1,10 +1,10 @@
 # rpgCore — Project Journal
 
 ## Current State
-Dungeon Crawler Pygame UI implemented with The Room hub, dungeon room scene, and inventory overlay. All 385 tests passing.
+392 passing. Six Aspects live. Slime Breeder garden rendering, buttons fixed, visual variety, scene templates created.
 
 ## In Flight
-None — Session complete.
+Slime Breeder polish.
 
 ## Next Priority
-[FEAT] Sprite-based room layout and Kenney/OGA asset ingestion.
+Scene template adoption across all demos, then Dungeon Crawler visual polish.
