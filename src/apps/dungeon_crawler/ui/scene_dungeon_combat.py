@@ -49,7 +49,8 @@ class DungeonCombatScene(CombatSceneBase):
         bw, bh = self.bottom_rect.width, self.bottom_rect.height
         btn_w = (bw - (5 * p)) // 4
         btn_h = int(bh * 0.8)
-        btn_y = (bh - btn_h) // 2
+        # Calculate Y relative to screen bottom bar start
+        btn_y = self.bottom_rect.y + (bh - btn_h) // 2
         
         button_font_size = 24
         
@@ -81,8 +82,10 @@ class DungeonCombatScene(CombatSceneBase):
         
         # Helper to find name from ID
         def get_name(eid):
-            if eid == "hero": return self.party[0].name
-            if eid.startswith("slime"): return self.enemies[0].name
+            # Check all 10 slots
+            for unit in (self.party + self.enemies):
+                if unit and unit.id == eid:
+                    return unit.name
             return eid
 
         if order:
@@ -98,7 +101,7 @@ class DungeonCombatScene(CombatSceneBase):
         self.btn_attack.enabled = can_act
         self.btn_flee.enabled = can_act
         
-        if self.active_actor_id == "slime_0":
+        if self.active_actor_id and self.active_actor_id.startswith("slime"):
             # Just enemy turn for now
             self._enemy_turn()
 
