@@ -40,6 +40,18 @@ class Panel(UIComponent):
         if component in self.children:
             self.children.remove(component)
 
+    def handle_event(self, event: pygame.event.Event) -> bool:
+        """Propagate events to children in reverse z-order. Returns True if consumed."""
+        if not self.visible:
+            return False
+            
+        # Panels usually don't consume events themselves (unless they have a background click handler)
+        # but they MUST pass them to children.
+        for child in reversed(self.children):
+            if hasattr(child, "handle_event") and child.handle_event(event):
+                return True
+        return False
+
     def update(self, dt_ms: int) -> None:
         if not self.visible:
             return
