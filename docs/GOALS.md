@@ -38,3 +38,15 @@ Proves the deepest expression of shared systems together.
 ## G9 — TurboShells Phoenix
 Genetic breeding, stable management, racing simulation.
 The demo that was always planned, still waiting its moment.
+
+## G10 — The Living World
+Six Aspects of one Soul's journey through existence.
+The Ring at the center where the Soul moves between all of them.
+Each Aspect fully playable alone. Crossover always additive.
+The mythology engine underlying Dugger's Green Box.
+
+## G11 — Slime Breeder (Creation Aspect)
+The Chao Garden of the Green Box.
+Genetics, shapes, sizes, colors, patterns, personality.
+TurboShells racing lives here as a mode.
+Your creations enter the world and show up elsewhere.

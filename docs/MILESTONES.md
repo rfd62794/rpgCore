@@ -21,3 +21,12 @@
   Criteria: one creature, genetics visible, one battle
 - [ ] M10 — Portfolio pass (Goals: G5)
   Criteria: three demos polished, README with screenshots
+
+- [ ] M11 — Slime Breeder frame (Goals: G11, G10)
+  Criteria: one slime created, genetics visible, personality emerges
+
+- [ ] M12 — The Ring hub scene (Goals: G10, G1)
+  Criteria: central hub renders, all six Aspects accessible
+
+- [ ] M13 — World State layer (Goals: G10, G4)
+  Criteria: one crossover ripple working end to end
