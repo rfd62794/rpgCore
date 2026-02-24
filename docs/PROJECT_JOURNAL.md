@@ -1,10 +1,10 @@
 # rpgCore — Project Journal
 
 ## Current State
-402 passing. 5v5 combat layout live. Dusk the Unlucky fights a Slime. Layout needs FF-style polish pass.
+402 passing. FF-style 8/62/15 layout live. SlimeRenderer integrated. Layout bones fixed.
 
 ## In Flight
-Combat scene layout and sizing.
+None.
 
 ## Next Priority
-FF-style combat polish — proper sizing, turn order display, damage feedback.
+FF-style combat polish: damage numbers, portraits.

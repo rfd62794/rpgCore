@@ -22,9 +22,6 @@
 - [FEAT] Slime Breeder — save/load garden persistence
 - [FEAT] Slime Breeder — slime personality emergence over time
 - [FEAT] Dungeon Crawler — proc-gen floor layouts and connection logic
-- [POLISH] Combat scene — FF-style layout, proper sizing, buttons visible
-- [POLISH] Combat scene — Turn Order display populated, not ellipsis
-- [POLISH] Combat scene — SlimeRenderer in enemy slots, not just name text
 - [POLISH] Combat scene — floating damage numbers on hit
 - [POLISH] Combat scene — hero portrait/stats in active slot
 
@@ -52,3 +49,8 @@
 - [x] [REFACTOR] Asset restructure — execute moves from ASSET_INVENTORY.md (2026-02-22)
 - [x] [FEAT] Space Trader — pygame UI, market screen, travel map (2026-02-22)
 - [x] [POLISH] Slime Breeder — breeding UI, trait inheritance visualization (2026-02-23)
+- [x] [POLISH] Combat scene — FF-style layout, proper sizing, buttons visible (2026-02-23)
+- [x] [POLISH] Combat scene — Turn Order display populated, not ellipsis (2026-02-23)
+- [x] [POLISH] Combat scene — SlimeRenderer in enemy slots, not just name text (2026-02-23)
+- [x] [POLISH] Combat scene — floating damage numbers on hit (2026-02-23)
+- [x] [POLISH] Combat scene — hero portrait/stats in active slot (2026-02-23)
