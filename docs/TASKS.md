@@ -22,6 +22,11 @@
 - [FEAT] Slime Breeder — save/load garden persistence
 - [FEAT] Slime Breeder — slime personality emergence over time
 - [FEAT] Dungeon Crawler — proc-gen floor layouts and connection logic
+- [POLISH] Combat scene — FF-style layout, proper sizing, buttons visible
+- [POLISH] Combat scene — Turn Order display populated, not ellipsis
+- [POLISH] Combat scene — SlimeRenderer in enemy slots, not just name text
+- [POLISH] Combat scene — floating damage numbers on hit
+- [POLISH] Combat scene — hero portrait/stats in active slot
 
 ## Backlog
 - [MIGRATE] Slime Clan — migrate to shared UI components

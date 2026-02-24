@@ -1,10 +1,10 @@
 # rpgCore — Project Journal
 
 ## Current State
-
+402 passing. 5v5 combat layout live. Dusk the Unlucky fights a Slime. Layout needs FF-style polish pass.
 
 ## In Flight
-Procedural dungeon layouts and looting.
+Combat scene layout and sizing.
 
 ## Next Priority
-Inventory management and item identification.
+FF-style combat polish — proper sizing, turn order display, damage feedback.
