@@ -1,7 +1,7 @@
 # rpgCore — Project Journal
 
 ## Current State
-402 passing. Layout proportions fixed (8/Mid/15). Turn names mapped.
+402 passing. Layout proportions stable. Buttons visible. Turn names mapped.
 
 ## In Flight
 None.
