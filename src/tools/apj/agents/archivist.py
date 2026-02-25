@@ -19,7 +19,9 @@ from __future__ import annotations
 
 import asyncio
 import hashlib
+import json
 import os
+import re
 from datetime import datetime
 from pathlib import Path
 from typing import Optional
@@ -172,41 +174,71 @@ class Archivist:
     # ------------------------------------------------------------------
 
     def _get_agent(self) -> Agent:
-        """Lazy-init the pydantic_ai Agent."""
+        """Lazy-init the plain-string pydantic_ai Agent.
+
+        NOTE: output_type=CoherenceReport is NOT used here. Ollama's tool-calling
+        implementation returns the JSON schema definition instead of a filled instance,
+        causing pydantic_ai to raise UnexpectedModelBehavior after exhausting retries.
+        Instead we use a plain string Agent with the schema embedded in the system
+        prompt, then parse the JSON response manually in _run_async.
+        """
         if self._agent is None:
             model = get_ollama_model(model_name=self.model_name, temperature=0.3)
+            schema = json.dumps(CoherenceReport.model_json_schema(), indent=2)
             system_prompt = (
                 "You are the ARCHIVIST for rpgCore, a Python/Pygame game engine project. "
                 "Your job is to read the Automated Project Journal (APJ) corpus and produce "
-                "a structured CoherenceReport that orients the developer at the START of a session.\n\n"
+                "a Coherence Report that orients the developer at the START of a session.\n\n"
                 f"{_FOUR_LAWS}\n\n"
-                "Rules:\n"
+                "OUTPUT FORMAT — respond with ONLY a single valid JSON object matching this schema:\n"
+                f"{schema}\n\n"
+                "Field rules:\n"
                 "- session_primer: Exactly 2 sentences. State WHERE the project is and what MOMENTUM exists.\n"
-                "- open_risks: List concrete risks you see (drift, broken refs, orphaned goals). "
-                "  Empty list if none detected.\n"
-                "- queued_focus: ONE clear task. Be specific (file, feature, test count).\n"
-                "- constitutional_flags: List ONLY actual violations of the Four Laws. "
-                "  Empty list if the corpus shows no violations.\n"
-                "- corpus_hash: Leave blank — it will be filled programmatically.\n"
-                "Be concise. No filler. The report is for a developer starting work."
+                "- open_risks: Array of strings. List concrete risks (drift, broken refs, orphaned goals). "
+                "  Empty array [] if none detected.\n"
+                "- queued_focus: ONE clear task string. Be specific (file, feature, test count).\n"
+                "- constitutional_flags: Array of strings listing ONLY actual violations of the Four Laws. "
+                "  Empty array [] if no violations detected.\n"
+                "- corpus_hash: Use empty string \"\" — filled programmatically.\n"
+                "CRITICAL: Output ONLY the JSON. No prose before or after. No markdown. No explanation."
             )
             self._agent = Agent(
                 model=model,
-                output_type=CoherenceReport,
                 system_prompt=system_prompt,
             )
-            logger.debug("Archivist: Agent initialized")
+            logger.debug("Archivist: Agent initialized (plain-string mode)")
         return self._agent
 
+    @staticmethod
+    def _extract_json(raw: str) -> str:
+        """Extract JSON from a response that may contain markdown fences or prose."""
+        # Try fenced code block first: ```json ... ``` or ``` ... ```
+        fenced = re.search(r"```(?:json)?\s*({.*?})\s*```", raw, re.DOTALL)
+        if fenced:
+            return fenced.group(1)
+        # Try first { ... } block
+        braces = re.search(r"({.*})", raw, re.DOTALL)
+        if braces:
+            return braces.group(1)
+        return raw.strip()
+
     async def _run_async(self, corpus: dict[str, str], corpus_hash: str) -> CoherenceReport:
-        """Run the pydantic_ai Agent asynchronously."""
+        """Run the plain-string Agent and parse JSON response into CoherenceReport."""
         agent = self._get_agent()
         prompt = self._build_prompt(corpus)
         logger.info("Archivist: querying Ollama...")
         result = await agent.run(prompt)
-        report: CoherenceReport = result.output
-        # Overwrite corpus_hash with the computed value (model may leave it blank)
-        report.corpus_hash = corpus_hash
+        raw_text: str = result.output
+        logger.debug(f"Archivist: raw response length={len(raw_text)} chars")
+
+        json_str = self._extract_json(raw_text)
+        try:
+            data = json.loads(json_str)
+        except json.JSONDecodeError as exc:
+            raise ValueError(f"Archivist: JSON parse failed — {exc}\nRaw: {raw_text[:300]}") from exc
+
+        report = CoherenceReport.model_validate(data)
+        report.corpus_hash = corpus_hash  # Always use computed hash
         logger.info(
             f"Archivist: report complete — "
             f"{len(report.open_risks)} risks, "
