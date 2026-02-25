@@ -1,10 +1,10 @@
 # rpgCore — Project Journal
 
 ## Current State
-422 passing tests. APJ schema layer shipped: Pydantic corpus models (Goal, Milestone, Task, JournalEntry, Corpus), all enums, LAW 1+4 validators, CorpusValidator. Docs restructured into core/planning/journal/reference/agents subdirs. pydantic-ai installed into system Python.
+434 passing tests. APJ parser layer shipped: doc_parser.py (frontmatter extraction, typed dispatch, build_corpus), validator.py (ValidationResult, validate_corpus). pyyaml added. G10 frontmatter in GOALS.md — smoke test confirmed.
 
 ## In Flight
-Phase 2 — APJ corpus parser: read GOALS.md, TASKS.md, MILESTONES.md, PROJECT_JOURNAL.md into Corpus model.
+Phase 3 — wire parser into Archivist: replace raw markdown reads with build_corpus(), surface ValidationResult in CoherenceReport.
 
 ## Next Priority
-Build corpus parser that ingests the restructured markdown docs into validated Corpus instances using the Phase 1 schema.
+Update Archivist._load_corpus() to call build_corpus() and pass structured Corpus to prompt builder.
