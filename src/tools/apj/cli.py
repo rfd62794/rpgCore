@@ -8,7 +8,7 @@ def _run_session_start() -> None:
     """Run the Archivist and print the Coherence Report to the console."""
     from src.tools.apj.agents.archivist import Archivist
 
-    print("\n⚙  APJ Archivist initializing...\n")
+    print("\n[*] APJ Archivist initializing...\n")
     archivist = Archivist(model_name="llama3.2:3b")
     report = archivist.run()
 
