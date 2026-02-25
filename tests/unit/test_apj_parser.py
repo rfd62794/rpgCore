@@ -80,7 +80,7 @@ def _session_dict(**kwargs) -> dict:
     d = {
         "id": "S001",
         "type": "session",
-        "date": date(2026, 2, 25),
+        "session_date": date(2026, 2, 25),
         "status": "COMPLETE",
         "test_floor": 434,
         "focus": "Test session",

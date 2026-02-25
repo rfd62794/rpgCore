@@ -1,6 +1,6 @@
 - id: S001
   type: session
-  date: 2026-02-20
+  session_date: 2026-02-20
   status: COMPLETE
   test_floor: 385
   focus: "Living World mythology, Slime Breeder foundation"
@@ -10,7 +10,7 @@
 
 - id: S002
   type: session
-  date: 2026-02-21
+  session_date: 2026-02-21
   status: COMPLETE
   test_floor: 397
   focus: "Dungeon Crawler room visual, two-layer combat system"
@@ -20,7 +20,7 @@
 
 - id: S003
   type: session
-  date: 2026-02-22
+  session_date: 2026-02-22
   status: COMPLETE
   test_floor: 402
   focus: "Combat scene base 5v5 layout, FF-style polish, buttons fixed"
@@ -30,7 +30,7 @@
 
 - id: S004
   type: session
-  date: 2026-02-24
+  session_date: 2026-02-24
   status: COMPLETE
   test_floor: 411
   focus: "APJ Archivist v1, Strategist v2, Director OpenRouter framework"
@@ -40,7 +40,7 @@
 
 - id: S005
   type: session
-  date: 2026-02-25
+  session_date: 2026-02-25
   status: ACTIVE
   test_floor: 434
   focus: "Schema layer, parser layer, pure YAML migration, session tracking"
