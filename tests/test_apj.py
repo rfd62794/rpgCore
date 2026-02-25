@@ -4,8 +4,8 @@ from src.tools.apj.journal import Journal
 
 @pytest.fixture
 def temp_journal(tmp_path):
-    journal_dir = tmp_path / "docs"
-    journal_dir.mkdir()
+    journal_dir = tmp_path / "docs" / "journal"
+    journal_dir.mkdir(parents=True)
     journal_file = journal_dir / "PROJECT_JOURNAL.md"
     content = """# rpgCore — Project Journal
 
@@ -19,13 +19,15 @@ Nothing.
 Testing.
 """
     journal_file.write_text(content, encoding="utf-8")
-    
+
     # Mock goals and milestones so .get_handoff doesn't crash from missing files
-    goals_file = journal_dir / "GOALS.md"
+    planning_dir = tmp_path / "docs" / "planning"
+    planning_dir.mkdir(parents=True)
+    goals_file = planning_dir / "GOALS.md"
     goals_file.write_text("# rpgCore — Goals\n\n## G1 — Test\nDesc", encoding="utf-8")
-    milestones = journal_dir / "MILESTONES.md"
+    milestones = planning_dir / "MILESTONES.md"
     milestones.write_text("# rpgCore — Milestones\n\n## Active\n", encoding="utf-8")
-    tasks = journal_dir / "TASKS.md"
+    tasks = planning_dir / "TASKS.md"
     tasks.write_text("# rpgCore — Task Backlog\n\n## Queued\n", encoding="utf-8")
 
     return Journal(root_dir=str(tmp_path))
@@ -81,25 +83,27 @@ def test_update_current_flag_via_cli_simulation(temp_journal):
 
 @pytest.fixture
 def temp_journal_with_tasks(tmp_path):
-    journal_dir = tmp_path / "docs"
-    journal_dir.mkdir(exist_ok=True)
-    
+    planning_dir = tmp_path / "docs" / "planning"
+    planning_dir.mkdir(parents=True, exist_ok=True)
+    journal_dir = tmp_path / "docs" / "journal"
+    journal_dir.mkdir(parents=True, exist_ok=True)
+
     # Journal file
     journal_file = journal_dir / "PROJECT_JOURNAL.md"
     journal_file.write_text("# rpgCore — Project Journal\n\n## Current State\nState.\n\n## In Flight\nFlight.\n\n## Next Priority\nPriority.\n", encoding="utf-8")
-    
+
     # Tasks file
-    tasks_file = journal_dir / "TASKS.md"
+    tasks_file = planning_dir / "TASKS.md"
     tasks_content = "# rpgCore — Task Backlog\n\n## Active\n- [ ] [TOOL] APJ\n\n## Queued\n- [ ] [FEAT] Task 1\n- [ ] [FEAT] Task 2\n- [ ] [FEAT] Task 3\n- [ ] [FEAT] Task 4\n\n## Backlog\n\n## Completed\n"
     tasks_file.write_text(tasks_content, encoding="utf-8")
-    
+
     # Goals file
-    goals_file = journal_dir / "GOALS.md"
+    goals_file = planning_dir / "GOALS.md"
     goals_content = "# rpgCore — Goals\n\n## G1 — Testing Goal\nGoal text here.\n"
     goals_file.write_text(goals_content, encoding="utf-8")
-    
+
     # Milestones file
-    milestones_file = journal_dir / "MILESTONES.md"
+    milestones_file = planning_dir / "MILESTONES.md"
     milestones_content = "# rpgCore — Milestones\n\n## Active\n- [ ] M1 — Test Milestone (Goals: G1)\n\n## Completed\n"
     milestones_file.write_text(milestones_content, encoding="utf-8")
 
