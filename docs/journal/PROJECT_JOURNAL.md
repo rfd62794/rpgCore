@@ -1,10 +1,10 @@
 # rpgCore — Project Journal
 
 ## Current State
-411 passing. Director live via OpenRouter deepseek-r1. Approval gate STRICT. Full swarm stack: Archivist + Strategist local, Director remote. warm_model pre-load confirmed.
+422 passing tests. APJ schema layer shipped: Pydantic corpus models (Goal, Milestone, Task, JournalEntry, Corpus), all enums, LAW 1+4 validators, CorpusValidator. Docs restructured into core/planning/journal/reference/agents subdirs. pydantic-ai installed into system Python.
 
 ## In Flight
-None.
+Phase 2 — APJ corpus parser: read GOALS.md, TASKS.md, MILESTONES.md, PROJECT_JOURNAL.md into Corpus model.
 
 ## Next Priority
-Scribe v3 — session end, git diff reader, journal auto-draft. Closes the loop.
+Build corpus parser that ingests the restructured markdown docs into validated Corpus instances using the Phase 1 schema.
