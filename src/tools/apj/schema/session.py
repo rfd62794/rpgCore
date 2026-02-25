@@ -1,5 +1,5 @@
 from datetime import date
-from typing import Literal, Optional
+from typing import Literal, Optional, Union
 from pydantic import BaseModel
 from .enums import SessionStatus
 
@@ -7,9 +7,9 @@ from .enums import SessionStatus
 class Session(BaseModel):
     id: str                               # S001, S012
     type: Literal["session"] = "session"
-    date: Optional[date] = None
+    date: Union[date, None] = None
     status: SessionStatus
-    test_floor: Optional[int] = None
+    test_floor: Union[int, None] = None
     focus: str = ""
     tasks_planned: list[str] = []
     tasks_completed: list[str] = []
