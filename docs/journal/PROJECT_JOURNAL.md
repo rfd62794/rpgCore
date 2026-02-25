@@ -66,10 +66,10 @@ tasks_added: []
 # rpgCore — Project Journal
 
 ## Current State
-442 passing. Pure YAML corpus, session tracking, agent ownership model. Full corpus valid — 11 goals, 13 milestones, 44 tasks, 5 journal, 5 sessions.
+442 passing. Pure YAML corpus complete. Session tracking, agent ownership, 73 records across 5 files. Corpus valid, zero errors.
 
 ## In Flight
-None.
+Phase 5 — Archivist wiring.
 
 ## Next Priority
-Phase 3 — wire build_corpus() into Archivist. Replace raw text reads with validated Corpus. Then Scribe.
+Scribe — session end, git diff, journal auto-draft.
