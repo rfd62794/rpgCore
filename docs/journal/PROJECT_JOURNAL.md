@@ -66,10 +66,10 @@ tasks_added: []
 # rpgCore — Project Journal
 
 ## Current State
-434 passing. Parser layer complete — frontmatter reader, corpus builder, ValidationResult. G10 parses correctly, M11 orphan caught as expected.
+442 passing. Pure YAML corpus, session tracking, agent ownership model. Full corpus valid — 11 goals, 13 milestones, 44 tasks, 5 journal, 5 sessions.
 
 ## In Flight
 None.
 
 ## Next Priority
-Phase 3 — wire build_corpus() into Archivist. Replace raw markdown reads with structured Corpus instances. Archivist findings become ValidationResult errors.
+Phase 3 — wire build_corpus() into Archivist. Replace raw text reads with validated Corpus. Then Scribe.
