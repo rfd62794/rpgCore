@@ -3,9 +3,9 @@
 /venv_stable
 
 # Python cache and build artifacts
-__pycache__/
-*.py[cod]
-*$py.class
+**/__pycache__/
+**/*.py[cod]
+**/*$py.class
 *.so
 .Python
 build/
