@@ -226,10 +226,9 @@ def test_archivist_fallback_report_when_ollama_offline(tmp_path):
 
 def test_archivist_saves_session_log(tmp_path):
     """Archivist writes a .md file to the session_logs directory."""
-    from unittest.mock import patch
-    from src.tools.apj.agents.archivist import Archivist, CoherenceReport, _SESSION_LOGS_DIR
+    from src.tools.apj.agents.archivist import Archivist, CoherenceReport
 
-    # Use real tmp_path for log writing
+    # Use real tmp_path for log writing — injected via log_dir parameter
     fake_log_dir = tmp_path / "session_logs"
     fake_log_dir.mkdir()
 
@@ -242,9 +241,7 @@ def test_archivist_saves_session_log(tmp_path):
     )
 
     archivist = Archivist(model_name="llama3.2:3b")
-
-    with patch("src.tools.apj.agents.archivist._SESSION_LOGS_DIR", fake_log_dir):
-        archivist._save_report(stub_report)
+    archivist._save_report(stub_report, log_dir=fake_log_dir)
 
     log_files = list(fake_log_dir.glob("*_archivist.md"))
     assert len(log_files) == 1, "Expected exactly one archivist log file"
@@ -254,3 +251,4 @@ def test_archivist_saves_session_log(tmp_path):
     assert "Test primer sentence one" in content
     assert "Risk alpha" in content
     assert "Fix the thing." in content
+
