@@ -286,3 +286,16 @@ def test_pure_yaml_parse_file(tmp_path):
     result = parse_file(path)
     assert len(result) == 3
     assert all(isinstance(r, Session) for r in result)
+
+
+def test_session_no_date():
+    """Session instantiates fine without a session_date (field is optional)."""
+    record = _parse_record({
+        "id": "S_NODATETEST",
+        "type": "session",
+        "status": "PLANNED",
+        "focus": "Undated session",
+    })
+    assert isinstance(record, Session)
+    assert record.session_date is None
+    assert record.status == SessionStatus.PLANNED
