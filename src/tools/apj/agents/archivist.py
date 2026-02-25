@@ -248,11 +248,12 @@ class Archivist:
     # Internal: persistence
     # ------------------------------------------------------------------
 
-    def _save_report(self, report: CoherenceReport) -> None:
+    def _save_report(self, report: CoherenceReport, log_dir: Optional[Path] = None) -> None:
         """Write the Coherence Report to docs/session_logs/."""
-        _SESSION_LOGS_DIR.mkdir(parents=True, exist_ok=True)
+        target_dir = log_dir if log_dir is not None else _SESSION_LOGS_DIR
+        target_dir.mkdir(parents=True, exist_ok=True)
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-        report_path = _SESSION_LOGS_DIR / f"{timestamp}_archivist.md"
+        report_path = target_dir / f"{timestamp}_archivist.md"
 
         lines = [
             f"# Archivist Coherence Report — {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n",
