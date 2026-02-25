@@ -1,15 +1,16 @@
 """
 tests/unit/test_apj_parser.py
 
-Unit tests for the APJ corpus parser (Phase 2).
-Uses tmp_path fixtures with real markdown frontmatter.
-Target: 422 baseline + 12 new = 434 passing.
+Unit tests for the APJ corpus parser (Phase 2 + Phase 4 updates).
+Pure YAML edition — uses tmp_path with .yaml files.
+Target: 422 baseline + 12 (Phase 2) + 8 (Phase 4) = 442 passing.
 """
 
 from datetime import date, datetime
 from pathlib import Path
 
 import pytest
+import yaml
 
 from src.tools.apj.parser import (
     ParseError,
@@ -18,14 +19,13 @@ from src.tools.apj.parser import (
     parse_file,
     validate_corpus,
 )
-from src.tools.apj.parser.doc_parser import (
-    _extract_frontmatter_blocks,
-    _parse_record,
-)
+from src.tools.apj.parser.doc_parser import _parse_record
 from src.tools.apj.schema import (
     Corpus,
     Goal,
     GoalStatus,
+    Session,
+    SessionStatus,
     Task,
     TaskScope,
     TaskStatus,
@@ -36,119 +36,35 @@ from src.tools.apj.schema import (
 # Helpers
 # ---------------------------------------------------------------------------
 
-def _write(tmp_path: Path, name: str, content: str) -> Path:
+def _write_yaml(tmp_path: Path, name: str, records: list[dict]) -> Path:
     p = tmp_path / name
-    p.write_text(content, encoding="utf-8")
+    p.write_text(
+        yaml.dump(records, allow_unicode=True, sort_keys=False),
+        encoding="utf-8",
+    )
     return p
 
 
-GOAL_BLOCK = """\
----
-id: G1
-type: goal
-title: Ship the Parser
-status: ACTIVE
-owner: human
-created: 2026-02-25
-modified: 2026-02-25
-tags: [parser, apl]
----
-
-Prose description here.
-"""
-
-TASK_BLOCK = """\
----
-id: T1
-type: task
-title: Write doc_parser.py
-status: ACTIVE
-scope: tooling
-owner: human
-created: 2026-02-25
-modified: 2026-02-25
-tags: []
----
-"""
-
-TASK_LAW1_BLOCK = """\
----
-id: T2
-type: task
-title: Bad shared task
-status: ACTIVE
-scope: shared
-demo: slime_breeder
-owner: human
-created: 2026-02-25
-modified: 2026-02-25
-tags: []
----
-"""
-
-UNKNOWN_TYPE_BLOCK = """\
----
-id: X1
-type: widget
-title: Unknown
-status: ACTIVE
-owner: human
-created: 2026-02-25
-modified: 2026-02-25
----
-"""
-
-MULTI_BLOCK = GOAL_BLOCK + "\n" + TASK_BLOCK
-
-
-# ---------------------------------------------------------------------------
-# Frontmatter extraction
-# ---------------------------------------------------------------------------
-
-def test_extract_frontmatter_single_block():
-    """One valid frontmatter block is extracted as a single dict."""
-    blocks = _extract_frontmatter_blocks(GOAL_BLOCK)
-    assert len(blocks) == 1
-    assert blocks[0]["id"] == "G1"
-    assert blocks[0]["type"] == "goal"
-
-
-def test_extract_frontmatter_multiple_blocks():
-    """Multiple frontmatter blocks in one file are all extracted."""
-    blocks = _extract_frontmatter_blocks(MULTI_BLOCK)
-    assert len(blocks) == 2
-    ids = {b["id"] for b in blocks}
-    assert ids == {"G1", "T1"}
-
-
-# ---------------------------------------------------------------------------
-# Record parsing
-# ---------------------------------------------------------------------------
-
-def test_parse_goal_record():
-    """Valid goal frontmatter dict → Goal instance with correct fields."""
-    data = {
-        "id": "G2",
+def _goal_dict(**kwargs) -> dict:
+    d = {
+        "id": "G1",
         "type": "goal",
-        "title": "Test Goal",
+        "title": "Ship the Parser",
         "status": "ACTIVE",
         "owner": "human",
         "created": date(2026, 2, 25),
         "modified": date(2026, 2, 25),
         "tags": [],
     }
-    record = _parse_record(data)
-    assert isinstance(record, Goal)
-    assert record.id == "G2"
-    assert record.status == GoalStatus.ACTIVE
+    d.update(kwargs)
+    return d
 
 
-def test_parse_task_record():
-    """Valid task frontmatter dict → Task instance."""
-    data = {
-        "id": "T3",
+def _task_dict(**kwargs) -> dict:
+    d = {
+        "id": "T1",
         "type": "task",
-        "title": "Parser task",
+        "title": "Write doc_parser.py",
         "status": "ACTIVE",
         "scope": "tooling",
         "owner": "human",
@@ -156,61 +72,86 @@ def test_parse_task_record():
         "modified": date(2026, 2, 25),
         "tags": [],
     }
-    record = _parse_record(data)
+    d.update(kwargs)
+    return d
+
+
+def _session_dict(**kwargs) -> dict:
+    d = {
+        "id": "S001",
+        "type": "session",
+        "date": date(2026, 2, 25),
+        "status": "COMPLETE",
+        "test_floor": 434,
+        "focus": "Test session",
+        "tasks_planned": [],
+        "tasks_completed": [],
+        "tasks_deferred": [],
+    }
+    d.update(kwargs)
+    return d
+
+
+# ---------------------------------------------------------------------------
+# Record parsing (pure YAML dispatch — Phase 2 core, updated)
+# ---------------------------------------------------------------------------
+
+def test_parse_goal_record():
+    """Valid goal dict → Goal instance with correct fields."""
+    record = _parse_record(_goal_dict(id="G2"))
+    assert isinstance(record, Goal)
+    assert record.id == "G2"
+    assert record.status == GoalStatus.ACTIVE
+
+
+def test_parse_task_record():
+    """Valid task dict → Task instance."""
+    record = _parse_record(_task_dict(id="T3", scope="tooling"))
     assert isinstance(record, Task)
     assert record.scope == TaskScope.TOOLING
 
 
 def test_parse_task_law1_violation_raises():
-    """scope=shared with demo field → ParseError (LAW 1 via model_validator)."""
-    data = {
-        "id": "T4",
-        "type": "task",
-        "title": "Bad task",
-        "status": "ACTIVE",
-        "scope": "shared",
-        "demo": "slime_breeder",
-        "owner": "human",
-        "created": date(2026, 2, 25),
-        "modified": date(2026, 2, 25),
-        "tags": [],
-    }
+    """scope=shared with demo field → ParseError (LAW 1)."""
     with pytest.raises(ParseError, match="Validation failed"):
-        _parse_record(data)
+        _parse_record(_task_dict(scope="shared", demo="slime_breeder"))
 
 
 def test_parse_unknown_type_raises():
     """An unknown type string → ParseError."""
-    data = {
-        "id": "X1",
-        "type": "widget",
-        "title": "Unknown",
-        "owner": "human",
-        "created": date(2026, 2, 25),
-        "modified": date(2026, 2, 25),
-    }
-    with pytest.raises(ParseError, match="Unknown record type"):
-        _parse_record(data)
+    with pytest.raises(ParseError, match="Unknown type"):
+        _parse_record({"id": "X1", "type": "widget"})
 
 
 # ---------------------------------------------------------------------------
-# parse_file
+# parse_file — pure YAML
 # ---------------------------------------------------------------------------
 
 def test_parse_file_missing_returns_empty(tmp_path):
     """parse_file on a non-existent path returns empty list, never raises."""
-    result = parse_file(tmp_path / "does_not_exist.md")
+    result = parse_file(tmp_path / "does_not_exist.yaml")
     assert result == []
 
 
-def test_parse_file_skips_invalid_blocks(tmp_path):
-    """A file with one bad block and one good block: bad is skipped, good parsed."""
-    content = GOAL_BLOCK + "\n" + TASK_LAW1_BLOCK
-    path = _write(tmp_path, "mixed.md", content)
-    records = parse_file(path)
-    # Only the valid GOAL block should survive
-    assert len(records) == 1
-    assert isinstance(records[0], Goal)
+def test_parse_file_skips_invalid_records(tmp_path):
+    """A file with one LAW-1-violating record and one valid record: bad is skipped."""
+    records = [
+        _goal_dict(id="G1"),                           # good
+        _task_dict(scope="shared", demo="slime_breeder"),  # bad — LAW 1
+    ]
+    path = _write_yaml(tmp_path, "mixed.yaml", records)
+    result = parse_file(path)
+    assert len(result) == 1
+    assert isinstance(result[0], Goal)
+
+
+def test_parse_file_reads_yaml_list(tmp_path):
+    """pure YAML file with a list of records parses all entries."""
+    records = [_goal_dict(id="G1"), _goal_dict(id="G2")]
+    path = _write_yaml(tmp_path, "goals.yaml", records)
+    result = parse_file(path)
+    assert len(result) == 2
+    assert {r.id for r in result} == {"G1", "G2"}
 
 
 # ---------------------------------------------------------------------------
@@ -221,34 +162,36 @@ def test_build_corpus_empty_docs(tmp_path, monkeypatch):
     """build_corpus with no real docs → empty Corpus, no raise."""
     import src.tools.apj.parser.doc_parser as dp
 
-    # Point _DOC_PATHS to non-existent paths in tmp_path
     monkeypatch.setattr(dp, "_DOC_PATHS", {
-        "goals":      tmp_path / "GOALS.md",
-        "milestones": tmp_path / "MILESTONES.md",
-        "tasks":      tmp_path / "TASKS.md",
-        "journal":    tmp_path / "PROJECT_JOURNAL.md",
+        "goals":      tmp_path / "goals.yaml",
+        "milestones": tmp_path / "milestones.yaml",
+        "tasks":      tmp_path / "tasks.yaml",
+        "journal":    tmp_path / "journal.yaml",
+        "sessions":   tmp_path / "sessions.yaml",
     })
     corpus = build_corpus()
     assert isinstance(corpus, Corpus)
     assert corpus.goals == []
     assert corpus.tasks == []
+    assert corpus.sessions == []
 
 
 def test_build_corpus_with_goals(tmp_path, monkeypatch):
-    """build_corpus with a goals file → Corpus.goals populated."""
+    """build_corpus with a goals yaml → Corpus.goals populated."""
     import src.tools.apj.parser.doc_parser as dp
 
-    goals_file = _write(tmp_path, "GOALS.md", GOAL_BLOCK)
+    goals_file = _write_yaml(tmp_path, "goals.yaml", [_goal_dict(id="G1")])
     monkeypatch.setattr(dp, "_DOC_PATHS", {
         "goals":      goals_file,
-        "milestones": tmp_path / "MILESTONES.md",
-        "tasks":      tmp_path / "TASKS.md",
-        "journal":    tmp_path / "PROJECT_JOURNAL.md",
+        "milestones": tmp_path / "milestones.yaml",
+        "tasks":      tmp_path / "tasks.yaml",
+        "journal":    tmp_path / "journal.yaml",
+        "sessions":   tmp_path / "sessions.yaml",
     })
     corpus = build_corpus()
     assert len(corpus.goals) == 1
     assert corpus.goals[0].id == "G1"
-    assert corpus.corpus_hash  # non-empty SHA256
+    assert corpus.corpus_hash
 
 
 # ---------------------------------------------------------------------------
@@ -297,3 +240,49 @@ def test_validate_corpus_orphan():
     assert result.error_count == 1
     assert any("unknown milestone" in e for e in result.errors)
     assert "violation" in result.summary()
+
+
+# ---------------------------------------------------------------------------
+# Phase 4 — Session parsing + schema tests
+# ---------------------------------------------------------------------------
+
+def test_parse_session_record():
+    """Valid session dict → Session instance with correct fields."""
+    record = _parse_record(_session_dict(id="S99", status="ACTIVE"))
+    assert isinstance(record, Session)
+    assert record.id == "S99"
+    assert record.status == SessionStatus.ACTIVE
+    assert record.test_floor == 434
+
+
+def test_build_corpus_with_sessions(tmp_path, monkeypatch):
+    """sessions.yaml → Corpus.sessions populated."""
+    import src.tools.apj.parser.doc_parser as dp
+
+    sessions_file = _write_yaml(tmp_path, "sessions.yaml", [
+        _session_dict(id="S001", status="COMPLETE"),
+        _session_dict(id="S002", status="ACTIVE"),
+    ])
+    monkeypatch.setattr(dp, "_DOC_PATHS", {
+        "goals":      tmp_path / "goals.yaml",
+        "milestones": tmp_path / "milestones.yaml",
+        "tasks":      tmp_path / "tasks.yaml",
+        "journal":    tmp_path / "journal.yaml",
+        "sessions":   sessions_file,
+    })
+    corpus = build_corpus()
+    assert len(corpus.sessions) == 2
+    assert corpus.sessions[0].id == "S001"
+
+
+def test_pure_yaml_parse_file(tmp_path):
+    """Pure YAML file (no frontmatter) with multiple records parses cleanly."""
+    records = [
+        _session_dict(id="S001", status="COMPLETE"),
+        _session_dict(id="S002", status="ACTIVE"),
+        _session_dict(id="S003", status="PLANNED"),
+    ]
+    path = _write_yaml(tmp_path, "sessions.yaml", records)
+    result = parse_file(path)
+    assert len(result) == 3
+    assert all(isinstance(r, Session) for r in result)

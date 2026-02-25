@@ -217,3 +217,59 @@ def test_corpus_validator_law1_cross_doc():
     )
     errors = corpus.validate_corpus()
     assert any("scope=demo" in e for e in errors)
+
+
+# ---------------------------------------------------------------------------
+# Phase 4 — Session, SessionStatus, OwnerType agent roles, Task tracking
+# ---------------------------------------------------------------------------
+
+def test_session_valid():
+    """A valid Session instantiates with expected defaults."""
+    from src.tools.apj.schema import Session, SessionStatus
+    s = Session(id="S001", status=SessionStatus.ACTIVE, test_floor=434)
+    assert s.id == "S001"
+    assert s.status == SessionStatus.ACTIVE
+    assert s.type == "session"
+    assert s.tasks_planned == []
+
+
+def test_session_status_enum():
+    """An invalid status string raises ValidationError."""
+    from src.tools.apj.schema import Session
+    with pytest.raises(ValidationError):
+        Session(id="S001", status="INVALID")
+
+
+def test_owner_type_agent_roles():
+    """All agent OwnerType values instantiate without error."""
+    from src.tools.apj.schema import OwnerType
+    agents = [
+        OwnerType.ARCHIVIST, OwnerType.STRATEGIST, OwnerType.SCRIBE,
+        OwnerType.CURATOR, OwnerType.DIRECTOR,
+    ]
+    assert len(agents) == 5
+    assert all(isinstance(a, OwnerType) for a in agents)
+
+
+def test_task_session_tracking():
+    """Task with created_session and target_session fields populates correctly."""
+    t = _task(
+        id="T_TRACK",
+        created_session="S001",
+        modified_session="S005",
+        target_session="S006",
+    )
+    assert t.created_session == "S001"
+    assert t.modified_session == "S005"
+    assert t.target_session == "S006"
+
+
+def test_task_deferred_fields():
+    """Task with deferred_from and deferred_reason populates correctly."""
+    t = _task(
+        id="T_DEF",
+        deferred_from="S004",
+        deferred_reason="Blocked on parser refactor",
+    )
+    assert t.deferred_from == "S004"
+    assert t.deferred_reason == "Blocked on parser refactor"
