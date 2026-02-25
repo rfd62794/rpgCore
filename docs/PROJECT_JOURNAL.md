@@ -1,10 +1,10 @@
 # rpgCore — Project Journal
 
 ## Current State
-405 passing. Archivist v1 live — reads corpus, detects drift, flags constitutional violations. llama3.2:3b via Ollama. Real analysis confirmed.
+408 passing. Strategist v2 live. Archivist + Strategist running sequentially. warm_model keep_alive pre-load drops session start from 90s to ~15s.
 
 ## In Flight
-Archivist handoff integration.
+None.
 
 ## Next Priority
-Wire Archivist report into apj handoff output. Then Strategist v2.
+Scribe v3 — session end, git diff reader, journal auto-draft. Then handoff integration.
