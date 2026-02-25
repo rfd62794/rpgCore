@@ -172,3 +172,85 @@ def test_handoff_contains_active_milestone(temp_journal_with_tasks):
     handoff = temp_journal_with_tasks.get_handoff()
     assert "ACTIVE MILESTONE: M1 — Test Milestone" in handoff
     assert "GOAL: G1 Testing Goal" in handoff
+
+
+# ---------------------------------------------------------------------------
+# Archivist Agent Tests (offline — no live Ollama required)
+# ---------------------------------------------------------------------------
+
+def test_ollama_client_sets_env_vars():
+    """get_ollama_model() must configure the three required env vars."""
+    import os
+    from src.tools.apj.agents.ollama_client import get_ollama_model
+
+    # Clear any previous state
+    for key in ("OPENAI_BASE_URL", "OPENAI_API_KEY"):
+        os.environ.pop(key, None)
+
+    get_ollama_model(model_name="llama3.2:3b")
+
+    assert os.environ.get("OPENAI_BASE_URL", "").endswith("/v1"), (
+        "OPENAI_BASE_URL must end with /v1 for Ollama compat"
+    )
+    assert os.environ.get("OPENAI_API_KEY") == "ollama", (
+        "OPENAI_API_KEY must be 'ollama' (dummy auth)"
+    )
+
+
+def test_archivist_fallback_report_when_ollama_offline(tmp_path):
+    """Archivist returns a valid CoherenceReport via fallback when Ollama is unreachable."""
+    from unittest.mock import patch, AsyncMock
+    from src.tools.apj.agents.archivist import Archivist, CoherenceReport
+
+    archivist = Archivist(model_name="llama3.2:3b")
+
+    # Patch _run_async to simulate Ollama being offline
+    with patch.object(
+        archivist,
+        "_run_async",
+        side_effect=ConnectionError("Ollama not reachable"),
+    ), patch.object(
+        archivist,
+        "_save_report",
+    ) as mock_save:
+        report = archivist.run()
+
+    # Report must be a valid CoherenceReport even on fallback
+    assert isinstance(report, CoherenceReport)
+    assert report.corpus_hash  # SHA256 — not empty
+    assert len(report.corpus_hash) == 64  # SHA256 hex length
+    assert "FALLBACK" in report.session_primer
+    assert len(report.open_risks) >= 1
+    mock_save.assert_called_once_with(report)
+
+
+def test_archivist_saves_session_log(tmp_path):
+    """Archivist writes a .md file to the session_logs directory."""
+    from unittest.mock import patch
+    from src.tools.apj.agents.archivist import Archivist, CoherenceReport, _SESSION_LOGS_DIR
+
+    # Use real tmp_path for log writing
+    fake_log_dir = tmp_path / "session_logs"
+    fake_log_dir.mkdir()
+
+    stub_report = CoherenceReport(
+        session_primer="Test primer sentence one. Test primer sentence two.",
+        open_risks=["Risk alpha"],
+        queued_focus="Fix the thing.",
+        constitutional_flags=[],
+        corpus_hash="a" * 64,
+    )
+
+    archivist = Archivist(model_name="llama3.2:3b")
+
+    with patch("src.tools.apj.agents.archivist._SESSION_LOGS_DIR", fake_log_dir):
+        archivist._save_report(stub_report)
+
+    log_files = list(fake_log_dir.glob("*_archivist.md"))
+    assert len(log_files) == 1, "Expected exactly one archivist log file"
+
+    content = log_files[0].read_text(encoding="utf-8")
+    assert "ARCHIVIST COHERENCE REPORT" in content
+    assert "Test primer sentence one" in content
+    assert "Risk alpha" in content
+    assert "Fix the thing." in content
