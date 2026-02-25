@@ -37,7 +37,7 @@ _PROJECT_ROOT = Path(__file__).resolve().parents[4]
 
 # APJ corpus paths (relative to project root)
 _CORPUS_PATHS: dict[str, Path] = {
-    "journal":    _PROJECT_ROOT / "docs" / "JOURNAL.md",
+    "journal":    _PROJECT_ROOT / "docs" / "PROJECT_JOURNAL.md",
     "tasks":      _PROJECT_ROOT / "docs" / "TASKS.md",
     "goals":      _PROJECT_ROOT / "docs" / "GOALS.md",
     "milestones": _PROJECT_ROOT / "docs" / "MILESTONES.md",

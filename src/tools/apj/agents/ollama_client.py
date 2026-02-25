@@ -8,21 +8,125 @@ Connection pattern (mirrors dgt_engine/game_engine/model_factory.py):
   - Base URL: http://localhost:11434/v1
   - Auth:     OPENAI_API_KEY = "ollama" (dummy)
   - Keep-alive: -1 (Iron Frame — model stays loaded)
+
+Model resolution (Fix 2 + 3):
+  - Queries /api/tags to discover available models
+  - Walks MODEL_PREFERENCE_CHAIN, picks first hit
+  - Auto-pulls if preferred model is unavailable (ensure_model)
+  - Falls back to last-resort "llama3.2:1b" if all else fails
 """
 
 import os
+import subprocess
 
+import httpx
 from loguru import logger
 from pydantic_ai.models.openai import OpenAIModel as OpenAI
 from pydantic_ai.settings import ModelSettings
 
-# Default model for the Archivist — 3b chosen for coherence reasoning quality
-ARCHIVIST_MODEL = "llama3.2:3b"
 OLLAMA_BASE_URL = "http://localhost:11434"
+
+# Preference chain — ordered: quality → compatibility → speed
+MODEL_PREFERENCE_CHAIN = [
+    "llama3.2:3b",
+    "llama3.2:3b-instruct-q4_K_M",
+    "mistral:7b-instruct-q4_0",
+    "llama3.2:1b",
+]
+
+_LAST_RESORT = "llama3.2:1b"
+
+
+def _get_available_models(base_url: str = OLLAMA_BASE_URL) -> list[str]:
+    """
+    Query Ollama /api/tags for currently available model names.
+    Returns an empty list if Ollama is unreachable.
+    """
+    try:
+        response = httpx.get(f"{base_url}/api/tags", timeout=5)
+        response.raise_for_status()
+        models = response.json().get("models", [])
+        return [m["name"] for m in models]
+    except Exception as exc:
+        logger.warning(f"OllamaClient: could not reach {base_url}/api/tags ({exc})")
+        return []
+
+
+def ensure_model(model_name: str, base_url: str = OLLAMA_BASE_URL) -> bool:
+    """
+    Ensure a model is available locally, pulling it via `ollama pull` if not.
+
+    Args:
+        model_name: The Ollama model tag to ensure (e.g. "llama3.2:3b").
+        base_url:   Ollama base URL (used for availability check before pull).
+
+    Returns:
+        True if the model is available after the call, False if pull failed.
+    """
+    available = _get_available_models(base_url)
+    if any(model_name in a for a in available):
+        logger.debug(f"OllamaClient: {model_name} already available — no pull needed")
+        return True
+
+    logger.info(f"OllamaClient: {model_name} not found — pulling via `ollama pull`...")
+    try:
+        result = subprocess.run(
+            ["ollama", "pull", model_name],
+            capture_output=True,
+            text=True,
+            timeout=300,  # 5 min max for large models
+        )
+        if result.returncode == 0:
+            logger.info(f"OllamaClient: {model_name} pulled successfully")
+            return True
+        else:
+            logger.warning(
+                f"OllamaClient: pull failed for {model_name} "
+                f"(exit {result.returncode}): {result.stderr.strip()}"
+            )
+            return False
+    except FileNotFoundError:
+        logger.warning("OllamaClient: `ollama` CLI not found in PATH — cannot pull models")
+        return False
+    except subprocess.TimeoutExpired:
+        logger.warning(f"OllamaClient: pull timed out for {model_name}")
+        return False
+
+
+def resolve_model(base_url: str = OLLAMA_BASE_URL) -> str:
+    """
+    Walk MODEL_PREFERENCE_CHAIN, return the first model available in Ollama.
+    If Ollama is unreachable or no preference matches, returns _LAST_RESORT.
+
+    Args:
+        base_url: Ollama base URL.
+
+    Returns:
+        Model name string ready for use with get_ollama_model().
+    """
+    available = _get_available_models(base_url)
+
+    if not available:
+        logger.warning(
+            f"OllamaClient: no models found or Ollama offline — "
+            f"defaulting to {_LAST_RESORT}"
+        )
+        return _LAST_RESORT
+
+    for preferred in MODEL_PREFERENCE_CHAIN:
+        if any(preferred in a for a in available):
+            logger.info(f"OllamaClient: model resolved → {preferred}")
+            return preferred
+
+    logger.warning(
+        f"OllamaClient: no preference chain match in {available} — "
+        f"defaulting to {_LAST_RESORT}"
+    )
+    return _LAST_RESORT
 
 
 def get_ollama_model(
-    model_name: str = ARCHIVIST_MODEL,
+    model_name: str | None = None,
     temperature: float = 0.3,
     max_tokens: int = 1024,
     timeout: float = 60.0,
@@ -30,16 +134,29 @@ def get_ollama_model(
     """
     Configure and return an OpenAIModel backed by local Ollama.
 
+    If model_name is None, resolve_model() walks the preference chain
+    and auto-pulls if the best available model isn't local yet.
+
     Args:
-        model_name:  Ollama model tag (e.g. "llama3.2:3b").
+        model_name:  Ollama model tag. None = resolve automatically.
         temperature: Sampling temperature. 0.3 = analytical, 0.8 = creative.
         max_tokens:  Max response tokens.
         timeout:     Request timeout in seconds.
 
     Returns:
-        Configured OpenAIModel instance ready for pydantic_ai Agent use.
+        Configured OpenAI model instance ready for pydantic_ai Agent use.
     """
     base_url = os.environ.get("OLLAMA_BASE_URL", OLLAMA_BASE_URL)
+
+    # Resolve model if not provided
+    if model_name is None:
+        model_name = resolve_model(base_url)
+    else:
+        # Strip "ollama:" prefix if caller passed full tag style
+        model_name = model_name.replace("ollama:", "")
+
+    # Ensure the resolved model is pulled and available
+    ensure_model(model_name, base_url)
 
     # Wire pydantic_ai to use Ollama's OpenAI-compat endpoint
     os.environ.setdefault("OLLAMA_BASE_URL", base_url)
@@ -53,12 +170,9 @@ def get_ollama_model(
         timeout=timeout,
     )
 
-    # Strip "ollama:" prefix if caller passes the full tag style
-    actual_model = model_name.replace("ollama:", "")
-
-    logger.debug(
-        f"OllamaClient configured: model={actual_model}, "
+    logger.info(
+        f"OllamaClient: using model={model_name}, "
         f"base_url={base_url}, temp={temperature}"
     )
 
-    return OpenAI(actual_model, settings=settings)
+    return OpenAI(model_name, settings=settings)
