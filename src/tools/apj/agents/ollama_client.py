@@ -93,6 +93,72 @@ def ensure_model(model_name: str, base_url: str = OLLAMA_BASE_URL) -> bool:
         return False
 
 
+async def warm_model(
+    model_name: str,
+    base_url: str = OLLAMA_BASE_URL,
+    keep_alive: int = -1,
+) -> bool:
+    """
+    Pre-load a model into VRAM via Ollama's /api/generate keep_alive mechanism.
+
+    Sends a minimal "ready" prompt with keep_alive=-1 so the model stays loaded
+    in VRAM for subsequent calls (the Iron Frame). First warm takes ~5s;
+    all subsequent calls in the session are instant.
+
+    Args:
+        model_name: Ollama model tag to warm (e.g. "llama3.2:3b").
+        base_url:   Ollama base URL.
+        keep_alive: Seconds to keep model loaded. -1 = indefinitely.
+
+    Returns:
+        True if warm succeeded, False if Ollama unreachable (non-fatal).
+    """
+    import asyncio as _asyncio
+    logger.info(f"OllamaClient: warming {model_name} (keep_alive={keep_alive})...")
+    try:
+        async with httpx.AsyncClient(timeout=30) as client:
+            resp = await client.post(
+                f"{base_url}/api/generate",
+                json={
+                    "model": model_name,
+                    "prompt": "ready",
+                    "keep_alive": keep_alive,
+                    "stream": False,
+                },
+            )
+            resp.raise_for_status()
+            logger.info(f"OllamaClient: {model_name} warm — VRAM loaded, ready for inference")
+            return True
+    except Exception as exc:
+        logger.warning(f"OllamaClient: warm failed for {model_name} ({exc}) — proceeding cold")
+        return False
+
+
+def warm_model_sync(
+    model_name: str,
+    base_url: str = OLLAMA_BASE_URL,
+    keep_alive: int = -1,
+) -> bool:
+    """
+    Synchronous wrapper around warm_model() for use in non-async CLI entry points.
+
+    Args:
+        model_name: Ollama model tag to warm.
+        base_url:   Ollama base URL.
+        keep_alive: Seconds to keep model loaded. -1 = indefinitely.
+
+    Returns:
+        True if warm succeeded, False if Ollama unreachable (non-fatal).
+    """
+    import asyncio as _asyncio
+    try:
+        return _asyncio.run(warm_model(model_name, base_url, keep_alive))
+    except Exception as exc:
+        logger.warning(f"OllamaClient: warm_model_sync failed ({exc})")
+        return False
+
+
+
 def resolve_model(base_url: str = OLLAMA_BASE_URL) -> str:
     """
     Walk MODEL_PREFERENCE_CHAIN, return the first model available in Ollama.

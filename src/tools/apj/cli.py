@@ -4,7 +4,7 @@ from loguru import logger
 from src.tools.apj.journal import Journal
 from src.tools.apj.agents.archivist import Archivist, CoherenceReport
 from src.tools.apj.agents.strategist import Strategist, SessionPlan, SessionOption
-from src.tools.apj.agents.ollama_client import resolve_model
+from src.tools.apj.agents.ollama_client import resolve_model, warm_model_sync
 
 
 
@@ -70,6 +70,10 @@ def print_session_plan(plan: "SessionPlan") -> None:
 def _run_session_start() -> None:
     """Run Archivist then Strategist, print both reports to console."""
     model = resolve_model()
+
+    # Pre-load model into VRAM — drops per-agent cold start from ~90s to ~3-5s
+    print("\n[~] Warming model in VRAM...")
+    warm_model_sync(model)
 
     print("\n[*] APJ Archivist initializing...\n")
     archivist = Archivist(model_name=model)
