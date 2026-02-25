@@ -253,3 +253,109 @@ def test_archivist_saves_session_log(tmp_path):
     assert "Fix the thing." in content
 
 
+# ---------------------------------------------------------------------------
+# Strategist offline tests
+# ---------------------------------------------------------------------------
+
+def test_strategist_fallback_plan():
+    """Strategist returns a valid SessionPlan via deterministic fallback when Ollama is offline."""
+    from unittest.mock import patch
+    from src.tools.apj.agents.archivist import CoherenceReport
+    from src.tools.apj.agents.strategist import Strategist, SessionPlan
+
+    stub_report = CoherenceReport(
+        session_primer="The project has 405 passing tests. Momentum is on the Strategist.",
+        open_risks=["G3 orphaned from milestones"],
+        queued_focus="Build the Strategist agent.",
+        constitutional_flags=[],
+        corpus_hash="b" * 64,
+    )
+
+    strategist = Strategist(model_name="llama3.2:3b")
+
+    with patch.object(
+        strategist,
+        "_run_async",
+        side_effect=ConnectionError("Ollama not reachable"),
+    ), patch.object(strategist, "_save_plan"):
+        plan = strategist.run(archivist_report=stub_report)
+
+    assert isinstance(plan, SessionPlan)
+    assert plan.recommended.label in ("Headlong", "Divert", "Alt")
+    assert plan.recommended.title
+    assert isinstance(plan.alternatives, list)
+    assert plan.corpus_hash == "b" * 64
+
+
+def test_strategist_plan_has_three_options():
+    """SessionPlan always has recommended + exactly 2 alternatives."""
+    from src.tools.apj.agents.archivist import CoherenceReport
+    from src.tools.apj.agents.strategist import Strategist, SessionOption
+
+    stub_report = CoherenceReport(
+        session_primer="405 passing. Combat loop complete.",
+        open_risks=["Two Active tasks with no Milestone"],
+        queued_focus="Wire Strategist into session start.",
+        constitutional_flags=[],
+        corpus_hash="c" * 64,
+    )
+
+    strategist = Strategist(model_name="llama3.2:3b")
+    plan = strategist._fallback_plan(stub_report)
+
+    assert isinstance(plan.recommended, SessionOption)
+    assert len(plan.alternatives) == 2, (
+        f"Expected exactly 2 alternatives, got {len(plan.alternatives)}"
+    )
+    for opt in [plan.recommended] + plan.alternatives:
+        assert opt.title, "Every option must have a title"
+        assert opt.tasks, "Every option must have at least one task"
+        assert opt.risk in ("Low", "Medium", "High"), f"Invalid risk: {opt.risk}"
+
+
+def test_session_start_runs_both_agents():
+    """session start calls Archivist then Strategist in sequence."""
+    from unittest.mock import patch, MagicMock
+    from src.tools.apj.agents.archivist import CoherenceReport
+    from src.tools.apj.agents.strategist import SessionPlan, SessionOption
+    from src.tools.apj import cli
+
+    stub_report = CoherenceReport(
+        session_primer="405 passing. Both agents running.",
+        open_risks=[],
+        queued_focus="Verify sequential session start.",
+        constitutional_flags=[],
+        corpus_hash="d" * 64,
+    )
+
+    def _make_option(label: str) -> SessionOption:
+        return SessionOption(
+            label=label, title=f"{label} Title", rationale="test",
+            tasks=["step 1"], risk="Low", milestone_impact="M3"
+        )
+
+    stub_plan = SessionPlan(
+        recommended=_make_option("Headlong"),
+        alternatives=[_make_option("Divert"), _make_option("Alt")],
+        open_questions=[],
+        archivist_risks_addressed=[],
+        corpus_hash="d" * 64,
+    )
+
+    mock_archivist_instance = MagicMock()
+    mock_archivist_instance.run.return_value = stub_report
+    mock_strategist_instance = MagicMock()
+    mock_strategist_instance.run.return_value = stub_plan
+
+    # Patch at source modules (local imports inside _run_session_start)
+    with (
+        patch("src.tools.apj.agents.archivist.Archivist", return_value=mock_archivist_instance),
+        patch("src.tools.apj.agents.strategist.Strategist", return_value=mock_strategist_instance),
+        patch("src.tools.apj.agents.ollama_client.resolve_model", return_value="llama3.2:3b"),
+        patch("src.tools.apj.cli.print_coherence_report"),
+        patch("src.tools.apj.cli.print_session_plan"),
+    ):
+        cli._run_session_start()
+
+    mock_archivist_instance.run.assert_called_once()
+    mock_strategist_instance.run.assert_called_once_with(archivist_report=stub_report)
