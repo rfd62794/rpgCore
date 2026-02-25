@@ -176,37 +176,53 @@ class Archivist:
     def _get_agent(self) -> Agent:
         """Lazy-init the plain-string pydantic_ai Agent.
 
-        NOTE: output_type=CoherenceReport is NOT used here. Ollama's tool-calling
-        implementation returns the JSON schema definition instead of a filled instance,
-        causing pydantic_ai to raise UnexpectedModelBehavior after exhausting retries.
-        Instead we use a plain string Agent with the schema embedded in the system
-        prompt, then parse the JSON response manually in _run_async.
+        NOTE: output_type=CoherenceReport is NOT used. Ollama's tool-calling
+        returns the JSON schema definition instead of a filled instance.
+        We use a plain string Agent with a concrete filled example so the
+        model knows exactly what shape to produce, then parse manually.
         """
         if self._agent is None:
             model = get_ollama_model(model_name=self.model_name, temperature=0.3)
-            schema = json.dumps(CoherenceReport.model_json_schema(), indent=2)
+            example = json.dumps({
+                "session_primer": (
+                    "The project has 402 passing tests with combat loop complete. "
+                    "Momentum is on the APJ intelligence layer and agent swarm."
+                ),
+                "open_risks": [
+                    "TASKS.md has two items marked Active but no owner",
+                    "docs/GOALS.md references G3 which has no linked milestone"
+                ],
+                "queued_focus": (
+                    "Verify llama3.2:3b is available via `ollama list` "
+                    "then run `python -m src.tools.apj session start`"
+                ),
+                "constitutional_flags": [
+                    "LAW 3: src/games/dungeon/scene.py does not inherit from "
+                    "scene_templates — check parent class"
+                ],
+                "corpus_hash": ""
+            }, indent=2)
             system_prompt = (
                 "You are the ARCHIVIST for rpgCore, a Python/Pygame game engine project. "
-                "Your job is to read the Automated Project Journal (APJ) corpus and produce "
-                "a Coherence Report that orients the developer at the START of a session.\n\n"
+                "Read the APJ corpus and produce a Coherence Report for the developer.\n\n"
                 f"{_FOUR_LAWS}\n\n"
-                "OUTPUT FORMAT — respond with ONLY a single valid JSON object matching this schema:\n"
-                f"{schema}\n\n"
-                "Field rules:\n"
-                "- session_primer: Exactly 2 sentences. State WHERE the project is and what MOMENTUM exists.\n"
-                "- open_risks: Array of strings. List concrete risks (drift, broken refs, orphaned goals). "
-                "  Empty array [] if none detected.\n"
-                "- queued_focus: ONE clear task string. Be specific (file, feature, test count).\n"
-                "- constitutional_flags: Array of strings listing ONLY actual violations of the Four Laws. "
-                "  Empty array [] if no violations detected.\n"
-                "- corpus_hash: Use empty string \"\" — filled programmatically.\n"
-                "CRITICAL: Output ONLY the JSON. No prose before or after. No markdown. No explanation."
+                "OUTPUT: Reply with ONLY a JSON object in exactly this shape "
+                "(fill every field with real values from the corpus — do NOT copy the example):\n\n"
+                f"{example}\n\n"
+                "Rules:\n"
+                "- session_primer: 2 sentences — current project state + momentum.\n"
+                "- open_risks: real risks from corpus. [] if none.\n"
+                "- queued_focus: one specific next task from the corpus.\n"
+                "- constitutional_flags: only confirmed Four Laws violations. [] if none.\n"
+                "- corpus_hash: always use empty string \"\" — filled later.\n"
+                "CRITICAL: Output ONLY the JSON object. No prose, no markdown fences, "
+                "no explanation. Start with { and end with }."
             )
             self._agent = Agent(
                 model=model,
                 system_prompt=system_prompt,
             )
-            logger.debug("Archivist: Agent initialized (plain-string mode)")
+            logger.debug("Archivist: Agent initialized (example-driven JSON mode)")
         return self._agent
 
     @staticmethod
