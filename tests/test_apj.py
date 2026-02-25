@@ -203,13 +203,20 @@ def test_ollama_client_sets_env_vars():
 
 def test_archivist_fallback_report_when_ollama_offline(tmp_path):
     """Archivist returns a valid CoherenceReport via fallback when Ollama is unreachable."""
-    from unittest.mock import patch, AsyncMock
+    from datetime import datetime
+    from unittest.mock import patch, MagicMock
     from src.tools.apj.agents.archivist import Archivist, CoherenceReport
+    from src.tools.apj.schema import Corpus
 
     archivist = Archivist(model_name="llama3.2:3b")
+    empty_corpus = Corpus(parsed_at=datetime(2026, 2, 25, 6, 0, 0))
 
+    # Patch build_corpus so no real YAML files are needed
     # Patch _run_async to simulate Ollama being offline
-    with patch.object(
+    with patch(
+        "src.tools.apj.agents.archivist.build_corpus",
+        return_value=empty_corpus,
+    ), patch.object(
         archivist,
         "_run_async",
         side_effect=ConnectionError("Ollama not reachable"),
@@ -221,12 +228,44 @@ def test_archivist_fallback_report_when_ollama_offline(tmp_path):
 
     # Report must be a valid CoherenceReport even on fallback
     assert isinstance(report, CoherenceReport)
-    assert report.corpus_hash  # SHA256 — not empty
-    assert len(report.corpus_hash) == 64  # SHA256 hex length
+    assert report.corpus_hash == empty_corpus.corpus_hash
     assert "FALLBACK" in report.session_primer
     assert len(report.open_risks) >= 1
     mock_save.assert_called_once_with(report)
 
+
+def test_archivist_uses_parser():
+    """Archivist.run() calls build_corpus() — no raw file reads."""
+    from datetime import datetime
+    from unittest.mock import patch, MagicMock
+    from src.tools.apj.agents.archivist import Archivist, CoherenceReport
+    from src.tools.apj.schema import Corpus
+
+    archivist = Archivist(model_name="llama3.2:3b")
+    empty_corpus = Corpus(parsed_at=datetime(2026, 2, 25, 6, 0, 0))
+
+    stub_report = CoherenceReport(
+        session_primer="Test primer. Second sentence.",
+        open_risks=[],
+        queued_focus="Phase 5 done.",
+        constitutional_flags=[],
+        corpus_hash=empty_corpus.corpus_hash,
+    )
+
+    with patch(
+        "src.tools.apj.agents.archivist.build_corpus",
+        return_value=empty_corpus,
+    ) as mock_build, patch.object(
+        archivist,
+        "_run_async",
+        side_effect=ConnectionError("skip Ollama"),
+    ), patch.object(
+        archivist,
+        "_save_report",
+    ):
+        archivist.run()
+
+    mock_build.assert_called_once()
 
 def test_archivist_saves_session_log(tmp_path):
     """Archivist writes a .md file to the session_logs directory."""
