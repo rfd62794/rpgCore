@@ -1,32 +1,173 @@
-# rpgCore — Milestones
+---
+id: M1
+type: milestone
+title: Shared engine layer established
+status: COMPLETE
+goals: [G1, G4]
+tasks: []
+owner: human
+created: 2026-01-01
+modified: 2026-02-25
+---
 
-## Completed
-- [x] M1 — Shared engine layer established
-- [x] M2 — Three demos playable
-- [x] M3 — APJ toolchain live
-- [x] M4 — Asset structure formalized
+---
+id: M2
+type: milestone
+title: Three demos playable
+status: COMPLETE
+goals: [G1]
+tasks: []
+owner: human
+created: 2026-01-01
+modified: 2026-02-25
+---
 
-## Active
-- [ ] M5 — All four demos playable (Goals: G1, G4)
-  Criteria: TurboShells launches with core loop running
+---
+id: M3
+type: milestone
+title: APJ toolchain live
+status: COMPLETE
+goals: [G1, G4]
+tasks: []
+owner: human
+created: 2026-01-01
+modified: 2026-02-25
+---
 
-## Queued
-- [ ] M6 — Space Trader demo frame (Goals: G6, G1)
-  Criteria: locations, economy, travel, one encounter type running
-- [ ] M7 — TurboShells core loop (Goals: G9, G4)
-  Criteria: breeding, stable, single race running
-- [ ] M8 — Dungeon Crawler frame (Goals: G7, G4)
-  Criteria: one procedural room, one D20 encounter, basic loot
-- [ ] M9 — Creature Collector frame (Goals: G8, G4)
-  Criteria: one creature, genetics visible, one battle
-- [ ] M10 — Portfolio pass (Goals: G5)
-  Criteria: three demos polished, README with screenshots
+---
+id: M4
+type: milestone
+title: Asset structure formalized
+status: COMPLETE
+goals: [G1, G4]
+tasks: []
+owner: human
+created: 2026-01-01
+modified: 2026-02-25
+---
 
-- [ ] M11 — Slime Breeder frame (Goals: G11, G10)
-  Criteria: one slime created, genetics visible, personality emerges
+---
+id: M5
+type: milestone
+title: All four demos playable
+status: ACTIVE
+goals: [G1, G4]
+tasks: []
+owner: human
+created: 2026-01-15
+modified: 2026-02-25
+---
 
-- [ ] M12 — The Ring hub scene (Goals: G10, G1)
-  Criteria: central hub renders, all six Aspects accessible
+Criteria: TurboShells launches with core loop running
 
-- [ ] M13 — World State layer (Goals: G10, G4)
-  Criteria: one crossover ripple working end to end
+---
+id: M6
+type: milestone
+title: Space Trader demo frame
+status: QUEUED
+goals: [G6, G1]
+tasks: []
+owner: human
+created: 2026-01-15
+modified: 2026-02-25
+---
+
+Criteria: locations, economy, travel, one encounter type running
+
+---
+id: M7
+type: milestone
+title: TurboShells core loop
+status: QUEUED
+goals: [G9, G4]
+tasks: []
+owner: human
+created: 2026-01-15
+modified: 2026-02-25
+---
+
+Criteria: breeding, stable, single race running
+
+---
+id: M8
+type: milestone
+title: Dungeon Crawler frame
+status: QUEUED
+goals: [G7, G4]
+tasks: []
+owner: human
+created: 2026-01-15
+modified: 2026-02-25
+---
+
+Criteria: one procedural room, one D20 encounter, basic loot
+
+---
+id: M9
+type: milestone
+title: Creature Collector frame
+status: QUEUED
+goals: [G8, G4]
+tasks: []
+owner: human
+created: 2026-01-15
+modified: 2026-02-25
+---
+
+Criteria: one creature, genetics visible, one battle
+
+---
+id: M10
+type: milestone
+title: Portfolio pass
+status: QUEUED
+goals: [G5]
+tasks: []
+owner: human
+created: 2026-01-15
+modified: 2026-02-25
+---
+
+Criteria: three demos polished, README with screenshots
+
+---
+id: M11
+type: milestone
+title: Slime Breeder frame
+status: QUEUED
+goals: [G11, G10]
+tasks: []
+owner: human
+created: 2026-02-20
+modified: 2026-02-25
+---
+
+Criteria: one slime created, genetics visible, personality emerges
+
+---
+id: M12
+type: milestone
+title: The Ring hub scene
+status: QUEUED
+goals: [G10, G1]
+tasks: []
+owner: human
+created: 2026-02-20
+modified: 2026-02-25
+---
+
+Criteria: central hub renders, all six Aspects accessible
+
+---
+id: M13
+type: milestone
+title: World State layer
+status: QUEUED
+goals: [G10, G4]
+tasks: []
+owner: human
+created: 2026-02-20
+modified: 2026-02-25
+---
+
+Criteria: one crossover ripple working end to end
