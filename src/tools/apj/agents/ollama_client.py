@@ -13,7 +13,7 @@ Connection pattern (mirrors dgt_engine/game_engine/model_factory.py):
 import os
 
 from loguru import logger
-from pydantic_ai.models.openai import OpenAIModel
+from pydantic_ai.models.openai import OpenAIModel as OpenAI
 from pydantic_ai.settings import ModelSettings
 
 # Default model for the Archivist — 3b chosen for coherence reasoning quality
@@ -26,7 +26,7 @@ def get_ollama_model(
     temperature: float = 0.3,
     max_tokens: int = 1024,
     timeout: float = 60.0,
-) -> OpenAIModel:
+) -> OpenAI:
     """
     Configure and return an OpenAIModel backed by local Ollama.
 
@@ -61,4 +61,4 @@ def get_ollama_model(
         f"base_url={base_url}, temp={temperature}"
     )
 
-    return OpenAIModel(actual_model, settings=settings)
+    return OpenAI(actual_model, settings=settings)

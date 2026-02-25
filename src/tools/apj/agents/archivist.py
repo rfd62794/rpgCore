@@ -277,4 +277,9 @@ class Archivist:
             lines.append("_No violations detected._")
 
         report_path.write_text("\n".join(lines), encoding="utf-8")
-        logger.info(f"Archivist: report saved → {report_path.relative_to(_PROJECT_ROOT)}")
+        try:
+            display_path = report_path.relative_to(_PROJECT_ROOT)
+        except ValueError:
+            display_path = report_path
+        logger.info(f"Archivist: report saved → {display_path}")
+
