@@ -1,0 +1,118 @@
+- id: G1
+  type: goal
+  title: Living Sandbox
+  status: ACTIVE
+  owner: human
+  created: 2026-01-01
+  modified: 2026-02-25
+  tags:
+  - engine
+  - architecture
+- id: G2
+  type: goal
+  title: Creature Collector
+  status: ACTIVE
+  owner: human
+  created: 2026-01-01
+  modified: 2026-02-25
+  tags:
+  - creature-collector
+  - demo
+- id: G3
+  type: goal
+  title: Dungeon Crawler (Superseded by G7)
+  status: SUPERSEDED
+  owner: human
+  created: 2026-01-01
+  modified: 2026-02-25
+  tags:
+  - dungeon-crawler
+  - superseded
+- id: G4
+  type: goal
+  title: Engine Capability
+  status: ACTIVE
+  owner: human
+  created: 2026-01-01
+  modified: 2026-02-25
+  tags:
+  - engine
+  - shared
+- id: G5
+  type: goal
+  title: Portfolio Readiness
+  status: ACTIVE
+  owner: human
+  created: 2026-01-01
+  modified: 2026-02-25
+  tags:
+  - portfolio
+  - polish
+- id: G6
+  type: goal
+  title: Space Trader Demo
+  status: ACTIVE
+  milestone: M6
+  owner: human
+  created: 2026-01-01
+  modified: 2026-02-25
+  tags:
+  - space-trader
+  - demo
+- id: G7
+  type: goal
+  title: Dungeon Crawler Demo
+  status: ACTIVE
+  milestone: M8
+  owner: human
+  created: 2026-01-01
+  modified: 2026-02-25
+  tags:
+  - dungeon-crawler
+  - demo
+- id: G8
+  type: goal
+  title: Creature Collector Demo
+  status: ACTIVE
+  milestone: M9
+  owner: human
+  created: 2026-01-01
+  modified: 2026-02-25
+  tags:
+  - creature-collector
+  - demo
+- id: G9
+  type: goal
+  title: TurboShells Phoenix
+  status: ACTIVE
+  milestone: M7
+  owner: human
+  created: 2026-01-01
+  modified: 2026-02-25
+  tags:
+  - turboshells
+  - demo
+- id: G10
+  type: goal
+  title: The Living World
+  status: ACTIVE
+  milestone: M11
+  owner: human
+  created: 2026-02-20
+  modified: 2026-02-25
+  tags:
+  - living-world
+  - soul
+  - aspects
+- id: G11
+  type: goal
+  title: Slime Breeder (Creation Aspect)
+  status: ACTIVE
+  milestone: M11
+  owner: human
+  created: 2026-02-20
+  modified: 2026-02-25
+  tags:
+  - slime-breeder
+  - living-world
+  - creation
