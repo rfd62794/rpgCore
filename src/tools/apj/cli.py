@@ -1,12 +1,53 @@
 import sys
 import argparse
+from loguru import logger
 from src.tools.apj.journal import Journal
+
+
+def _run_session_start() -> None:
+    """Run the Archivist and print the Coherence Report to the console."""
+    from src.tools.apj.agents.archivist import Archivist
+
+    print("\n⚙  APJ Archivist initializing...\n")
+    archivist = Archivist(model_name="llama3.2:3b")
+    report = archivist.run()
+
+    # Print structured report to console
+    print("=" * 60)
+    print("  ARCHIVIST COHERENCE REPORT")
+    print("=" * 60)
+
+    print("\n📋 SESSION PRIMER")
+    print(f"  {report.session_primer}")
+
+    print("\n🎯 QUEUED FOCUS")
+    print(f"  → {report.queued_focus}")
+
+    if report.open_risks:
+        print("\n⚠  OPEN RISKS")
+        for risk in report.open_risks:
+            print(f"  • {risk}")
+    else:
+        print("\n✅ OPEN RISKS — None detected.")
+
+    if report.constitutional_flags:
+        print("\n🚨 CONSTITUTIONAL FLAGS")
+        for flag in report.constitutional_flags:
+            print(f"  ⚠️  {flag}")
+    else:
+        print("\n✅ CONSTITUTIONAL FLAGS — No violations detected.")
+
+    print(f"\n🔑 Corpus hash: {report.corpus_hash[:16]}...")
+    print("=" * 60)
+    print("  Session log saved to docs/session_logs/")
+    print("=" * 60 + "\n")
+
 
 def main():
     journal = Journal()
-    
+
     if len(sys.argv) < 2:
-        print("Usage: python -m src.tools.apj [status|update|handoff|boot|tasks|goals|milestones]")
+        print("Usage: python -m src.tools.apj [status|update|handoff|boot|tasks|goals|milestones|session]")
         return
 
     cmd = sys.argv[1].lower()
