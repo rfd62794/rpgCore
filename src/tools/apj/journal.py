@@ -4,10 +4,10 @@ from datetime import datetime
 from src.tools.apj.tracker import MarkdownListTracker
 
 class Journal:
-    JOURNAL_PATH = "docs/PROJECT_JOURNAL.md"
-    TASKS_PATH = "docs/TASKS.md"
-    MILESTONES_PATH = "docs/MILESTONES.md"
-    GOALS_PATH = "docs/GOALS.md"
+    JOURNAL_PATH = "docs/journal/PROJECT_JOURNAL.md"
+    TASKS_PATH = "docs/planning/TASKS.md"
+    MILESTONES_PATH = "docs/planning/MILESTONES.md"
+    GOALS_PATH = "docs/planning/GOALS.md"
 
     def __init__(self, root_dir: str = "."):
         self.root_dir = root_dir
@@ -112,8 +112,8 @@ ENVIRONMENT: Windows (PowerShell/CMD)
   Line endings: CRLF
 
 READ FIRST:
-  docs/RPGCORE_CONSTITUTION.md
-  docs/SESSION_PROTOCOL.md
+  docs/core/RPGCORE_CONSTITUTION.md
+  docs/reference/SESSION_PROTOCOL.md
 
 {milestone_block}
 
@@ -153,10 +153,10 @@ STEP 0 — Verify orientation:
   python -m src.tools.apj handoff
 
 STEP 1 — Read these documents in order:
-  docs/RPGCORE_CONSTITUTION.md
-  docs/SESSION_PROTOCOL.md
-  docs/PROJECT_JOURNAL.md
-  docs/TASKS.md
+  docs/core/RPGCORE_CONSTITUTION.md
+  docs/reference/SESSION_PROTOCOL.md
+  docs/journal/PROJECT_JOURNAL.md
+  docs/planning/TASKS.md
 
 STEP 2 — Verify test floor:
   uv run pytest

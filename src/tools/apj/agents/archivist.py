@@ -39,14 +39,14 @@ _PROJECT_ROOT = Path(__file__).resolve().parents[4]
 
 # APJ corpus paths (relative to project root)
 _CORPUS_PATHS: dict[str, Path] = {
-    "journal":    _PROJECT_ROOT / "docs" / "PROJECT_JOURNAL.md",
-    "tasks":      _PROJECT_ROOT / "docs" / "TASKS.md",
-    "goals":      _PROJECT_ROOT / "docs" / "GOALS.md",
-    "milestones": _PROJECT_ROOT / "docs" / "MILESTONES.md",
+    "journal":    _PROJECT_ROOT / "docs" / "journal" / "PROJECT_JOURNAL.md",
+    "tasks":      _PROJECT_ROOT / "docs" / "planning" / "TASKS.md",
+    "goals":      _PROJECT_ROOT / "docs" / "planning" / "GOALS.md",
+    "milestones": _PROJECT_ROOT / "docs" / "planning" / "MILESTONES.md",
 }
 
 # Where session reports are saved
-_SESSION_LOGS_DIR = _PROJECT_ROOT / "docs" / "session_logs"
+_SESSION_LOGS_DIR = _PROJECT_ROOT / "docs" / "agents" / "session_logs"
 
 # Constitutional laws (injected into the Archivist's system prompt)
 _FOUR_LAWS = """
@@ -54,7 +54,7 @@ The Four Constitutional Laws of rpgCore:
   LAW 1 — No demo-specific logic in src/shared/. Shared code must be generic.
   LAW 2 — No content gating between demos. Each demo is self-contained.
   LAW 3 — Every new scene must inherit from a scene template in src/shared/engine/scene_templates/.
-  LAW 4 — The test floor is 402 passing tests. Do not regress below this.
+  LAW 4 — The test floor is 411 passing tests. Do not regress below this.
 """
 
 # Specific questions the Archivist must answer when populating risks and flags.
@@ -63,7 +63,7 @@ _FOCUS_QUESTIONS = [
     "Are all Goals in GOALS.md linked to at least one Milestone in MILESTONES.md?",
     "Are there Active tasks in TASKS.md with no corresponding Active or Queued Milestone?",
     "Are there Milestones marked Active with no corresponding Tasks in TASKS.md?",
-    "Does the journal's reported test count match the test floor of 402?",
+    "Does the journal's reported test count match the test floor of 411?",
     "Are there any TODO or FIXME markers in TASKS.md suggesting unfinished work?",
     "Are there Goals marked complete with no evidence in the journal?",
     "Does any task description reference a specific demo in a way that suggests shared/ pollution?",

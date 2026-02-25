@@ -33,7 +33,7 @@ def print_coherence_report(report: "CoherenceReport") -> None:
         print("\n[CONSTITUTIONAL FLAGS] No violations detected.")
     print(f"\n[CORPUS HASH] {report.corpus_hash[:16]}...")
     print("=" * 60)
-    print("  Session log saved to docs/session_logs/")
+    print("  Session log saved to docs/agents/session_logs/")
     print("=" * 60 + "\n")
 
 

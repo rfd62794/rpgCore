@@ -12,7 +12,7 @@ Approval modes:
 Cost awareness:
   - Always log estimated token cost before calling
   - Always log actual token cost after calling
-  - Session budget tracked in docs/session_logs/director_usage.log
+  - Session budget tracked in docs/agents/session_logs/director_usage.log
 """
 
 from __future__ import annotations
@@ -27,7 +27,7 @@ from loguru import logger
 # Paths
 # ---------------------------------------------------------------------------
 _PROJECT_ROOT = Path(__file__).resolve().parents[4]
-_USAGE_LOG = _PROJECT_ROOT / "docs" / "session_logs" / "director_usage.log"
+_USAGE_LOG = _PROJECT_ROOT / "docs" / "agents" / "session_logs" / "director_usage.log"
 
 # ---------------------------------------------------------------------------
 # Approval modes
