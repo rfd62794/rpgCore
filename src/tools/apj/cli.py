@@ -207,8 +207,30 @@ def main():
         if sub == "start":
             _run_session_start()
         elif sub == "end":
-            print("Scribe not yet implemented (v3). Session end recorded.")
-            logger.info("APJ: session end stub invoked (Scribe v3 pending)")
+            from src.tools.apj.agents.scribe import Scribe
+            print("\n[*] APJ Scribe initializing...")
+            scribe = Scribe()
+            draft = scribe.run()
+            if draft:
+                print("\n" + "=" * 60)
+                print("  SCRIBE DRAFT — REVIEW BEFORE APPROVING")
+                print("=" * 60)
+                print(f"  Session:    {draft.session_id}")
+                print(f"  Date:       {draft.session_date}")
+                print(f"  Floor:      {draft.test_floor}")
+                print(f"  Summary:    {draft.summary}")
+                print(f"  Commits:    {', '.join(draft.committed) or 'none'}")
+                print(f"  Done:       {', '.join(draft.tasks_completed) or 'none'}")
+                print(f"  Added:      {', '.join(draft.tasks_added) or 'none'}")
+                print(f"  Confidence: {draft.confidence}")
+                print("=" * 60)
+                response = input("\n  Approve and write to journal? [y/N]: ").strip().lower()
+                if response == "y":
+                    scribe.approve_and_write(draft)
+                    print(f"\n  Journal entry {draft.session_id} written.")
+                    print("  Session closed.")
+                else:
+                    print("\n  Draft not written. Run session end again to retry.")
         else:
             print("Usage: python -m src.tools.apj session [start|end]")
 
