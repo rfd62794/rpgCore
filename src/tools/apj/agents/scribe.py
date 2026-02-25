@@ -60,7 +60,9 @@ class ScribeDraft(BaseModel):
 # ---------------------------------------------------------------------------
 class Scribe:
     def __init__(self, model_name: Optional[str] = None) -> None:
-        self.model_name = model_name or resolve_model()
+        from src.tools.apj.agents.ollama_client import warm_model_sync
+        resolved = model_name or resolve_model()
+        self.model_name = warm_model_sync(resolved)   # may downgrade to 1b/0.5b
         self._agent = None
         logger.info(f"Scribe initialized (model={self.model_name})")
 
