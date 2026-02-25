@@ -30,6 +30,7 @@ dependencies = [
     "Pillow>=10.2.0",
     "numpy>=1.26.4",
     "python-dotenv>=1.2.1",
+    "pydantic-ai>=1.63.0",
 ]
 
 [project.optional-dependencies]
