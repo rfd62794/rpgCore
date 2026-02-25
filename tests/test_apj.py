@@ -247,8 +247,9 @@ def test_archivist_saves_session_log(tmp_path):
     assert len(log_files) == 1, "Expected exactly one archivist log file"
 
     content = log_files[0].read_text(encoding="utf-8")
-    assert "ARCHIVIST COHERENCE REPORT" in content
+    assert "# Archivist Coherence Report" in content
     assert "Test primer sentence one" in content
     assert "Risk alpha" in content
     assert "Fix the thing." in content
+
 
