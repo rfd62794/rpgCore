@@ -1,4 +1,5 @@
 import sys
+sys.stdout.reconfigure(encoding="utf-8", errors="replace")  # fix cp1252 on Windows
 import argparse
 from dotenv import load_dotenv
 load_dotenv()  # Load .env before agent imports resolve env vars

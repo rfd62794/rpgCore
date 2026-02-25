@@ -292,14 +292,32 @@ VALIDATION ERRORS (deterministic — confirmed violations, include in constituti
 
     @staticmethod
     def _extract_json(raw: str) -> str:
-        """Extract JSON from a response that may contain markdown fences or prose."""
+        """
+        Extract first complete JSON object from response.
+        Uses brace-depth tracking — stops at the matching closing brace,
+        ignoring any prose the model appends after the JSON.
+        """
+        # Try fenced code block first: ```json ... ``` or ``` ... ```
         fenced = re.search(r"```(?:json)?\s*({.*?})\s*```", raw, re.DOTALL)
         if fenced:
             return fenced.group(1)
-        braces = re.search(r"({.*})", raw, re.DOTALL)
-        if braces:
-            return braces.group(1)
-        return raw.strip()
+
+        # Find first { and track depth to its matching }
+        start = raw.find("{")
+        if start == -1:
+            return raw.strip()
+
+        depth = 0
+        for i, char in enumerate(raw[start:], start):
+            if char == "{":
+                depth += 1
+            elif char == "}":
+                depth -= 1
+                if depth == 0:
+                    return raw[start:i + 1]
+
+        # Unclosed brace — return from start and let the caller handle it
+        return raw[start:].strip()
 
     async def _run_async(
         self,
