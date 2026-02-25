@@ -19,9 +19,9 @@
 - [FEAT] Dungeon Crawler — implement sprite-based room layout (Hero, Slime patrol, Exit flag)
 - [ASSET] Dungeon Crawler — ingest Kenney and OGA sprite packs (Dungeon, LPC, Urban)
 - [DESIGN] Ambient systems — day cycle, weather, fishing, crafting as shared texture
-- [FEAT] Slime Breeder — save/load garden persistence
-- [FEAT] Slime Breeder — slime personality emergence over time
-- [FEAT] Dungeon Crawler — proc-gen floor layouts and connection logic
+- [FEAT] Slime Breeder — save/load garden persistence  *(demo: slime_breeder — not a shared/ concern)*
+- [FEAT] Slime Breeder — slime personality emergence over time  *(demo: slime_breeder — not a shared/ concern)*
+- [FEAT] Dungeon Crawler — proc-gen floor layouts and connection logic  *(demo: dungeon_crawler)*
 - [POLISH] Combat scene — floating damage numbers on hit
 - [POLISH] Combat scene — hero portrait/stats in active slot
 
