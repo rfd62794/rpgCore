@@ -1,10 +1,10 @@
 # rpgCore — Project Journal
 
 ## Current State
-402 passing. Combat loop complete. Buttons fixed via Panel event propagation. Sable of Ashfall died on Floor 4. Hall of Ancestors recording.
+405 passing. Archivist v1 live — reads corpus, detects drift, flags constitutional violations. llama3.2:3b via Ollama. Real analysis confirmed.
 
 ## In Flight
-Combat polish — damage numbers, portraits, inventory.
+Archivist handoff integration.
 
 ## Next Priority
-Play all six demos fresh. Note what each needs most.
+Wire Archivist report into apj handoff output. Then Strategist v2.
