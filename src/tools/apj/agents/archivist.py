@@ -57,6 +57,44 @@ The Four Constitutional Laws of rpgCore:
   LAW 4 — The test floor is 402 passing tests. Do not regress below this.
 """
 
+# Specific questions the Archivist must answer when populating risks and flags.
+# Injected into _build_prompt() so the model has them in context alongside the corpus.
+_FOCUS_QUESTIONS = [
+    "Are all Goals in GOALS.md linked to at least one Milestone in MILESTONES.md?",
+    "Are there Active tasks in TASKS.md with no corresponding Active or Queued Milestone?",
+    "Are there Milestones marked Active with no corresponding Tasks in TASKS.md?",
+    "Does the journal's reported test count match the test floor of 402?",
+    "Are there any TODO or FIXME markers in TASKS.md suggesting unfinished work?",
+    "Are there Goals marked complete with no evidence in the journal?",
+    "Does any task description reference a specific demo in a way that suggests shared/ pollution?",
+]
+
+# Few-shot example injected into the system prompt to demonstrate evidence-only flagging.
+_GOOD_REPORT_EXAMPLE = """
+EXAMPLE of a correct, high-quality CoherenceReport:
+{
+  "session_primer": "rpgCore has 405 passing tests across six playable demos including the Dungeon Crawler with a working combat loop. The Archivist agent shipped last session and confirmed live corpus analysis.",
+  "open_risks": [
+    "G3 in GOALS.md has no linked Milestone — orphaned goal, should be linked or retired",
+    "Two TASKS.md items marked Active have no corresponding Active Milestone"
+  ],
+  "queued_focus": "Link G3 to Milestone M5 or mark it deferred in GOALS.md",
+  "constitutional_flags": [
+    "LAW 1 VIOLATION — tasks.md line 47 references slime_breeder directly inside a shared/ task description"
+  ],
+  "corpus_hash": ""
+}
+
+EXAMPLE of a BAD report (do not do this):
+{
+  "constitutional_flags": [
+    "LAW 1 — No demo-specific logic in src/shared/",
+    "LAW 4 — The test floor is 402 passing tests"
+  ]
+}
+The bad example flags laws WITHOUT evidence. Only flag violations you can cite specifically.
+"""
+
 
 # ---------------------------------------------------------------------------
 # Output schema
@@ -157,16 +195,22 @@ class Archivist:
 
     @staticmethod
     def _build_prompt(corpus: dict[str, str]) -> str:
-        """Assemble the Archivist's user prompt from corpus content."""
+        """Assemble the Archivist's user prompt from corpus content + focus questions."""
         sections = []
         for key, content in corpus.items():
             if content.strip():
                 sections.append(f"=== {key.upper()} ===\n{content[:3000]}")
             else:
                 sections.append(f"=== {key.upper()} ===\n(empty)")
+        questions = "\n".join(
+            f"  {i + 1}. {q}" for i, q in enumerate(_FOCUS_QUESTIONS)
+        )
         return (
-            "Analyze the following APJ project corpus and produce a CoherenceReport.\n\n"
+            "Analyze the following APJ project corpus.\n\n"
             + "\n\n".join(sections)
+            + f"\n\nANSWER THESE SPECIFIC QUESTIONS when populating open_risks and constitutional_flags:\n{questions}\n\n"
+            + "Only flag a constitutional violation if you found SPECIFIC EVIDENCE in the corpus. "
+            + "Do not flag laws preemptively."
         )
 
     # ------------------------------------------------------------------
@@ -217,6 +261,7 @@ class Archivist:
                 "- corpus_hash: always use empty string \"\" — filled later.\n"
                 "CRITICAL: Output ONLY the JSON object. No prose, no markdown fences, "
                 "no explanation. Start with { and end with }."
+                f"{_GOOD_REPORT_EXAMPLE}"
             )
             self._agent = Agent(
                 model=model,

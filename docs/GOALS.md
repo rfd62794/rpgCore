@@ -8,9 +8,10 @@ gets branched. Engine improvements fold back in.
 Genetics, combat, exploration, relationship tracking.
 Proves the deepest expression of shared systems.
 
-## G3 — Dungeon Crawler  
+## G3 — Dungeon Crawler *(SUPERSEDED by G7)*
 Procedural rooms, D20 depth, roguelike progression.
 Exploration as the core verb.
+Superseded by G7 which carries a linked Milestone (M8).
 
 ## G4 — Engine Capability
 Every new demo harvests something back into shared/.
