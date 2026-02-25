@@ -4,6 +4,7 @@ from .goal import Goal
 from .milestone import Milestone
 from .task import Task
 from .journal import JournalEntry
+from .session import Session
 from .enums import TaskScope
 
 
@@ -52,6 +53,7 @@ class Corpus(BaseModel):
     milestones: list[Milestone] = []
     tasks: list[Task] = []
     journal: list[JournalEntry] = []
+    sessions: list[Session] = []
     parsed_at: datetime
     corpus_hash: str = ""
 

@@ -12,7 +12,18 @@ class Task(BaseModel):
     scope: TaskScope
     demo: Optional[str] = None
     milestone: Optional[str] = None
-    owner: OwnerType = OwnerType.HUMAN
+
+    # Ownership
+    created_by: OwnerType = OwnerType.SYSTEM
+    created_session: str = "S000"
+    modified_by: OwnerType = OwnerType.SYSTEM
+    modified_session: str = "S000"
+
+    # Session scheduling
+    target_session: Optional[str] = None
+    deferred_from: Optional[str] = None
+    deferred_reason: Optional[str] = None
+
     created: date
     modified: date
     tags: list[str] = []
@@ -20,7 +31,7 @@ class Task(BaseModel):
     @model_validator(mode="after")
     def validate_demo_scope(self) -> "Task":
         if self.scope == TaskScope.DEMO and not self.demo:
-            raise ValueError("scope=demo requires demo field to be set")
+            raise ValueError("scope=demo requires demo field")
         if self.scope == TaskScope.SHARED and self.demo:
-            raise ValueError("scope=shared cannot reference a demo — LAW 1")
+            raise ValueError("scope=shared cannot reference demo — LAW 1")
         return self

@@ -12,5 +12,9 @@ class Milestone(BaseModel):
     goals: list[str] = []
     tasks: list[str] = []
     owner: OwnerType = OwnerType.HUMAN
+    created_by: OwnerType = OwnerType.SYSTEM
+    created_session: str = "S000"
+    modified_by: OwnerType = OwnerType.SYSTEM
+    modified_session: str = "S000"
     created: date
     modified: date

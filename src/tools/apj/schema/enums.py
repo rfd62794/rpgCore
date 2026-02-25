@@ -30,6 +30,22 @@ class TaskScope(str, Enum):
 
 
 class OwnerType(str, Enum):
-    HUMAN   = "human"
-    SCRIBE  = "scribe"
-    CURATOR = "curator"
+    # Human roles
+    HUMAN      = "human"       # kept for YAML backward compat
+    DESIGNER   = "designer"
+    OVERSEER   = "overseer"
+    # Agent roles
+    ARCHIVIST  = "archivist"
+    STRATEGIST = "strategist"
+    SCRIBE     = "scribe"
+    CURATOR    = "curator"
+    DIRECTOR   = "director"
+    # System
+    SYSTEM     = "system"
+
+
+class SessionStatus(str, Enum):
+    PLANNED  = "PLANNED"
+    ACTIVE   = "ACTIVE"
+    COMPLETE = "COMPLETE"
+    SKIPPED  = "SKIPPED"
