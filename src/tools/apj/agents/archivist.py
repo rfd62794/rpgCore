@@ -317,7 +317,9 @@ VALIDATION ERRORS (deterministic — confirmed violations, include in constituti
 
         json_str = self._extract_json(raw_text)
         try:
-            data = json.loads(json_str)
+            # raw_decode stops at the first complete JSON object — tolerates
+            # any trailing prose the model appends after the closing brace.
+            data, _ = json.JSONDecoder().raw_decode(json_str.strip())
         except json.JSONDecodeError as exc:
             raise ValueError(
                 f"Archivist: JSON parse failed — {exc}\nRaw: {raw_text[:300]}"
