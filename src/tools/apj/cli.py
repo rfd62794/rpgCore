@@ -73,17 +73,19 @@ def _run_session_start() -> None:
     """Run Archivist then Strategist, print both reports to console."""
     model = resolve_model()
 
-    # Pre-load model into VRAM — drops per-agent cold start from ~90s to ~3-5s
+    # Pre-load model into VRAM — auto-downgrades to 1b/0.5b on memory constraint
     print("\n[~] Warming model in VRAM...")
-    warm_model_sync(model)
+    active_model = warm_model_sync(model)   # may return a smaller model
+    if active_model != model:
+        print(f"[!] Memory constraint — downgraded to {active_model}")
 
     print("\n[*] APJ Archivist initializing...\n")
-    archivist = Archivist(model_name=model)
+    archivist = Archivist(model_name=active_model)
     report = archivist.run()
     print_coherence_report(report)
 
     print("\n[...] Strategist planning session...\n")
-    strategist = Strategist(model_name=model)
+    strategist = Strategist(model_name=active_model)
     plan = strategist.run(archivist_report=report)
     print_session_plan(plan)
 

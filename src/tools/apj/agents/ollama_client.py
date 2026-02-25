@@ -29,9 +29,8 @@ OLLAMA_BASE_URL = "http://localhost:11434"
 # Preference chain — ordered: quality → compatibility → speed
 MODEL_PREFERENCE_CHAIN = [
     "llama3.2:3b",
-    "llama3.2:3b-instruct-q4_K_M",
-    "mistral:7b-instruct-q4_0",
-    "llama3.2:1b",
+    "llama3.2:1b",        # fallback if 3b fails memory check
+    "qwen2.5:0.5b",       # last resort
 ]
 
 _LAST_RESORT = "llama3.2:1b"
@@ -138,25 +137,48 @@ def warm_model_sync(
     model_name: str,
     base_url: str = OLLAMA_BASE_URL,
     keep_alive: int = -1,
-) -> bool:
+) -> str:
     """
     Synchronous wrapper around warm_model() for use in non-async CLI entry points.
-
-    Args:
-        model_name: Ollama model tag to warm.
-        base_url:   Ollama base URL.
-        keep_alive: Seconds to keep model loaded. -1 = indefinitely.
-
+    
+    If the requested model fails with a memory error (Ollama 500), automatically
+    tries the next model in MODEL_PREFERENCE_CHAIN and returns whichever warmed.
+    
     Returns:
-        True if warm succeeded, False if Ollama unreachable (non-fatal).
+        The model name that successfully warmed (may differ from model_name).
     """
     import asyncio as _asyncio
-    try:
-        return _asyncio.run(warm_model(model_name, base_url, keep_alive))
-    except Exception as exc:
-        logger.warning(f"OllamaClient: warm_model_sync failed ({exc})")
-        return False
 
+    # Build chain: requested model first, then rest of preference chain
+    chain = [model_name] + [
+        m for m in MODEL_PREFERENCE_CHAIN if m != model_name
+    ]
+
+    for candidate in chain:
+        try:
+            result = _asyncio.run(warm_model(candidate, base_url, keep_alive))
+            if result:
+                if candidate != model_name:
+                    logger.warning(
+                        f"OllamaClient: downgraded {model_name} → {candidate} "
+                        f"(memory constraint)"
+                    )
+                return candidate
+        except Exception as exc:
+            err = str(exc).lower()
+            if any(k in err for k in ("memory", "insufficient", "500")):
+                logger.warning(
+                    f"OllamaClient: {candidate} memory error — "
+                    f"trying next in chain"
+                )
+                continue
+            # Non-memory error — proceed cold with original model
+            logger.warning(f"OllamaClient: warm_model_sync failed ({exc})")
+            return model_name
+
+    # All candidates failed — fall back cold to last in chain
+    logger.warning("OllamaClient: all warm attempts failed — proceeding cold")
+    return chain[-1]
 
 
 def resolve_model(base_url: str = OLLAMA_BASE_URL) -> str:
