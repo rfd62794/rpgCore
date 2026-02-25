@@ -154,6 +154,16 @@ def main():
                 new_content = "".join(lines)
                 journal.update_section(section, new_content)
                 print(f"Section '{section}' updated.")
+    elif cmd == "session":
+        sub = sys.argv[2].lower() if len(sys.argv) > 2 else ""
+        if sub == "start":
+            _run_session_start()
+        elif sub == "end":
+            print("Scribe not yet implemented (v3). Session end recorded.")
+            logger.info("APJ: session end stub invoked (Scribe v3 pending)")
+        else:
+            print("Usage: python -m src.tools.apj session [start|end]")
+
     else:
         print(f"Unknown command: {cmd}")
 
