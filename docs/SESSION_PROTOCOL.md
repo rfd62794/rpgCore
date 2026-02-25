@@ -1,11 +1,24 @@
-# Slime Clan — AI Session Protocol
+# rpgCore — AI Session Protocol
 
 *To be provided at the start of every new Coding Agent session to prevent context drift.*
 
+## Session Start Sequence
+
+```powershell
+python -m src.tools.apj session start
+```
+
+1. **Archivist** reads corpus → prints Coherence Report (risks, flags, primer)
+2. **Strategist** reads report → prints Session Plan (Recommended / Divert / Alt)
+3. **You** choose an option and tell the IDE agent which was selected
+4. **IDE agent** executes the chosen plan
+
+---
+
 ## Step 0 — Orient
-Run: `python -m src.tools.apj handoff`
-This prints current project state, what is in flight, and next priority. 
-Read the output before reading anything else.
+Run: `python -m src.tools.apj session start`
+This runs the full Archivist + Strategist pipeline and prints current project state,
+risks, constitutional flags, and a ranked session plan. Read all output before touching code.
 
 ## Agent Behavior Standards
 - Always use `uv run` for execution. Never activate venv manually.
