@@ -1,11 +1,13 @@
 import sys
 import argparse
+from dotenv import load_dotenv
+load_dotenv()  # Load .env before agent imports resolve env vars
+
 from loguru import logger
 from src.tools.apj.journal import Journal
 from src.tools.apj.agents.archivist import Archivist, CoherenceReport
 from src.tools.apj.agents.strategist import Strategist, SessionPlan, SessionOption
 from src.tools.apj.agents.ollama_client import resolve_model, warm_model_sync
-
 
 
 def print_coherence_report(report: "CoherenceReport") -> None:

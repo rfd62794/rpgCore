@@ -360,3 +360,35 @@ def test_session_start_runs_both_agents():
     mock_archivist_instance.run.assert_called_once()
     mock_strategist_instance.run.assert_called_once_with(archivist_report=stub_report)
 
+
+# ---------------------------------------------------------------------------
+# OpenRouter Director offline tests
+# ---------------------------------------------------------------------------
+
+def test_director_disabled_when_no_key(monkeypatch):
+    """is_director_enabled() returns False when OPENROUTER_API_KEY is missing or placeholder."""
+    from src.tools.apj.agents.openrouter_client import is_director_enabled
+
+    monkeypatch.delenv("OPENROUTER_API_KEY", raising=False)
+    monkeypatch.setenv("DIRECTOR_APPROVAL_MODE", "STRICT")
+    assert is_director_enabled() is False
+
+    monkeypatch.setenv("OPENROUTER_API_KEY", "your_key_here")
+    assert is_director_enabled() is False
+
+
+def test_director_disabled_when_mode_off(monkeypatch):
+    """is_director_enabled() returns False when DIRECTOR_APPROVAL_MODE=OFF regardless of key."""
+    from src.tools.apj.agents.openrouter_client import is_director_enabled
+
+    monkeypatch.setenv("OPENROUTER_API_KEY", "sk-or-real-key-12345")
+    monkeypatch.setenv("DIRECTOR_APPROVAL_MODE", "OFF")
+    assert is_director_enabled() is False
+
+
+def test_approval_mode_defaults_to_strict(monkeypatch):
+    """get_approval_mode() returns STRICT when DIRECTOR_APPROVAL_MODE is not set."""
+    from src.tools.apj.agents.openrouter_client import get_approval_mode, APPROVAL_STRICT
+
+    monkeypatch.delenv("DIRECTOR_APPROVAL_MODE", raising=False)
+    assert get_approval_mode() == APPROVAL_STRICT

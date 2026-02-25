@@ -81,3 +81,32 @@ Register via `manager.register()` and launch via `manager.run()`.
   - Run `python -m src.tools.apj tasks --done "completed task"` for each finished item.
   - Run `python -m src.tools.apj tasks --add "[TAG] description"` for new discoveries.
   - Run `python -m src.tools.apj update` and update all three journal sections to reflect current state.
+
+---
+
+## Director (Generalist) — OpenRouter
+
+The Director is called **SPARINGLY** at decision gates the local swarm cannot handle.
+
+### When to call the Director
+- Architectural decisions with no clear answer in the Constitution
+- Novel task types the Strategist has never seen
+- Constitutional conflicts requiring cross-domain judgment
+- Cross-demo design decisions affecting the Living World
+
+### When NOT to call the Director
+- Anything the local swarm handles reliably
+- Routine implementation tasks
+- Tasks already in TASKS.md with clear specs
+- Anything where the Strategist produced a confident plan
+
+### Approval and Cost
+- **Approval gate:** `STRICT` by default — every call requires explicit `[y/N]` confirmation
+- **Cost tracking:** all Director calls logged to `docs/session_logs/director_usage.log`
+- **Free models preferred:** `deepseek/deepseek-r1`, `meta-llama/llama-3.1-70b-instruct`
+- **Configuration:** copy `.env.example` → `.env`, add `OPENROUTER_API_KEY`
+
+```powershell
+# Verify Director is configured and enabled
+python -c "from dotenv import load_dotenv; load_dotenv(); from src.tools.apj.agents.openrouter_client import is_director_enabled; print('Director enabled:', is_director_enabled())"
+```
