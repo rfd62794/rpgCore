@@ -191,20 +191,29 @@ def test_corpus_validate_clean():
 def test_corpus_validator_law1_cross_doc():
     """Cross-doc LAW 1 check: scope=demo task with no demo field is caught."""
     # Bypass the model_validator by constructing directly via model_construct
-    # to simulate a corrupt/deserialized record that bypassed validation
+    # to simulate a corrupt/deserialized record that bypassed validation.
+    # We also use Corpus.model_construct so Pydantic does NOT re-validate
+    # the task list — the validator receives the raw, bad record as-is.
     bad_task = Task.model_construct(
         id="T_BAD",
         type="task",
         title="Bad task",
         status=TaskStatus.ACTIVE,
         scope=TaskScope.DEMO,
-        demo=None,       # violates LAW 1, bypasses model_validator
+        demo=None,       # violates LAW 1, bypassed model_validator
         milestone=None,
         owner=OwnerType.HUMAN,
         created=_today(),
         modified=_today(),
         tags=[],
     )
-    corpus = _corpus(tasks=[bad_task])
+    corpus = Corpus.model_construct(
+        goals=[],
+        milestones=[],
+        tasks=[bad_task],
+        journal=[],
+        parsed_at=datetime(2026, 2, 25, 6, 0, 0),
+        corpus_hash="",
+    )
     errors = corpus.validate_corpus()
     assert any("scope=demo" in e for e in errors)
