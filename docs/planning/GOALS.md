@@ -1,3 +1,15 @@
+---
+id: G10
+type: goal
+title: The Living World
+status: ACTIVE
+milestone: M11
+owner: human
+created: 2026-02-20
+modified: 2026-02-25
+tags: [living-world, soul, aspects]
+---
+
 # rpgCore — Goals
 
 ## G1 — Living Sandbox
