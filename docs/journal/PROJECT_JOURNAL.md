@@ -66,10 +66,10 @@ tasks_added: []
 # rpgCore — Project Journal
 
 ## Current State
-442 passing. Pure YAML corpus complete. Session tracking, agent ownership, 73 records across 5 files. Corpus valid, zero errors.
+443 passing. Phase 5 complete. Archivist wired to build_corpus(). Memory fallback chain 3b->1b. Robust JSON extraction. Full swarm operational.
 
 ## In Flight
-Phase 5 — Archivist wiring.
+None.
 
 ## Next Priority
-Scribe — session end, git diff, journal auto-draft.
+Phase 6 -- Scribe. Session end, git diff reader, journal auto-draft.
