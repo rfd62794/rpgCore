@@ -2,6 +2,10 @@ import sys
 import argparse
 from loguru import logger
 from src.tools.apj.journal import Journal
+from src.tools.apj.agents.archivist import Archivist, CoherenceReport
+from src.tools.apj.agents.strategist import Strategist, SessionPlan, SessionOption
+from src.tools.apj.agents.ollama_client import resolve_model
+
 
 
 def print_coherence_report(report: "CoherenceReport") -> None:
@@ -65,10 +69,6 @@ def print_session_plan(plan: "SessionPlan") -> None:
 
 def _run_session_start() -> None:
     """Run Archivist then Strategist, print both reports to console."""
-    from src.tools.apj.agents.archivist import Archivist, CoherenceReport
-    from src.tools.apj.agents.strategist import Strategist, SessionPlan
-    from src.tools.apj.agents.ollama_client import resolve_model
-
     model = resolve_model()
 
     print("\n[*] APJ Archivist initializing...\n")

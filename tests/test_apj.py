@@ -347,11 +347,11 @@ def test_session_start_runs_both_agents():
     mock_strategist_instance = MagicMock()
     mock_strategist_instance.run.return_value = stub_plan
 
-    # Patch at source modules (local imports inside _run_session_start)
+    # Patch at cli module level (imports are now module-level, not local)
     with (
-        patch("src.tools.apj.agents.archivist.Archivist", return_value=mock_archivist_instance),
-        patch("src.tools.apj.agents.strategist.Strategist", return_value=mock_strategist_instance),
-        patch("src.tools.apj.agents.ollama_client.resolve_model", return_value="llama3.2:3b"),
+        patch("src.tools.apj.cli.Archivist", return_value=mock_archivist_instance),
+        patch("src.tools.apj.cli.Strategist", return_value=mock_strategist_instance),
+        patch("src.tools.apj.cli.resolve_model", return_value="llama3.2:3b"),
         patch("src.tools.apj.cli.print_coherence_report"),
         patch("src.tools.apj.cli.print_session_plan"),
     ):
@@ -359,3 +359,4 @@ def test_session_start_runs_both_agents():
 
     mock_archivist_instance.run.assert_called_once()
     mock_strategist_instance.run.assert_called_once_with(archivist_report=stub_report)
+
