@@ -6,7 +6,7 @@ session: 1
 author: human
 test_floor: 337
 summary: APJ task management system live — TASKS.md backlog, --add, --done, --next, handoff integration.
-committed: [feat: apj tasks command]
+committed: ["feat: apj tasks command"]
 tasks_completed: [T039]
 tasks_added: []
 ---
@@ -19,7 +19,7 @@ session: 2
 author: human
 test_floor: 354
 summary: Space Trader pygame UI shipped. Slime Breeder breeding UI polished. Combat scene FF-style layout complete.
-committed: [feat: space trader UI, polish: slime breeder, polish: combat scene]
+committed: ["feat: space trader UI", "polish: slime breeder", "polish: combat scene"]
 tasks_completed: [T040, T041, T042, T043, T044]
 tasks_added: []
 ---
@@ -31,8 +31,8 @@ date: 2026-02-24
 session: 3
 author: human
 test_floor: 402
-summary: Combat button fixes — Attack and Flee respond to clicks, combat loop functional. Dungeon Crawler UI complete.
-committed: [fix: combat buttons, feat: dungeon crawler UI]
+summary: Combat button fixes — Attack and Flee respond to clicks. Dungeon Crawler UI complete.
+committed: ["fix: combat buttons", "feat: dungeon crawler UI"]
 tasks_completed: []
 tasks_added: []
 ---
@@ -44,8 +44,8 @@ date: 2026-02-25
 session: 4
 author: human
 test_floor: 411
-summary: Director Framework shipped — OpenRouter client, approval modes, usage logging. pydantic-ai wired into Archivist and Strategist agents.
-committed: [feat: director framework]
+summary: Director Framework shipped — OpenRouter client, approval modes, usage logging. pydantic-ai wired into agents.
+committed: ["feat: director framework"]
 tasks_completed: []
 tasks_added: []
 ---
@@ -58,7 +58,7 @@ session: 5
 author: scribe
 test_floor: 434
 summary: APJ schema layer (Phase 1) and corpus parser (Phase 2) complete. Pydantic corpus models, LAW 1+4 validators, frontmatter reader, corpus builder, ValidationResult. Docs restructured into subdirs.
-committed: [feat: apj schema layer, feat: apj parser]
+committed: ["feat: apj schema layer", "feat: apj parser", "docs: frontmatter migration"]
 tasks_completed: []
 tasks_added: []
 ---
