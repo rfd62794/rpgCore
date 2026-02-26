@@ -428,6 +428,105 @@ def main():
             for c in results:
                 print(f"{c.name} in {c.file}:{c.line_start} — bases: {c.bases}")
 
+    elif cmd == "docstring":
+        sub = sys.argv[2] if len(sys.argv) > 2 else "help"
+        
+        if sub == "add":
+            symbol_name = sys.argv[3] if len(sys.argv) > 3 else ""
+            if not symbol_name:
+                print("Usage: apj docstring add <SymbolName>")
+                return
+            
+            # find symbol in inventory
+            from .inventory.cache import load_cache
+            symbol_map = load_cache(PROJECT_ROOT)
+            if symbol_map is None:
+                from .inventory.scanner import ASTScanner
+                from .inventory.cache import save_cache
+                scanner = ASTScanner(PROJECT_ROOT)
+                symbol_map = scanner.scan()
+                save_cache(PROJECT_ROOT, symbol_map)
+            
+            # find class or function
+            classes = symbol_map.find_class(symbol_name)
+            functions = symbol_map.find_function(symbol_name)
+            
+            if not classes and not functions:
+                print(f"Symbol '{symbol_name}' not found. Run: apj inventory scan")
+                return
+            
+            target = classes[0] if classes else functions[0]
+            symbol_type = "class" if classes else "function"
+            
+            # read source code for that symbol
+            file_path = PROJECT_ROOT / target.file
+            source_lines = file_path.read_text(encoding="utf-8").splitlines()
+            source_code = "\n".join(
+                source_lines[target.line_start - 1 : target.line_end]
+            )
+            
+            # generate
+            from .agents.docstring_agent import DocstringAgent, DocstringRequest
+            agent = DocstringAgent()
+            request = DocstringRequest(
+                symbol_name=target.name,
+                symbol_type=symbol_type,
+                source_code=source_code,
+                file_path=target.file,
+                existing_docstring=target.docstring,
+            )
+            
+            print(f"\nGenerating docstring for {symbol_type}: {symbol_name}...")
+            result = agent.generate(request)
+            result.line_number = target.line_start # Ensure correct line number from inventory
+            
+            print(f"\n{'='*60}")
+            print(f"  PROPOSED DOCSTRING — {result.symbol_name}")
+            print(f"{'='*60}")
+            print(f"[CONFIDENCE] {result.confidence}")
+            print(f"[REASONING]  {result.reasoning}")
+            print(f"[DOCSTRING]")
+            print(f'  """{result.docstring}"""')
+            print(f"{'='*60}")
+            
+            response = input("\nInsert this docstring? [y/N]: ")
+            if response.lower() == "y":
+                success = agent.insert(result, PROJECT_ROOT)
+                if success:
+                    print(f"Docstring inserted. Run: apj inventory scan to update cache.")
+                else:
+                    print("Insertion failed — check logs.")
+        
+        elif sub == "sweep":
+            print("Sweep mode: finds symbols missing docstrings.")
+            from .inventory.cache import load_cache
+            symbol_map = load_cache(PROJECT_ROOT)
+            if symbol_map is None:
+                from .inventory.scanner import ASTScanner
+                from .inventory.cache import save_cache
+                scanner = ASTScanner(PROJECT_ROOT)
+                symbol_map = scanner.scan()
+                save_cache(PROJECT_ROOT, symbol_map)
+            
+            missing = []
+            for f in symbol_map.files.values():
+                for c in f.classes:
+                    if not c.docstring:
+                        missing.append((c.name, f.path, "class"))
+                for fn in f.functions:
+                    if not fn.docstring and not fn.name.startswith("_"):
+                        missing.append((fn.name, f.path, "function"))
+            
+            print(f"\nFound {len(missing)} symbols missing docstrings:")
+            for name, path, stype in missing[:20]:
+                print(f"  {stype}: {name} in {path}")
+            if len(missing) > 20:
+                print(f"  ... and {len(missing) - 20} more")
+            print(f"\nRun: apj docstring add <SymbolName> to add one at a time.")
+        
+        else:
+            print("Usage: apj docstring [add|sweep]")
+
     elif cmd == "improve":
         agent_name = sys.argv[2] if len(sys.argv) > 2 else None
         if not agent_name or agent_name not in ("archivist", "strategist", "scribe", "herald"):
