@@ -9,8 +9,8 @@ from pydantic import BaseModel, Field
 from src.tools.apj.agents.ollama_client import get_ollama_model
 from src.tools.apj.agents.openrouter_client import get_openrouter_model
 
-# Resolution: src/tools/apj/agents/model_router.py -> parents[3] is rpgCore
-PROJECT_ROOT = Path(__file__).resolve().parents[3]
+# Resolution: src/tools/apj/agents/model_router.py -> parents[4] is rpgCore
+PROJECT_ROOT = Path(__file__).resolve().parents[4]
 
 class RoutingDecision(str, Enum):
     LOCAL   = "local"

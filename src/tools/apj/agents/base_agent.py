@@ -10,8 +10,8 @@ from pydantic import BaseModel, Field
 from src.tools.apj.agents.registry import SchemaRegistry
 from src.tools.apj.agents.ollama_client import warm_model_sync, resolve_model
 
-# Resolution: src/tools/apj/agents/base_agent.py -> parents[3] is rpgCore
-PROJECT_ROOT = Path(__file__).resolve().parents[3]
+# Resolution: src/tools/apj/agents/base_agent.py -> parents[4] is rpgCore
+PROJECT_ROOT = Path(__file__).resolve().parents[4]
 
 class PromptConfig(BaseModel):
     system: str   # path relative to PROJECT_ROOT

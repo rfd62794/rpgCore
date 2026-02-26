@@ -48,13 +48,11 @@ def test_router_budget_warn():
     assert budget.check(600) == "warn"
 
 @patch("src.tools.apj.agents.model_router.get_ollama_model")
-def test_router_tries_local_success(mock_get_ollama, mock_config):
-    mock_client = MagicMock()
-    mock_client.run.return_value = MagicMock(output='{"test": "ok"}')
-    mock_get_ollama.return_value = mock_client
+@patch("pydantic_ai.Agent.run")
+def test_router_tries_local_success(mock_agent_run, mock_get_ollama, mock_config):
+    mock_get_ollama.return_value = MagicMock() # Mock the model client
+    mock_agent_run.return_value = MagicMock(output='{"test": "ok"}')
     
-    # We call ModelRouter.route directly
-    # It calls _try_local which calls get_ollama_model
     res = ModelRouter._try_local("prompt")
     assert res == '{"test": "ok"}'
 
