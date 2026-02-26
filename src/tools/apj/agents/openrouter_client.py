@@ -139,7 +139,7 @@ def request_approval(
 # Model factory
 # ---------------------------------------------------------------------------
 
-def get_openrouter_model():
+def get_openrouter_model(model: str | None = None):
     """
     Return a pydantic_ai OpenAIChatModel pointed at OpenRouter.
 
@@ -152,7 +152,7 @@ def get_openrouter_model():
     from pydantic_ai.models.openai import OpenAIChatModel
 
     api_key = os.getenv("OPENROUTER_API_KEY", "")
-    model_name = os.getenv("OPENROUTER_MODEL", FREE_MODELS[0])
+    model_name = model or os.getenv("OPENROUTER_MODEL", FREE_MODELS[0])
 
     # pydantic_ai 1.22+ has a built-in 'openrouter' provider.
     # It reads OPENROUTER_API_KEY from env automatically.
