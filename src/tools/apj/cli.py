@@ -365,14 +365,14 @@ def main():
             print("Usage: python -m src.tools.apj session [start|end]")
 
     elif cmd == "herald":
-        from src.tools.apj.agents.base_agent import BaseAgent
+        from src.tools.apj.agents.herald import Herald
         plan = _load_last_strategist_plan()
         if plan is None:
             print("No strategist plan found. Run session start first.")
             return
 
-        print("\n[~] Herald: invoking ModelRouter (targeting remote)...")
-        agent = BaseAgent.from_config("herald")
+        print("\n[~] Herald: invoking ModelRouter (with ContextBuilder)...")
+        agent = Herald.from_config("herald")
         directive = agent.run(plan)
         
         from src.tools.apj.cli import print_herald_directive

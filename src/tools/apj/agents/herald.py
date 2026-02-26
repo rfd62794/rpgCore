@@ -33,6 +33,8 @@ from pydantic import BaseModel, Field
 
 from src.tools.apj.agents.ollama_client import get_ollama_model
 from src.tools.apj.agents.strategist import SessionPlan
+from src.tools.apj.agents.base_agent import BaseAgent, AgentConfig
+from src.tools.apj.inventory.context_builder import ContextBuilder
 
 # ---------------------------------------------------------------------------
 # Paths
@@ -162,46 +164,58 @@ _HERALD_SYSTEM_PROMPT = (
 # Herald
 # ---------------------------------------------------------------------------
 
-class Herald:
+class Herald(BaseAgent):
     """
     The APJ Herald: converts an approved SessionPlan into a ready-to-paste
-    IDE agent directive.
-
-    Design mirrors Archivist/Strategist:
-    - warm_model_sync chain in __init__
-    - Plain string Agent, example-driven JSON prompt
-    - Brace-depth JSON extraction in _run_async
-    - Deterministic fallback if Ollama unreachable
-    - Always saves directive to docs/session_logs/
-    - run() is synchronous and always returns HeraldDirective
+    IDE agent directive. Grounded in real codebase context via ContextBuilder.
     """
 
-    def __init__(self, model_name: Optional[str] = None) -> None:
-        from src.tools.apj.agents.ollama_client import warm_model_sync, resolve_model
-        resolved = model_name or resolve_model()
-        self.model_name = warm_model_sync(resolved)
-        self._agent: Optional[object] = None
+    def __init__(self, config: AgentConfig) -> None:
+        super().__init__(config)
         logger.info(f"Herald initialized (model={self.model_name})")
 
     # ── Public API ──────────────────────────────────────────────────────────
 
     def run(self, plan: SessionPlan) -> HeraldDirective:
         """
-        Synchronous entry point. Takes a SessionPlan, produces a HeraldDirective.
-
-        Args:
-            plan: Approved SessionPlan from the Strategist.
-
-        Returns:
-            HeraldDirective — always, even if Ollama is down.
+        Takes a SessionPlan, enriches with ContextBuilder, and produces a HeraldDirective.
         """
+        # extract intent from recommended task title
+        intent = plan.recommended.title if plan.recommended else "general session work"
+        
+        # build context slice from real codebase
         try:
-            directive = asyncio.run(self._run_async(plan))
+            builder = ContextBuilder(_PROJECT_ROOT)
+            context_slice = builder.build(intent)
+            context_text = context_slice.to_prompt_text()
+        except Exception as e:
+            logger.warning(f"Herald: ContextBuilder failed — {e}")
+            context_text = ""
+        
+        # inject context into task string
+        task = self._build_task(plan, context_text)
+        
+        try:
+            directive = super().run(task)
+            # Ensure it's a HeraldDirective (BaseAgent returns BaseModel)
+            if not isinstance(directive, HeraldDirective):
+                directive = HeraldDirective.model_validate(directive.model_dump())
+            return directive
         except Exception as exc:
-            logger.warning(f"Herald: Ollama unreachable or agent failed ({exc}). Using fallback.")
-            directive = self._fallback_directive(plan)
+            logger.warning(f"Herald: Agent failed ({exc}). Using fallback.")
+            return self._fallback_directive(plan)
 
-        return directive
+    def _build_task(self, plan: SessionPlan, context: str) -> str:
+        """Combine session plan and codebase context into a single task string."""
+        recommended = plan.recommended
+        tasks_text = "\n".join(recommended.tasks) if recommended else ""
+        return (
+            f"SESSION PLAN:\n"
+            f"Title: {recommended.title}\n"
+            f"Rationale: {recommended.rationale}\n"
+            f"Tasks:\n{tasks_text}\n"
+            f"\n{context}"
+        )
 
     # ── Agent ───────────────────────────────────────────────────────────────
 
