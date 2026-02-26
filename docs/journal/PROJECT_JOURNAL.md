@@ -66,10 +66,10 @@ tasks_added: []
 # rpgCore — Project Journal
 
 ## Current State
-452 passing. Herald agent building.
+462 passing. Prompts externalized. Improver live. Archivist, Strategist, Herald hardened via DeepSeek R1. Scribe manually hardened (rejected DragonQuest substitution).
 
 ## In Flight
-Herald directive generator.
+None.
 
 ## Next Priority
-Loot system v1 via Herald directive.
+Scribe manual prompt fix. Then session start — Herald generates directive from DUNGEON_DESIGN.md.
