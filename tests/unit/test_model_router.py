@@ -1,6 +1,6 @@
 import pytest
 from datetime import datetime
-from unittest.mock import MagicMock, patch, AsyncMock
+from unittest.mock import MagicMock, patch
 from src.tools.apj.agents.model_router import ModelRouter, AccountRateLimitState, BudgetState, RoutingDecision
 from src.tools.apj.agents.base_agent import AgentConfig
 
@@ -11,7 +11,7 @@ def mock_config():
         "role": "tester",
         "department": "analysis",
         "model_preference": "local",
-        "prompts": {"system": "s.md", "fewshot": "f.md"},
+        "prompts": {"system": "docs/agents/prompts/archivist_system.md", "fewshot": "docs/agents/prompts/archivist_fewshot.md"},
         "schema": "CoherenceReport",
         "fallback": {"session_primer": "fail", "open_risks": [], "queued_focus": "none", "constitutional_flags": [], "corpus_hash": ""},
         "save_output": False,
@@ -53,13 +53,15 @@ def test_router_tries_local_success(mock_agent_class, mock_get_ollama, mock_conf
     mock_agent_instance = MagicMock()
     mock_agent_class.return_value = mock_agent_instance
     
-    # Mock the result of agent.run()
-    mock_run_result = MagicMock()
-    mock_run_result.output = '{"test": "ok"}'
+    # Using a real async def ensures asyncio.run() works correctly in the test context
+    async def mock_run_fn(*args, **kwargs):
+        mock_run_result = MagicMock()
+        mock_run_result.output = '{"test": "ok"}'
+        return mock_run_result
     
-    # Use AsyncMock for run so asyncio.run works
-    mock_agent_instance.run = AsyncMock(return_value=mock_run_result)
+    mock_agent_instance.run = mock_run_fn
     
+    # We test via _try_local which calls Agent(model=client).run()
     res = ModelRouter._try_local("prompt")
     assert res == '{"test": "ok"}'
 
