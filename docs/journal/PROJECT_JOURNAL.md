@@ -62,14 +62,25 @@ committed: ["feat: apj schema layer", "feat: apj parser", "docs: frontmatter mig
 tasks_completed: []
 tasks_added: []
 ---
+id: S006
+type: journal
+date: 2026-02-25
+session: 6
+author: scribe
+test_floor: 494
+summary: CodeInventory v1, ContextBuilder, and DocstringAgent suite live. Herald grounded in real codebase paths via ContextBuilder. DocstringAgent upgraded to ModelRouter (remote) for reliable generation. 494 passing tests.
+committed: ["feat: CodeInventory v1", "feat: ContextBuilder grounding", "feat: DocstringAgent + CLI", "feat: DocstringAgent upgrade"]
+tasks_completed: [T045, T046, T047, T048, T049]
+tasks_added: []
+---
 
 # rpgCore — Project Journal
 
 ## Current State
-462 passing. Prompts externalized. Improver live. Archivist, Strategist, Herald hardened via DeepSeek R1. Scribe manually hardened (rejected DragonQuest substitution).
+494 passing. CodeInventory v1 + ContextBuilder provides real-time grounding for agents. DocstringAgent automates documentation via remote ModelRouter (solved 1b hallucinations). Herald refactored to BaseAgent/ModelRouter.
 
 ## In Flight
 None.
 
 ## Next Priority
-Scribe manual prompt fix. Then session start — Herald generates directive from DUNGEON_DESIGN.md.
+Execute automated docstring sweep across core modules. Then handoff to Herald for next feature implementation (Scene templates or UI polish).

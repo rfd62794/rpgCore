@@ -550,3 +550,48 @@
   - polish
   - combat
   - completed
+- id: T045
+  type: task
+  title: CodeInventory v1 — AST scanner, SymbolMap, cache, CLI
+  status: DONE
+  scope: tooling
+  owner: human
+  created: 2026-02-25
+  modified: 2026-02-25
+  tags: [tool, apj, completed]
+- id: T046
+  type: task
+  title: ContextBuilder — codebase grounding for Herald agent
+  status: DONE
+  scope: tooling
+  owner: human
+  created: 2026-02-25
+  modified: 2026-02-25
+  tags: [tool, apj, completed]
+- id: T047
+  type: task
+  title: DocstringAgent — automated documentation generation and insertion
+  status: DONE
+  scope: tooling
+  owner: human
+  created: 2026-02-25
+  modified: 2026-02-25
+  tags: [tool, apj, completed]
+- id: T048
+  type: task
+  title: DocstringAgent upgrade — routed via ModelRouter for remote reliability
+  status: DONE
+  scope: tooling
+  owner: human
+  created: 2026-02-25
+  modified: 2026-02-25
+  tags: [tool, apj, completed]
+- id: T049
+  type: task
+  title: Herald refactor — inherit from BaseAgent, use ContextBuilder
+  status: DONE
+  scope: tooling
+  owner: human
+  created: 2026-02-25
+  modified: 2026-02-25
+  tags: [agent, apj, completed]
