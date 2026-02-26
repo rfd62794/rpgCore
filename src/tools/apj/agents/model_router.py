@@ -125,19 +125,16 @@ class ModelRouter:
     
     @classmethod
     def _try_local(cls, prompt: str) -> Optional[str]:
-        for model in LOCAL_FALLBACK_CHAIN:
+        for model_name in LOCAL_FALLBACK_CHAIN:
             try:
-                # Use synchronous call pattern for local models
-                # Correct pattern: OllamaClient uses warm_model_sync and resolve_model
-                # but we already have those. We just need the OpenAIModel instance.
-                client = get_ollama_model(model_name=model)
+                from pydantic_ai import Agent
+                client = get_ollama_model(model_name=model_name)
+                agent = Agent(model=client)
                 import asyncio
-                # BaseAgent might be called from sync or async, but for tonight
-                # we are staying in sync CLI land.
-                result = asyncio.run(client.run(prompt))
+                result = asyncio.run(agent.run(prompt))
                 return result.output
             except Exception as e:
-                logger.debug(f"Local {model} failed: {e}") # Debug so we don't spam
+                logger.debug(f"Local {model_name} failed: {e}")
                 continue
         return None
     
@@ -158,17 +155,18 @@ class ModelRouter:
             logger.warning(f"ModelRouter: Account limit — {reason}")
             return None
         
-        for model in chain:
+        for model_name in chain:
             try:
-                # remote calls are also sync in our CLI context
-                client = get_openrouter_model(model_name=model)
+                from pydantic_ai import Agent
+                client = get_openrouter_model(model_name=model_name)
+                agent = Agent(model=client)
                 import asyncio
-                result = asyncio.run(client.run(prompt))
+                result = asyncio.run(agent.run(prompt))
                 
                 # Success - record usage
                 cls._account_state.record_request()
                 cls._budget.record_usage(estimated_tokens)
-                cls._log_usage(model, estimated_tokens)
+                cls._log_usage(model_name, estimated_tokens)
                 return result.output
                 
             except Exception as e:
