@@ -1,6 +1,6 @@
 import pytest
-from datetime import datetime, timedelta
-from unittest.mock import MagicMock, patch
+from datetime import datetime
+from unittest.mock import MagicMock, patch, AsyncMock
 from src.tools.apj.agents.model_router import ModelRouter, AccountRateLimitState, BudgetState, RoutingDecision
 from src.tools.apj.agents.base_agent import AgentConfig
 
@@ -34,7 +34,6 @@ def test_router_account_daily_limit_blocks_all_remote():
 def test_router_account_rpm_limit_blocks_all_remote():
     state = AccountRateLimitState(requests_this_minute=20, rpm_limit=20)
     can, reason = state.can_request()
-    # If minute reset hasn't happened
     assert can is False
     assert "RPM limit" in reason
 
@@ -55,15 +54,11 @@ def test_router_tries_local_success(mock_agent_class, mock_get_ollama, mock_conf
     mock_agent_class.return_value = mock_agent_instance
     
     # Mock the result of agent.run()
-    # Since the code calls asyncio.run(agent.run(prompt)), 
-    # mock_agent_instance.run must return something that asyncio.run can handle.
     mock_run_result = MagicMock()
     mock_run_result.output = '{"test": "ok"}'
     
-    import asyncio
-    future = asyncio.Future()
-    future.set_result(mock_run_result)
-    mock_agent_instance.run.return_value = future
+    # Use AsyncMock for run so asyncio.run works
+    mock_agent_instance.run = AsyncMock(return_value=mock_run_result)
     
     res = ModelRouter._try_local("prompt")
     assert res == '{"test": "ok"}'
