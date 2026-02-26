@@ -236,32 +236,9 @@ class Herald(BaseAgent):
             logger.debug("Herald: Agent initialized (example-driven JSON mode)")
         return self._agent
 
-    @staticmethod
-    def _build_prompt(plan: SessionPlan) -> str:
-        """Build Herald prompt from SessionPlan recommended option."""
-        rec = plan.recommended
-        tasks_str = "\n".join(f"  {i+1}. {t}" for i, t in enumerate(rec.tasks))
-        alts_str = "\n".join(
-            f"  [{a.label}] {a.title}: {a.rationale}"
-            for a in plan.alternatives
-        )
-        questions_str = (
-            "\n".join(f"  - {q}" for q in plan.open_questions)
-            if plan.open_questions else "  None."
-        )
-        return (
-            "Produce a HeraldDirective for this approved SessionPlan.\n\n"
-            f"RECOMMENDED OPTION: {rec.label.upper()} — {rec.title}\n"
-            f"  Risk: {rec.risk}\n"
-            f"  Milestone: {rec.milestone_impact}\n"
-            f"  Rationale: {rec.rationale}\n"
-            f"  Tasks from Strategist:\n{tasks_str}\n\n"
-            f"ALTERNATIVES (for context only — directive targets Recommended):\n{alts_str}\n\n"
-            f"OPEN QUESTIONS:\n{questions_str}\n\n"
-            "Convert the Strategist tasks into a production-ready IDE directive. "
-            "Add specific file paths, exact pytest commands, and a conventional commit message. "
-            "The context field must tell the agent what patterns to follow before touching any file."
-        )
+    # BaseAgent's _build_prompt is used with the comprehensive 'task' string
+    # constructed in run() above.
+
 
     @staticmethod
     def _extract_json(raw: str) -> str:
