@@ -207,6 +207,14 @@ class Archivist:
 
         test_floor = corpus.journal[-1].test_floor if corpus.journal else "unknown"
 
+        # Discover design reference docs so the LLM can cite them in recommendations
+        _ref_dir = _PROJECT_ROOT / "docs" / "reference"
+        _ref_docs = sorted(p.name for p in _ref_dir.glob("*.md")) if _ref_dir.exists() else []
+        _ref_note = (
+            "  " + ", ".join(f"docs/reference/{n}" for n in _ref_docs)
+            if _ref_docs else "  None found."
+        )
+
         corpus_summary = f"""
 PROJECT STATE (structured corpus):
   Goals:      {len(corpus.goals)} total, {len(active_goals)} ACTIVE
@@ -215,6 +223,9 @@ PROJECT STATE (structured corpus):
   Sessions:   {len(corpus.sessions)} recorded
   Test floor: {test_floor}
   Latest session: {latest_session.id + " — " + latest_session.focus if latest_session else "none"}
+
+DESIGN REFERENCE DOCS (docs/reference/ — cite these when making recommendations):
+{_ref_note}
 
 ACTIVE GOALS:
 {chr(10).join(f"  {g.id}: {g.title} → {g.milestone or 'no milestone'}" for g in active_goals) or "  None"}

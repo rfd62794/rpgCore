@@ -9,6 +9,7 @@ from src.tools.apj.journal import Journal
 from src.tools.apj.agents.archivist import Archivist, CoherenceReport
 from src.tools.apj.agents.strategist import Strategist, SessionPlan, SessionOption
 from src.tools.apj.agents.ollama_client import resolve_model, warm_model_sync
+from src.tools.apj.agents.herald import Herald, HeraldDirective
 
 
 def print_coherence_report(report: "CoherenceReport") -> None:
@@ -91,11 +92,117 @@ def _run_session_start() -> None:
     print_session_plan(plan)
 
 
+def print_herald_directive(directive: "HeraldDirective") -> None:
+    """Print the Herald directive to stdout in ready-to-paste format."""
+    print("=" * 60)
+    print("  HERALD DIRECTIVE")
+    print("=" * 60)
+    print(f"[SESSION]  {directive.session_id} \u2014 {directive.title}")
+    print(f"[CONFIDENCE]  {directive.confidence}")
+    print("-" * 60)
+    print(f"\n{directive.preamble}")
+    print("\n[CONTEXT]")
+    # Wrap context lines at ~70 chars for readability
+    for line in directive.context.split(". "):
+        if line:
+            print(f"  {line.strip()}.")
+    print("\n[TASKS]")
+    for task in directive.tasks:
+        print(f"  {task}")
+    print("\n[VERIFY]")
+    print(f"  {directive.verification}")
+    print("\n[COMMIT]")
+    print(f"  {directive.commit_message}")
+    print("=" * 60 + "\n")
+
+
+def _load_last_strategist_plan() -> "SessionPlan | None":
+    """
+    Load the most recent *_strategist.md from docs/session_logs/.
+    Parses the markdown back to a SessionPlan. Returns None if not found
+    or if parse fails — caller handles the None case.
+    """
+    import json
+    import re
+    from pathlib import Path
+
+    logs_dir = Path(__file__).resolve().parents[4] / "docs" / "session_logs"
+    if not logs_dir.exists():
+        logger.warning("Herald: session_logs dir not found — run session start first")
+        return None
+
+    strategist_files = sorted(logs_dir.glob("*_strategist.md"))
+    if not strategist_files:
+        logger.warning("Herald: no *_strategist.md found in session_logs")
+        return None
+
+    latest = strategist_files[-1]
+    logger.info(f"Herald: loading plan from {latest.name}")
+
+    try:
+        # The strategist saves plain markdown — we reconstruct SessionPlan
+        # from the embedded JSON-like structure in the task list.
+        # Since we don't store raw JSON, we build a fallback plan from
+        # text parsing of the markdown headings and task lines.
+        text = latest.read_text(encoding="utf-8")
+
+        # Extract recommended title and tasks using markdown patterns
+        title_match = re.search(r"\[R\] HEADLONG.*?\u2014 (.+?) \[", text)
+        title = title_match.group(1).strip() if title_match else "Session Work"
+
+        # Extract task lines (numbered list items)
+        tasks = re.findall(r"    \d+\.\s+(.+)", text)
+
+        # Extract milestone impact
+        milestone_match = re.search(r"Advances:\s+(.+)", text)
+        milestone = milestone_match.group(1).strip() if milestone_match else "Active Milestone"
+
+        # Extract corpus hash
+        hash_match = re.search(r"Corpus Hash.*?`([a-f0-9]+)`", text)
+        corpus_hash = hash_match.group(1) if hash_match else ""
+
+        from src.tools.apj.agents.strategist import SessionPlan, SessionOption
+        return SessionPlan(
+            recommended=SessionOption(
+                label="Headlong",
+                title=title,
+                rationale="Loaded from last Strategist session log.",
+                tasks=tasks or ["Review session log for details"],
+                risk="Low",
+                milestone_impact=milestone,
+            ),
+            alternatives=[
+                SessionOption(
+                    label="Divert",
+                    title="Address Open Risks",
+                    rationale="Check Archivist report for risks.",
+                    tasks=["Review docs/agents/session_logs/ for last archivist report"],
+                    risk="Low",
+                    milestone_impact="N/A",
+                ),
+                SessionOption(
+                    label="Alt",
+                    title="Smaller Session Scope",
+                    rationale="Lower risk option — reduce scope.",
+                    tasks=["python -m src.tools.apj handoff"],
+                    risk="Low",
+                    milestone_impact="N/A",
+                ),
+            ],
+            open_questions=[],
+            archivist_risks_addressed=[],
+            corpus_hash=corpus_hash,
+        )
+    except Exception as exc:
+        logger.warning(f"Herald: failed to parse strategist plan ({exc})")
+        return None
+
+
 def main():
     journal = Journal()
 
     if len(sys.argv) < 2:
-        print("Usage: python -m src.tools.apj [status|update|handoff|boot|tasks|goals|milestones|session]")
+        print("Usage: python -m src.tools.apj [status|update|handoff|boot|tasks|goals|milestones|session|herald]")
         return
 
     cmd = sys.argv[1].lower()
@@ -233,6 +340,21 @@ def main():
                     print("\n  Draft not written. Run session end again to retry.")
         else:
             print("Usage: python -m src.tools.apj session [start|end]")
+
+    elif cmd == "herald":
+        plan = _load_last_strategist_plan()
+        if plan is None:
+            print("No strategist plan found. Run session start first.")
+            return
+        model = resolve_model()
+        active_model = warm_model_sync(model)
+        herald = Herald(model_name=active_model)
+        directive = herald.run(plan)
+        print_herald_directive(directive)
+        response = input("Save directive? [y/N]: ").strip().lower()
+        if response == "y":
+            herald._save_directive(directive)
+            print("Directive saved to session_logs/")
 
     else:
         print(f"Unknown command: {cmd}")

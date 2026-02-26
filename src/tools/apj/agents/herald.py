@@ -1,0 +1,354 @@
+"""
+herald.py — APJ Herald Agent
+
+Single responsibility: take an approved SessionPlan from the Strategist and
+produce a ready-to-paste IDE agent directive.
+
+The directive answers exactly one question:
+  "What exact instructions should the IDE agent receive?"
+
+Design mirrors Archivist/Strategist exactly:
+  - __init__ uses warm_model_sync chain (auto-downgrades 3b→1b→0.5b)
+  - Plain string Agent, example-driven JSON prompt
+  - _run_async uses brace-depth JSON extraction
+  - _fallback_directive — deterministic stub if Ollama fails
+  - _save_directive — saves to docs/session_logs/YYYYMMDD_HHMMSS_herald.md
+  - run() is always synchronous, always returns a HeraldDirective
+
+Sessions NEVER fail — if Ollama is down, the fallback runs and the directive
+is still useful (references the recommended option's tasks literally).
+"""
+
+from __future__ import annotations
+
+import asyncio
+import json
+import re
+from datetime import datetime
+from pathlib import Path
+from typing import Optional
+
+from loguru import logger
+from pydantic import BaseModel, Field
+
+from src.tools.apj.agents.ollama_client import get_ollama_model
+from src.tools.apj.agents.strategist import SessionPlan
+
+# ---------------------------------------------------------------------------
+# Paths
+# ---------------------------------------------------------------------------
+_PROJECT_ROOT = Path(__file__).resolve().parents[4]
+_SESSION_LOGS_DIR = _PROJECT_ROOT / "docs" / "session_logs"
+
+# ---------------------------------------------------------------------------
+# Output schema
+# ---------------------------------------------------------------------------
+
+class HeraldDirective(BaseModel):
+    """Structured output from the Herald — ready-to-paste IDE agent directive."""
+
+    session_id: str = Field(
+        description="Session identifier carried from the SessionPlan corpus_hash or recommended title slug."
+    )
+    title: str = Field(
+        description="Short human-readable name for this directive, e.g. 'Loot System v1'."
+    )
+    preamble: str = Field(
+        description="Opening line of the directive. Always: 'Run `python -m src.tools.apj handoff`.'",
+        default="Run `python -m src.tools.apj handoff`."
+    )
+    context: str = Field(
+        description=(
+            "What the agent needs to know BEFORE coding: existing patterns, "
+            "file locations, schemas to follow, design doc references."
+        )
+    )
+    tasks: list[str] = Field(
+        description=(
+            "Numbered, atomic task steps. Each step MUST reference a specific file path. "
+            "Every task must be verifiable."
+        )
+    )
+    verification: str = Field(
+        description="Exact pytest command + manual smoke test steps."
+    )
+    commit_message: str = Field(
+        description="Conventional commits format: feat/fix/docs/refactor: description"
+    )
+    confidence: str = Field(
+        description="'high' if plan was clear and specific, 'medium' if gaps exist, 'low' if plan was ambiguous.",
+        default="medium"
+    )
+
+
+# ---------------------------------------------------------------------------
+# Few-shot example
+# ---------------------------------------------------------------------------
+_EXAMPLE_DIRECTIVE = json.dumps({
+    "session_id": "S006",
+    "title": "Loot System v1 — Item Drops and Equipment Slots",
+    "preamble": "Run `python -m src.tools.apj handoff`.",
+    "context": (
+        "Loot system spec is in docs/reference/DUNGEON_DESIGN.md. "
+        "Data contracts (ItemDrop, RarityTier, EquipmentSlot) are defined in the Port Notes section. "
+        "Existing combat system is in src/shared/engine/combat/. "
+        "Follow the dataclass pattern used in src/shared/engine/combat/combat_result.py. "
+        "Do not add pygame calls to any shared/ file."
+    ),
+    "tasks": [
+        "1. Create src/shared/engine/loot/__init__.py — empty package marker",
+        "2. Create src/shared/engine/loot/item.py — ItemDrop, RarityTier, EquipmentSlot dataclasses from DUNGEON_DESIGN.md Port Notes section",
+        "3. Create src/shared/engine/loot/drop_table.py — DropTable class: standard_drop(), elite_drop(), boss_drop() following rarity rules from DUNGEON_DESIGN.md Loot System v1 section",
+        "4. Create tests/unit/test_loot.py — test_item_drop_creation, test_rarity_tiers, test_drop_table_standard, test_drop_table_boss_guaranteed_rare",
+        "5. Run pytest — target 452 passing (448 + 4 new)"
+    ],
+    "verification": (
+        "uv run pytest tests/unit/test_loot.py -v. "
+        "Manual: python -c \"from src.shared.engine.loot.item import ItemDrop, RarityTier; print(RarityTier.RARE)\""
+    ),
+    "commit_message": "feat: loot system v1 — ItemDrop, RarityTier, DropTable, 4 tests",
+    "confidence": "high"
+}, indent=2)
+
+_BAD_DIRECTIVE_EXAMPLE = """
+EXAMPLE of a BAD directive (do not do this):
+{
+  "tasks": [
+    "1. Implement the loot system",
+    "2. Add some tests",
+    "3. Make sure it works"
+  ]
+}
+The bad example has no file paths, no specificity, no verification. Every task must name a file.
+"""
+
+_HERALD_SYSTEM_PROMPT = (
+    "You are the HERALD for rpgCore. You receive an approved SessionPlan "
+    "and produce a single ready-to-paste IDE agent directive.\n\n"
+    "Your job is to answer: \"What exact instructions should the IDE agent receive?\"\n\n"
+    "Rules:\n"
+    "- Always start directive with: Run `python -m src.tools.apj handoff`.\n"
+    "- Reference specific file paths — never say \"the combat system\", "
+    "say \"src/apps/dungeon/scenes/combat_scene.py\"\n"
+    "- Every task must be verifiable — include the exact pytest target\n"
+    "- Commit message must be conventional commits format: "
+    "feat/fix/docs/refactor: description\n"
+    "- context section: what the agent needs to know BEFORE coding "
+    "(existing patterns, file locations, schema to follow)\n"
+    "- tasks section: numbered steps, each referencing a specific file\n"
+    "- verification: pytest command + manual smoke test steps\n"
+    "- Never invent file paths — only reference paths that exist in the project\n"
+    "- confidence: high if plan was clear, medium if gaps exist, "
+    "low if plan was ambiguous\n\n"
+    "OUTPUT: Reply with ONLY a JSON object in exactly this shape "
+    "(fill every field with real values — do NOT copy the example):\n\n"
+    f"{_EXAMPLE_DIRECTIVE}\n\n"
+    f"{_BAD_DIRECTIVE_EXAMPLE}\n\n"
+    "CRITICAL: Output ONLY the JSON object. No prose, no markdown fences, "
+    "no explanation. Start with { and end with }."
+)
+
+
+# ---------------------------------------------------------------------------
+# Herald
+# ---------------------------------------------------------------------------
+
+class Herald:
+    """
+    The APJ Herald: converts an approved SessionPlan into a ready-to-paste
+    IDE agent directive.
+
+    Design mirrors Archivist/Strategist:
+    - warm_model_sync chain in __init__
+    - Plain string Agent, example-driven JSON prompt
+    - Brace-depth JSON extraction in _run_async
+    - Deterministic fallback if Ollama unreachable
+    - Always saves directive to docs/session_logs/
+    - run() is synchronous and always returns HeraldDirective
+    """
+
+    def __init__(self, model_name: Optional[str] = None) -> None:
+        from src.tools.apj.agents.ollama_client import warm_model_sync, resolve_model
+        resolved = model_name or resolve_model()
+        self.model_name = warm_model_sync(resolved)
+        self._agent: Optional[object] = None
+        logger.info(f"Herald initialized (model={self.model_name})")
+
+    # ── Public API ──────────────────────────────────────────────────────────
+
+    def run(self, plan: SessionPlan) -> HeraldDirective:
+        """
+        Synchronous entry point. Takes a SessionPlan, produces a HeraldDirective.
+
+        Args:
+            plan: Approved SessionPlan from the Strategist.
+
+        Returns:
+            HeraldDirective — always, even if Ollama is down.
+        """
+        try:
+            directive = asyncio.run(self._run_async(plan))
+        except Exception as exc:
+            logger.warning(f"Herald: Ollama unreachable or agent failed ({exc}). Using fallback.")
+            directive = self._fallback_directive(plan)
+
+        return directive
+
+    # ── Agent ───────────────────────────────────────────────────────────────
+
+    def _get_agent(self) -> object:
+        """Lazy-init the plain-string pydantic_ai Agent."""
+        if self._agent is None:
+            from pydantic_ai import Agent
+            model = get_ollama_model(model_name=self.model_name, temperature=0.3)
+            self._agent = Agent(
+                model=model,
+                system_prompt=_HERALD_SYSTEM_PROMPT,
+            )
+            logger.debug("Herald: Agent initialized (example-driven JSON mode)")
+        return self._agent
+
+    @staticmethod
+    def _build_prompt(plan: SessionPlan) -> str:
+        """Build Herald prompt from SessionPlan recommended option."""
+        rec = plan.recommended
+        tasks_str = "\n".join(f"  {i+1}. {t}" for i, t in enumerate(rec.tasks))
+        alts_str = "\n".join(
+            f"  [{a.label}] {a.title}: {a.rationale}"
+            for a in plan.alternatives
+        )
+        questions_str = (
+            "\n".join(f"  - {q}" for q in plan.open_questions)
+            if plan.open_questions else "  None."
+        )
+        return (
+            "Produce a HeraldDirective for this approved SessionPlan.\n\n"
+            f"RECOMMENDED OPTION: {rec.label.upper()} — {rec.title}\n"
+            f"  Risk: {rec.risk}\n"
+            f"  Milestone: {rec.milestone_impact}\n"
+            f"  Rationale: {rec.rationale}\n"
+            f"  Tasks from Strategist:\n{tasks_str}\n\n"
+            f"ALTERNATIVES (for context only — directive targets Recommended):\n{alts_str}\n\n"
+            f"OPEN QUESTIONS:\n{questions_str}\n\n"
+            "Convert the Strategist tasks into a production-ready IDE directive. "
+            "Add specific file paths, exact pytest commands, and a conventional commit message. "
+            "The context field must tell the agent what patterns to follow before touching any file."
+        )
+
+    @staticmethod
+    def _extract_json(raw: str) -> str:
+        """
+        Extract first complete JSON object from response.
+        Brace-depth tracking — same approach as Archivist/Scribe.
+        """
+        fenced = re.search(r"```(?:json)?\s*({.*?})\s*```", raw, re.DOTALL)
+        if fenced:
+            return fenced.group(1)
+
+        start = raw.find("{")
+        if start == -1:
+            return raw.strip()
+
+        depth = 0
+        for i, char in enumerate(raw[start:], start):
+            if char == "{":
+                depth += 1
+            elif char == "}":
+                depth -= 1
+                if depth == 0:
+                    return raw[start:i + 1]
+
+        return raw[start:].strip()
+
+    async def _run_async(self, plan: SessionPlan) -> HeraldDirective:
+        """Run the plain-string Agent and parse JSON response into HeraldDirective."""
+        agent = self._get_agent()
+        prompt = self._build_prompt(plan)
+        logger.info("Herald: querying Ollama...")
+        result = await agent.run(prompt)  # type: ignore[union-attr]
+        raw_text: str = result.output
+        logger.debug(f"Herald: raw response length={len(raw_text)} chars")
+
+        json_str = self._extract_json(raw_text)
+        try:
+            data, _ = json.JSONDecoder().raw_decode(json_str.strip())
+        except json.JSONDecodeError as exc:
+            raise ValueError(
+                f"Herald: JSON parse failed — {exc}\nRaw: {raw_text[:300]}"
+            ) from exc
+
+        directive = HeraldDirective.model_validate(data)
+        # Always enforce preamble — model may modify it
+        directive.preamble = "Run `python -m src.tools.apj handoff`."
+        logger.info(
+            f"Herald: directive complete — '{directive.title}' "
+            f"[{directive.confidence}], {len(directive.tasks)} tasks"
+        )
+        return directive
+
+    # ── Fallback ────────────────────────────────────────────────────────────
+
+    def _fallback_directive(self, plan: SessionPlan) -> HeraldDirective:
+        """
+        Deterministic stub directive built from SessionPlan.recommended.
+        Used when Ollama is unreachable — never fails.
+        Tasks are carried directly from the Strategist (may lack file paths).
+        """
+        logger.warning("Herald: generating fallback directive (Ollama offline)")
+        rec = plan.recommended
+        # Carry Strategist tasks as-is — they may be less specific but are honest
+        numbered_tasks = [
+            f"{i+1}. {t}" for i, t in enumerate(rec.tasks)
+        ]
+        return HeraldDirective(
+            session_id=plan.corpus_hash[:8] or "FALLBACK",
+            title=rec.title,
+            preamble="Run `python -m src.tools.apj handoff`.",
+            context=(
+                f"[FALLBACK — Ollama offline] Strategist recommended: {rec.title}. "
+                f"Milestone: {rec.milestone_impact}. "
+                "File paths were not enriched — review DUNGEON_DESIGN.md and LIVING_WORLD.md manually."
+            ),
+            tasks=numbered_tasks,
+            verification="uv run pytest --tb=no -q",
+            commit_message=f"feat: {rec.title.lower().replace(' ', '-')}",
+            confidence="low",
+        )
+
+    # ── Persistence ─────────────────────────────────────────────────────────
+
+    def _save_directive(
+        self, directive: HeraldDirective, log_dir: Optional[Path] = None
+    ) -> Path:
+        """Write the HeraldDirective to docs/session_logs/ as markdown."""
+        target_dir = log_dir if log_dir is not None else _SESSION_LOGS_DIR
+        target_dir.mkdir(parents=True, exist_ok=True)
+        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+        directive_path = target_dir / f"{timestamp}_herald.md"
+
+        lines = [
+            f"# Herald Directive — {directive.title}\n",
+            f"**Session:** {directive.session_id}  ",
+            f"**Confidence:** {directive.confidence}  ",
+            f"**Generated:** {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n",
+            "## Preamble",
+            directive.preamble,
+            "\n## Context",
+            directive.context,
+            "\n## Tasks",
+        ]
+        lines += [f"{t}" for t in directive.tasks]
+        lines += [
+            "\n## Verification",
+            directive.verification,
+            "\n## Commit",
+            f"`{directive.commit_message}`",
+        ]
+
+        directive_path.write_text("\n".join(lines), encoding="utf-8")
+        try:
+            display_path = directive_path.relative_to(_PROJECT_ROOT)
+        except ValueError:
+            display_path = directive_path
+        logger.info(f"Herald: directive saved → {display_path}")
+        return directive_path
