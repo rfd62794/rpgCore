@@ -216,7 +216,7 @@ def resolve_model(base_url: str = OLLAMA_BASE_URL) -> str:
 def get_ollama_model(
     model_name: str | None = None,
     temperature: float = 0.3,
-    max_tokens: int = 1024,
+    max_tokens: int = 2048,
     timeout: float = 60.0,
 ) -> OpenAI:
     """
