@@ -25,7 +25,7 @@ def _make_plan():
         tasks=[
             "Create src/shared/engine/loot/__init__.py",
             "Create src/shared/engine/loot/item.py with ItemDrop dataclass",
-            "Run uv run pytest — target 452 passing",
+            "Run uv run pytest tests/unit/test_loot.py -v — target 452 passing",
         ],
         risk="Low",
         milestone_impact="M8 — Dungeon Crawler Frame",
