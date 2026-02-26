@@ -24,3 +24,17 @@ Changes:
   - Moved output format directive to very first line [CHANGE: prevents prose bleed]
   - Added explicit validation criteria for task specificity [CHANGE: addresses vague 'read docs' tasks]
   - Standardized corpus_hash handling in schema [CHANGE: resolves empty vs hash confusion]
+
+## 2026-02-25 — herald
+Model: deepseek/deepseek-r1
+Confidence: high
+Weaknesses identified:
+  - Output format instruction appears after example prose creating ambiguity
+  - Example uses bracket placeholders that models might literally reproduce
+  - Missing concrete example of pytest verification syntax
+  - No demonstration of confidence scoring in sample output
+Changes:
+  - Moved output format instruction before any examples [CHANGE: prevents prose generation]
+  - Replaced [demo] placeholder with concrete 'demo' folder name [CHANGE: prevents bracket literals]
+  - Added explicit pytest path example with -k flag [CHANGE: clarifies verification]
+  - Included full example with realistic values in all fields [CHANGE: better few-shot]
