@@ -10,7 +10,11 @@ from src.tools.apj.agents.archivist import Archivist, CoherenceReport
 from src.tools.apj.agents.strategist import Strategist, SessionPlan, SessionOption
 from src.tools.apj.agents.ollama_client import resolve_model, warm_model_sync
 from src.tools.apj.agents.herald import Herald, HeraldDirective
+from datetime import datetime
+from pathlib import Path
 
+# Resolution: src/tools/apj/cli.py -> parents[3] is rpgCore
+PROJECT_ROOT = Path(__file__).resolve().parents[3]
 
 def print_coherence_report(report: "CoherenceReport") -> None:
     """Print the Archivist CoherenceReport to stdout."""
@@ -380,6 +384,49 @@ def main():
             h = Herald(model_name="base_agent_router") # Dummy for save logic
             h._save_directive(directive)
             print("Directive saved to session_logs/")
+
+    elif cmd == "inventory":
+        sub = sys.argv[2] if len(sys.argv) > 2 else "scan"
+        
+        if sub == "scan":
+            from .inventory.scanner import ASTScanner
+            from .inventory.cache import save_cache
+            scanner = ASTScanner(PROJECT_ROOT)
+            symbol_map = scanner.scan()
+            save_cache(PROJECT_ROOT, symbol_map)
+            print(symbol_map.summary())
+        
+        elif sub == "find":
+            keyword = sys.argv[3] if len(sys.argv) > 3 else ""
+            if not keyword:
+                print("Usage: apj inventory find <keyword>")
+                return
+            from .inventory.cache import load_cache
+            from .inventory.scanner import ASTScanner
+            from .inventory.cache import save_cache
+            symbol_map = load_cache(PROJECT_ROOT)
+            if symbol_map is None:
+                scanner = ASTScanner(PROJECT_ROOT)
+                symbol_map = scanner.scan()
+                save_cache(PROJECT_ROOT, symbol_map)
+            results = symbol_map.find_by_keyword(keyword)
+            for f in results:
+                classes = [c.name for c in f.classes]
+                print(f"{f.path} — {classes}")
+        
+        elif sub == "classes":
+            name = sys.argv[3] if len(sys.argv) > 3 else ""
+            if not name:
+                print("Usage: apj inventory classes <ClassName>")
+                return
+            from .inventory.cache import load_cache
+            symbol_map = load_cache(PROJECT_ROOT)
+            if symbol_map is None:
+                print("Run: apj inventory scan first")
+                return
+            results = symbol_map.find_class(name)
+            for c in results:
+                print(f"{c.name} in {c.file}:{c.line_start} — bases: {c.bases}")
 
     elif cmd == "improve":
         agent_name = sys.argv[2] if len(sys.argv) > 2 else None
