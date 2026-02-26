@@ -60,7 +60,7 @@ def test_improver_sanitize_strips_project_names():
             improver.model_name = "deepseek/deepseek-r1"
 
     result = improver._sanitize("The rpgCore project has many features.")
-    assert "[GAME_PROJECT]" in result
+    assert "PyGame_Engine" in result
     assert "rpgCore" not in result
 
 
@@ -78,7 +78,7 @@ def test_improver_sanitize_strips_demo_names():
             improver.model_name = "deepseek/deepseek-r1"
 
     result = improver._sanitize("The Slime Breeder demo uses genetics.")
-    assert "[DEMO_NAME]" in result
+    assert "GenericDemo" in result
     assert "Slime Breeder" not in result
 
 

@@ -51,16 +51,16 @@ AGENT_DESCRIPTIONS: dict[str, str] = {
 # Sanitizer — strip project-identifying info before remote calls
 # ---------------------------------------------------------------------------
 SANITIZE_PATTERNS: dict[str, str] = {
-    r"rpgCore":                  "[GAME_PROJECT]",
-    r"Dungeon Crawler":          "[DEMO_NAME]",
-    r"Slime Breeder":            "[DEMO_NAME]",
-    r"Space Trader":             "[DEMO_NAME]",
-    r"Slime Clan":               "[DEMO_NAME]",
-    r"Last Appointment":         "[DEMO_NAME]",
-    r"The Living World":         "[PROJECT_CONCEPT]",
-    r"The Ring":                 "[PROJECT_HUB]",
-    r"src/apps/\w+/":            "src/apps/[demo]/",
-    r"docs/reference/\w+\.md":  "docs/reference/[DESIGN_DOC].md",
+    r"rpgCore":                  "PyGame_Engine",
+    r"Dungeon Crawler":          "GenericDemo",
+    r"Slime Breeder":            "GenericDemo",
+    r"Space Trader":             "GenericDemo",
+    r"Slime Clan":               "GenericDemo",
+    r"Last Appointment":         "GenericDemo",
+    r"The Living World":         "ProjectConcept",
+    r"The Ring":                 "ProjectHub",
+    r"src/apps/\w+/":            "src/apps/demo_name/",
+    r"docs/reference/\w+\.md":  "docs/reference/design_doc.md",
 }
 
 # ---------------------------------------------------------------------------
