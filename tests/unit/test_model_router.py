@@ -48,15 +48,25 @@ def test_router_budget_warn():
     assert budget.check(600) == "warn"
 
 @patch("src.tools.apj.agents.model_router.get_ollama_model")
-@patch("pydantic_ai.Agent.run", new_callable=MagicMock)
-def test_router_tries_local_success(mock_agent_run, mock_get_ollama, mock_config):
-    mock_get_ollama.return_value = MagicMock()
-    # To support asyncio.run(agent.run(prompt)), the mock must return a coroutine-like object
-    # or just use a helper to make it awaitable.
+@patch("src.tools.apj.agents.model_router.Agent")
+def test_router_tries_local_success(mock_agent_class, mock_get_ollama, mock_config):
+    # Mock the Agent instance
+    mock_agent_instance = MagicMock()
+    mock_agent_class.return_value = mock_agent_instance
+    
+    # Mock the result of agent.run()
+    # Since the code calls asyncio.run(agent.run(prompt)), 
+    # mock_agent_instance.run must return something that asyncio.run can handle.
+    mock_run_result = MagicMock()
+    mock_run_result.output = '{"test": "ok"}'
+    
     import asyncio
     future = asyncio.Future()
-    future.set_result(MagicMock(output='{"test": "ok"}'))
-    mock_agent_run.return_value = future
+    future.set_result(mock_run_result)
+    mock_agent_instance.run.return_value = future
+    
+    res = ModelRouter._try_local("prompt")
+    assert res == '{"test": "ok"}'
     
     res = ModelRouter._try_local("prompt")
     assert res == '{"test": "ok"}'
