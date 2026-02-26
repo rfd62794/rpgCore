@@ -157,7 +157,7 @@ class ModelRouter:
         
         for model_name in chain:
             try:
-                client = get_openrouter_model(model_name=model_name)
+                client = get_openrouter_model(model=model_name)
                 agent = Agent(model=client)
                 import asyncio
                 result = asyncio.run(agent.run(prompt))
