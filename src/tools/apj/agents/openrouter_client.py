@@ -154,16 +154,12 @@ def get_openrouter_model():
     api_key = os.getenv("OPENROUTER_API_KEY", "")
     model_name = os.getenv("OPENROUTER_MODEL", FREE_MODELS[0])
 
+    # pydantic_ai 1.22+ has a built-in 'openrouter' provider.
+    # It reads OPENROUTER_API_KEY from env automatically.
+    os.environ["OPENROUTER_API_KEY"] = api_key   # ensure it's set for the provider
     logger.info(f"Director: connecting via OpenRouter -> {model_name}")
 
-    # pydantic_ai requires a custom base_url via an AsyncOpenAI client instance
-    from openai import AsyncOpenAI
-    openai_client = AsyncOpenAI(
-        base_url=_OPENROUTER_BASE_URL,
-        api_key=api_key,
-    )
-
-    return OpenAIChatModel(model_name, openai_client=openai_client)
+    return OpenAIChatModel(model_name, provider="openrouter")
 
 
 # ---------------------------------------------------------------------------
