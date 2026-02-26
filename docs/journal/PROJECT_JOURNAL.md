@@ -66,10 +66,10 @@ tasks_added: []
 # rpgCore — Project Journal
 
 ## Current State
-448 passing. LIVING_WORLD.md and DUNGEON_DESIGN.md created — master design reference and dungeon crawler spec.
+452 passing. Herald agent building.
 
 ## In Flight
-None.
+Herald directive generator.
 
 ## Next Priority
-Herald directive generator. Or: loot system v1 implementation from DUNGEON_DESIGN spec.
+Loot system v1 via Herald directive.
