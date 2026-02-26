@@ -56,7 +56,7 @@ type: journal
 date: 2026-02-25
 session: 5
 author: scribe
-test_floor: 434
+test_floor: 462
 summary: APJ schema layer (Phase 1) and corpus parser (Phase 2) complete. Pydantic corpus models, LAW 1+4 validators, frontmatter reader, corpus builder, ValidationResult. Docs restructured into subdirs.
 committed: ["feat: apj schema layer", "feat: apj parser", "docs: frontmatter migration"]
 tasks_completed: []
