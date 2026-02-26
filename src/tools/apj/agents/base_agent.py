@@ -1,0 +1,142 @@
+import json
+import re
+import yaml
+from datetime import datetime
+from pathlib import Path
+from typing import Any, Optional, Union
+from loguru import logger
+from pydantic import BaseModel, Field
+
+from src.tools.apj.agents.registry import SchemaRegistry
+from src.tools.apj.agents.ollama_client import warm_model_sync, resolve_model
+
+# Resolution: src/tools/apj/agents/base_agent.py -> parents[3] is rpgCore
+PROJECT_ROOT = Path(__file__).resolve().parents[3]
+
+class PromptConfig(BaseModel):
+    system: str   # path relative to PROJECT_ROOT
+    fewshot: str  # path relative to PROJECT_ROOT
+
+class AgentConfig(BaseModel):
+    name: str
+    role: str
+    department: str        # analysis/planning/execution/memory/persona
+    model_preference: str  # "local" or "remote"
+    backend_override: Optional[str] = None  # specific model string or null
+    prompts: PromptConfig
+    schema_name: str = Field(alias="schema") # 'schema' is a reserved keyword in some contexts
+    fallback: dict
+    save_output: bool = True
+    log_quality: bool = True
+
+    class Config:
+        populate_by_name = True
+
+class BaseAgent:
+    def __init__(self, config: AgentConfig):
+        self.config = config
+        self.schema = SchemaRegistry.get(config.schema_name)
+        self.model_name = self._warm_model()
+        self._agent = None # lazy-loaded or routed
+    
+    @classmethod
+    def from_config(cls, name: str) -> "BaseAgent":
+        path = PROJECT_ROOT / "docs" / "agents" / "configs" / f"{name}.yaml"
+        if not path.exists():
+            raise FileNotFoundError(f"Agent config not found: {path}")
+        
+        with open(path, "r", encoding="utf-8") as f:
+            data = yaml.safe_load(f)
+        
+        config = AgentConfig.model_validate(data)
+        return cls(config)
+    
+    def run(self, task_input: Any) -> BaseModel:
+        """Execute the agent loop: serialize -> prompt -> call -> extract -> validate -> save."""
+        task = self._serialize_input(task_input)
+        prompt = self._build_prompt(task)
+        
+        # Route to ModelRouter (Implementation in Part 2)
+        from src.tools.apj.agents.model_router import ModelRouter
+        raw = ModelRouter.route(self.config, prompt)
+        
+        json_str = self._extract_json(raw)
+        result = self._validate(json_str)
+        
+        if self.config.save_output:
+            self._save(result)
+            
+        return result
+    
+    def _build_prompt(self, task: str) -> str:
+        system = self._load_prompt(self.config.prompts.system)
+        fewshot = self._load_prompt(self.config.prompts.fewshot)
+        return "\n\n".join([
+            f"ROLE: {self.config.role}",
+            system,
+            fewshot,
+            f"TASK:\n{task}",
+        ])
+    
+    def _extract_json(self, raw: str) -> str:
+        """Brace-depth extraction - standard APJ pattern."""
+        fenced = re.search(r"```(?:json)?\s*({.*?})\s*```", raw, re.DOTALL)
+        if fenced:
+            return fenced.group(1)
+        
+        start = raw.find("{")
+        if start == -1:
+            return raw.strip()
+        
+        depth = 0
+        for i, char in enumerate(raw[start:], start):
+            if char == "{":
+                depth += 1
+            elif char == "}":
+                depth -= 1
+                if depth == 0:
+                    return raw[start:i + 1]
+        return raw[start:].strip()
+    
+    def _validate(self, json_str: str) -> BaseModel:
+        try:
+            # First try loading as JSON to catch basic syntax errors
+            data = json.loads(json_str)
+            return self.schema.model_validate(data)
+        except Exception as e:
+            logger.warning(f"Agent {self.config.name} validation failed: {e}. Using fallback.")
+            return self.schema.model_validate(self.config.fallback)
+    
+    def _serialize_input(self, task_input: Any) -> str:
+        if isinstance(task_input, str):
+            return task_input
+        if isinstance(task_input, BaseModel):
+            return task_input.model_dump_json(indent=2)
+        return str(task_input)
+    
+    def _load_prompt(self, relative_path: str) -> str:
+        path = PROJECT_ROOT / relative_path
+        if path.exists():
+            return path.read_text(encoding="utf-8")
+        logger.warning(f"Prompt file missing: {relative_path}")
+        return ""
+    
+    def _warm_model(self) -> str:
+        """Ensure a local model is ready if preference is local."""
+        if self.config.model_preference == "local":
+            resolved = resolve_model()
+            return warm_model_sync(resolved)
+        return "remote"
+    
+    def _save(self, result: BaseModel) -> None:
+        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+        log_dir = PROJECT_ROOT / "docs" / "session_logs"
+        log_dir.mkdir(parents=True, exist_ok=True)
+        path = log_dir / f"{timestamp}_{self.config.name}.md"
+        
+        content = [
+            f"# {self.config.name.upper()} OUTPUT — {timestamp}\n",
+            result.model_dump_json(indent=2)
+        ]
+        path.write_text("\n".join(content), encoding="utf-8")
+        logger.info(f"Agent {self.config.name} output saved: {path.name}")

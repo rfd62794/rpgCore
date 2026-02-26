@@ -1,0 +1,23 @@
+name: strategist
+role: "Read archivist report, produce ranked session plan with three concrete options."
+department: planning
+model_preference: local
+backend_override: null
+prompts:
+  system: docs/agents/prompts/strategist_system.md
+  fewshot: docs/agents/prompts/strategist_fewshot.md
+schema: SessionPlan
+fallback:
+  recommended:
+    label: "HEADLONG"
+    title: "Review Archivist Findings"
+    rationale: "Fallback session — review archivist report manually."
+    risk: "low"
+    milestone_impact: "N/A"
+    tasks: ["Read docs/session_logs/ for last archivist report"]
+  alternatives: []
+  open_questions: ["Is Ollama running?"]
+  archivist_risks_addressed: []
+  corpus_hash: ""
+save_output: true
+log_quality: true
