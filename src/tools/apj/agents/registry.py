@@ -3,12 +3,14 @@ from src.tools.apj.agents.archivist import CoherenceReport
 from src.tools.apj.agents.strategist import SessionPlan
 from src.tools.apj.agents.herald import HeraldDirective
 from src.tools.apj.agents.scribe import ScribeDraft
+from src.tools.apj.agents.docstring_agent import DocstringResult
 
 SCHEMA_REGISTRY: dict[str, type[BaseModel]] = {
     "CoherenceReport":  CoherenceReport,
     "SessionPlan":      SessionPlan,
     "HeraldDirective":  HeraldDirective,
     "ScribeDraft":      ScribeDraft,
+    "DocstringResult":  DocstringResult,
 }
 
 class SchemaRegistry:
