@@ -126,7 +126,7 @@ def _load_last_strategist_plan() -> "SessionPlan | None":
     import re
     from pathlib import Path
 
-    logs_dir = Path(__file__).resolve().parents[4] / "docs" / "session_logs"
+    logs_dir = Path(__file__).resolve().parents[3] / "docs" / "session_logs"
     if not logs_dir.exists():
         logger.warning("Herald: session_logs dir not found — run session start first")
         return None

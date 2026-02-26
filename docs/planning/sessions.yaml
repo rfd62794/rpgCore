@@ -42,7 +42,7 @@
   type: session
   session_date: 2026-02-25
   status: ACTIVE
-  test_floor: 434
+  test_floor: 462
   focus: "Schema layer, parser layer, pure YAML migration, session tracking"
   tasks_planned: []
   tasks_completed: []
