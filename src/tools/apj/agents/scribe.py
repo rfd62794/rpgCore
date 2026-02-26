@@ -40,6 +40,15 @@ _TASKS_PATH   = _PROJECT_ROOT / "docs" / "planning" / "tasks.yaml"
 _SESSION_LOGS = _PROJECT_ROOT / "docs" / "agents" / "session_logs"
 
 
+def _load_prompt(filename: str) -> str:
+    """Load a prompt file from docs/agents/prompts/. Returns empty string if missing."""
+    path = _PROJECT_ROOT / "docs" / "agents" / "prompts" / filename
+    if path.exists():
+        return path.read_text(encoding="utf-8")
+    logger.warning(f"Prompt file missing: {filename} \u2014 using empty string")
+    return ""
+
+
 # ---------------------------------------------------------------------------
 # Output schema
 # ---------------------------------------------------------------------------
@@ -167,17 +176,9 @@ class Scribe:
                 "confidence": "high",
             })
             system_prompt = (
-                "You are the SCRIBE for rpgCore. Read the git diff and "
-                "project state and write a concise session journal entry.\n\n"
-                "OUTPUT: Reply with ONLY a single valid JSON object:\n"
-                f"{example}\n\n"
-                "Field rules:\n"
-                "- summary: 2 sentences MAX. What shipped and test floor.\n"
-                "- tasks_completed: task IDs (T001 format) finished this session.\n"
-                "- tasks_added: task IDs for new work discovered this session.\n"
-                "- committed: 7-char commit hashes from the diff.\n"
-                "- confidence: 'high' if diff is clear, 'low' if ambiguous.\n"
-                "CRITICAL: Output ONLY the JSON object. No prose. No markdown."
+                _load_prompt("scribe_system.md")
+                + f"\n\n{example}\n\n"
+                + _load_prompt("scribe_fewshot.md")
             )
             self._agent = Agent(model=model, system_prompt=system_prompt)
             logger.debug("Scribe: Agent initialized")

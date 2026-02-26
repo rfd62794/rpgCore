@@ -71,12 +71,12 @@ EXAMPLE of a correct, high-quality CoherenceReport:
 {
   "session_primer": "rpgCore has 442 passing tests across six playable demos including the Dungeon Crawler with a working combat loop. The corpus parser shipped last session and confirmed live structured validation.",
   "open_risks": [
-    "G3 in corpus has no linked Milestone — orphaned goal, should be linked or retired",
+    "G3 in corpus has no linked Milestone \u2014 orphaned goal, should be linked or retired",
     "Two tasks marked Active have no corresponding Active Milestone"
   ],
   "queued_focus": "Link G3 to Milestone M5 or mark it deferred",
   "constitutional_flags": [
-    "LAW 1 VIOLATION — T047 is scoped shared but references slime_breeder in title"
+    "LAW 1 VIOLATION \u2014 T047 is scoped shared but references slime_breeder in title"
   ],
   "corpus_hash": ""
 }
@@ -84,12 +84,21 @@ EXAMPLE of a correct, high-quality CoherenceReport:
 EXAMPLE of a BAD report (do not do this):
 {
   "constitutional_flags": [
-    "LAW 1 — No demo-specific logic in src/shared/",
-    "LAW 4 — The test floor is 442 passing tests"
+    "LAW 1 \u2014 No demo-specific logic in src/shared/",
+    "LAW 4 \u2014 The test floor is 442 passing tests"
   ]
 }
 The bad example flags laws WITHOUT evidence. Only flag violations you can cite specifically.
 """
+
+
+def _load_prompt(filename: str) -> str:
+    """Load a prompt file from docs/agents/prompts/. Returns empty string if missing."""
+    path = _PROJECT_ROOT / "docs" / "agents" / "prompts" / filename
+    if path.exists():
+        return path.read_text(encoding="utf-8")
+    logger.warning(f"Prompt file missing: {filename} \u2014 using empty string")
+    return ""
 
 
 # ---------------------------------------------------------------------------
@@ -266,7 +275,7 @@ VALIDATION ERRORS (deterministic — confirmed violations, include in constituti
                     "Momentum is on the Archivist wiring and agent swarm."
                 ),
                 "open_risks": [
-                    "G3 has no linked milestone — orphaned",
+                    "G3 has no linked milestone \u2014 orphaned",
                     "Two Active tasks have no corresponding Active Milestone",
                 ],
                 "queued_focus": (
@@ -278,21 +287,9 @@ VALIDATION ERRORS (deterministic — confirmed violations, include in constituti
                 "corpus_hash": "",
             }, indent=2)
             system_prompt = (
-                "You are the ARCHIVIST for rpgCore, a Python/Pygame game engine project. "
-                "Read the APJ corpus summary and produce a Coherence Report for the developer.\n\n"
-                f"{_FOUR_LAWS}\n\n"
-                "OUTPUT: Reply with ONLY a JSON object in exactly this shape "
-                "(fill every field with real values from the corpus — do NOT copy the example):\n\n"
-                f"{example}\n\n"
-                "Rules:\n"
-                "- session_primer: 2 sentences — current project state + momentum.\n"
-                "- open_risks: real risks from corpus. [] if none.\n"
-                "- queued_focus: one specific next task from the corpus.\n"
-                "- constitutional_flags: only confirmed Four Laws violations. [] if none.\n"
-                "- corpus_hash: always use empty string \"\" — filled later.\n"
-                "CRITICAL: Output ONLY the JSON object. No prose, no markdown fences, "
-                "no explanation. Start with { and end with }."
-                f"{_GOOD_REPORT_EXAMPLE}"
+                _load_prompt("archivist_system.md")
+                + f"\n\n{example}\n\n"
+                + _load_prompt("archivist_fewshot.md")
             )
             self._agent = Agent(
                 model=model,

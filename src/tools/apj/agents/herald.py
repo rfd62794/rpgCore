@@ -40,6 +40,15 @@ from src.tools.apj.agents.strategist import SessionPlan
 _PROJECT_ROOT = Path(__file__).resolve().parents[4]
 _SESSION_LOGS_DIR = _PROJECT_ROOT / "docs" / "session_logs"
 
+
+def _load_prompt(filename: str) -> str:
+    """Load a prompt file from docs/agents/prompts/. Returns empty string if missing."""
+    path = _PROJECT_ROOT / "docs" / "agents" / "prompts" / filename
+    if path.exists():
+        return path.read_text(encoding="utf-8")
+    logger.warning(f"Prompt file missing: {filename} \u2014 using empty string")
+    return ""
+
 # ---------------------------------------------------------------------------
 # Output schema
 # ---------------------------------------------------------------------------
@@ -201,9 +210,14 @@ class Herald:
         if self._agent is None:
             from pydantic_ai import Agent
             model = get_ollama_model(model_name=self.model_name, temperature=0.3)
+            system_prompt = (
+                _load_prompt("herald_system.md")
+                + "\n\n"
+                + _load_prompt("herald_fewshot.md")
+            )
             self._agent = Agent(
                 model=model,
-                system_prompt=_HERALD_SYSTEM_PROMPT,
+                system_prompt=system_prompt,
             )
             logger.debug("Herald: Agent initialized (example-driven JSON mode)")
         return self._agent

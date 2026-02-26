@@ -157,6 +157,15 @@ _GOOD_PLAN_EXAMPLE = json.dumps({
 }, indent=2)
 
 
+def _load_prompt(filename: str) -> str:
+    """Load a prompt file from docs/agents/prompts/. Returns empty string if missing."""
+    path = _PROJECT_ROOT / "docs" / "agents" / "prompts" / filename
+    if path.exists():
+        return path.read_text(encoding="utf-8")
+    logger.warning(f"Prompt file missing: {filename} \u2014 using empty string")
+    return ""
+
+
 class Strategist:
     """
     The APJ Strategist: reads Archivist findings and produces a ranked Session Plan.
@@ -231,23 +240,9 @@ class Strategist:
         if self._agent is None:
             model = get_ollama_model(model_name=self.model_name, temperature=0.4)
             system_prompt = (
-                "You are the STRATEGIST for rpgCore, a Python/Pygame game engine project.\n\n"
-                "You read the Archivist's Coherence Report and produce a ranked Session Plan "
-                "answering: 'What should we work on today and what are the real options?'\n\n"
-                f"{_FOUR_LAWS}\n\n"
-                "Rules:\n"
-                "- recommended: advances the highest-priority Active Milestone\n"
-                "- alternatives[0] label='Divert': addresses the most critical Archivist risk\n"
-                "- alternatives[1] label='Alt': smaller scope, lower risk option\n"
-                "- tasks: name real files, test targets, commit messages — be specific\n"
-                "- open_questions: only decisions the Overseer must make before work begins\n"
-                "- Never recommend options that violate the Four Constitutional Laws\n"
-                "- corpus_hash: always use empty string \"\" — carried from Archivist\n\n"
-                "OUTPUT: Reply with ONLY a JSON object in exactly this shape "
-                "(fill every field with real values — do NOT copy the example):\n\n"
-                f"{_GOOD_PLAN_EXAMPLE}\n\n"
-                "CRITICAL: Output ONLY the JSON object. No prose, no markdown fences, "
-                "no explanation. Start with { and end with }."
+                _load_prompt("strategist_system.md")
+                + "\n\n"
+                + _load_prompt("strategist_fewshot.md")
             )
             from pydantic_ai import Agent
             self._agent = Agent(
