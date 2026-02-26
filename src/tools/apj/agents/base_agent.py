@@ -7,7 +7,6 @@ from typing import Any, Optional, Union
 from loguru import logger
 from pydantic import BaseModel, Field
 
-from src.tools.apj.agents.registry import SchemaRegistry
 from src.tools.apj.agents.ollama_client import warm_model_sync, resolve_model
 
 # Resolution: src/tools/apj/agents/base_agent.py -> parents[4] is rpgCore
@@ -35,6 +34,7 @@ class AgentConfig(BaseModel):
 class BaseAgent:
     def __init__(self, config: AgentConfig):
         self.config = config
+        from src.tools.apj.agents.registry import SchemaRegistry
         self.schema = SchemaRegistry.get(config.schema_name)
         self.model_name = self._warm_model()
         self._agent = None # lazy-loaded or routed
