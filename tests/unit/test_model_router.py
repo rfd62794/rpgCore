@@ -67,9 +67,6 @@ def test_router_tries_local_success(mock_agent_class, mock_get_ollama, mock_conf
     
     res = ModelRouter._try_local("prompt")
     assert res == '{"test": "ok"}'
-    
-    res = ModelRouter._try_local("prompt")
-    assert res == '{"test": "ok"}'
 
 def test_handle_429_provider_saturated():
     err = Exception("Provider overloaded")

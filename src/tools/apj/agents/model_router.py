@@ -8,6 +8,7 @@ from pydantic import BaseModel, Field
 
 from src.tools.apj.agents.ollama_client import get_ollama_model
 from src.tools.apj.agents.openrouter_client import get_openrouter_model
+from pydantic_ai import Agent
 
 # Resolution: src/tools/apj/agents/model_router.py -> parents[4] is rpgCore
 PROJECT_ROOT = Path(__file__).resolve().parents[4]
@@ -127,7 +128,6 @@ class ModelRouter:
     def _try_local(cls, prompt: str) -> Optional[str]:
         for model_name in LOCAL_FALLBACK_CHAIN:
             try:
-                from pydantic_ai import Agent
                 client = get_ollama_model(model_name=model_name)
                 agent = Agent(model=client)
                 import asyncio
@@ -157,7 +157,6 @@ class ModelRouter:
         
         for model_name in chain:
             try:
-                from pydantic_ai import Agent
                 client = get_openrouter_model(model_name=model_name)
                 agent = Agent(model=client)
                 import asyncio
