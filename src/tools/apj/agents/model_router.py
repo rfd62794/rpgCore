@@ -75,9 +75,9 @@ DEPARTMENT_ROUTING: dict[str, RoutingDecision] = {
 }
 
 REMOTE_FALLBACK_CHAIN: list[str] = [
-    "deepseek/deepseek-r1:free",
-    "meta-llama/llama-3.1-70b-instruct:free",
-    "google/gemini-flash-1.5:free",
+    "deepseek/deepseek-r1",
+    "meta-llama/llama-3.1-70b-instruct",
+    "google/gemini-flash-1.5",
 ]
 
 LOCAL_FALLBACK_CHAIN: list[str] = [
