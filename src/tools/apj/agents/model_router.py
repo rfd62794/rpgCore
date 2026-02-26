@@ -170,13 +170,13 @@ class ModelRouter:
                 return result.output
                 
             except Exception as e:
-                error_type = cls._handle_429(e, model)
+                error_type = cls._handle_429(e, model_name)
                 if error_type == "account_rate_limited":
                     return None  # Stop chain entirely
                 elif error_type == "provider_saturated":
                     continue     # Try next model
                 
-                logger.warning(f"ModelRouter: Remote {model} failed: {e}")
+                logger.warning(f"ModelRouter: Remote {model_name} failed: {e}")
                 continue
         return None
     
