@@ -467,7 +467,7 @@ def main():
             
             # generate
             from .agents.docstring_agent import DocstringAgent, DocstringRequest
-            agent = DocstringAgent()
+            agent = DocstringAgent.from_config("docstring")
             request = DocstringRequest(
                 symbol_name=target.name,
                 symbol_type=symbol_type,

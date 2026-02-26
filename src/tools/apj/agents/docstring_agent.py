@@ -6,6 +6,8 @@ import logging
 
 logger = logging.getLogger(__name__)
 
+from src.tools.apj.agents.base_agent import BaseAgent, AgentConfig
+
 class DocstringRequest(BaseModel):
     symbol_name: str
     symbol_type: str        # "class" / "function" / "method"
@@ -21,66 +23,18 @@ class DocstringResult(BaseModel):
     confidence: str         # "high" / "medium" / "low"
     reasoning: str
 
-class DocstringAgent:
+class DocstringAgent(BaseAgent):
     """
     Generates Google-style docstrings for Python classes and functions.
-    Operates on one symbol at a time. Human approves before insertion.
-    Uses local model — small focused task, 1b handles reliably.
+    Now inherits from BaseAgent to leverage ModelRouter (remote access).
     """
-    
-    SYSTEM_PROMPT = """You generate Google-style Python docstrings.
-Your ONLY output is valid JSON. No prose before or after.
 
-Rules:
-- Write a clear one-line summary
-- Add Args section if function has parameters  
-- Add Returns section if function returns a value
-- Add Raises section if function raises exceptions
-- Keep docstrings concise — not exhaustive
-- Use present tense ("Returns" not "Return")
-- Do NOT describe implementation details — describe behavior
+    def __init__(self, config: AgentConfig):
+        super().__init__(config)
+        logger.info(f"DocstringAgent initialized (model={self.model_name})")
 
-Output schema:
-{
-  "symbol_name": "string",
-  "file_path": "string", 
-  "line_number": 0,
-  "docstring": "Summary line.\\n\\nArgs:\\n    arg: Description.\\n\\nReturns:\\n    Description.",
-  "confidence": "high",
-  "reasoning": "one sentence explaining the docstring choice"
-}"""
-
-    EXAMPLE = """EXAMPLE:
-Input symbol:
-  def resolve_attack(self, attacker, defender, action):
-      roll = self.d20.roll()
-      return CombatResult(roll=roll, hit=roll > defender.armor)
-
-Output:
-{
-  "symbol_name": "resolve_attack",
-  "file_path": "src/shared/combat/d20_resolver.py",
-  "line_number": 24,
-  "docstring": "Resolve a single attack action using d20 rules.\\n\\nArgs:\\n    attacker: The unit making the attack.\\n    defender: The unit receiving the attack.\\n    action: The combat action being performed.\\n\\nReturns:\\n    CombatResult with roll value and hit determination.",
-  "confidence": "high",
-  "reasoning": "Clear input/output contract from source code."
-}
-DO NOT copy these example values."""
-
-    def __init__(self):
-        from .ollama_client import warm_model_sync, resolve_model
-        resolved = resolve_model()
-        self.model_name = warm_model_sync(resolved)
-        self._model = None
-    
-    def _get_model(self):
-        if self._model is None:
-            from .ollama_client import get_ollama_model
-            self._model = get_ollama_model(model_name=self.model_name)
-        return self._model
-    
     def generate(self, request: DocstringRequest) -> DocstringResult:
-        """Generate a docstring for a single symbol."""
+        """Generate a docstring for a single symbol using ModelRouter."""
         task = (
             f"Generate a Google-style docstring for this {request.symbol_type}:\n\n"
             f"File: {request.file_path}\n"
@@ -88,23 +42,10 @@ DO NOT copy these example values."""
             f"Source code:\n```python\n{request.source_code}\n```"
         )
         
-        prompt = "\n\n".join([
-            self.SYSTEM_PROMPT,
-            self.EXAMPLE,
-            f"TASK:\n{task}",
-        ])
-        
         try:
-            model = self._get_model()
-            # Simple prompt-to-JSON loop for the specialized 1b model
-            from pydantic_ai import Agent
-            agent = Agent(model=model)
-            import asyncio
-            result_run = asyncio.run(agent.run(prompt))
-            content = result_run.output
-            
-            json_str = self._extract_json(content)
-            result = DocstringResult.model_validate_json(json_str)
+            result = super().run(task)
+            if not isinstance(result, DocstringResult):
+                result = DocstringResult.model_validate(result.model_dump())
             return result
         except Exception as e:
             logger.warning(f"DocstringAgent: generation failed — {e}")
@@ -114,7 +55,7 @@ DO NOT copy these example values."""
                 line_number=0,
                 docstring=f'"""{request.symbol_name}."""',
                 confidence="low",
-                reasoning="Fallback — model failed to generate.",
+                reasoning="Fallback — agent failed to generate.",
             )
     
     def insert(self, result: DocstringResult, project_root: Path) -> bool:
