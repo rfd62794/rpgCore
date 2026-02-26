@@ -70,3 +70,17 @@
   - 'docs: frontmatter migration'
   tasks_completed: []
   tasks_added: []
+- id: S006
+  type: journal
+  date: 2026-02-25
+  session: 6
+  author: scribe
+  test_floor: 494
+  summary: CodeInventory v1, ContextBuilder, and DocstringAgent suite live. Herald grounded in real codebase paths via ContextBuilder. DocstringAgent upgraded to ModelRouter (remote) for reliable generation. 494 passing tests.
+  committed:
+  - 'feat: CodeInventory v1'
+  - 'feat: ContextBuilder grounding'
+  - 'feat: DocstringAgent + CLI'
+  - 'feat: DocstringAgent upgrade'
+  tasks_completed: [T045, T046, T047, T048, T049]
+  tasks_added: []
