@@ -66,10 +66,10 @@ tasks_added: []
 # rpgCore — Project Journal
 
 ## Current State
-443 passing. Phase 5 complete. Archivist wired to build_corpus(). Memory fallback chain 3b->1b. Robust JSON extraction. Full swarm operational.
+448 passing. LIVING_WORLD.md and DUNGEON_DESIGN.md created — master design reference and dungeon crawler spec.
 
 ## In Flight
 None.
 
 ## Next Priority
-Phase 6 -- Scribe. Session end, git diff reader, journal auto-draft.
+Herald directive generator. Or: loot system v1 implementation from DUNGEON_DESIGN spec.
