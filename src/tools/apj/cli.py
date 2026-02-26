@@ -361,18 +361,24 @@ def main():
             print("Usage: python -m src.tools.apj session [start|end]")
 
     elif cmd == "herald":
+        from src.tools.apj.agents.base_agent import BaseAgent
         plan = _load_last_strategist_plan()
         if plan is None:
             print("No strategist plan found. Run session start first.")
             return
-        model = resolve_model()
-        active_model = warm_model_sync(model)
-        herald = Herald(model_name=active_model)
-        directive = herald.run(plan)
+
+        print("\n[~] Herald: invoking ModelRouter (targeting remote)...")
+        agent = BaseAgent.from_config("herald")
+        directive = agent.run(plan)
+        
+        from src.tools.apj.cli import print_herald_directive
         print_herald_directive(directive)
+        
         response = input("Save directive? [y/N]: ").strip().lower()
         if response == "y":
-            herald._save_directive(directive)
+            from src.tools.apj.agents.herald import Herald
+            h = Herald(model_name="base_agent_router") # Dummy for save logic
+            h._save_directive(directive)
             print("Directive saved to session_logs/")
 
     elif cmd == "improve":
