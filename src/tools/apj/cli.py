@@ -198,11 +198,30 @@ def _load_last_strategist_plan() -> "SessionPlan | None":
         return None
 
 
+def print_improvement_suggestion(s: "ImprovementSuggestion") -> None:
+    """Print an ImprovementSuggestion in readable format."""
+    print("=" * 60)
+    print("  IMPROVER SUGGESTION")
+    print("=" * 60)
+    print(f"[AGENT]      {s.agent_name}")
+    print(f"[FILE]       {s.prompt_file}")
+    print(f"[CONFIDENCE] {s.confidence}")
+    print("\n[WEAKNESSES FOUND]")
+    for w in s.weaknesses:
+        print(f"  * {w}")
+    print("\n[ANNOTATED CHANGES]")
+    for c in s.changes_annotated:
+        print(f"  -> {c}")
+    print("\n[REWRITTEN PROMPT PREVIEW] (first 300 chars)")
+    print(f"  {s.rewritten_prompt[:300]}...")
+    print("=" * 60 + "\n")
+
+
 def main():
     journal = Journal()
 
     if len(sys.argv) < 2:
-        print("Usage: python -m src.tools.apj [status|update|handoff|boot|tasks|goals|milestones|session|herald]")
+        print("Usage: python -m src.tools.apj [status|update|handoff|boot|tasks|goals|milestones|session|herald|improve]")
         return
 
     cmd = sys.argv[1].lower()
@@ -355,6 +374,24 @@ def main():
         if response == "y":
             herald._save_directive(directive)
             print("Directive saved to session_logs/")
+
+    elif cmd == "improve":
+        agent_name = sys.argv[2] if len(sys.argv) > 2 else None
+        if not agent_name or agent_name not in ("archivist", "strategist", "scribe", "herald"):
+            print("Usage: apj improve [archivist|strategist|scribe|herald]")
+            return
+        from src.tools.apj.agents.improver import Improver
+        try:
+            improver = Improver()
+        except RuntimeError as e:
+            print(f"[!] {e}")
+            return
+        suggestion = improver.run(agent_name)
+        print_improvement_suggestion(suggestion)
+        response = input("Apply this improvement? [y/N]: ").strip().lower()
+        if response == "y":
+            improver.apply(suggestion)
+            print(f"Prompt updated. Backup saved.")
 
     else:
         print(f"Unknown command: {cmd}")
