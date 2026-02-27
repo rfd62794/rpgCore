@@ -1,7 +1,7 @@
 name: strategist
 role: "Read archivist report, produce ranked session plan with three concrete options."
 department: planning
-model_preference: local
+model_preference: remote
 backend_override: null
 prompts:
   system: docs/agents/prompts/strategist_system.md

@@ -1,7 +1,7 @@
 name: archivist
 role: "Read project corpus, find drift, flag constitutional violations with specific evidence."
 department: analysis
-model_preference: local
+model_preference: remote
 backend_override: null
 prompts:
   system: docs/agents/prompts/archivist_system.md
