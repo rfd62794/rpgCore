@@ -3,16 +3,20 @@ from enum import Enum
 
 class GoalStatus(str, Enum):
     ACTIVE     = "ACTIVE"
+    PLANNED    = "PLANNED"
     DEFERRED   = "DEFERRED"
     COMPLETE   = "COMPLETE"
     SUPERSEDED = "SUPERSEDED"
+    PARKED     = "PARKED"
 
 
 class MilestoneStatus(str, Enum):
     ACTIVE   = "ACTIVE"
     QUEUED   = "QUEUED"
+    PLANNED  = "PLANNED"
     COMPLETE = "COMPLETE"
     BLOCKED  = "BLOCKED"
+    PARKED   = "PARKED"
 
 
 class TaskStatus(str, Enum):
