@@ -189,7 +189,7 @@ In Archivist corpus. Defines the North Star.
 ---
 id: M15
 type: milestone
-title: Slime Breeder Browser Deployment
+title: Browser Deployment — Slime Breeder playable at rfditservices.com
 status: QUEUED
 goals: [G12]
 tasks: []
@@ -203,7 +203,7 @@ Playable at rfditservices.com. Verified SSL and assets.
 ---
 id: M16
 type: milestone
-title: Five Slime Cultures
+title: Cultural Renderer — Five slime types visually distinct
 status: QUEUED
 goals: [G13, G14]
 tasks: []
@@ -245,7 +245,7 @@ Factions track player behavior and adjust alignment.
 ---
 id: M19
 type: milestone
-title: Core Loop Proven
+title: Core Loop — Slime Breeder feeds Dungeon Crawler
 status: QUEUED
 goals: [G11, G7]
 tasks: []

@@ -9,7 +9,7 @@
 
 - id: M_CULTURAL
   type: milestone
-  title: "Five slime cultures with cultural parameter ranges"
+  title: "Cultural Renderer — Five slime types visually distinct"
   status: ACTIVE
   goals: [G6]
   owner: human
@@ -18,7 +18,7 @@
 
 - id: M_BROWSER
   type: milestone
-  title: "Slime Breeder browser playable at rfditservices.com"
+  title: "Browser Deployment — Slime Breeder playable at rfditservices.com"
   status: ACTIVE
   goals: [G1, G10]
   tasks:
@@ -32,7 +32,7 @@
 
 - id: M_LOOP
   type: milestone
-  title: "Core loop proven — Breeder feeds Dungeon"
+  title: "Core Loop — Slime Breeder feeds Dungeon Crawler"
   status: ACTIVE
   goals: [G2]
   tasks:
