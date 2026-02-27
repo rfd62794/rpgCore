@@ -218,7 +218,7 @@ def test_archivist_fallback_report_when_ollama_offline(tmp_path):
         return_value=empty_corpus,
     ), patch.object(
         archivist,
-        "_run_async",
+        "_execute_run",
         side_effect=ConnectionError("Ollama not reachable"),
     ), patch.object(
         archivist,
@@ -257,7 +257,7 @@ def test_archivist_uses_parser():
         return_value=empty_corpus,
     ) as mock_build, patch.object(
         archivist,
-        "_run_async",
+        "_execute_run",
         side_effect=ConnectionError("skip Ollama"),
     ), patch.object(
         archivist,
@@ -318,7 +318,7 @@ def test_strategist_fallback_plan():
 
     with patch.object(
         strategist,
-        "_run_async",
+        "_execute_run",
         side_effect=ConnectionError("Ollama not reachable"),
     ), patch.object(strategist, "_save_plan"):
         plan = strategist.run(archivist_report=stub_report)

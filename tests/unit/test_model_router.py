@@ -53,15 +53,15 @@ def test_router_tries_local_success(mock_agent_class, mock_get_ollama, mock_conf
     mock_agent_instance = MagicMock()
     mock_agent_class.return_value = mock_agent_instance
     
-    # Using a real async def ensures asyncio.run() works correctly in the test context
-    async def mock_run_fn(*args, **kwargs):
+    # Using a real sync function for run_sync
+    def mock_run_sync_fn(*args, **kwargs):
         mock_run_result = MagicMock()
         mock_run_result.output = '{"test": "ok"}'
         return mock_run_result
     
-    mock_agent_instance.run = mock_run_fn
+    mock_agent_instance.run_sync = mock_run_sync_fn
     
-    # We test via _try_local which calls Agent(model=client).run()
+    # We test via _try_local which calls Agent().run_sync()
     res = ModelRouter._try_local("prompt")
     assert res == '{"test": "ok"}'
 

@@ -178,15 +178,15 @@ class ConfigManager:
         if game_type == GameType.SPACE:
             if config.space is None:
                 raise ValueError("Space game configuration not loaded")
-            return config.space.dict()
+            return config.space.model_dump()
         elif game_type == GameType.RPG:
             if config.rpg is None:
                 raise ValueError("RPG game configuration not loaded")
-            return config.rpg.dict()
+            return config.rpg.model_dump()
         elif game_type == GameType.TYCOON:
             if config.tycoon is None:
                 raise ValueError("Tycoon game configuration not loaded")
-            return config.tycoon.dict()
+            return config.tycoon.model_dump()
         else:
             raise ValueError(f"Unknown game type: {game_type}")
 
@@ -216,7 +216,7 @@ class ConfigManager:
             self._game_config = self._load_game_config()
 
         # Create new config with updated values
-        config_dict = self._game_config.dict()
+        config_dict = self._game_config.model_dump()
         config_dict.update(kwargs)
         self._game_config = GameConfig(**config_dict)
 
@@ -233,7 +233,7 @@ class ConfigManager:
         if self._system_config is None:
             self._system_config = self._load_system_config()
 
-        config_dict = self._system_config.dict()
+        config_dict = self._system_config.model_dump()
         config_dict.update(kwargs)
         self._system_config = SystemConfig(**config_dict)
 
@@ -283,8 +283,8 @@ class ConfigManager:
             Configuration as string
         """
         config_dict = {
-            "game": self.game_config.dict(),
-            "system": self.system_config.dict()
+            "game": self.game_config.model_dump(),
+            "system": self.system_config.model_dump()
         }
 
         if output_format == "yaml":
