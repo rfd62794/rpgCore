@@ -76,7 +76,7 @@
   milestone: M_APJ
   owner: human
   created: 2026-02-26
-  modified: 2026-02-26
+  modified: 2026-02-27
 
 - id: G9
   type: goal
@@ -86,7 +86,7 @@
   milestone: M_ENGINE
   owner: human
   created: 2026-02-26
-  modified: 2026-02-26
+  modified: 2026-02-27
 
 - id: G10
   type: goal
