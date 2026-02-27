@@ -180,11 +180,9 @@ class Archivist:
             )
 
         try:
-            report = asyncio.run(
-                self._run_async(corpus, corpus_hash, validation_result.errors)
-            )
+            report = self._execute_run(corpus, corpus_hash, validation_result.errors)
         except Exception as exc:
-            logger.warning(f"Archivist: Ollama unreachable or agent failed ({exc}). Using fallback.")
+            logger.warning(f"Archivist: LLM call failed ({exc}). Using fallback.")
             report = self._fallback_report(corpus, corpus_hash, validation_result.errors)
 
         self._save_report(report)
@@ -304,13 +302,13 @@ VALIDATION ERRORS (deterministic — confirmed violations, include in constituti
         # Unclosed brace — return from start and let the caller handle it
         return raw[start:].strip()
 
-    async def _run_async(
+    def _execute_run(
         self,
         corpus: Corpus,
         corpus_hash: str,
         validation_errors: list[str],
     ) -> CoherenceReport:
-        """Run the plain-string Agent and parse JSON response into CoherenceReport."""
+        """Execute the agent logic: build prompt -> call router -> parse JSON."""
         example = json.dumps({
             "session_primer": (
                 "The project has 442 passing tests with the corpus parser live. "
