@@ -32,7 +32,7 @@ from typing import Optional
 from loguru import logger
 from pydantic import BaseModel, Field
 
-from src.tools.apj.agents.ollama_client import get_ollama_model
+from src.tools.apj.agents.model_router import ModelRouter
 from src.tools.apj.agents.strategist import SessionPlan
 from src.tools.apj.agents.base_agent import BaseAgent, AgentConfig
 from src.tools.apj.inventory.context_builder import ContextBuilder
