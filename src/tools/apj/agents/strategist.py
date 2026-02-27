@@ -206,10 +206,10 @@ class Strategist:
             SessionPlan — always, even if Ollama is down.
         """
         try:
-            plan = asyncio.run(self._run_async(archivist_report))
+            plan = self._execute_run(archivist_report)
         except Exception as exc:
             logger.warning(
-                f"Strategist: Ollama unreachable or planning failed ({exc}). "
+                f"Strategist: LLM call failed ({exc}). "
                 "Using fallback plan."
             )
             plan = self._fallback_plan(archivist_report)
