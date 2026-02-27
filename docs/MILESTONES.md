@@ -1,51 +1,90 @@
-M_VISION:
+- id: M_VISION
+  type: milestone
   title: "VISION.md complete and in Archivist corpus"
-  status: Active
+  status: ACTIVE
   goals: [G8]
+  owner: human
+  created: 2026-02-26
+  modified: 2026-02-26
 
-M_CULTURAL:
+- id: M_CULTURAL
+  type: milestone
   title: "Five slime cultures with cultural parameter ranges"
-  status: Active
+  status: ACTIVE
   goals: [G6]
+  owner: human
+  created: 2026-02-26
+  modified: 2026-02-26
 
-M_BROWSER:
+- id: M_BROWSER
+  type: milestone
   title: "Slime Breeder browser playable at rfditservices.com"
-  status: Active
+  status: ACTIVE
   goals: [G1, G10]
+  owner: human
+  created: 2026-02-26
+  modified: 2026-02-26
 
-M_LOOP:
+- id: M_LOOP
+  type: milestone
   title: "Core loop proven — Breeder feeds Dungeon"
-  status: Active
+  status: ACTIVE
   goals: [G2]
+  owner: human
+  created: 2026-02-26
+  modified: 2026-02-26
 
-M_HUB:
+- id: M_HUB
+  type: milestone
   title: "Garden hub connects all worlds"
-  status: Planned
+  status: QUEUED
   goals: [G3]
+  owner: human
+  created: 2026-02-26
+  modified: 2026-02-26
 
-M_ENGINE:
+- id: M_ENGINE
+  type: milestone
   title: "Shared infrastructure — all demos use src/shared/"
-  status: Active
+  status: ACTIVE
   goals: [G9]
+  owner: human
+  created: 2026-02-26
+  modified: 2026-02-26
 
-M_APJ:
+- id: M_APJ
+  type: milestone
   title: "APJ swarm vision-aligned — recommends demo work"
-  status: Active
+  status: ACTIVE
   goals: [G8]
+  owner: human
+  created: 2026-02-26
+  modified: 2026-02-26
 
-M_V2:
+- id: M_V2
+  type: milestone
   title: "v2 complete — Racing and Conquest playable"
-  status: Planned
+  status: QUEUED
   goals: [G4, G5]
+  owner: human
+  created: 2026-02-26
+  modified: 2026-02-26
 
-M_V3:
+- id: M_V3
+  type: milestone
   title: "v3 complete — Living World with faction memory"
-  status: Planned
+  status: QUEUED
   goals: [G7]
+  owner: human
+  created: 2026-02-26
+  modified: 2026-02-26
 
 # PARKED — previous milestones not yet mapped to vision
-# Review after M_BROWSER ships
-M_PARKED:
+- id: M_PARKED
+  type: milestone
   title: "Previous milestones — review after v1 ships"
-  status: Parked
+  status: PARKED
   notes: "Migrate relevant items to active milestones after browser demo is live"
+  owner: human
+  created: 2026-02-26
+  modified: 2026-02-26

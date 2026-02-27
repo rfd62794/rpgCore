@@ -23,9 +23,9 @@ from src.tools.apj.schema import (
 _PROJECT_ROOT = Path(__file__).resolve().parents[4]
 
 _DOC_PATHS = {
-    "goals":      _PROJECT_ROOT / "docs" / "planning" / "goals.yaml",
-    "milestones": _PROJECT_ROOT / "docs" / "planning" / "milestones.yaml",
-    "tasks":      _PROJECT_ROOT / "docs" / "planning" / "tasks.yaml",
+    "goals":      _PROJECT_ROOT / "docs" / "GOALS.md",
+    "milestones": _PROJECT_ROOT / "docs" / "MILESTONES.md",
+    "tasks":      _PROJECT_ROOT / "docs" / "TASKS.md",
     "journal":    _PROJECT_ROOT / "docs" / "journal"  / "journal.yaml",
     "sessions":   _PROJECT_ROOT / "docs" / "planning" / "sessions.yaml",
 }

@@ -74,18 +74,18 @@
         "args": [],
         "docstring": "Main launcher entry point",
         "calls": [
-          "launch",
-          "ArgumentParser",
-          "show_menu",
           "parse_args",
           "title",
-          "LauncherConfig",
-          "print",
-          "add",
+          "DGTPlatformLauncher",
+          "launch",
           "remove",
-          "ApplicationMode",
+          "print",
           "add_argument",
-          "DGTPlatformLauncher"
+          "ApplicationMode",
+          "add",
+          "LauncherConfig",
+          "show_menu",
+          "ArgumentParser"
         ],
         "is_method": false,
         "parent_class": null
@@ -360,12 +360,12 @@
         "args": [],
         "docstring": null,
         "calls": [
-          "run",
+          "print",
+          "add_argument",
+          "AsteroidsGame",
           "ArgumentParser",
           "parse_known_args",
-          "print",
-          "AsteroidsGame",
-          "add_argument"
+          "run"
         ],
         "is_method": false,
         "parent_class": null
@@ -523,15 +523,15 @@
         ],
         "docstring": null,
         "calls": [
-          "DungeonCrawlerREPL",
-          "run",
-          "DungeonSession",
-          "ArgumentParser",
           "cmdloop",
-          "parse_known_args",
-          "SceneManager",
           "register",
-          "add_argument"
+          "run",
+          "add_argument",
+          "DungeonSession",
+          "DungeonCrawlerREPL",
+          "SceneManager",
+          "parse_known_args",
+          "ArgumentParser"
         ],
         "is_method": false,
         "parent_class": null
@@ -794,11 +794,11 @@
         "args": [],
         "docstring": "Main entry point for Adaptive Workspace",
         "calls": [
-          "run",
           "AdaptiveWorkspace",
+          "remove",
           "print",
           "add",
-          "remove"
+          "run"
         ],
         "is_method": false,
         "parent_class": null
@@ -1028,11 +1028,11 @@
         "args": [],
         "docstring": "Main entry point for Sovereign Dashboard",
         "calls": [
-          "run",
-          "SovereignDashboard",
+          "remove",
           "print",
+          "SovereignDashboard",
           "add",
-          "remove"
+          "run"
         ],
         "is_method": false,
         "parent_class": null
@@ -1226,11 +1226,11 @@
         "args": [],
         "docstring": "Main entry point for Large Workspace",
         "calls": [
-          "run",
-          "print",
-          "add",
           "remove",
-          "LargeWorkspace"
+          "print",
+          "LargeWorkspace",
+          "add",
+          "run"
         ],
         "is_method": false,
         "parent_class": null
@@ -1403,13 +1403,13 @@
         "args": [],
         "docstring": "Test the manual control widget",
         "calls": [
-          "Tk",
-          "geometry",
-          "pack",
-          "create_manual_control_widget",
           "title",
+          "Tk",
+          "mainloop",
           "print",
-          "mainloop"
+          "geometry",
+          "create_manual_control_widget",
+          "pack"
         ],
         "is_method": false,
         "parent_class": null
@@ -1563,14 +1563,14 @@
         "args": [],
         "docstring": "Test the menu system",
         "calls": [
-          "init",
           "Surface",
-          "create_menu_system",
-          "initialize",
           "show_main_menu",
           "print",
+          "handle_input",
+          "create_menu_system",
+          "initialize",
           "render",
-          "handle_input"
+          "init"
         ],
         "is_method": false,
         "parent_class": null
@@ -1731,8 +1731,8 @@
         "args": [],
         "docstring": "Create and configure the Last Appointment app.",
         "calls": [
-          "SceneManager",
-          "register"
+          "register",
+          "SceneManager"
         ],
         "is_method": false,
         "parent_class": null
@@ -1769,8 +1769,8 @@
         "args": [],
         "docstring": null,
         "calls": [
-          "run",
-          "create_app"
+          "create_app",
+          "run"
         ],
         "is_method": false,
         "parent_class": null
@@ -1808,8 +1808,8 @@
         "args": [],
         "docstring": "Create and configure the Slime Breeder app.",
         "calls": [
-          "SceneManager",
-          "register"
+          "register",
+          "SceneManager"
         ],
         "is_method": false,
         "parent_class": null
@@ -1823,8 +1823,8 @@
         "docstring": null,
         "calls": [
           "run",
-          "info",
-          "create_app"
+          "create_app",
+          "info"
         ],
         "is_method": false,
         "parent_class": null
@@ -1875,8 +1875,8 @@
         "args": [],
         "docstring": "Create and configure the SlimeClanApp with modular scenes.",
         "calls": [
-          "SceneManager",
-          "register"
+          "register",
+          "SceneManager"
         ],
         "is_method": false,
         "parent_class": null
@@ -2029,10 +2029,10 @@
         ],
         "docstring": "Generate a SlimeUnit with stats modified by Shape and Hat.",
         "calls": [
-          "int",
-          "SlimeUnit",
           "spawn_entity",
-          "max"
+          "int",
+          "max",
+          "SlimeUnit"
         ],
         "is_method": false,
         "parent_class": null
@@ -2049,10 +2049,10 @@
         ],
         "docstring": "Execute one turn for the actor. Returns a combat log string.",
         "calls": [
-          "_execute_shield",
           "_execute_sword",
+          "_execute_none",
           "_execute_staff",
-          "_execute_none"
+          "_execute_shield"
         ],
         "is_method": false,
         "parent_class": null
@@ -2069,11 +2069,11 @@
         ],
         "docstring": "NONE AI: Basic unspecialized attacker. Just hits the weakest target.",
         "calls": [
-          "min",
           "random",
-          "roll_d20",
+          "min",
+          "max",
           "int",
-          "max"
+          "roll_d20"
         ],
         "is_method": false,
         "parent_class": null
@@ -2090,12 +2090,12 @@
         ],
         "docstring": "SWORD AI: Attack (default +1 mana), Crit Focus (2 mana), Taunt Break (1 mana).",
         "calls": [
+          "random",
           "min",
           "len",
-          "random",
-          "roll_d20",
+          "max",
           "int",
-          "max"
+          "roll_d20"
         ],
         "is_method": false,
         "parent_class": null
@@ -2113,8 +2113,8 @@
         "docstring": "SHIELD AI: Taunt (default +1 mana), Shield Bash (2 mana), Rally (1 mana). Solo: Bash as default.",
         "calls": [
           "min",
-          "max",
           "len",
+          "max",
           "roll_d20"
         ],
         "is_method": false,
@@ -2132,11 +2132,11 @@
         ],
         "docstring": "STAFF AI: Heal (default +1 mana), Mana Surge (3 mana), Weaken (2 mana).",
         "calls": [
-          "min",
           "ability_check",
-          "int",
+          "min",
+          "max",
           "sum",
-          "max"
+          "int"
         ],
         "is_method": false,
         "parent_class": null
@@ -2632,8 +2632,8 @@
         "docstring": null,
         "calls": [
           "run",
-          "info",
-          "create_app"
+          "create_app",
+          "info"
         ],
         "is_method": false,
         "parent_class": null
@@ -2719,10 +2719,10 @@
         ],
         "docstring": "Return the winning TileState if any clan holds >= threshold tiles, else None.\n\nIf threshold is None (default), computes dynamically:\n    claimable = total tiles \u2212 BLOCKED tiles\n    threshold  = int(claimable \u00d7 WIN_FRACTION)\nIf threshold is provided explicitly, uses that value directly\n(backward-compat for tests using check_win(grid, threshold=N)).",
         "calls": [
-          "int",
           "sum",
-          "max",
-          "range"
+          "range",
+          "int",
+          "max"
         ],
         "is_method": false,
         "parent_class": null
@@ -2741,13 +2741,13 @@
         ],
         "docstring": "Session 010: Render a procedural slime sprite at the center (cx, cy).\nGeometry dynamically scales based on tile_size.\nMust be a pure drawing function (no external side effects).",
         "calls": [
+          "Rect",
+          "arc",
+          "circle",
           "min",
           "ellipse",
-          "arc",
-          "Rect",
-          "circle",
-          "int",
-          "max"
+          "max",
+          "int"
         ],
         "is_method": false,
         "parent_class": null
@@ -2766,8 +2766,8 @@
         "docstring": "Session 009: Battle strength for a clan at a contested tile.\n\nStrength = (total tiles held by clan) + (adjacent clan tiles \u00d7 3)\n\nThe proximity bonus rewards clans that surround the contested tile,\nmaking concentrated territory more powerful than equal but dispersed tiles.\nMinimum returned value is 1 to keep probability well-defined.",
         "calls": [
           "sum",
-          "max",
-          "range"
+          "range",
+          "max"
         ],
         "is_method": false,
         "parent_class": null
@@ -2786,9 +2786,9 @@
         ],
         "docstring": "Session 009: Probabilistic battle weighted by clan strength.\n\nWin probability = attacker_strength / (attacker_strength + defender_strength).\nResult is stochastic \u2014 upsets always possible, but strength skews odds.\n\nReturns:\n    (winner, attacker_strength, defender_strength, attacker_win_probability)",
         "calls": [
-          "info",
+          "random",
           "compute_battle_strength",
-          "random"
+          "info"
         ],
         "is_method": false,
         "parent_class": null
@@ -2838,8 +2838,8 @@
         "docstring": "Return the set of (col, row) coordinates that are orthogonally adjacent\nto at least one RED tile. Used to apply adjacency weighting in AI targeting.",
         "calls": [
           "set",
-          "add",
-          "range"
+          "range",
+          "add"
         ],
         "is_method": false,
         "parent_class": null
@@ -2873,11 +2873,11 @@
         "docstring": "Session 005/009: Decide the AI's next action WITHOUT modifying the grid.\n\nReturns (col, row, new_state) or None if no valid targets exist.\nTiles adjacent to Red territory are weighted 5x; others weight 1.\nBattle resolution uses resolve_battle_weighted() (Session 009).",
         "calls": [
           "random",
-          "get_tiles_adjacent_to_red",
-          "_weighted_choice",
-          "info",
           "resolve_battle_weighted",
-          "range"
+          "range",
+          "info",
+          "get_tiles_adjacent_to_red",
+          "_weighted_choice"
         ],
         "is_method": false,
         "parent_class": null
@@ -2908,11 +2908,11 @@
         ],
         "docstring": "Place `count` BLOCKED tiles in the neutral zone in-place.\n\nProtection zones (never blocked):\n  Blue corner: cols 0-2, rows 0-2   (3\u00d73 top-left)\n  Red  corner: cols 7-9, rows 7-9   (3\u00d73 bottom-right)\n\nPure function over grid; uses random.sample for deterministic seed-ability.",
         "calls": [
+          "sample",
+          "range",
           "min",
           "len",
-          "info",
-          "sample",
-          "range"
+          "info"
         ],
         "is_method": false,
         "parent_class": null
@@ -2927,9 +2927,9 @@
         ],
         "docstring": "Set the starting board configuration in-place (Session 003).\nSession 008: also calls generate_obstacles() after seeding clans.\n\nBlue clan: 2\u00d72 cluster in the top-left corner     \u2014 cols 0-1, rows 0-1\nRed clan:  2\u00d72 cluster in the bottom-right corner \u2014 cols 8-9, rows 8-9",
         "calls": [
+          "range",
           "generate_obstacles",
-          "info",
-          "range"
+          "info"
         ],
         "is_method": false,
         "parent_class": null
@@ -2961,12 +2961,12 @@
         "args": [],
         "docstring": "Configure logging and launch the territorial grid prototype.",
         "calls": [
-          "run",
-          "info",
-          "add",
-          "remove",
+          "cleanup",
           "TerritorialGrid",
-          "cleanup"
+          "remove",
+          "add",
+          "info",
+          "run"
         ],
         "is_method": false,
         "parent_class": null
@@ -3082,12 +3082,12 @@
         "args": [],
         "docstring": "Main entry point for Arcade Visual Asteroids",
         "calls": [
-          "run",
+          "cleanup",
+          "remove",
           "ArcadeVisualAsteroids",
           "print",
           "add",
-          "remove",
-          "cleanup"
+          "run"
         ],
         "is_method": false,
         "parent_class": null
@@ -3223,10 +3223,10 @@
         "docstring": "Main entry point",
         "calls": [
           "AsteroidsCloneSDK",
-          "run",
+          "remove",
           "print",
           "add",
-          "remove"
+          "run"
         ],
         "is_method": false,
         "parent_class": null
@@ -3415,24 +3415,24 @@
         ],
         "docstring": "Run a 60-second headless AI survival benchmark.",
         "calls": [
-          "AsteroidPilot",
-          "len",
-          "compute_steering",
-          "_check_collisions",
-          "tick",
-          "update",
-          "time",
-          "open",
-          "print_exc",
-          "to_dict",
-          "spawn_asteroid_field",
-          "print",
           "apply_to_ship",
-          "AsteroidsSlice",
-          "wire_exhaust",
+          "_check_collisions",
+          "spawn_asteroid_field",
           "items",
           "write",
-          "range"
+          "AsteroidPilot",
+          "update",
+          "print",
+          "print_exc",
+          "range",
+          "open",
+          "tick",
+          "len",
+          "AsteroidsSlice",
+          "to_dict",
+          "wire_exhaust",
+          "time",
+          "compute_steering"
         ],
         "is_method": false,
         "parent_class": null
@@ -3445,20 +3445,20 @@
         "args": [],
         "docstring": "Run the Asteroids Stress Test.\n\nUsage:\n    python -m apps.space.asteroids_slice            # headless benchmark\n    python -m apps.space.asteroids_slice --visual   # TK window\n    python -m apps.space.asteroids_slice --ai       # AI survival (headless)\n    python -m apps.space.asteroids_slice --ai --visual # AI survival (visual)",
         "calls": [
-          "VisualRunner",
-          "AsteroidPilot",
-          "launch",
-          "run",
-          "min",
-          "wire_exhaust",
-          "run_ai_headless",
+          "get",
           "spawn_asteroid_field",
+          "run_ai_headless",
+          "launch",
+          "remove",
+          "AsteroidPilot",
           "print",
           "int",
-          "AsteroidsSlice",
+          "min",
           "add",
-          "remove",
-          "get"
+          "AsteroidsSlice",
+          "wire_exhaust",
+          "VisualRunner",
+          "run"
         ],
         "is_method": false,
         "parent_class": null
@@ -3919,12 +3919,12 @@
         "args": [],
         "docstring": "Main entry point for Combatant Evolution",
         "calls": [
-          "run",
-          "print",
-          "add",
+          "cleanup",
           "remove",
+          "print",
           "CombatantEvolution",
-          "cleanup"
+          "add",
+          "run"
         ],
         "is_method": false,
         "parent_class": null
@@ -4088,12 +4088,12 @@
         "args": [],
         "docstring": "Main entry point for Cultural Evolution",
         "calls": [
-          "CulturalEvolution",
-          "run",
-          "print",
-          "add",
+          "cleanup",
           "remove",
-          "cleanup"
+          "print",
+          "CulturalEvolution",
+          "add",
+          "run"
         ],
         "is_method": false,
         "parent_class": null
@@ -4654,11 +4654,11 @@
         "docstring": "Main entry point for Sentient Scavenger",
         "calls": [
           "SentientScavenger",
-          "run",
+          "cleanup",
+          "remove",
           "print",
           "add",
-          "remove",
-          "cleanup"
+          "run"
         ],
         "is_method": false,
         "parent_class": null
@@ -4824,12 +4824,12 @@
         "args": [],
         "docstring": "Main entry point for Simple Visual Asteroids",
         "calls": [
-          "run",
           "SimpleVisualAsteroids",
+          "cleanup",
+          "remove",
           "print",
           "add",
-          "remove",
-          "cleanup"
+          "run"
         ],
         "is_method": false,
         "parent_class": null
@@ -4954,8 +4954,8 @@
         "docstring": "Initialize the space engine with all dependencies",
         "calls": [
           "get_space_container",
-          "configure",
-          "initialize_all"
+          "initialize_all",
+          "configure"
         ],
         "is_method": false,
         "parent_class": null
@@ -5493,12 +5493,12 @@
         "args": [],
         "docstring": "Main entry point for Tournament Mode",
         "calls": [
-          "run",
           "TournamentMode",
+          "cleanup",
+          "remove",
           "print",
           "add",
-          "remove",
-          "cleanup"
+          "run"
         ],
         "is_method": false,
         "parent_class": null
@@ -5657,15 +5657,15 @@
         "args": [],
         "docstring": "Main training entry point",
         "calls": [
-          "train",
-          "ArgumentParser",
-          "parse_args",
           "save_best_genome",
-          "print",
-          "TrainingLoop",
-          "add",
+          "parse_args",
           "remove",
-          "add_argument"
+          "print",
+          "add_argument",
+          "train",
+          "add",
+          "TrainingLoop",
+          "ArgumentParser"
         ],
         "is_method": false,
         "parent_class": null
@@ -5857,11 +5857,11 @@
         "args": [],
         "docstring": "Main entry point",
         "calls": [
-          "run",
           "TurboScoutDemo",
+          "remove",
           "print",
           "add",
-          "remove"
+          "run"
         ],
         "is_method": false,
         "parent_class": null
@@ -6036,14 +6036,14 @@
         "docstring": "Main entry point for Visual Asteroids",
         "calls": [
           "run",
-          "ArgumentParser",
-          "cleanup",
           "parse_args",
-          "VisualAsteroids",
-          "print",
-          "add",
+          "cleanup",
           "remove",
-          "add_argument"
+          "print",
+          "add_argument",
+          "add",
+          "VisualAsteroids",
+          "ArgumentParser"
         ],
         "is_method": false,
         "parent_class": null
@@ -6187,10 +6187,10 @@
         ],
         "docstring": null,
         "calls": [
-          "space_used",
           "title",
-          "print",
           "items",
+          "print",
+          "space_used",
           "get"
         ],
         "is_method": false,
@@ -6206,8 +6206,8 @@
         ],
         "docstring": null,
         "calls": [
-          "print",
           "get_listings",
+          "print",
           "title"
         ],
         "is_method": false,
@@ -6223,13 +6223,13 @@
         ],
         "docstring": null,
         "calls": [
-          "enumerate",
-          "get_risk_level",
-          "neighbors",
+          "append",
           "title",
+          "get_risk_level",
+          "enumerate",
           "print",
           "get",
-          "append"
+          "neighbors"
         ],
         "is_method": false,
         "parent_class": null
@@ -6244,21 +6244,21 @@
         ],
         "docstring": null,
         "calls": [
-          "len",
-          "input",
-          "print_market",
-          "buy",
-          "update_daily",
-          "travel",
-          "print_status",
-          "strip",
-          "isdigit",
-          "split",
-          "print",
           "get",
+          "print_market",
+          "sell",
+          "strip",
+          "travel",
+          "input",
+          "print",
+          "isdigit",
           "lower",
           "int",
-          "sell",
+          "split",
+          "len",
+          "print_status",
+          "update_daily",
+          "buy",
           "print_map"
         ],
         "is_method": false,
@@ -6272,14 +6272,14 @@
         "args": [],
         "docstring": null,
         "calls": [
-          "run",
-          "ArgumentParser",
-          "run_repl",
-          "parse_known_args",
-          "SceneManager",
           "register",
+          "run",
           "SpaceTraderSession",
-          "add_argument"
+          "add_argument",
+          "run_repl",
+          "SceneManager",
+          "parse_known_args",
+          "ArgumentParser"
         ],
         "is_method": false,
         "parent_class": null
@@ -6581,10 +6581,10 @@
         ],
         "docstring": "Create a kinetic body with default physics stats",
         "calls": [
-          "KineticState",
-          "KineticBody",
           "PhysicsStats",
-          "Vector2"
+          "KineticState",
+          "Vector2",
+          "KineticBody"
         ],
         "is_method": false,
         "parent_class": null
@@ -6599,10 +6599,10 @@
         ],
         "docstring": "Create a kinetic body optimized for speed",
         "calls": [
-          "KineticState",
-          "KineticBody",
           "PhysicsStats",
-          "Vector2"
+          "KineticState",
+          "Vector2",
+          "KineticBody"
         ],
         "is_method": false,
         "parent_class": null
@@ -6617,10 +6617,10 @@
         ],
         "docstring": "Create a kinetic body optimized for mass/stability",
         "calls": [
-          "KineticState",
-          "KineticBody",
           "PhysicsStats",
-          "Vector2"
+          "KineticState",
+          "Vector2",
+          "KineticBody"
         ],
         "is_method": false,
         "parent_class": null
@@ -6741,12 +6741,12 @@
         ],
         "docstring": "Create a turtle with random genome",
         "calls": [
-          "TurboGenome",
-          "from_genome",
-          "choice",
           "list",
+          "choice",
           "randint",
-          "uniform"
+          "uniform",
+          "TurboGenome",
+          "from_genome"
         ],
         "is_method": false,
         "parent_class": null
@@ -8750,9 +8750,9 @@
         ],
         "docstring": "Helper for AutoBattle rendering.",
         "calls": [
+          "get",
           "getattr",
-          "str",
-          "get"
+          "str"
         ],
         "is_method": false,
         "parent_class": null
@@ -8767,9 +8767,9 @@
         ],
         "docstring": "Helper for AutoBattle rendering.",
         "calls": [
+          "get",
           "getattr",
-          "str",
-          "get"
+          "str"
         ],
         "is_method": false,
         "parent_class": null
@@ -8793,18 +8793,18 @@
         ],
         "docstring": "Pure render for BattleField tactical grid.",
         "calls": [
-          "Surface",
-          "draw_slime",
-          "Rect",
-          "get_height",
-          "get_width",
-          "render",
-          "fill",
-          "blit",
-          "rect",
           "set_alpha",
+          "blit",
+          "Rect",
+          "Surface",
+          "get_height",
+          "rect",
+          "range",
+          "fill",
+          "draw_slime",
           "line",
-          "range"
+          "render",
+          "get_width"
         ],
         "is_method": false,
         "parent_class": null
@@ -8826,16 +8826,16 @@
         ],
         "docstring": "Pure render for AutoBattle arena.",
         "calls": [
-          "len",
+          "set_alpha",
+          "blit",
           "Surface",
           "_draw_unit",
-          "enumerate",
-          "get_width",
-          "render",
+          "int",
           "fill",
-          "blit",
-          "set_alpha",
-          "int"
+          "len",
+          "render",
+          "enumerate",
+          "get_width"
         ],
         "is_method": false,
         "parent_class": null
@@ -8854,16 +8854,16 @@
         ],
         "docstring": null,
         "calls": [
-          "get_shape_str",
-          "draw_slime",
-          "circle",
-          "get_width",
-          "render",
           "blit",
           "hasattr",
+          "get_shape_str",
+          "circle",
           "rect",
-          "int",
+          "draw_slime",
           "max",
+          "render",
+          "int",
+          "get_width",
           "get_hat_str"
         ],
         "is_method": false,
@@ -8969,27 +8969,27 @@
         ],
         "docstring": "Pure render for the entire map layer.",
         "calls": [
-          "polygon",
-          "get_width",
-          "get",
-          "int",
-          "append",
-          "collidelist",
-          "get_height",
-          "getattr",
-          "render",
-          "add",
-          "get_owner",
           "values",
-          "Rect",
-          "fill",
-          "clear",
+          "get_owner",
+          "getattr",
+          "get_width",
+          "polygon",
           "circle",
+          "tuple",
+          "fill",
+          "add",
           "set",
-          "sorted",
+          "get",
+          "collidelist",
+          "clear",
           "blit",
+          "Rect",
           "line",
-          "tuple"
+          "render",
+          "append",
+          "sorted",
+          "get_height",
+          "int"
         ],
         "is_method": false,
         "parent_class": null
@@ -9008,15 +9008,15 @@
         ],
         "docstring": null,
         "calls": [
-          "collidelist",
+          "append",
+          "blit",
           "Rect",
           "get_height",
-          "get_width",
-          "getattr",
+          "collidelist",
           "render",
-          "blit",
           "int",
-          "append"
+          "getattr",
+          "get_width"
         ],
         "is_method": false,
         "parent_class": null
@@ -9032,12 +9032,12 @@
         ],
         "docstring": null,
         "calls": [
+          "blit",
           "Rect",
           "get_height",
-          "get_width",
+          "rect",
           "render",
-          "blit",
-          "rect"
+          "get_width"
         ],
         "is_method": false,
         "parent_class": null
@@ -9057,11 +9057,11 @@
         ],
         "docstring": null,
         "calls": [
-          "get_height",
-          "get_width",
-          "render",
           "blit",
-          "rect"
+          "get_height",
+          "rect",
+          "render",
+          "get_width"
         ],
         "is_method": false,
         "parent_class": null
@@ -9079,13 +9079,13 @@
         ],
         "docstring": null,
         "calls": [
-          "Surface",
-          "get_width",
-          "blit",
-          "fill",
           "set_alpha",
+          "blit",
+          "Surface",
+          "fill",
+          "Font",
           "render",
-          "Font"
+          "get_width"
         ],
         "is_method": false,
         "parent_class": null
@@ -9102,12 +9102,12 @@
         ],
         "docstring": null,
         "calls": [
-          "Surface",
-          "get_width",
           "blit",
+          "Surface",
           "fill",
+          "Font",
           "render",
-          "Font"
+          "get_width"
         ],
         "is_method": false,
         "parent_class": null
@@ -9123,10 +9123,10 @@
         ],
         "docstring": null,
         "calls": [
-          "get_width",
           "render",
+          "blit",
           "rect",
-          "blit"
+          "get_width"
         ],
         "is_method": false,
         "parent_class": null
@@ -10723,8 +10723,8 @@
         ],
         "docstring": "Update body with bounds awareness",
         "calls": [
-          "update",
-          "wrap_position"
+          "wrap_position",
+          "update"
         ],
         "is_method": false,
         "parent_class": null
@@ -11576,10 +11576,10 @@
         ],
         "docstring": null,
         "calls": [
-          "Vector2D",
-          "KineticBody",
           "sin",
-          "cos"
+          "cos",
+          "Vector2D",
+          "KineticBody"
         ],
         "is_method": false,
         "parent_class": null
@@ -11846,10 +11846,10 @@
         "args": [],
         "docstring": "Generate a completely random SlimeGenome.",
         "calls": [
-          "SlimeGenome",
-          "random",
           "randint",
-          "choice"
+          "random",
+          "choice",
+          "SlimeGenome"
         ],
         "is_method": false,
         "parent_class": null
@@ -11866,13 +11866,13 @@
         ],
         "docstring": "Breed two SlimeGenomes with a chance of mutation.",
         "calls": [
+          "inherit",
+          "SlimeGenome",
           "isinstance",
-          "min",
           "random",
           "choice",
-          "SlimeGenome",
           "randint",
-          "inherit",
+          "min",
           "max",
           "uniform"
         ],
@@ -13926,20 +13926,20 @@
         ],
         "docstring": "Initialize all game systems.\n\nArgs:\n    config_path: Path to configuration file\n    \nReturns:\n    Initialized GameContext",
         "calls": [
-          "GameContext",
-          "ConfigManager",
-          "load_config",
-          "load_from_assets",
-          "initialize",
-          "EntityTemplateRegistry",
-          "set_template_registry",
-          "info",
-          "EntityManager",
-          "get",
-          "warning",
           "SystemConfig",
+          "GodotRenderSystem",
           "AssetRegistry",
-          "GodotRenderSystem"
+          "load_from_assets",
+          "EntityTemplateRegistry",
+          "load_config",
+          "initialize",
+          "warning",
+          "ConfigManager",
+          "info",
+          "set_template_registry",
+          "get",
+          "EntityManager",
+          "GameContext"
         ],
         "is_method": false,
         "parent_class": null
@@ -13954,8 +13954,8 @@
         ],
         "docstring": "Shutdown all systems.",
         "calls": [
-          "info",
-          "shutdown"
+          "shutdown",
+          "info"
         ],
         "is_method": false,
         "parent_class": null
@@ -15766,9 +15766,9 @@
         ],
         "docstring": "Retrieve preset or raise ValueError with valid options.",
         "calls": [
-          "join",
           "ValueError",
-          "keys"
+          "keys",
+          "join"
         ],
         "is_method": false,
         "parent_class": null
@@ -15819,9 +15819,9 @@
         ],
         "docstring": "Create an asteroid template.\n\nArgs:\n    size: \"small\", \"medium\", or \"large\"\n    template_id: Custom ID (defaults to \"asteroid_{size}\")",
         "calls": [
+          "EntityTemplate",
           "_get_preset",
-          "capitalize",
-          "EntityTemplate"
+          "capitalize"
         ],
         "is_method": false,
         "parent_class": null
@@ -15837,9 +15837,9 @@
         ],
         "docstring": "Create an enemy fighter template.\n\nArgs:\n    ai_type: AI behavior type (\"basic\", \"aggressive\", \"evasive\")\n    template_id: Custom ID (defaults to \"enemy_{ai_type}\")",
         "calls": [
+          "EntityTemplate",
           "_get_preset",
-          "capitalize",
-          "EntityTemplate"
+          "capitalize"
         ],
         "is_method": false,
         "parent_class": null
@@ -15855,9 +15855,9 @@
         ],
         "docstring": "Create a projectile template.\n\nArgs:\n    weapon_type: \"bullet\", \"missile\", or \"laser\"\n    template_id: Custom ID (defaults to \"projectile_{weapon_type}\")",
         "calls": [
+          "EntityTemplate",
           "_get_preset",
-          "capitalize",
-          "EntityTemplate"
+          "capitalize"
         ],
         "is_method": false,
         "parent_class": null
@@ -15874,10 +15874,10 @@
         ],
         "docstring": "Create an RPG character template.\n\nArgs:\n    class_type: \"warrior\", \"mage\", or \"rogue\"\n    level: Starting level (1-100)\n    template_id: Custom ID",
         "calls": [
-          "_validate_level",
-          "capitalize",
           "EntityTemplate",
-          "_get_preset"
+          "_get_preset",
+          "capitalize",
+          "_validate_level"
         ],
         "is_method": false,
         "parent_class": null
@@ -15893,9 +15893,9 @@
         ],
         "docstring": "Create an NPC template.\n\nArgs:\n    role: \"villager\", \"merchant\", \"guard\", or \"quest_giver\"\n    template_id: Custom ID",
         "calls": [
+          "EntityTemplate",
           "_get_preset",
           "capitalize",
-          "EntityTemplate",
           "replace"
         ],
         "is_method": false,
@@ -15913,10 +15913,10 @@
         ],
         "docstring": "Create a monster template.\n\nArgs:\n    species: \"goblin\", \"skeleton\", \"dragon\"\n    level: Monster level (1-100)\n    template_id: Custom ID",
         "calls": [
-          "_validate_level",
-          "capitalize",
           "EntityTemplate",
-          "_get_preset"
+          "_get_preset",
+          "capitalize",
+          "_validate_level"
         ],
         "is_method": false,
         "parent_class": null
@@ -15932,9 +15932,9 @@
         ],
         "docstring": "Create a tycoon animal template.\n\nArgs:\n    species: \"cow\", \"chicken\", \"pig\", \"sheep\"\n    template_id: Custom ID",
         "calls": [
+          "EntityTemplate",
           "_get_preset",
-          "capitalize",
-          "EntityTemplate"
+          "capitalize"
         ],
         "is_method": false,
         "parent_class": null
@@ -15950,9 +15950,9 @@
         ],
         "docstring": "Create a tycoon facility template.\n\nArgs:\n    facility_type: \"barn\", \"factory\", \"store\", \"warehouse\"\n    template_id: Custom ID",
         "calls": [
+          "EntityTemplate",
           "_get_preset",
-          "capitalize",
-          "EntityTemplate"
+          "capitalize"
         ],
         "is_method": false,
         "parent_class": null
@@ -17175,8 +17175,8 @@
         "docstring": "Create default pixel renderer with Game Boy resolution",
         "calls": [
           "SystemConfig",
-          "PixelRenderer",
-          "initialize"
+          "initialize",
+          "PixelRenderer"
         ],
         "is_method": false,
         "parent_class": null
@@ -17193,8 +17193,8 @@
         "docstring": "Create high-resolution pixel renderer (2x Game Boy resolution)",
         "calls": [
           "SystemConfig",
-          "PixelRenderer",
-          "initialize"
+          "initialize",
+          "PixelRenderer"
         ],
         "is_method": false,
         "parent_class": null
@@ -17211,8 +17211,8 @@
         "docstring": "Create ultra-high-resolution pixel renderer (4x Game Boy resolution)",
         "calls": [
           "SystemConfig",
-          "PixelRenderer",
-          "initialize"
+          "initialize",
+          "PixelRenderer"
         ],
         "is_method": false,
         "parent_class": null
@@ -17326,8 +17326,8 @@
         "args": [],
         "docstring": "Create an empty transparent tile",
         "calls": [
-          "TilePattern",
-          "range"
+          "range",
+          "TilePattern"
         ],
         "is_method": false,
         "parent_class": null
@@ -17342,8 +17342,8 @@
         ],
         "docstring": "Create a solid-colored tile",
         "calls": [
-          "TilePattern",
-          "range"
+          "range",
+          "TilePattern"
         ],
         "is_method": false,
         "parent_class": null
@@ -17369,8 +17369,8 @@
         "args": [],
         "docstring": "Create a water tile with animation",
         "calls": [
-          "TilePattern",
-          "range"
+          "range",
+          "TilePattern"
         ],
         "is_method": false,
         "parent_class": null
@@ -17384,8 +17384,8 @@
         "docstring": "Create default tile bank with 4 banks",
         "calls": [
           "SystemConfig",
-          "TileBank",
-          "initialize"
+          "initialize",
+          "TileBank"
         ],
         "is_method": false,
         "parent_class": null
@@ -17399,8 +17399,8 @@
         "docstring": "Create large tile bank with 8 banks",
         "calls": [
           "SystemConfig",
-          "TileBank",
-          "initialize"
+          "initialize",
+          "TileBank"
         ],
         "is_method": false,
         "parent_class": null
@@ -17414,8 +17414,8 @@
         "docstring": "Create minimal tile bank with 2 banks",
         "calls": [
           "SystemConfig",
-          "TileBank",
-          "initialize"
+          "initialize",
+          "TileBank"
         ],
         "is_method": false,
         "parent_class": null
@@ -17603,9 +17603,9 @@
         "docstring": "Create default exhaust system with standard settings",
         "calls": [
           "SystemConfig",
+          "create_default_fx_system",
           "ExhaustSystem",
-          "initialize",
-          "create_default_fx_system"
+          "initialize"
         ],
         "is_method": false,
         "parent_class": null
@@ -17620,8 +17620,8 @@
         ],
         "docstring": "Create high-intensity exhaust system for heavy emissions",
         "calls": [
-          "create_default_exhaust_system",
-          "create_large_fx_system"
+          "create_large_fx_system",
+          "create_default_exhaust_system"
         ],
         "is_method": false,
         "parent_class": null
@@ -17636,8 +17636,8 @@
         ],
         "docstring": "Create minimal exhaust system for low-emission scenarios",
         "calls": [
-          "create_default_exhaust_system",
-          "create_minimal_fx_system"
+          "create_minimal_fx_system",
+          "create_default_exhaust_system"
         ],
         "is_method": false,
         "parent_class": null
@@ -17780,8 +17780,8 @@
         "args": [],
         "docstring": "Create default FX system with 1000 particles",
         "calls": [
-          "initialize",
           "SystemConfig",
+          "initialize",
           "FXSystem"
         ],
         "is_method": false,
@@ -17795,8 +17795,8 @@
         "args": [],
         "docstring": "Create large FX system with 5000 particles",
         "calls": [
-          "initialize",
           "SystemConfig",
+          "initialize",
           "FXSystem"
         ],
         "is_method": false,
@@ -17810,8 +17810,8 @@
         "args": [],
         "docstring": "Create minimal FX system with 200 particles",
         "calls": [
-          "initialize",
           "SystemConfig",
+          "initialize",
           "FXSystem"
         ],
         "is_method": false,
@@ -17900,8 +17900,8 @@
         ],
         "docstring": "Create emitter for explosion effect (fast outward burst)",
         "calls": [
-          "int",
-          "ParticleEmitter"
+          "ParticleEmitter",
+          "int"
         ],
         "is_method": false,
         "parent_class": null
@@ -17916,8 +17916,8 @@
         ],
         "docstring": "Create emitter for smoke effect (rising, expanding)",
         "calls": [
-          "int",
-          "ParticleEmitter"
+          "ParticleEmitter",
+          "int"
         ],
         "is_method": false,
         "parent_class": null
@@ -17932,8 +17932,8 @@
         ],
         "docstring": "Create emitter for spark effect (bright, scattered)",
         "calls": [
-          "int",
-          "ParticleEmitter"
+          "ParticleEmitter",
+          "int"
         ],
         "is_method": false,
         "parent_class": null
@@ -17948,8 +17948,8 @@
         ],
         "docstring": "Create emitter for electric spark effect (sharp, cyan-blue)",
         "calls": [
-          "int",
-          "ParticleEmitter"
+          "ParticleEmitter",
+          "int"
         ],
         "is_method": false,
         "parent_class": null
@@ -17964,8 +17964,8 @@
         ],
         "docstring": "Create emitter for fire effect (upward, yellow-red)",
         "calls": [
-          "int",
-          "ParticleEmitter"
+          "ParticleEmitter",
+          "int"
         ],
         "is_method": false,
         "parent_class": null
@@ -17980,8 +17980,8 @@
         ],
         "docstring": "Create emitter for dust effect (slow, brownish)",
         "calls": [
-          "int",
-          "ParticleEmitter"
+          "ParticleEmitter",
+          "int"
         ],
         "is_method": false,
         "parent_class": null
@@ -17996,8 +17996,8 @@
         ],
         "docstring": "Create emitter for blood splatter effect",
         "calls": [
-          "int",
-          "ParticleEmitter"
+          "ParticleEmitter",
+          "int"
         ],
         "is_method": false,
         "parent_class": null
@@ -18012,8 +18012,8 @@
         ],
         "docstring": "Create emitter for frost/ice effect (cool, crystalline)",
         "calls": [
-          "int",
-          "ParticleEmitter"
+          "ParticleEmitter",
+          "int"
         ],
         "is_method": false,
         "parent_class": null
@@ -18028,8 +18028,8 @@
         ],
         "docstring": "Create emitter for rain effect (downward, light blue)",
         "calls": [
-          "int",
-          "ParticleEmitter"
+          "ParticleEmitter",
+          "int"
         ],
         "is_method": false,
         "parent_class": null
@@ -18044,8 +18044,8 @@
         ],
         "docstring": "Get a copy of a preset effect (safe for modification)",
         "calls": [
-          "_copy_emitter",
-          "ParticleEffect"
+          "ParticleEffect",
+          "_copy_emitter"
         ],
         "is_method": false,
         "parent_class": null
@@ -19354,10 +19354,10 @@
         "docstring": "Run autonomous tavern movie mode",
         "calls": [
           "DGTSystem",
-          "initialize",
           "error",
-          "info",
-          "run_autonomous_mode"
+          "run_autonomous_mode",
+          "initialize",
+          "info"
         ],
         "is_method": false,
         "parent_class": null
@@ -19371,10 +19371,10 @@
         "docstring": "Run autonomous forest exploration mode",
         "calls": [
           "DGTSystem",
-          "initialize",
           "error",
-          "info",
-          "run_autonomous_mode"
+          "run_autonomous_mode",
+          "initialize",
+          "info"
         ],
         "is_method": false,
         "parent_class": null
@@ -19387,11 +19387,11 @@
         "args": [],
         "docstring": "Run demo mode with all scenarios",
         "calls": [
-          "run_demo_mode",
           "DGTSystem",
-          "initialize",
           "error",
-          "info"
+          "initialize",
+          "info",
+          "run_demo_mode"
         ],
         "is_method": false,
         "parent_class": null
@@ -19405,10 +19405,10 @@
         "docstring": "Run interactive mode for development",
         "calls": [
           "DGTSystem",
-          "run_interactive_mode",
-          "initialize",
           "error",
-          "info"
+          "initialize",
+          "info",
+          "run_interactive_mode"
         ],
         "is_method": false,
         "parent_class": null
@@ -19422,17 +19422,17 @@
         "docstring": "Main entry point",
         "calls": [
           "run",
-          "run_interactive",
-          "ArgumentParser",
           "parse_args",
-          "run_demo",
-          "error",
-          "info",
           "run_tavern_autopilot",
           "remove",
+          "error",
+          "add_argument",
+          "run_demo",
           "add",
+          "info",
           "run_forest_autopilot",
-          "add_argument"
+          "run_interactive",
+          "ArgumentParser"
         ],
         "is_method": false,
         "parent_class": null
@@ -19671,11 +19671,11 @@
         ],
         "docstring": "Dynamically redirect old imports to new structure.\n\nThis function is called when an attribute cannot be found in the module.\nIt checks if the requested attribute maps to a new module path, and if so,\nimports and returns the new module.\n\nArgs:\n    name: The attribute name being imported\n\nReturns:\n    The module from the new structure\n\nRaises:\n    AttributeError: If the attribute cannot be found in either old or new structure",
         "calls": [
-          "AttributeError",
+          "warn",
           "import_module",
           "replace",
-          "warn",
-          "split"
+          "split",
+          "AttributeError"
         ],
         "is_method": false,
         "parent_class": null
@@ -19688,8 +19688,8 @@
         "args": [],
         "docstring": "Return list of available attributes for this compatibility module.",
         "calls": [
-          "keys",
-          "list"
+          "list",
+          "keys"
         ],
         "is_method": false,
         "parent_class": null
@@ -19967,8 +19967,8 @@
         ],
         "docstring": "Create and initialize sovereign registry",
         "calls": [
-          "load_registry",
-          "SovereignRegistry"
+          "SovereignRegistry",
+          "load_registry"
         ],
         "is_method": false,
         "parent_class": null
@@ -20305,8 +20305,8 @@
         ],
         "docstring": "Factory function for creating sovereign objects",
         "calls": [
-          "obj_class",
-          "get"
+          "get",
+          "obj_class"
         ],
         "is_method": false,
         "parent_class": null
@@ -20322,12 +20322,12 @@
         ],
         "docstring": "Export sovereign objects to raw file",
         "calls": [
-          "len",
+          "append",
           "get_all_data",
-          "open",
-          "info",
           "dump",
-          "append"
+          "open",
+          "len",
+          "info"
         ],
         "is_method": false,
         "parent_class": null
@@ -20466,8 +20466,8 @@
         ],
         "docstring": "Load starter kit using global instance",
         "calls": [
-          "get_starter_loader",
-          "load_starter_kit"
+          "load_starter_kit",
+          "get_starter_loader"
         ],
         "is_method": false,
         "parent_class": null
@@ -20480,10 +20480,10 @@
         "args": [],
         "docstring": "Get all scene rendering data",
         "calls": [
-          "get_starter_loader",
-          "keys",
+          "get_rendering_data",
           "get_scene_objects",
-          "get_rendering_data"
+          "keys",
+          "get_starter_loader"
         ],
         "is_method": false,
         "parent_class": null
@@ -20498,8 +20498,8 @@
         ],
         "docstring": "Get material archetype with fallback",
         "calls": [
-          "get_starter_loader",
-          "get_material_archetype"
+          "get_material_archetype",
+          "get_starter_loader"
         ],
         "is_method": false,
         "parent_class": null
@@ -20879,8 +20879,8 @@
         ],
         "docstring": "Create Tiny Farm ingestor system",
         "calls": [
-          "TinyFarmIngestor",
-          "load_and_process_assets"
+          "load_and_process_assets",
+          "TinyFarmIngestor"
         ],
         "is_method": false,
         "parent_class": null
@@ -21206,8 +21206,8 @@
         ],
         "docstring": "Create Tiny Farm sheet loader",
         "calls": [
-          "load_all_assets",
-          "TinyFarmSheetLoader"
+          "TinyFarmSheetLoader",
+          "load_all_assets"
         ],
         "is_method": false,
         "parent_class": null
@@ -21557,11 +21557,11 @@
         ],
         "docstring": "Initialize configuration system",
         "calls": [
-          "get_summary",
-          "ConfigManager",
           "validate_configuration",
-          "info",
-          "warning"
+          "get_summary",
+          "warning",
+          "ConfigManager",
+          "info"
         ],
         "is_method": false,
         "parent_class": null
@@ -22715,13 +22715,13 @@
         "docstring": "Entry point for the game.",
         "calls": [
           "run",
-          "ArgumentParser",
           "parse_args",
-          "parse_known_args",
-          "remove",
-          "add",
           "GameREPL",
-          "add_argument"
+          "remove",
+          "add_argument",
+          "add",
+          "parse_known_args",
+          "ArgumentParser"
         ],
         "is_method": false,
         "parent_class": null
@@ -24355,8 +24355,8 @@
         ],
         "docstring": "Register an asset in the global registry",
         "calls": [
-          "get_dgt_registry",
-          "register"
+          "register",
+          "get_dgt_registry"
         ],
         "is_method": false,
         "parent_class": null
@@ -24373,8 +24373,8 @@
         ],
         "docstring": "Register a genome in the global registry",
         "calls": [
-          "get_dgt_registry",
-          "register"
+          "register",
+          "get_dgt_registry"
         ],
         "is_method": false,
         "parent_class": null
@@ -24391,8 +24391,8 @@
         ],
         "docstring": "Register an entity in the global registry",
         "calls": [
-          "get_dgt_registry",
-          "register"
+          "register",
+          "get_dgt_registry"
         ],
         "is_method": false,
         "parent_class": null
@@ -25407,14 +25407,14 @@
         ],
         "docstring": "Procedurally generates a location based on a template.",
         "calls": [
-          "enumerate",
-          "Location",
-          "choice",
           "sample",
-          "randint",
-          "get",
+          "append",
           "WorldObject",
-          "append"
+          "enumerate",
+          "choice",
+          "randint",
+          "Location",
+          "get"
         ],
         "is_method": false,
         "parent_class": null
@@ -25674,9 +25674,9 @@
         ],
         "docstring": "Get a configured OpenAIModel instance with persistent settings.\n\nArgs:\n    model_name: Name of the Ollama model to use.\n    temperature: Sampling temperature (0.1 for logic, 0.8 for creative).\n    \nReturns:\n    Configured OpenAIModel instance.",
         "calls": [
-          "ModelSettings",
           "replace",
-          "OpenAIModel"
+          "OpenAIModel",
+          "ModelSettings"
         ],
         "is_method": false,
         "parent_class": null
@@ -25742,8 +25742,8 @@
         ],
         "docstring": "Creates a Goal object from a blueprint definition.",
         "calls": [
-          "Goal",
-          "get"
+          "get",
+          "Goal"
         ],
         "is_method": false,
         "parent_class": null
@@ -25759,12 +25759,12 @@
         ],
         "docstring": "Generates goals for a specific location using templates or blueprints.",
         "calls": [
-          "isinstance",
-          "Goal",
           "sample",
+          "append",
+          "Goal",
+          "isinstance",
           "randint",
-          "get",
-          "append"
+          "get"
         ],
         "is_method": false,
         "parent_class": null
@@ -26097,8 +26097,8 @@
         "docstring": "Create Emerald City with Janitor who knows sewer secret.\n\nTests:\n- Social graph with location isolation\n- Tag-based knowledge (\"knows_sewer_secret\")\n- Multi-location persistence",
         "calls": [
           "Room",
-          "GameState",
           "NPC",
+          "GameState",
           "Relationship"
         ],
         "is_method": false,
@@ -26112,8 +26112,8 @@
         "args": [],
         "docstring": "Create full world with Tavern + Emerald City.\n\nTests cross-location social graph isolation.",
         "calls": [
-          "create_tavern_scenario",
           "create_emerald_city_scenario",
+          "create_tavern_scenario",
           "Relationship"
         ],
         "is_method": false,
@@ -26380,8 +26380,8 @@
         "docstring": "Main entry point",
         "calls": [
           "run_game",
-          "info",
-          "SurvivalGame"
+          "SurvivalGame",
+          "info"
         ],
         "is_method": false,
         "parent_class": null
@@ -26624,11 +26624,11 @@
         "args": [],
         "docstring": "Test the tri-brain architecture",
         "calls": [
+          "process",
+          "print",
           "mutate",
           "get_decision_statistics",
-          "create_tri_brain",
-          "print",
-          "process"
+          "create_tri_brain"
         ],
         "is_method": false,
         "parent_class": null
@@ -27201,8 +27201,8 @@
         ],
         "docstring": "Generates environmental tags based on global reputation.",
         "calls": [
-          "append",
-          "get"
+          "get",
+          "append"
         ],
         "is_method": false,
         "parent_class": null
@@ -27215,8 +27215,8 @@
         "args": [],
         "docstring": "Creates the 'Starter Campaign' sequence:\nTavern -> Plaza -> Dungeon Entrance",
         "calls": [
-          "WorldObject",
-          "Location"
+          "Location",
+          "WorldObject"
         ],
         "is_method": false,
         "parent_class": null
@@ -30466,23 +30466,23 @@
         "args": [],
         "docstring": "Test the PrefabFactory with the baked assets.",
         "calls": [
-          "create_object",
-          "len",
-          "get_dialogue_set",
-          "get_interaction",
+          "get_available_environments",
+          "create_character",
           "cleanup",
           "get_available_objects",
-          "PrefabFactory",
-          "create_environment",
-          "print",
-          "load_assets",
-          "create_character",
-          "add",
           "remove",
-          "get",
           "get_available_characters",
-          "get_available_environments",
-          "Path"
+          "print",
+          "PrefabFactory",
+          "load_assets",
+          "create_environment",
+          "get_dialogue_set",
+          "add",
+          "get_interaction",
+          "len",
+          "Path",
+          "get",
+          "create_object"
         ],
         "is_method": false,
         "parent_class": null
@@ -31500,8 +31500,8 @@
         ],
         "docstring": "Create a predictive narrative engine with default configuration.\n\nArgs:\n    model_name: Ollama model identifier\n    tone: Narrative tone\n    \nReturns:\n    Configured PredictiveNarrativeEngine",
         "calls": [
-          "NarrativeEngine",
-          "PredictiveNarrativeEngine"
+          "PredictiveNarrativeEngine",
+          "NarrativeEngine"
         ],
         "is_method": false,
         "parent_class": null
@@ -32548,11 +32548,11 @@
         "args": [],
         "docstring": "Main entry point for Cartographer",
         "calls": [
-          "run",
-          "CartographerApp",
           "error",
+          "CartographerApp",
+          "showerror",
           "info",
-          "showerror"
+          "run"
         ],
         "is_method": false,
         "parent_class": null
@@ -33619,18 +33619,18 @@
         ],
         "docstring": "Decorator for implementing error boundaries around functions\n\nArgs:\n    category: Error category for classification\n    severity: Error severity level\n    fallback_value: Value to return on error (if not raising)\n    log_errors: Whether to log errors\n    raise_on_error: Whether to raise exceptions or return fallback\n\nReturns:\n    Decorated function with error handling",
         "calls": [
-          "FileIOError",
-          "UIError",
-          "format_exc",
+          "ImageProcessingError",
+          "func",
           "wraps",
           "error",
-          "ValidationError",
-          "warning",
-          "str",
-          "ImageProcessingError",
           "SystemError",
+          "UIError",
+          "FileIOError",
+          "ValidationError",
+          "format_exc",
           "ExportError",
-          "func"
+          "warning",
+          "str"
         ],
         "is_method": false,
         "parent_class": null
@@ -34084,9 +34084,9 @@
         ],
         "docstring": "Convenience function to enforce Python 3.12 requirement.\n\nArgs:\n    project_root: Project root path (defaults to current working directory)",
         "calls": [
-          "cwd",
           "enforce_version_or_exit",
-          "PythonVersionManager"
+          "PythonVersionManager",
+          "cwd"
         ],
         "is_method": false,
         "parent_class": null
@@ -34171,19 +34171,19 @@
         "docstring": "Main entry point",
         "calls": [
           "StudioLauncher",
-          "ArgumentParser",
-          "cleanup",
           "parse_args",
-          "launch_all",
-          "launch_cartographer",
-          "wait_for_processes",
-          "error",
-          "info",
-          "add",
-          "remove",
+          "cleanup",
           "launch_weaver",
+          "launch_cartographer",
+          "remove",
+          "error",
+          "add_argument",
+          "wait_for_processes",
+          "add",
+          "info",
           "launch_console",
-          "add_argument"
+          "launch_all",
+          "ArgumentParser"
         ],
         "is_method": false,
         "parent_class": null
@@ -34355,10 +34355,10 @@
         "args": [],
         "docstring": "Main entry point for Weaver",
         "calls": [
-          "run",
+          "WeaverApp",
           "info",
           "error",
-          "WeaverApp"
+          "run"
         ],
         "is_method": false,
         "parent_class": null
@@ -36242,9 +36242,9 @@
         ],
         "docstring": "Quick profiling function for raycasting performance.\n\nArgs:\n    ray_caster: RayCaster to profile\n    character_renderer: CharacterRenderer to profile\n    num_rays: Number of rays to test\n    \nReturns:\n    Performance report as string",
         "calls": [
-          "RaycastingProfiler",
+          "profile_raycasting_performance",
           "generate_performance_report",
-          "profile_raycasting_performance"
+          "RaycastingProfiler"
         ],
         "is_method": false,
         "parent_class": null
@@ -37850,12 +37850,12 @@
         "args": [],
         "docstring": "Main entry point for Tkinter testing.",
         "calls": [
-          "run",
-          "print",
-          "error",
-          "add",
           "remove",
-          "TkinterAdapter"
+          "error",
+          "print",
+          "add",
+          "TkinterAdapter",
+          "run"
         ],
         "is_method": false,
         "parent_class": null
@@ -38003,9 +38003,9 @@
         "args": [],
         "docstring": "Main entry point.",
         "calls": [
+          "EnhancedTkinterAdapter",
           "print",
-          "run",
-          "EnhancedTkinterAdapter"
+          "run"
         ],
         "is_method": false,
         "parent_class": null
@@ -38125,8 +38125,8 @@
         "args": [],
         "docstring": "Main entry point.",
         "calls": [
-          "print",
           "TkinterTest",
+          "print",
           "run"
         ],
         "is_method": false,
@@ -40028,13 +40028,13 @@
         ],
         "docstring": "Create a PPU render packet",
         "calls": [
-          "RenderLayer",
-          "RenderPacket",
-          "enumerate",
-          "HUDData",
           "get",
           "append",
-          "setattr"
+          "setattr",
+          "HUDData",
+          "RenderLayer",
+          "enumerate",
+          "RenderPacket"
         ],
         "is_method": false,
         "parent_class": null
@@ -40655,8 +40655,8 @@
         "docstring": "Factory: create, initialise, and return a ready-to-use PPUAdapter.",
         "calls": [
           "PPUAdapter",
-          "error",
-          "initialize"
+          "initialize",
+          "error"
         ],
         "is_method": false,
         "parent_class": null
@@ -41695,10 +41695,10 @@
         "docstring": "Factory function to create Unified PPU",
         "calls": [
           "success_result",
-          "failure_result",
           "PPUConfig",
-          "initialize",
-          "UnifiedPPU"
+          "UnifiedPPU",
+          "failure_result",
+          "initialize"
         ],
         "is_method": false,
         "parent_class": null
@@ -42241,9 +42241,9 @@
         ],
         "docstring": "Convert skirmish metrics to batch update format",
         "calls": [
-          "append",
+          "get",
           "items",
-          "get"
+          "append"
         ],
         "is_method": false,
         "parent_class": null
@@ -42479,10 +42479,10 @@
         ],
         "docstring": "Save default configuration to YAML file",
         "calls": [
-          "dump",
+          "to_dict",
           "open",
-          "create_default_config",
-          "to_dict"
+          "dump",
+          "create_default_config"
         ],
         "is_method": false,
         "parent_class": null
@@ -42635,8 +42635,8 @@
         ],
         "docstring": "Get log file path",
         "calls": [
-          "mkdir",
-          "get_project_root"
+          "get_project_root",
+          "mkdir"
         ],
         "is_method": false,
         "parent_class": null
@@ -42649,8 +42649,8 @@
         "args": [],
         "docstring": "Get current environment from environment variables",
         "calls": [
-          "getenv",
-          "lower"
+          "lower",
+          "getenv"
         ],
         "is_method": false,
         "parent_class": null
@@ -42702,8 +42702,8 @@
         "args": [],
         "docstring": "Check if debug mode is enabled",
         "calls": [
-          "getenv",
-          "lower"
+          "lower",
+          "getenv"
         ],
         "is_method": false,
         "parent_class": null
@@ -42716,9 +42716,9 @@
         "args": [],
         "docstring": "Get system configuration from environment and defaults",
         "calls": [
-          "getenv",
           "is_debug_mode",
-          "get_environment"
+          "get_environment",
+          "getenv"
         ],
         "is_method": false,
         "parent_class": null
@@ -42747,11 +42747,11 @@
         "docstring": "Initialize system constants and validate configuration",
         "calls": [
           "mkdir",
-          "ValueError",
           "get_system_config",
-          "validate_system_config",
           "info",
-          "get_project_root"
+          "validate_system_config",
+          "get_project_root",
+          "ValueError"
         ],
         "is_method": false,
         "parent_class": null
@@ -42942,8 +42942,8 @@
         "args": [],
         "docstring": "Enforce the DGT 3.12 Standard.\n\nReturns:\n    bool: True if Python version is valid, False otherwise\n    \nRaises:\n    SystemExit: If Python version is not supported",
         "calls": [
-          "critical",
           "exit",
+          "critical",
           "info"
         ],
         "is_method": false,
@@ -42981,12 +42981,12 @@
         "args": [],
         "docstring": "Log detailed system information for debugging.",
         "calls": [
-          "check_compatibility_features",
-          "replace",
+          "get_python_version_info",
           "title",
-          "info",
           "items",
-          "get_python_version_info"
+          "replace",
+          "check_compatibility_features",
+          "info"
         ],
         "is_method": false,
         "parent_class": null
@@ -43361,9 +43361,9 @@
         "args": [],
         "docstring": "Get or create the global AssetRegistry instance (Lazy Singleton).",
         "calls": [
-          "error",
-          "Path",
           "MockRegistry",
+          "Path",
+          "error",
           "create_asset_registry"
         ],
         "is_method": false,
@@ -44256,19 +44256,19 @@
         "args": [],
         "docstring": "Test the world state functionality",
         "calls": [
-          "Vector2",
-          "WorldState",
-          "_apply_boundary_correction",
-          "get_entity",
-          "print",
-          "create_asteroid",
-          "get_world_statistics",
           "items",
-          "update_world",
           "create_ship",
+          "_apply_boundary_correction",
+          "Vector2",
+          "print",
           "randint",
+          "range",
+          "get_world_statistics",
+          "update_world",
           "uniform",
-          "range"
+          "get_entity",
+          "create_asteroid",
+          "WorldState"
         ],
         "is_method": false,
         "parent_class": null
@@ -45433,9 +45433,9 @@
         ],
         "docstring": "Draw the sovereign grid lines for debugging",
         "calls": [
-          "draw_pixel_perfect_rect",
           "range",
-          "draw_pixel_perfect_line"
+          "draw_pixel_perfect_line",
+          "draw_pixel_perfect_rect"
         ],
         "is_method": false,
         "parent_class": null
@@ -45448,22 +45448,22 @@
         "args": [],
         "docstring": "Test the render panel functionality",
         "calls": [
-          "Tk",
-          "geometry",
-          "update_layout",
-          "get_sovereign_surface",
-          "pack",
-          "bind",
-          "animate",
           "render_frame",
-          "draw_pixel_perfect_rect",
+          "update_layout",
           "title",
+          "Tk",
           "draw_pixel_perfect_circle",
-          "draw_sovereign_grid",
-          "create_sovereign_viewport",
-          "fill",
+          "animate",
           "mainloop",
-          "after"
+          "create_sovereign_viewport",
+          "get_sovereign_surface",
+          "draw_pixel_perfect_rect",
+          "fill",
+          "geometry",
+          "pack",
+          "after",
+          "bind",
+          "draw_sovereign_grid"
         ],
         "is_method": false,
         "parent_class": null
@@ -46218,8 +46218,8 @@
         ],
         "docstring": "Create initial game state with proper defaults",
         "calls": [
-          "GameState",
-          "time"
+          "time",
+          "GameState"
         ],
         "is_method": false,
         "parent_class": null
@@ -47121,8 +47121,8 @@
         "docstring": "Create genetics for heavy, armored shell",
         "calls": [
           "GeneticTraits",
-          "GeneticComponent",
-          "GeneticCode"
+          "GeneticCode",
+          "GeneticComponent"
         ],
         "is_method": false,
         "parent_class": null
@@ -47136,8 +47136,8 @@
         "docstring": "Create genetics for fast, scout shell",
         "calls": [
           "GeneticTraits",
-          "GeneticComponent",
-          "GeneticCode"
+          "GeneticCode",
+          "GeneticComponent"
         ],
         "is_method": false,
         "parent_class": null
@@ -47151,8 +47151,8 @@
         "docstring": "Create genetics for balanced, all-purpose shell",
         "calls": [
           "GeneticTraits",
-          "GeneticComponent",
-          "GeneticCode"
+          "GeneticCode",
+          "GeneticComponent"
         ],
         "is_method": false,
         "parent_class": null
@@ -47165,11 +47165,11 @@
         "args": [],
         "docstring": "Create random genetics for asteroids",
         "calls": [
-          "GeneticTraits",
+          "GeneticCode",
           "GeneticComponent",
           "randint",
-          "GeneticCode",
-          "uniform"
+          "uniform",
+          "GeneticTraits"
         ],
         "is_method": false,
         "parent_class": null
@@ -47320,10 +47320,10 @@
         ],
         "docstring": "Create a projectile with high-speed motion",
         "calls": [
-          "Vector2D",
-          "KineticBody",
           "sin",
-          "cos"
+          "cos",
+          "Vector2D",
+          "KineticBody"
         ],
         "is_method": false,
         "parent_class": null
@@ -47898,9 +47898,9 @@
         ],
         "docstring": "Handle bullet-asteroid collision",
         "calls": [
+          "deactivate",
           "hasattr",
-          "debug",
-          "deactivate"
+          "debug"
         ],
         "is_method": false,
         "parent_class": null
@@ -48708,8 +48708,8 @@
         ],
         "docstring": "Update checkpoint progress for participant",
         "calls": [
-          "_get_logger",
-          "debug"
+          "debug",
+          "_get_logger"
         ],
         "is_method": false,
         "parent_class": null
@@ -48722,11 +48722,11 @@
         "args": [],
         "docstring": "Check if any participant has finished the race",
         "calls": [
+          "items",
           "_get_logger",
           "stop_race",
-          "time",
           "info",
-          "items"
+          "time"
         ],
         "is_method": false,
         "parent_class": null
@@ -48742,12 +48742,12 @@
         ],
         "docstring": "Update participant state in registry",
         "calls": [
-          "_get_logger",
-          "DGTRegistry",
-          "EntityStateSnapshot",
-          "getattr",
+          "register_entity_state",
           "error",
-          "register_entity_state"
+          "EntityStateSnapshot",
+          "DGTRegistry",
+          "_get_logger",
+          "getattr"
         ],
         "is_method": false,
         "parent_class": null
@@ -48760,18 +48760,18 @@
         "args": [],
         "docstring": "Update registry with current race state snapshot",
         "calls": [
-          "_get_logger",
-          "len",
-          "update_system_metrics",
-          "WorldStateSnapshot",
-          "time",
-          "DGTRegistry",
-          "EntityStateSnapshot",
+          "append",
           "getattr",
-          "error",
-          "get_world_snapshot",
           "items",
-          "append"
+          "error",
+          "EntityStateSnapshot",
+          "DGTRegistry",
+          "_get_logger",
+          "update_system_metrics",
+          "get_world_snapshot",
+          "WorldStateSnapshot",
+          "len",
+          "time"
         ],
         "is_method": false,
         "parent_class": null
@@ -48785,8 +48785,8 @@
         "docstring": "Get current race state",
         "calls": [
           "to_tuple",
-          "len",
-          "items"
+          "items",
+          "len"
         ],
         "is_method": false,
         "parent_class": null
@@ -48813,9 +48813,9 @@
         "docstring": "Start a mock race with default participants",
         "calls": [
           "handle_event",
-          "RuntimeError",
+          "create_race_runner_system",
           "initialize",
-          "create_race_runner_system"
+          "RuntimeError"
         ],
         "is_method": false,
         "parent_class": null
@@ -48968,9 +48968,9 @@
         "args": [],
         "docstring": "Generate and translate a wild turtle's stats.\n\nReturns:\n    Result containing RaceStats for a randomly generated turtle",
         "calls": [
-          "create_race_translator",
           "generate_wild_turtle",
-          "translate_genome_to_stats"
+          "translate_genome_to_stats",
+          "create_race_translator"
         ],
         "is_method": false,
         "parent_class": null
@@ -49321,11 +49321,11 @@
         "args": [],
         "docstring": "Setup status manager for asteroids game",
         "calls": [
-          "StatusManager",
           "register_achievement",
-          "create_asteroids_stats",
+          "register_stat",
+          "StatusManager",
           "create_asteroids_achievements",
-          "register_stat"
+          "create_asteroids_stats"
         ],
         "is_method": false,
         "parent_class": null
@@ -49449,11 +49449,11 @@
         "docstring": "Test sub-stepping engine compatibility\n\nReturns:\n    Result containing test success",
         "calls": [
           "Result",
-          "create_sub_stepping_engine",
-          "update",
+          "initialize_race",
           "get_timing_info",
           "abs",
-          "initialize_race",
+          "update",
+          "create_sub_stepping_engine",
           "range"
         ],
         "is_method": false,
@@ -51424,8 +51424,8 @@
           "get_trait_value",
           "random",
           "from_dict",
-          "get_trait_names",
-          "CrossoverConfig"
+          "CrossoverConfig",
+          "get_trait_names"
         ],
         "is_method": false,
         "parent_class": null
@@ -51445,10 +51445,10 @@
         "calls": [
           "get_trait_value",
           "random",
-          "get",
           "from_dict",
+          "CrossoverConfig",
           "get_trait_names",
-          "CrossoverConfig"
+          "get"
         ],
         "is_method": false,
         "parent_class": null
@@ -51466,13 +51466,13 @@
         ],
         "docstring": "Crossover with blending for continuous values.\n\nContinuous traits (like size modifiers) are averaged between parents.\nThis creates smoother trait transitions in breeding lines.\n\nArgs:\n    parent1: First parent genome\n    parent2: Second parent genome\n    blend_genes: List of gene names to blend (average)\n    config: Optional crossover configuration\n    \nReturns:\n    New TurboGenome with blended continuous traits",
         "calls": [
-          "isinstance",
           "get_trait_value",
-          "random",
           "list",
+          "isinstance",
+          "random",
           "from_dict",
-          "get_trait_names",
-          "CrossoverConfig"
+          "CrossoverConfig",
+          "get_trait_names"
         ],
         "is_method": false,
         "parent_class": null
@@ -51489,19 +51489,19 @@
         ],
         "docstring": "Specialized crossover for color patterns with intelligent mixing.\n\nRGB colors are blended with a bias towards one parent.\nPatterns have a higher chance of being inherited directly.\n\nArgs:\n    parent1: First parent genome\n    parent2: Second parent genome\n    config: Optional crossover configuration\n    \nReturns:\n    New TurboGenome with sophisticated color inheritance",
         "calls": [
-          "isinstance",
-          "len",
           "get_trait_value",
           "endswith",
-          "range",
+          "isinstance",
           "random",
           "choice",
-          "int",
-          "from_dict",
-          "get_trait_names",
           "tuple",
+          "from_dict",
+          "range",
           "CrossoverConfig",
-          "uniform"
+          "len",
+          "uniform",
+          "get_trait_names",
+          "int"
         ],
         "is_method": false,
         "parent_class": null
@@ -51517,12 +51517,12 @@
         ],
         "docstring": "Calculate similarity percentage between two genetic profiles.\n\nUses Euclidean distance for RGB colors and exact matching for other traits.\nReturns a value between 0.0 (completely different) and 1.0 (identical).\n\nArgs:\n    genome1: First genome to compare\n    genome2: Second genome to compare\n    \nReturns:\n    Similarity score between 0.0 and 1.0",
         "calls": [
-          "isinstance",
-          "len",
           "get_trait_value",
           "sum",
-          "get_trait_names",
-          "range"
+          "isinstance",
+          "range",
+          "len",
+          "get_trait_names"
         ],
         "is_method": false,
         "parent_class": null
@@ -51539,16 +51539,16 @@
         ],
         "docstring": "Perform crossover on a batch of parent pairs.\n\nArgs:\n    parents: List of parent genomes (must be even length)\n    crossover_type: Type of crossover ('mendelian', 'dominant', 'blended', 'color')\n    config: Optional crossover configuration\n    \nReturns:\n    List of child genomes\n    \nRaises:\n    ValueError: If parents list has odd length",
         "calls": [
-          "len",
+          "list",
+          "append",
           "blended_crossover",
           "dominant_crossover",
-          "ValueError",
           "mendelian_crossover",
-          "color_pattern_crossover",
-          "list",
           "range",
           "CrossoverConfig",
-          "append"
+          "len",
+          "color_pattern_crossover",
+          "ValueError"
         ],
         "is_method": false,
         "parent_class": null
@@ -51662,11 +51662,11 @@
         "args": [],
         "docstring": "Generate a randomized wild turtle genome within valid legacy ranges.\n\nThis function creates genetically diverse turtles that respect all\nconstraints from the original TurboShells system.\n\nReturns:\n    TurboGenome: Randomized but valid genome",
         "calls": [
-          "TurboGenome",
-          "choice",
           "list",
+          "choice",
           "randint",
-          "uniform"
+          "uniform",
+          "TurboGenome"
         ],
         "is_method": false,
         "parent_class": null
@@ -51681,8 +51681,8 @@
         ],
         "docstring": "Validate a genome against all constraints.\n\nArgs:\n    genome: Genome to validate\n    \nReturns:\n    True if valid, raises ValidationError if invalid",
         "calls": [
-          "ValueError",
-          "dict"
+          "dict",
+          "ValueError"
         ],
         "is_method": false,
         "parent_class": null
@@ -52619,16 +52619,16 @@
         "args": [],
         "docstring": "Test the successor registry functionality",
         "calls": [
-          "len",
-          "generate_successors",
-          "enumerate",
           "get_registry_statistics",
           "add_parent",
-          "print",
           "create_successor_registry",
           "items",
+          "print",
+          "range",
+          "generate_successors",
+          "len",
           "uniform",
-          "range"
+          "enumerate"
         ],
         "is_method": false,
         "parent_class": null
@@ -52858,9 +52858,9 @@
         "docstring": "Create a race snapshot from turtle states",
         "calls": [
           "sum",
-          "len",
           "is_active",
-          "RaceSnapshot"
+          "RaceSnapshot",
+          "len"
         ],
         "is_method": false,
         "parent_class": null
@@ -52875,10 +52875,10 @@
         ],
         "docstring": "Validate race configuration dictionary",
         "calls": [
-          "failure_result",
           "success_result",
-          "str",
-          "RaceConfig"
+          "failure_result",
+          "RaceConfig",
+          "str"
         ],
         "is_method": false,
         "parent_class": null
@@ -52893,10 +52893,10 @@
         ],
         "docstring": "Validate turtle state dictionary",
         "calls": [
-          "failure_result",
-          "str",
+          "TurtleState",
           "success_result",
-          "TurtleState"
+          "failure_result",
+          "str"
         ],
         "is_method": false,
         "parent_class": null
@@ -52911,10 +52911,10 @@
         ],
         "docstring": "Validate race snapshot dictionary",
         "calls": [
-          "failure_result",
           "success_result",
-          "str",
-          "RaceSnapshot"
+          "failure_result",
+          "RaceSnapshot",
+          "str"
         ],
         "is_method": false,
         "parent_class": null
@@ -53159,11 +53159,11 @@
         "args": [],
         "docstring": "Main entry point for asset baking.",
         "calls": [
-          "bake_assets",
           "DGTAssetBaker",
+          "bake_assets",
+          "remove",
           "print",
           "add",
-          "remove",
           "Path"
         ],
         "is_method": false,
@@ -53353,17 +53353,17 @@
         "args": [],
         "docstring": "CLI entry point for baking embeddings.",
         "calls": [
-          "create_default_intent_library",
           "SemanticBaker",
-          "ArgumentParser",
           "parse_args",
           "verify_embeddings",
-          "Path",
           "bake_embeddings",
-          "add",
           "remove",
           "print",
-          "add_argument"
+          "add_argument",
+          "create_default_intent_library",
+          "add",
+          "Path",
+          "ArgumentParser"
         ],
         "is_method": false,
         "parent_class": null
@@ -53615,12 +53615,12 @@
         ],
         "docstring": "Decorator for circuit breaker protection",
         "calls": [
-          "run_until_complete",
+          "get_circuit_manager",
           "async_call",
-          "iscoroutinefunction",
-          "get_event_loop",
           "call_pillar",
-          "get_circuit_manager"
+          "run_until_complete",
+          "get_event_loop",
+          "iscoroutinefunction"
         ],
         "is_method": false,
         "parent_class": null
@@ -53809,8 +53809,8 @@
         ],
         "docstring": "Load system configuration using global manager",
         "calls": [
-          "get_configuration_manager",
-          "load_configuration"
+          "load_configuration",
+          "get_configuration_manager"
         ],
         "is_method": false,
         "parent_class": null
@@ -54401,8 +54401,8 @@
         "args": [],
         "docstring": "Check if debug mode is enabled",
         "calls": [
-          "getenv",
-          "lower"
+          "lower",
+          "getenv"
         ],
         "is_method": false,
         "parent_class": null
@@ -54456,9 +54456,9 @@
         ],
         "docstring": "Get logs directory path",
         "calls": [
-          "mkdir",
           "Path",
-          "getenv"
+          "getenv",
+          "mkdir"
         ],
         "is_method": false,
         "parent_class": null
@@ -54504,8 +54504,8 @@
         "args": [],
         "docstring": "Get game-specific logger",
         "calls": [
-          "get_component_logger",
-          "get_logger_manager"
+          "get_logger_manager",
+          "get_component_logger"
         ],
         "is_method": false,
         "parent_class": null
@@ -54518,8 +54518,8 @@
         "args": [],
         "docstring": "Get world engine logger",
         "calls": [
-          "get_component_logger",
-          "get_logger_manager"
+          "get_logger_manager",
+          "get_component_logger"
         ],
         "is_method": false,
         "parent_class": null
@@ -54532,8 +54532,8 @@
         "args": [],
         "docstring": "Get D&D engine logger",
         "calls": [
-          "get_component_logger",
-          "get_logger_manager"
+          "get_logger_manager",
+          "get_component_logger"
         ],
         "is_method": false,
         "parent_class": null
@@ -54546,8 +54546,8 @@
         "args": [],
         "docstring": "Get graphics engine logger",
         "calls": [
-          "get_component_logger",
-          "get_logger_manager"
+          "get_logger_manager",
+          "get_component_logger"
         ],
         "is_method": false,
         "parent_class": null
@@ -54560,8 +54560,8 @@
         "args": [],
         "docstring": "Get Voyager logger",
         "calls": [
-          "get_component_logger",
-          "get_logger_manager"
+          "get_logger_manager",
+          "get_component_logger"
         ],
         "is_method": false,
         "parent_class": null
@@ -54574,8 +54574,8 @@
         "args": [],
         "docstring": "Get Chronicler logger",
         "calls": [
-          "get_component_logger",
-          "get_logger_manager"
+          "get_logger_manager",
+          "get_component_logger"
         ],
         "is_method": false,
         "parent_class": null
@@ -54588,8 +54588,8 @@
         "args": [],
         "docstring": "Get performance logger",
         "calls": [
-          "get_component_logger",
-          "get_logger_manager"
+          "get_logger_manager",
+          "get_component_logger"
         ],
         "is_method": false,
         "parent_class": null
@@ -54602,8 +54602,8 @@
         "args": [],
         "docstring": "Get persistence logger",
         "calls": [
-          "get_component_logger",
-          "get_logger_manager"
+          "get_logger_manager",
+          "get_component_logger"
         ],
         "is_method": false,
         "parent_class": null
@@ -54620,8 +54620,8 @@
         ],
         "docstring": "Log performance metric",
         "calls": [
-          "log_performance",
-          "get_logger_manager"
+          "get_logger_manager",
+          "log_performance"
         ],
         "is_method": false,
         "parent_class": null
@@ -54667,8 +54667,8 @@
         ],
         "docstring": "Decorator to log function calls",
         "calls": [
-          "error",
           "get_game_logger",
+          "error",
           "debug",
           "func"
         ],
@@ -54685,8 +54685,8 @@
         ],
         "docstring": "Decorator to log function performance",
         "calls": [
-          "log_performance",
           "time",
+          "log_performance",
           "func"
         ],
         "is_method": false,
@@ -54702,8 +54702,8 @@
         "calls": [
           "is_development",
           "error",
-          "add",
-          "initialize_logging"
+          "initialize_logging",
+          "add"
         ],
         "is_method": false,
         "parent_class": null
@@ -54859,10 +54859,10 @@
         "args": [],
         "docstring": "Create memory-mapped assets from existing baked data.",
         "calls": [
-          "MMapAssetBaker",
           "convert_from_baker",
-          "exists",
+          "MMapAssetBaker",
           "error",
+          "exists",
           "info",
           "Path"
         ],
@@ -55296,14 +55296,14 @@
         "args": [],
         "docstring": "CLI entry point for world validation.",
         "calls": [
-          "validate_all",
-          "ArgumentParser",
+          "WorldValidator",
           "parse_args",
-          "print",
+          "validate_all",
           "remove",
-          "add",
+          "print",
           "add_argument",
-          "WorldValidator"
+          "add",
+          "ArgumentParser"
         ],
         "is_method": false,
         "parent_class": null
