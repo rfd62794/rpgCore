@@ -17,9 +17,9 @@ save_output: true
 log_quality: true
 
 corpus_paths:
-  - docs/planning/GOALS.md
-  - docs/planning/TASKS.md
-  - docs/planning/MILESTONES.md
   - docs/VISION.md
   - docs/WORLD.md
+  - docs/GOALS.md
+  - docs/MILESTONES.md
+  - docs/TASKS.md
   - docs/agents/memory/agent_memory.md
