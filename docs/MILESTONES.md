@@ -46,7 +46,7 @@
 - id: M_ENGINE
   type: milestone
   title: "Shared infrastructure — all demos use src/shared/"
-  status: ACTIVE
+  status: Parked
   goals: [G9]
   owner: human
   created: 2026-02-26
@@ -55,7 +55,7 @@
 - id: M_APJ
   type: milestone
   title: "APJ swarm vision-aligned — recommends demo work"
-  status: ACTIVE
+  status: Parked
   goals: [G8]
   owner: human
   created: 2026-02-26
