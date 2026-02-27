@@ -1,40 +1,98 @@
-# Field Notes: The Living World
+# World Field Notes — Unnamed Planet
 
 ## The Planet
-(Name pending classification)
+No name recorded yet.
+The slimes have a name for it in their own language.
+Nobody has translated it correctly.
+The word seems to mean something between
+"home" and "inevitable."
 
 ## The Five Regions
-The surface is divided by extreme environmental pressures, each giving rise to distinct lifeforms.
 
-### Ember Wastes
-A high-energy, resource-rich volcanic region. The terrain is jagged and the air is thick with heat. The dominant lifeforms are angular and resilient.
+### The Ember Wastes
+Hot. Dry. Resource rich beneath the surface.
+Ember Slimes have lived here longest of any culture.
+Angular formations in the rock mirror their forms.
+Travelers who stay too long start to feel restless.
 
-### Crystal Caverns
-Deep subterranean networks of ancient geological formations. A place of silence and geometric perfection.
+### The Crystal Caverns
+Cold. Dark. Older than any other region.
+The geometric formations predate the slimes.
+Crystal Slimes did not build them.
+They moved in. They studied what was already there.
+The carvings on the deep walls are not slime-made.
 
-### Moss Plains
-The most hospitable region. Rolling hills of dense, soft vegetation. Life here is abundant and social.
+### The Moss Plains
+Warm. Abundant. Loud with life.
+Moss Slimes are everywhere.
+They are the most numerous culture by far.
+They remember every visitor.
+They share information freely.
+This is either generosity or strategy.
+Possibly both.
 
-### Coastal Waters
-Fluid and ever-changing. The intersection of land and sea requires high adaptability.
+### The Coastal Waters
+Always moving. Always trading.
+Coastal Slimes have routes that predate
+any known map of the surface.
+They know things about the other regions
+that the other regions do not know about themselves.
+They charge for this information.
+Everything has a price on the coast.
 
-### Void Edges
-Where the known world begins to fray. The atmosphere shifts, and life takes on irregular, uncanny forms that defy standard biological classification.
+### The Void Edges
+Nobody agrees on where they begin.
+The other cultures avoid them.
+The Void Slimes are not aggressive.
+They simply exist in a way that feels wrong.
+Their movement does not follow expected patterns.
+Their forms shift in ways that should not be possible.
+The Crystal scholars have studied them for generations.
+They have stopped publishing findings.
 
-## The Garden (Your Crash Site)
-A pocket of neutrality in a contested world. It appears the environment here intentionally fosters growth and stability. Previous evidence suggests it has served as a sanctuary for others before.
+## The Garden
+Crash site. Neutral ground by old agreement.
+The agreement predates any living slime's memory.
+It is simply known: this place is neutral.
+Nobody enforces it. Nobody violates it.
+The garden existed before the most recent crash.
+It will exist after.
+Previous travelers left things here.
+Most of it is overgrown now.
+Some of it still works.
 
 ## The Ruins Beneath
-Vast, ancient structures extending deep into the planetary crust. They hold the physical remains of the ship parts you seek, as well as the history of this world and the reason for the crashes.
-
-## The Void Edges
-Not merely a geographical boundary, but a site of convergent evolution. Void Slimes congregate here, exhibiting traits that suggest life from an entirely different pressure gradient.
-
-## The Factions and Their History
-The five primary Slime cultures have inhabited these regions for eons. They have established territories, alliances, and a long memory of those who have come from beyond the sky.
+Every region has them.
+The ruins are not slime-built.
+The Crystal scholars know this.
+They do not say it to outsiders.
+The deepest ruins contain things
+that do not match any known slime culture
+or any known off-world technology.
+They are simply there.
+They have always been there.
+They function.
 
 ## What The Clans Know About The Crashes
-The Clans understand that the crashes are periodic and non-accidental. They have watched travelers arrive, build, and either disappear into the world or attempt to leave.
+Ships have been arriving for a long time.
+Not frequently. Not on a schedule.
+But consistently enough that
+every living culture has a word for it.
+The Moss Slimes call it "the falling stars."
+The Crystal Slimes call it "the returning."
+The Coastal Slimes call it "new cargo."
+The Ember Slimes do not speak of it.
+The Void Slimes smile when asked.
 
 ## What Nobody Knows Yet
-Something draws ships here. It is not accidental.
+Something draws ships here.
+It is not accidental.
+The garden is not neutral by chance.
+The ruins beneath it are the deepest on the planet.
+The Void Edges point toward something beyond the atmosphere.
+The Crystal scholars stopped publishing findings
+the year they reached the lowest level.
+That was sixty years ago.
+The scholar who led that expedition
+still lives in the caverns.
+She does not receive visitors.

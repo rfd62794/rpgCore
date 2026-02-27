@@ -46,7 +46,7 @@ The emotional anchor of the entire experience.
 Genetics and personality reveal over generations.
 Attachment through raising. Mastery through breeding.
 Chao Garden meets Pokemon breeding depth.
-Breeds feed every other world.
+Slimes bred here feed every other world.
 
 ### Dungeon Crawler
 "What's in the next room?"
@@ -56,6 +56,7 @@ So is the history of why you crashed.
 Procedural floors. Systemic loot and builds.
 Diablo 2 one-more-dungeon loop.
 Party drawn from slimes you raised.
+Loss is permanent on Core mode.
 
 ### Slime Conquest
 "What can my squad achieve?"
@@ -65,7 +66,7 @@ Procedural maps. Systemic strategy.
 Optional map battles on casual missions.
 Required on Core and Story missions.
 Squads built from slimes you bred.
-The stakes feel real because the slimes are yours.
+Stakes feel real because the slimes are yours.
 
 ### Slime Racing
 "How fast can they go?"
@@ -73,63 +74,65 @@ How factions settle disputes peacefully.
 First friendly contact with clans.
 Win races → earn respect → unlock trade.
 Genetics matter: agility, acceleration, drafting.
-Chocobo Racing energy.
+Chocobo Racing energy. FF7 Golden Saucer spirit.
 
 ## The Faction World
 
 ### Five Slime Cultures
-Evolved based on regional pressure.
+Evolved based on regional environmental pressure.
 Tendencies not locks — genetics can override.
 Cultural traits visible in mathematical rendering.
+Sub-species emerge through deep breeding chains.
+Player-created sub-species are valid and named.
 
 Ember Slimes (Ember Wastes)
-  Warriors. Resource rich.
-  Angular forms. Hot palette.
+  Warriors. Resource rich. Angular forms.
+  Hot color palette. Fast wobble.
   Trade: parts, weapons, combat training.
 
 Crystal Slimes (Crystal Caverns)
-  Scholars. Ancient knowledge.
-  Geometric, faceted forms. Cool palette.
+  Scholars. Ancient knowledge. Geometric forms.
+  Cool blues and whites. Deliberate movement.
   Trade: information, maps, dungeon layouts.
   Know more about your crash than they say.
 
 Moss Slimes (Moss Plains)
-  Farmers. Abundant. Social.
-  Rounded, soft forms. Green palette.
+  Farmers. Abundant. Social. Rounded forms.
+  Green and brown palette. Gentle wobble.
   Trade: breeding supplies, genetic materials.
   Most welcoming to outsiders.
 
-Coastal Slimes (Coastal Waters)
-  Traders. Adaptable. Fluid.
-  Elongated forms. Blue-teal palette.
+### Coastal Slimes (Coastal Waters)
+  Traders. Adaptable. Elongated fluid forms.
+  Blue-teal palette. Ripple movement.
   Trade: routes, cargo, rare finds.
   Know every faction's price.
 
 Void Slimes (Void Edges)
-  Unknown pressure. Strange traits.
-  Irregular, shifting forms. Dark with inner light.
+  Not a culture. A convergent evolution.
+  Irregular shifting forms. Dark with inner glow.
   Movement feels deliberately uncanny.
   Factions fear them. Some worship them.
-  Don't trade easily.
-  Worth pursuing anyway.
-  Best rewards. Highest risk.
+  Rarest traits. Most dangerous in dungeon.
+  Most valuable in conquest.
+  Breed one if you go deep enough.
 
 ### Faction Memory
 Factions remember what you did.
 Choices made while surviving
-have consequences you didn't anticipate.
+have consequences you did not anticipate.
 Alignment in Act 1 determines
 who trusts you in Act 3.
 
-### The Economy (Slime Clan)
+### The Economy
 Not your clan. The existing civilization.
 Clans have territory, resources,
-relationships, memory.
+relationships, and memory.
 Your garden sits in contested territory.
-The crash wasn't random.
+The crash was not random.
 Something brought you here.
 The clans know what it was.
-You don't. Yet.
+You do not. Yet.
 
 ## The Slimes
 
@@ -141,93 +144,77 @@ The renderer reads genome parameters.
 No artist bottleneck. No variant limit.
 Cultural tendencies expressed through
 parameter ranges, not locked values.
-
-### Genetic Parameters → Visual Output
-body_size         → overall scale
-body_roundness    → ellipse ratio
-primary_color     → main fill (HSL)
-secondary_color   → pattern color
-pattern_type      → spots/stripes/patches/none
-pattern_density   → coverage amount
-wobble_frequency  → pulse speed
-wobble_amplitude  → pulse depth
-eye_size          → eye radius
-eye_spacing       → distance between eyes
-cultural_base     → shape tendency + color range
-rare_trait        → special visual effect
-
-### Rare Traits
-Void trait      → inner glow, dark body
-Crystal trait   → faceted edges
-Ember trait     → heat shimmer
-Ancient trait   → markings from old civilization
-Off-world trait → doesn't exist on this planet
-                  brought by crashed travelers
-                  including you
-
-### Sub-Species
-Deep breeding dilutes cultural base traits.
-Unique combinations emerge.
-Player creates their own sub-species.
+Player-bred sub-species emerge naturally.
 The system generates them.
 Player names and remembers them.
-That is The Living World.
 
-### Void Slimes
-Not a culture. A convergent evolution.
-Rarest traits. Most dangerous in dungeon.
-Most valuable in conquest.
-Breed one if you go deep enough.
-The world has an edge.
-Void Slimes live near it.
-What's beyond that edge
-is the Space question
-answered without leaving the planet.
+### Genetic Parameters → Visual Output
+body_size           → overall scale
+body_roundness      → ellipse ratio
+primary_color       → main fill HSL
+secondary_color     → pattern color
+pattern_type        → spots stripes patches none
+pattern_density     → coverage amount
+wobble_frequency    → pulse speed
+wobble_amplitude    → pulse depth
+eye_size            → eye radius
+eye_spacing         → distance between eyes
+cultural_base       → shape tendency and color range
+rare_trait          → special visual effect
+
+### Rare Traits
+void_trait      → inner glow, dark body
+crystal_trait   → faceted edges
+ember_trait     → heat shimmer
+ancient_trait   → markings from old civilization
+off_world_trait → not from this planet
+                  brought by crashed travelers
+                  including you
 
 ## The Mystery
 Space is mythology, not game mode.
 You crashed from somewhere.
 There are other planets.
 Other slime cultures exist out there.
-The player doesn't visit them.
-But the world implies they exist.
 Previous travelers crashed here before you.
 Your garden's neutral status is not accidental.
 Something draws ships to this planet.
 Design the mystery. Not the answer.
 
 ## Technical Constraints
-No LLMs — intelligence through systems.
+No LLMs — intelligence through systems only.
 Mathematical rendering — genetics drive appearance.
 Procedural stage — systemic meaning.
-Systems create worlds. Not content.
+Systems create worlds, not content.
 Runs offline. Works in browser.
 Saves via LocalStorage and export/import JSON.
 Slimes connect every world.
+Python backend. TypeScript renderer. Rust for speed.
 
 ## What We Are Not Building
 LLM dialogue or behavior.
 Procedural story generation.
 Chosen one narrative.
 Gating between worlds.
-Space as playable game mode (v1-v3).
+Space as playable game mode in v1 through v3.
+Sprites for slime rendering.
 
 ## Shipping Order
 
 v1 — Prove the Loop
-  Garden + Dungeon Crawler
-  Crash landing. First contact.
+  Garden Hub + Slime Breeder + Dungeon Crawler.
+  Crash landing. First contact. Core loop proven.
   Breed → Adventure → Loss → Breed again.
   Browser playable at rfditservices.com.
 
-v2 — Open the World  
-  Racing + Conquest
+v2 — Open the World
+  Slime Racing + Slime Conquest.
   Factions emerge. Trust is earned.
   The question is asked.
 
 v3 — The Living World
-  Clan economy. Full story.
-  Player chooses.
+  Clan economy. Full faction memory. Complete story.
+  Player chooses whether to leave.
 
 v4 — Beyond (if earned)
   Space. Other planets.
