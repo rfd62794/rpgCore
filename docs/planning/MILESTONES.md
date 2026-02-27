@@ -38,7 +38,7 @@ modified: 2026-02-25
 id: M4
 type: milestone
 title: Asset structure formalized
-status: Parked
+status: PARKED
 goals: [G1, G4]
 tasks: []
 owner: human
