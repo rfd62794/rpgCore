@@ -26,7 +26,7 @@
   milestone: M_HUB
   owner: human
   created: 2026-02-26
-  modified: 2026-02-26
+  modified: 2026-02-27
 
 - id: G4
   type: goal
