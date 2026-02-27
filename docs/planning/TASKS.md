@@ -571,3 +571,63 @@ created: 2026-02-23
 modified: 2026-02-23
 tags: [polish, combat, completed]
 ---
+
+---
+id: T_BROWSER_01
+type: task
+title: Install pygbag and verify Slime Breeder launches
+status: ACTIVE
+scope: tooling
+milestone: M_BROWSER
+owner: human
+created: 2026-02-27
+modified: 2026-02-27
+---
+
+---
+id: T_BROWSER_02
+type: task
+title: Configure pygbag build for browser output
+status: QUEUED
+scope: tooling
+milestone: M_BROWSER
+owner: human
+created: 2026-02-27
+modified: 2026-02-27
+---
+
+---
+id: T_LOOP_01
+type: task
+title: Verify bred slime appears in dungeon party slot
+status: QUEUED
+scope: shared
+milestone: M_LOOP
+owner: human
+created: 2026-02-27
+modified: 2026-02-27
+---
+
+---
+id: T_CULTURAL_01
+type: task
+title: Add Ember cultural parameter ranges to SlimeRenderer
+status: QUEUED
+scope: shared
+milestone: M_CULTURAL
+owner: human
+created: 2026-02-27
+modified: 2026-02-27
+---
+
+---
+id: T_HUB_01
+type: task
+title: Create Garden hub scene connecting Breeder and Dungeon
+status: QUEUED
+scope: shared
+milestone: M_HUB
+owner: human
+created: 2026-02-27
+modified: 2026-02-27
+---

@@ -562,3 +562,48 @@
   title: "Combat scene \xE2\u20AC\u201D Turn Order display, SlimeRenderer in enemy\
     \ slots, floating damage, hero portrait"
   type: task
+- created: 2026-02-27
+  id: T_BROWSER_01
+  milestone: M_BROWSER
+  modified: 2026-02-27
+  owner: human
+  scope: tooling
+  status: ACTIVE
+  title: "Install pygbag and verify Slime Breeder launches"
+  type: task
+- created: 2026-02-27
+  id: T_BROWSER_02
+  milestone: M_BROWSER
+  modified: 2026-02-27
+  owner: human
+  scope: tooling
+  status: QUEUED
+  title: "Configure pygbag build for browser output"
+  type: task
+- created: 2026-02-27
+  id: T_LOOP_01
+  milestone: M_LOOP
+  modified: 2026-02-27
+  owner: human
+  scope: shared
+  status: QUEUED
+  title: "Verify bred slime appears in dungeon party slot"
+  type: task
+- created: 2026-02-27
+  id: T_CULTURAL_01
+  milestone: M_CULTURAL
+  modified: 2026-02-27
+  owner: human
+  scope: shared
+  status: QUEUED
+  title: "Add Ember cultural parameter ranges to SlimeRenderer"
+  type: task
+- created: 2026-02-27
+  id: T_HUB_01
+  milestone: M_HUB
+  modified: 2026-02-27
+  owner: human
+  scope: shared
+  status: QUEUED
+  title: "Create Garden hub scene connecting Breeder and Dungeon"
+  type: task
