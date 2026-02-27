@@ -33,3 +33,10 @@
 - Do not skip risk field in SessionPlan alternatives
 - Do not refactor existing agents mid-session
 - Do not recommend non-vision-aligned work when VISION.md exists
+
+## Planned: ThreadAgent Suite
+- **ThreadAuditor** — Audits VISION -> Goal -> Milestone -> Task -> Step chain.
+- **ThreadBuilder** — Generates missing chain links with real file paths.
+- **ThreadValidator** — Verifies steps against chain after completion.
+- Build after **M_BROWSER** ships.
+- **Priority**: HIGH — fixes Strategist drift permanently.
