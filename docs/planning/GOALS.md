@@ -72,16 +72,18 @@ Clean repo, honest tests, compelling README.
 ---
 id: G6
 type: goal
-title: Space Trader Demo
+title: Space Trader Demo [REVIEW]
 status: ACTIVE
 milestone: M6
 owner: human
 created: 2026-01-01
-modified: 2026-02-25
+modified: 2026-02-26
 tags: [space-trader, demo]
 ---
 
 Simple economy, location-based prices, travel risk.
+[REVIEW] VISION.md states: "Space as playable game mode (v1-v3)" is NOT being built.
+"Space is mythology, not game mode."
 Reuses Slime Clan territory and Asteroids combat systems.
 Core memory: Palm Pilot Space Trader, bus rides, simple fun.
 
@@ -135,15 +137,17 @@ The demo that was always planned, still waiting its moment.
 ---
 id: G10
 type: goal
-title: The Living World
+title: The Living World [REVIEW]
 status: ACTIVE
 milestone: M11
 owner: human
 created: 2026-02-20
-modified: 2026-02-25
+modified: 2026-02-26
 tags: [living-world, soul, aspects]
 ---
 
+[REVIEW] VISION.md defines "Four Worlds" (Breeder, Crawler, Conquest, Racing).
+Existing goal mentions "Six Aspects".
 Six Aspects of one Soul's journey through existence.
 The Ring at the center where the Soul moves between all of them.
 Each Aspect fully playable alone. Crossover always additive.
@@ -165,3 +169,94 @@ The Chao Garden of the Green Box.
 Genetics, shapes, sizes, colors, patterns, personality.
 TurboShells racing lives here as a mode.
 Your creations enter the world and show up elsewhere.
+
+---
+id: G12
+type: goal
+title: Browser Deployment
+status: ACTIVE
+owner: human
+created: 2026-02-26
+modified: 2026-02-26
+tags: [deployment, web]
+---
+
+Slime Breeder demo playable at rfditservices.com.
+
+---
+id: G13
+type: goal
+title: Faction System
+status: ACTIVE
+owner: human
+created: 2026-02-26
+modified: 2026-02-26
+tags: [faction, memory]
+---
+
+5 cultures with distinct tendencies and long-term memory of player actions.
+
+---
+id: G14
+type: goal
+title: Mathematical Renderer
+status: ACTIVE
+owner: human
+created: 2026-02-26
+modified: 2026-02-26
+tags: [rendering, procedural]
+---
+
+Renderer driven by cultural parameter ranges (HSL, shapes, patterns).
+
+---
+id: G15
+type: goal
+title: Void Trait System
+status: ACTIVE
+owner: human
+created: 2026-02-26
+modified: 2026-02-26
+tags: [genetics, rare]
+---
+
+Breeding chain for rarest traits (glow, dark body, uncanny movement).
+
+---
+id: G16
+type: goal
+title: Save System
+status: ACTIVE
+owner: human
+created: 2026-02-26
+modified: 2026-02-26
+tags: [persistence]
+---
+
+LocalStorage for web persistence + export/import JSON for cross-platform play.
+
+---
+id: G17
+type: goal
+title: Hub/Garden World
+status: ACTIVE
+owner: human
+created: 2026-02-26
+modified: 2026-02-26
+tags: [hub, connection]
+---
+
+The Garden as an emotional anchor connecting all secondary worlds.
+
+---
+id: G18
+type: goal
+title: Narrative Arc
+status: ACTIVE
+owner: human
+created: 2026-02-26
+modified: 2026-02-26
+tags: [narrative]
+---
+
+Movement from crash landing survival to planetary belonging.

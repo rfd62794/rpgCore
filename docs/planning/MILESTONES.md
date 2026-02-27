@@ -171,3 +171,101 @@ modified: 2026-02-25
 ---
 
 Criteria: one crossover ripple working end to end
+
+---
+id: M14
+type: milestone
+title: VISION.md complete
+status: COMPLETE
+goals: [G10]
+tasks: []
+owner: archivist
+created: 2026-02-26
+modified: 2026-02-26
+---
+
+In Archivist corpus. Defines the North Star.
+
+---
+id: M15
+type: milestone
+title: Slime Breeder Browser Deployment
+status: QUEUED
+goals: [G12]
+tasks: []
+owner: human
+created: 2026-02-26
+modified: 2026-02-26
+---
+
+Playable at rfditservices.com. Verified SSL and assets.
+
+---
+id: M16
+type: milestone
+title: Five Slime Cultures
+status: QUEUED
+goals: [G13, G14]
+tasks: []
+owner: human
+created: 2026-02-26
+modified: 2026-02-26
+---
+
+Parameter ranges defined and rendering correctly for all 5 cultures.
+
+---
+id: M17
+type: milestone
+title: Void Slime Breeding Chain
+status: QUEUED
+goals: [G15]
+tasks: []
+owner: human
+created: 2026-02-26
+modified: 2026-02-26
+---
+
+Rare traits logic implemented and breedable.
+
+---
+id: M18
+type: milestone
+title: Faction Memory System
+status: QUEUED
+goals: [G13]
+tasks: []
+owner: human
+created: 2026-02-26
+modified: 2026-02-26
+---
+
+Factions track player behavior and adjust alignment.
+
+---
+id: M19
+type: milestone
+title: Core Loop Proven
+status: QUEUED
+goals: [G11, G7]
+tasks: []
+owner: human
+created: 2026-02-26
+modified: 2026-02-26
+---
+
+Breeder + Dungeon connected via shared slime objects.
+
+---
+id: M20
+type: milestone
+title: Garden Hub
+status: QUEUED
+goals: [G17]
+tasks: []
+owner: human
+created: 2026-02-26
+modified: 2026-02-26
+---
+
+Emotional anchor hub allowing world transitions.
