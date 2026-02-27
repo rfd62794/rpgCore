@@ -26,7 +26,8 @@ from loguru import logger
 from pydantic import BaseModel, Field
 
 from src.tools.apj.agents.archivist import CoherenceReport
-from src.tools.apj.agents.ollama_client import get_ollama_model
+from src.tools.apj.agents.model_router import ModelRouter
+from src.tools.apj.agents.base_agent import AgentConfig, BaseAgent
 
 try:
     from pydantic_ai import Agent
@@ -178,10 +179,16 @@ class Strategist:
     - Saves plan to docs/session_logs/
     """
 
-    def __init__(self, model_name: str = "llama3.2:3b") -> None:
+    def __init__(self, model_name: str = "base_agent_router") -> None:
         self.model_name = model_name
-        self._agent: Optional[object] = None
-        logger.info(f"Strategist initialized (model={model_name})")
+        self.config = self._load_config()
+        logger.info(f"Strategist initialized (model={model_name}, preference={self.config.model_preference})")
+
+    def _load_config(self) -> AgentConfig:
+        path = _PROJECT_ROOT / "docs" / "agents" / "configs" / "strategist.yaml"
+        with open(path, "r", encoding="utf-8") as f:
+            data = yaml.safe_load(f)
+        return AgentConfig.model_validate(data)
 
     # ------------------------------------------------------------------
     # Public API
@@ -235,22 +242,7 @@ class Strategist:
     # Internal: agent
     # ------------------------------------------------------------------
 
-    def _get_agent(self) -> "Agent":
-        """Lazy-init the plain-string pydantic_ai Agent."""
-        if self._agent is None:
-            model = get_ollama_model(model_name=self.model_name, temperature=0.4)
-            system_prompt = (
-                _load_prompt("strategist_system.md")
-                + "\n\n"
-                + _load_prompt("strategist_fewshot.md")
-            )
-            from pydantic_ai import Agent
-            self._agent = Agent(
-                model=model,
-                system_prompt=system_prompt,
-            )
-            logger.debug("Strategist: Agent initialized (example-driven JSON mode)")
-        return self._agent  # type: ignore
+    # _get_agent is deprecated in favor of ModelRouter.route
 
     @staticmethod
     def _extract_json(raw: str) -> str:
@@ -265,11 +257,15 @@ class Strategist:
 
     async def _run_async(self, report: CoherenceReport) -> SessionPlan:
         """Run the plain-string Agent and parse JSON into SessionPlan."""
-        agent = self._get_agent()
-        prompt = self._build_prompt(report)
-        logger.info("Strategist: querying Ollama...")
-        result = await agent.run(prompt)
-        raw_text: str = result.output
+        system_prompt = (
+            _load_prompt("strategist_system.md")
+            + "\n\n"
+            + _load_prompt("strategist_fewshot.md")
+        )
+        prompt = system_prompt + "\n\nTASK:\n" + self._build_prompt(report)
+        
+        logger.info("Strategist: invoking ModelRouter...")
+        raw_text = ModelRouter.route(self.config, prompt)
         logger.debug(f"Strategist: raw response length={len(raw_text)} chars")
 
         json_str = self._extract_json(raw_text)

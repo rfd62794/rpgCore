@@ -33,7 +33,8 @@ from loguru import logger
 from pydantic import BaseModel, Field
 from pydantic_ai import Agent
 
-from src.tools.apj.agents.ollama_client import get_ollama_model
+from src.tools.apj.agents.model_router import ModelRouter
+from src.tools.apj.agents.base_agent import AgentConfig, BaseAgent
 from src.tools.apj.parser import build_corpus, validate_corpus
 from src.tools.apj.schema import Corpus
 
@@ -146,10 +147,16 @@ class Archivist:
     - Never raises — sessions must always be able to start
     """
 
-    def __init__(self, model_name: str = "llama3.2:3b") -> None:
+    def __init__(self, model_name: str = "base_agent_router") -> None:
         self.model_name = model_name
-        self._agent: Optional[Agent] = None
-        logger.info(f"Archivist initialized (model={model_name})")
+        self.config = self._load_config()
+        logger.info(f"Archivist initialized (model={model_name}, preference={self.config.model_preference})")
+
+    def _load_config(self) -> AgentConfig:
+        path = _PROJECT_ROOT / "docs" / "agents" / "configs" / "archivist.yaml"
+        with open(path, "r", encoding="utf-8") as f:
+            data = yaml.safe_load(f)
+        return AgentConfig.model_validate(data)
 
     # ------------------------------------------------------------------
     # Public API
@@ -265,38 +272,7 @@ VALIDATION ERRORS (deterministic — confirmed violations, include in constituti
     # Internal: agent
     # ------------------------------------------------------------------
 
-    def _get_agent(self) -> Agent:
-        """Lazy-init the plain-string pydantic_ai Agent."""
-        if self._agent is None:
-            model = get_ollama_model(model_name=self.model_name, temperature=0.3)
-            example = json.dumps({
-                "session_primer": (
-                    "The project has 442 passing tests with the corpus parser live. "
-                    "Momentum is on the Archivist wiring and agent swarm."
-                ),
-                "open_risks": [
-                    "G3 has no linked milestone \u2014 orphaned",
-                    "Two Active tasks have no corresponding Active Milestone",
-                ],
-                "queued_focus": (
-                    "Link G3 to Milestone M5 or mark deferred in goals.yaml"
-                ),
-                "constitutional_flags": [
-                    "LAW 1: T047 scoped shared but title references slime_breeder directly"
-                ],
-                "corpus_hash": "",
-            }, indent=2)
-            system_prompt = (
-                _load_prompt("archivist_system.md")
-                + f"\n\n{example}\n\n"
-                + _load_prompt("archivist_fewshot.md")
-            )
-            self._agent = Agent(
-                model=model,
-                system_prompt=system_prompt,
-            )
-            logger.debug("Archivist: Agent initialized (example-driven JSON mode)")
-        return self._agent
+    # _get_agent is deprecated in favor of ModelRouter.route
 
     @staticmethod
     def _extract_json(raw: str) -> str:
@@ -334,11 +310,32 @@ VALIDATION ERRORS (deterministic — confirmed violations, include in constituti
         validation_errors: list[str],
     ) -> CoherenceReport:
         """Run the plain-string Agent and parse JSON response into CoherenceReport."""
-        agent = self._get_agent()
-        prompt = self._build_prompt(corpus, validation_errors)
-        logger.info("Archivist: querying Ollama...")
-        result = await agent.run(prompt)
-        raw_text: str = result.output
+        example = json.dumps({
+            "session_primer": (
+                "The project has 442 passing tests with the corpus parser live. "
+                "Momentum is on the Archivist wiring and agent swarm."
+            ),
+            "open_risks": [
+                "G3 has no linked milestone — orphaned",
+                "Two Active tasks have no corresponding Active Milestone",
+            ],
+            "queued_focus": (
+                "Link G3 to Milestone M5 or mark deferred in goals.yaml"
+            ),
+            "constitutional_flags": [
+                "LAW 1: T047 scoped shared but title references slime_breeder directly"
+            ],
+            "corpus_hash": "",
+        }, indent=2)
+        system_prompt = (
+            _load_prompt("archivist_system.md")
+            + f"\n\n{example}\n\n"
+            + _load_prompt("archivist_fewshot.md")
+        )
+        prompt = system_prompt + "\n\nTASK:\n" + self._build_prompt(corpus, validation_errors)
+        
+        logger.info("Archivist: invoking ModelRouter...")
+        raw_text = ModelRouter.route(self.config, prompt)
         logger.debug(f"Archivist: raw response length={len(raw_text)} chars")
 
         json_str = self._extract_json(raw_text)
