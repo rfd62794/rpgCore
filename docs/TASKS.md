@@ -1,572 +1,563 @@
----
-id: T001
-type: task
-title: Last Appointment — migrate to shared UI components
-status: QUEUED
-scope: demo
-demo: last_appointment
-milestone: M5
-owner: human
-created: 2026-02-20
-modified: 2026-02-25
-tags: [migrate, ui]
----
-
----
-id: T002
-type: task
-title: TurboShells — frame session, stable management loop
-status: QUEUED
-scope: demo
-demo: turboshells
-milestone: M7
-owner: human
-created: 2026-02-20
-modified: 2026-02-25
-tags: [feat, turboshells]
----
-
----
-id: T003
-type: task
-title: Asteroids Phase 2 — NEAT pilot training, watch and train modes
-status: QUEUED
-scope: demo
-demo: asteroids
-milestone: M5
-owner: human
-created: 2026-02-20
-modified: 2026-02-25
-tags: [feat, asteroids, neat]
----
-
----
-id: T004
-type: task
-title: Particle system — harvest from dgt_engine and game_engine donor archives
-status: QUEUED
-scope: shared
-milestone: M5
-owner: human
-created: 2026-02-20
-modified: 2026-02-25
-tags: [harvest, particles]
----
-
----
-id: T005
-type: task
-title: Sprite sheet importer — resurrect from archive, wire to sprite_loader
-status: QUEUED
-scope: tooling
-owner: human
-created: 2026-02-20
-modified: 2026-02-25
-tags: [tool, sprites]
----
-
----
-id: T006
-type: task
-title: Asset ingestor — rebuild as src/tools/asset_ingestor/
-status: QUEUED
-scope: tooling
-owner: human
-created: 2026-02-20
-modified: 2026-02-25
-tags: [tool, assets]
----
-
----
-id: T007
-type: task
-title: Asset cache — move from game_engine donor to src/shared/assets/cache.py
-status: QUEUED
-scope: shared
-owner: human
-created: 2026-02-20
-modified: 2026-02-25
-tags: [harvest, assets]
----
-
----
-id: T008
-type: task
-title: Space Trader — button controls and keyboard navigation
-status: QUEUED
-scope: demo
-demo: space_trader
-milestone: M6
-owner: human
-created: 2026-02-20
-modified: 2026-02-25
-tags: [polish, space-trader]
----
-
----
-id: T009
-type: task
-title: Space Trader — buy/sell cost comparison with gain/loss display
-status: QUEUED
-scope: demo
-demo: space_trader
-milestone: M6
-owner: human
-created: 2026-02-20
-modified: 2026-02-25
-tags: [polish, space-trader]
----
-
----
-id: T010
-type: task
-title: Space Trader — pirate and random event handling in pygame UI
-status: QUEUED
-scope: demo
-demo: space_trader
-milestone: M6
-owner: human
-created: 2026-02-20
-modified: 2026-02-25
-tags: [polish, space-trader]
----
-
----
-id: T011
-type: task
-title: Space Trader — clickable node map for travel
-status: QUEUED
-scope: demo
-demo: space_trader
-milestone: M6
-owner: human
-created: 2026-02-20
-modified: 2026-02-25
-tags: [feat, space-trader]
----
-
----
-id: T012
-type: task
-title: Space Trader — UI refinement and economy balancing
-status: QUEUED
-scope: demo
-demo: space_trader
-milestone: M6
-owner: human
-created: 2026-02-20
-modified: 2026-02-25
-tags: [polish, space-trader]
----
-
----
-id: T013
-type: task
-title: Scene vs SceneBase mismatch — document correct pattern in SESSION_PROTOCOL
-status: QUEUED
-scope: docs
-owner: human
-created: 2026-02-20
-modified: 2026-02-25
-tags: [fix, docs]
----
-
----
-id: T014
-type: task
-title: Dungeon Crawler — implement sprite-based room layout
-status: QUEUED
-scope: demo
-demo: dungeon_crawler
-milestone: M8
-owner: human
-created: 2026-02-20
-modified: 2026-02-25
-tags: [feat, dungeon-crawler]
----
-
----
-id: T015
-type: task
-title: Dungeon Crawler — ingest Kenney and OGA sprite packs
-status: QUEUED
-scope: demo
-demo: dungeon_crawler
-milestone: M8
-owner: human
-created: 2026-02-20
-modified: 2026-02-25
-tags: [asset, dungeon-crawler]
----
-
----
-id: T016
-type: task
-title: Ambient systems — day cycle, weather, fishing, crafting as shared texture
-status: QUEUED
-scope: shared
-owner: human
-created: 2026-02-20
-modified: 2026-02-25
-tags: [design, ambient]
----
-
----
-id: T017
-type: task
-title: Slime Breeder — save/load garden persistence
-status: QUEUED
-scope: demo
-demo: slime_breeder
-milestone: M11
-owner: human
-created: 2026-02-20
-modified: 2026-02-25
-tags: [feat, slime-breeder]
----
-
----
-id: T018
-type: task
-title: Slime Breeder — slime personality emergence over time
-status: QUEUED
-scope: demo
-demo: slime_breeder
-milestone: M11
-owner: human
-created: 2026-02-20
-modified: 2026-02-25
-tags: [feat, slime-breeder]
----
-
----
-id: T019
-type: task
-title: Dungeon Crawler — proc-gen floor layouts and connection logic
-status: QUEUED
-scope: demo
-demo: dungeon_crawler
-milestone: M8
-owner: human
-created: 2026-02-20
-modified: 2026-02-25
-tags: [feat, dungeon-crawler]
----
-
----
-id: T020
-type: task
-title: Combat scene — floating damage numbers on hit
-status: QUEUED
-scope: shared
-owner: human
-created: 2026-02-20
-modified: 2026-02-25
-tags: [polish, combat]
----
-
----
-id: T021
-type: task
-title: Combat scene — hero portrait/stats in active slot
-status: QUEUED
-scope: shared
-owner: human
-created: 2026-02-20
-modified: 2026-02-25
-tags: [polish, combat]
----
-
----
-id: T022
-type: task
-title: Slime Clan — migrate to shared UI components
-status: QUEUED
-scope: demo
-demo: slime_clan
-owner: human
-created: 2026-02-01
-modified: 2026-02-25
-tags: [migrate, backlog]
----
-
----
-id: T023
-type: task
-title: Asteroids Phase 3 — roguelike upgrade system
-status: QUEUED
-scope: demo
-demo: asteroids
-owner: human
-created: 2026-02-01
-modified: 2026-02-25
-tags: [feat, asteroids, backlog]
----
-
----
-id: T024
-type: task
-title: TurboShells — genetic breeding simulation
-status: QUEUED
-scope: demo
-demo: turboshells
-milestone: M7
-owner: human
-created: 2026-02-01
-modified: 2026-02-25
-tags: [feat, turboshells, backlog]
----
-
----
-id: T025
-type: task
-title: TurboShells — race simulation
-status: QUEUED
-scope: demo
-demo: turboshells
-milestone: M7
-owner: human
-created: 2026-02-01
-modified: 2026-02-25
-tags: [feat, turboshells, backlog]
----
-
----
-id: T026
-type: task
-title: Pydantic V1 migration in dgt_engine and game_engine
-status: QUEUED
-scope: shared
-owner: human
-created: 2026-02-01
-modified: 2026-02-25
-tags: [fix, pydantic, backlog]
----
-
----
-id: T027
-type: task
-title: APJ — scene previewer tool
-status: QUEUED
-scope: tooling
-owner: human
-created: 2026-02-01
-modified: 2026-02-25
-tags: [tool, apj, backlog]
----
-
----
-id: T028
-type: task
-title: APJ — dialogue editor for appointment.json style graphs
-status: QUEUED
-scope: tooling
-owner: human
-created: 2026-02-01
-modified: 2026-02-25
-tags: [tool, apj, backlog]
----
-
----
-id: T029
-type: task
-title: Pygame splash screen launcher
-status: QUEUED
-scope: shared
-owner: human
-created: 2026-02-01
-modified: 2026-02-25
-tags: [feat, backlog]
----
-
----
-id: T030
-type: task
-title: Color palette / theme system in assets/shared/themes/
-status: QUEUED
-scope: shared
-owner: human
-created: 2026-02-01
-modified: 2026-02-25
-tags: [feat, backlog]
----
-
----
-id: T031
-type: task
-title: Space Trader — design economy model, location graph, cargo system
-status: QUEUED
-scope: demo
-demo: space_trader
-milestone: M6
-owner: human
-created: 2026-02-01
-modified: 2026-02-25
-tags: [plan, space-trader, backlog]
----
-
----
-id: T032
-type: task
-title: Space Trader — identify which Slime Clan and Asteroids components reuse directly
-status: QUEUED
-scope: demo
-demo: space_trader
-milestone: M6
-owner: human
-created: 2026-02-01
-modified: 2026-02-25
-tags: [plan, space-trader, backlog]
----
-
----
-id: T033
-type: task
-title: Dungeon Crawler — design room system, encounter types, loot tables
-status: QUEUED
-scope: demo
-demo: dungeon_crawler
-milestone: M8
-owner: human
-created: 2026-02-01
-modified: 2026-02-25
-tags: [plan, dungeon-crawler, backlog]
----
-
----
-id: T034
-type: task
-title: Creature Collector — design genetics display, battle flow, capture mechanic
-status: QUEUED
-scope: demo
-demo: creature_collector
-milestone: M9
-owner: human
-created: 2026-02-01
-modified: 2026-02-25
-tags: [plan, creature-collector, backlog]
----
-
----
-id: T035
-type: task
-title: TurboShells — design breeding UI, stable view, race loop
-status: QUEUED
-scope: demo
-demo: turboshells
-milestone: M7
-owner: human
-created: 2026-02-01
-modified: 2026-02-25
-tags: [plan, turboshells, backlog]
----
-
----
-id: T036
-type: task
-title: Shared economy system — buy/sell/price variance for Space Trader and future demos
-status: QUEUED
-scope: shared
-owner: human
-created: 2026-02-01
-modified: 2026-02-25
-tags: [harvest, economy, backlog]
----
-
----
-id: T037
-type: task
-title: Procedural room generator — for Dungeon Crawler and Asteroids roguelike
-status: QUEUED
-scope: shared
-owner: human
-created: 2026-02-01
-modified: 2026-02-25
-tags: [harvest, procgen, backlog]
----
-
----
-id: T038
-type: task
-title: Inventory system — items, cargo, loot for Space Trader and Dungeon Crawler
-status: QUEUED
-scope: shared
-owner: human
-created: 2026-02-01
-modified: 2026-02-25
-tags: [harvest, inventory, backlog]
----
-
----
-id: T039
-type: task
-title: APJ — task management system integration
-status: DONE
-scope: tooling
-owner: human
-created: 2026-02-22
-modified: 2026-02-22
-tags: [tool, apj, completed]
----
-
----
-id: T040
-type: task
-title: Asset restructure — execute moves from ASSET_INVENTORY.md
-status: DONE
-scope: shared
-owner: human
-created: 2026-02-22
-modified: 2026-02-22
-tags: [refactor, assets, completed]
----
-
----
-id: T041
-type: task
-title: Space Trader — pygame UI, market screen, travel map
-status: DONE
-scope: demo
-demo: space_trader
-owner: human
-created: 2026-02-22
-modified: 2026-02-22
-tags: [feat, space-trader, completed]
----
-
----
-id: T042
-type: task
-title: Slime Breeder — breeding UI, trait inheritance visualization
-status: DONE
-scope: demo
-demo: slime_breeder
-owner: human
-created: 2026-02-23
-modified: 2026-02-23
-tags: [polish, slime-breeder, completed]
----
-
----
-id: T043
-type: task
-title: Combat scene — FF-style layout, proper sizing, buttons visible
-status: DONE
-scope: shared
-owner: human
-created: 2026-02-23
-modified: 2026-02-23
-tags: [polish, combat, completed]
----
-
----
-id: T044
-type: task
-title: Combat scene — Turn Order display, SlimeRenderer in enemy slots, floating damage, hero portrait
-status: DONE
-scope: shared
-owner: human
-created: 2026-02-23
-modified: 2026-02-23
-tags: [polish, combat, completed]
----
+- created: 2026-02-20
+  demo: last_appointment
+  id: T001
+  milestone: M5
+  modified: 2026-02-25
+  owner: human
+  scope: demo
+  status: QUEUED
+  tags:
+  - migrate
+  - ui
+  title: "Last Appointment \xE2\u20AC\u201D migrate to shared UI components"
+  type: task
+- created: 2026-02-20
+  demo: turboshells
+  id: T002
+  milestone: M7
+  modified: 2026-02-25
+  owner: human
+  scope: demo
+  status: QUEUED
+  tags:
+  - feat
+  - turboshells
+  title: "TurboShells \xE2\u20AC\u201D frame session, stable management loop"
+  type: task
+- created: 2026-02-20
+  demo: asteroids
+  id: T003
+  milestone: M5
+  modified: 2026-02-25
+  owner: human
+  scope: demo
+  status: QUEUED
+  tags:
+  - feat
+  - asteroids
+  - neat
+  title: "Asteroids Phase 2 \xE2\u20AC\u201D NEAT pilot training, watch and train\
+    \ modes"
+  type: task
+- created: 2026-02-20
+  id: T004
+  milestone: M5
+  modified: 2026-02-25
+  owner: human
+  scope: shared
+  status: QUEUED
+  tags:
+  - harvest
+  - particles
+  title: "Particle system \xE2\u20AC\u201D harvest from dgt_engine and game_engine\
+    \ donor archives"
+  type: task
+- created: 2026-02-20
+  id: T005
+  modified: 2026-02-25
+  owner: human
+  scope: tooling
+  status: QUEUED
+  tags:
+  - tool
+  - sprites
+  title: "Sprite sheet importer \xE2\u20AC\u201D resurrect from archive, wire to sprite_loader"
+  type: task
+- created: 2026-02-20
+  id: T006
+  modified: 2026-02-25
+  owner: human
+  scope: tooling
+  status: QUEUED
+  tags:
+  - tool
+  - assets
+  title: "Asset ingestor \xE2\u20AC\u201D rebuild as src/tools/asset_ingestor/"
+  type: task
+- created: 2026-02-20
+  id: T007
+  modified: 2026-02-25
+  owner: human
+  scope: shared
+  status: QUEUED
+  tags:
+  - harvest
+  - assets
+  title: "Asset cache \xE2\u20AC\u201D move from game_engine donor to src/shared/assets/cache.py"
+  type: task
+- created: 2026-02-20
+  demo: space_trader
+  id: T008
+  milestone: M6
+  modified: 2026-02-25
+  owner: human
+  scope: demo
+  status: QUEUED
+  tags:
+  - polish
+  - space-trader
+  title: "Space Trader \xE2\u20AC\u201D button controls and keyboard navigation"
+  type: task
+- created: 2026-02-20
+  demo: space_trader
+  id: T009
+  milestone: M6
+  modified: 2026-02-25
+  owner: human
+  scope: demo
+  status: QUEUED
+  tags:
+  - polish
+  - space-trader
+  title: "Space Trader \xE2\u20AC\u201D buy/sell cost comparison with gain/loss display"
+  type: task
+- created: 2026-02-20
+  demo: space_trader
+  id: T010
+  milestone: M6
+  modified: 2026-02-25
+  owner: human
+  scope: demo
+  status: QUEUED
+  tags:
+  - polish
+  - space-trader
+  title: "Space Trader \xE2\u20AC\u201D pirate and random event handling in pygame\
+    \ UI"
+  type: task
+- created: 2026-02-20
+  demo: space_trader
+  id: T011
+  milestone: M6
+  modified: 2026-02-25
+  owner: human
+  scope: demo
+  status: QUEUED
+  tags:
+  - feat
+  - space-trader
+  title: "Space Trader \xE2\u20AC\u201D clickable node map for travel"
+  type: task
+- created: 2026-02-20
+  demo: space_trader
+  id: T012
+  milestone: M6
+  modified: 2026-02-25
+  owner: human
+  scope: demo
+  status: QUEUED
+  tags:
+  - polish
+  - space-trader
+  title: "Space Trader \xE2\u20AC\u201D UI refinement and economy balancing"
+  type: task
+- created: 2026-02-20
+  id: T013
+  modified: 2026-02-25
+  owner: human
+  scope: docs
+  status: QUEUED
+  tags:
+  - fix
+  - docs
+  title: "Scene vs SceneBase mismatch \xE2\u20AC\u201D document correct pattern in\
+    \ SESSION_PROTOCOL"
+  type: task
+- created: 2026-02-20
+  demo: dungeon_crawler
+  id: T014
+  milestone: M8
+  modified: 2026-02-25
+  owner: human
+  scope: demo
+  status: QUEUED
+  tags:
+  - feat
+  - dungeon-crawler
+  title: "Dungeon Crawler \xE2\u20AC\u201D implement sprite-based room layout"
+  type: task
+- created: 2026-02-20
+  demo: dungeon_crawler
+  id: T015
+  milestone: M8
+  modified: 2026-02-25
+  owner: human
+  scope: demo
+  status: QUEUED
+  tags:
+  - asset
+  - dungeon-crawler
+  title: "Dungeon Crawler \xE2\u20AC\u201D ingest Kenney and OGA sprite packs"
+  type: task
+- created: 2026-02-20
+  id: T016
+  modified: 2026-02-25
+  owner: human
+  scope: shared
+  status: QUEUED
+  tags:
+  - design
+  - ambient
+  title: "Ambient systems \xE2\u20AC\u201D day cycle, weather, fishing, crafting as\
+    \ shared texture"
+  type: task
+- created: 2026-02-20
+  demo: slime_breeder
+  id: T017
+  milestone: M11
+  modified: 2026-02-25
+  owner: human
+  scope: demo
+  status: QUEUED
+  tags:
+  - feat
+  - slime-breeder
+  title: "Slime Breeder \xE2\u20AC\u201D save/load garden persistence"
+  type: task
+- created: 2026-02-20
+  demo: slime_breeder
+  id: T018
+  milestone: M11
+  modified: 2026-02-25
+  owner: human
+  scope: demo
+  status: QUEUED
+  tags:
+  - feat
+  - slime-breeder
+  title: "Slime Breeder \xE2\u20AC\u201D slime personality emergence over time"
+  type: task
+- created: 2026-02-20
+  demo: dungeon_crawler
+  id: T019
+  milestone: M8
+  modified: 2026-02-25
+  owner: human
+  scope: demo
+  status: QUEUED
+  tags:
+  - feat
+  - dungeon-crawler
+  title: "Dungeon Crawler \xE2\u20AC\u201D proc-gen floor layouts and connection logic"
+  type: task
+- created: 2026-02-20
+  id: T020
+  modified: 2026-02-25
+  owner: human
+  scope: shared
+  status: QUEUED
+  tags:
+  - polish
+  - combat
+  title: "Combat scene \xE2\u20AC\u201D floating damage numbers on hit"
+  type: task
+- created: 2026-02-20
+  id: T021
+  modified: 2026-02-25
+  owner: human
+  scope: shared
+  status: QUEUED
+  tags:
+  - polish
+  - combat
+  title: "Combat scene \xE2\u20AC\u201D hero portrait/stats in active slot"
+  type: task
+- created: 2026-02-01
+  demo: slime_clan
+  id: T022
+  modified: 2026-02-25
+  owner: human
+  scope: demo
+  status: QUEUED
+  tags:
+  - migrate
+  - backlog
+  title: "Slime Clan \xE2\u20AC\u201D migrate to shared UI components"
+  type: task
+- created: 2026-02-01
+  demo: asteroids
+  id: T023
+  modified: 2026-02-25
+  owner: human
+  scope: demo
+  status: QUEUED
+  tags:
+  - feat
+  - asteroids
+  - backlog
+  title: "Asteroids Phase 3 \xE2\u20AC\u201D roguelike upgrade system"
+  type: task
+- created: 2026-02-01
+  demo: turboshells
+  id: T024
+  milestone: M7
+  modified: 2026-02-25
+  owner: human
+  scope: demo
+  status: QUEUED
+  tags:
+  - feat
+  - turboshells
+  - backlog
+  title: "TurboShells \xE2\u20AC\u201D genetic breeding simulation"
+  type: task
+- created: 2026-02-01
+  demo: turboshells
+  id: T025
+  milestone: M7
+  modified: 2026-02-25
+  owner: human
+  scope: demo
+  status: QUEUED
+  tags:
+  - feat
+  - turboshells
+  - backlog
+  title: "TurboShells \xE2\u20AC\u201D race simulation"
+  type: task
+- created: 2026-02-01
+  id: T026
+  modified: 2026-02-25
+  owner: human
+  scope: shared
+  status: QUEUED
+  tags:
+  - fix
+  - pydantic
+  - backlog
+  title: Pydantic V1 migration in dgt_engine and game_engine
+  type: task
+- created: 2026-02-01
+  id: T027
+  modified: 2026-02-25
+  owner: human
+  scope: tooling
+  status: QUEUED
+  tags:
+  - tool
+  - apj
+  - backlog
+  title: "APJ \xE2\u20AC\u201D scene previewer tool"
+  type: task
+- created: 2026-02-01
+  id: T028
+  modified: 2026-02-25
+  owner: human
+  scope: tooling
+  status: QUEUED
+  tags:
+  - tool
+  - apj
+  - backlog
+  title: "APJ \xE2\u20AC\u201D dialogue editor for appointment.json style graphs"
+  type: task
+- created: 2026-02-01
+  id: T029
+  modified: 2026-02-25
+  owner: human
+  scope: shared
+  status: QUEUED
+  tags:
+  - feat
+  - backlog
+  title: Pygame splash screen launcher
+  type: task
+- created: 2026-02-01
+  id: T030
+  modified: 2026-02-25
+  owner: human
+  scope: shared
+  status: QUEUED
+  tags:
+  - feat
+  - backlog
+  title: Color palette / theme system in assets/shared/themes/
+  type: task
+- created: 2026-02-01
+  demo: space_trader
+  id: T031
+  milestone: M6
+  modified: 2026-02-25
+  owner: human
+  scope: demo
+  status: QUEUED
+  tags:
+  - plan
+  - space-trader
+  - backlog
+  title: "Space Trader \xE2\u20AC\u201D design economy model, location graph, cargo\
+    \ system"
+  type: task
+- created: 2026-02-01
+  demo: space_trader
+  id: T032
+  milestone: M6
+  modified: 2026-02-25
+  owner: human
+  scope: demo
+  status: QUEUED
+  tags:
+  - plan
+  - space-trader
+  - backlog
+  title: "Space Trader \xE2\u20AC\u201D identify which Slime Clan and Asteroids components\
+    \ reuse directly"
+  type: task
+- created: 2026-02-01
+  demo: dungeon_crawler
+  id: T033
+  milestone: M8
+  modified: 2026-02-25
+  owner: human
+  scope: demo
+  status: QUEUED
+  tags:
+  - plan
+  - dungeon-crawler
+  - backlog
+  title: "Dungeon Crawler \xE2\u20AC\u201D design room system, encounter types, loot\
+    \ tables"
+  type: task
+- created: 2026-02-01
+  demo: creature_collector
+  id: T034
+  milestone: M9
+  modified: 2026-02-25
+  owner: human
+  scope: demo
+  status: QUEUED
+  tags:
+  - plan
+  - creature-collector
+  - backlog
+  title: "Creature Collector \xE2\u20AC\u201D design genetics display, battle flow,\
+    \ capture mechanic"
+  type: task
+- created: 2026-02-01
+  demo: turboshells
+  id: T035
+  milestone: M7
+  modified: 2026-02-25
+  owner: human
+  scope: demo
+  status: QUEUED
+  tags:
+  - plan
+  - turboshells
+  - backlog
+  title: "TurboShells \xE2\u20AC\u201D design breeding UI, stable view, race loop"
+  type: task
+- created: 2026-02-01
+  id: T036
+  modified: 2026-02-25
+  owner: human
+  scope: shared
+  status: QUEUED
+  tags:
+  - harvest
+  - economy
+  - backlog
+  title: "Shared economy system \xE2\u20AC\u201D buy/sell/price variance for Space\
+    \ Trader and future demos"
+  type: task
+- created: 2026-02-01
+  id: T037
+  modified: 2026-02-25
+  owner: human
+  scope: shared
+  status: QUEUED
+  tags:
+  - harvest
+  - procgen
+  - backlog
+  title: "Procedural room generator \xE2\u20AC\u201D for Dungeon Crawler and Asteroids\
+    \ roguelike"
+  type: task
+- created: 2026-02-01
+  id: T038
+  modified: 2026-02-25
+  owner: human
+  scope: shared
+  status: QUEUED
+  tags:
+  - harvest
+  - inventory
+  - backlog
+  title: "Inventory system \xE2\u20AC\u201D items, cargo, loot for Space Trader and\
+    \ Dungeon Crawler"
+  type: task
+- created: 2026-02-22
+  id: T039
+  modified: 2026-02-22
+  owner: human
+  scope: tooling
+  status: DONE
+  tags:
+  - tool
+  - apj
+  - completed
+  title: "APJ \xE2\u20AC\u201D task management system integration"
+  type: task
+- created: 2026-02-22
+  id: T040
+  modified: 2026-02-22
+  owner: human
+  scope: shared
+  status: DONE
+  tags:
+  - refactor
+  - assets
+  - completed
+  title: "Asset restructure \xE2\u20AC\u201D execute moves from ASSET_INVENTORY.md"
+  type: task
+- created: 2026-02-22
+  demo: space_trader
+  id: T041
+  modified: 2026-02-22
+  owner: human
+  scope: demo
+  status: DONE
+  tags:
+  - feat
+  - space-trader
+  - completed
+  title: "Space Trader \xE2\u20AC\u201D pygame UI, market screen, travel map"
+  type: task
+- created: 2026-02-23
+  demo: slime_breeder
+  id: T042
+  modified: 2026-02-23
+  owner: human
+  scope: demo
+  status: DONE
+  tags:
+  - polish
+  - slime-breeder
+  - completed
+  title: "Slime Breeder \xE2\u20AC\u201D breeding UI, trait inheritance visualization"
+  type: task
+- created: 2026-02-23
+  id: T043
+  modified: 2026-02-23
+  owner: human
+  scope: shared
+  status: DONE
+  tags:
+  - polish
+  - combat
+  - completed
+  title: "Combat scene \xE2\u20AC\u201D FF-style layout, proper sizing, buttons visible"
+  type: task
+- created: 2026-02-23
+  id: T044
+  modified: 2026-02-23
+  owner: human
+  scope: shared
+  status: DONE
+  tags:
+  - polish
+  - combat
+  - completed
+  title: "Combat scene \xE2\u20AC\u201D Turn Order display, SlimeRenderer in enemy\
+    \ slots, floating damage, hero portrait"
+  type: task
