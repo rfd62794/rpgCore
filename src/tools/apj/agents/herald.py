@@ -170,9 +170,16 @@ class Herald(BaseAgent):
     IDE agent directive. Grounded in real codebase context via ContextBuilder.
     """
 
-    def __init__(self, config: AgentConfig) -> None:
-        super().__init__(config)
+    def __init__(self, model_name: str = "base_agent_router") -> None:
+        self.model_name = model_name
+        self.config = self._load_config()
         logger.info(f"Herald initialized (model={self.model_name})")
+
+    def _load_config(self) -> AgentConfig:
+        path = _PROJECT_ROOT / "docs" / "agents" / "configs" / "herald.yaml"
+        with open(path, "r", encoding="utf-8") as f:
+            data = yaml.safe_load(f)
+        return AgentConfig.model_validate(data)
 
     # ── Public API ──────────────────────────────────────────────────────────
 
@@ -196,13 +203,13 @@ class Herald(BaseAgent):
         task = self._build_task(plan, context_text)
         
         try:
-            directive = super().run(task)
-            # Ensure it's a HeraldDirective (BaseAgent returns BaseModel)
+            directive = self._execute_run(task)
+            # Ensure it's a HeraldDirective (ModelRouter returns output field)
             if not isinstance(directive, HeraldDirective):
                 directive = HeraldDirective.model_validate(directive.model_dump())
             return directive
         except Exception as exc:
-            logger.warning(f"Herald: Agent failed ({exc}). Using fallback.")
+            logger.warning(f"Herald: LLM call failed ({exc}). Using fallback.")
             return self._fallback_directive(plan)
 
     def _build_task(self, plan: SessionPlan, context: str) -> str:
@@ -219,22 +226,7 @@ class Herald(BaseAgent):
 
     # ── Agent ───────────────────────────────────────────────────────────────
 
-    def _get_agent(self) -> object:
-        """Lazy-init the plain-string pydantic_ai Agent."""
-        if self._agent is None:
-            from pydantic_ai import Agent
-            model = get_ollama_model(model_name=self.model_name, temperature=0.3)
-            system_prompt = (
-                _load_prompt("herald_system.md")
-                + "\n\n"
-                + _load_prompt("herald_fewshot.md")
-            )
-            self._agent = Agent(
-                model=model,
-                system_prompt=system_prompt,
-            )
-            logger.debug("Herald: Agent initialized (example-driven JSON mode)")
-        return self._agent
+    # _get_agent is deprecated in favor of ModelRouter.route
 
     # BaseAgent's _build_prompt is used with the comprehensive 'task' string
     # constructed in run() above.
@@ -265,17 +257,22 @@ class Herald(BaseAgent):
 
         return raw[start:].strip()
 
-    async def _run_async(self, plan: SessionPlan) -> HeraldDirective:
-        """Run the plain-string Agent and parse JSON response into HeraldDirective."""
-        agent = self._get_agent()
-        prompt = self._build_prompt(plan)
-        logger.info("Herald: querying Ollama...")
-        result = await agent.run(prompt)  # type: ignore[union-attr]
-        raw_text: str = result.output
+    def _execute_run(self, task: str) -> HeraldDirective:
+        """Execute the agent logic: build prompt -> call router -> parse JSON."""
+        system_prompt = (
+            _load_prompt("herald_system.md")
+            + "\n\n"
+            + _load_prompt("herald_fewshot.md")
+        )
+        prompt = system_prompt + "\n\nTASK:\n" + self._build_prompt(task)
+        
+        logger.info("Herald: invoking ModelRouter...")
+        raw_text = ModelRouter.route(self.config, prompt)
         logger.debug(f"Herald: raw response length={len(raw_text)} chars")
 
         json_str = self._extract_json(raw_text)
         try:
+            # raw_decode stops at the first complete JSON object
             data, _ = json.JSONDecoder().raw_decode(json_str.strip())
         except json.JSONDecodeError as exc:
             raise ValueError(
