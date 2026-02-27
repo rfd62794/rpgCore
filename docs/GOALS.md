@@ -123,21 +123,21 @@
 - id: G9_OLD
   type: goal
   title: TurboShells Phoenix
-  status: Parked
+  status: PARKED
   owner: human
   created: 2026-01-01
   modified: 2026-02-26
 - id: G10_OLD
   type: goal
   title: The Living World
-  status: Parked
+  status: PARKED
   owner: human
   created: 2026-02-20
   modified: 2026-02-26
 - id: G11_OLD
   type: goal
   title: Slime Breeder (Creation Aspect)
-  status: Parked
+  status: PARKED
   owner: human
   created: 2026-02-20
   modified: 2026-02-26
