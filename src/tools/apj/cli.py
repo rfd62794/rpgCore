@@ -77,13 +77,30 @@ def print_session_plan(plan: "SessionPlan") -> None:
 
 def _run_session_start() -> None:
     """Run Archivist then Strategist, print both reports to console."""
-    model = resolve_model()
+    import yaml
+    
+    # Check if we can skip warmup (if both primary agents are remote)
+    skip_warmup = False
+    try:
+        a_path = PROJECT_ROOT / "docs/agents/configs/archivist.yaml"
+        s_path = PROJECT_ROOT / "docs/agents/configs/strategist.yaml"
+        with open(a_path) as f: a_conf = yaml.safe_load(f)
+        with open(s_path) as f: s_conf = yaml.safe_load(f)
+        if a_conf.get("model_preference") == "remote" and s_conf.get("model_preference") == "remote":
+            skip_warmup = True
+    except:
+        pass
 
-    # Pre-load model into VRAM — auto-downgrades to 1b/0.5b on memory constraint
-    print("\n[~] Warming model in VRAM...")
-    active_model = warm_model_sync(model)   # may return a smaller model
-    if active_model != model:
-        print(f"[!] Memory constraint — downgraded to {active_model}")
+    if not skip_warmup:
+        model = resolve_model()
+        # Pre-load model into VRAM — auto-downgrades to 1b/0.5b on memory constraint
+        print("\n[~] Warming model in VRAM...")
+        active_model = warm_model_sync(model)   # may return a smaller model
+        if active_model != model:
+            print(f"[!] Memory constraint — downgraded to {active_model}")
+    else:
+        print("\n[~] Skipping local warmup (remote preference detected)")
+        active_model = "base_agent_router" # ModelRouter will handle actual model selection
 
     print("\n[*] APJ Archivist initializing...\n")
     archivist = Archivist(model_name=active_model)
