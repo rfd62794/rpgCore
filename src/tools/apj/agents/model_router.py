@@ -130,8 +130,7 @@ class ModelRouter:
             try:
                 client = get_ollama_model(model_name=model_name)
                 agent = Agent(model=client)
-                import asyncio
-                result = asyncio.run(agent.run(prompt))
+                result = agent.run_sync(prompt)
                 return result.output
             except Exception as e:
                 logger.debug(f"Local {model_name} failed: {e}")
@@ -159,8 +158,7 @@ class ModelRouter:
             try:
                 client = get_openrouter_model(model=model_name)
                 agent = Agent(model=client)
-                import asyncio
-                result = asyncio.run(agent.run(prompt))
+                result = agent.run_sync(prompt)
                 
                 # Success - record usage
                 cls._account_state.record_request()
