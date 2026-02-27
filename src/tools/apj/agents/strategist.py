@@ -256,8 +256,8 @@ class Strategist:
             return braces.group(1)
         return raw.strip()
 
-    async def _run_async(self, report: CoherenceReport) -> SessionPlan:
-        """Run the plain-string Agent and parse JSON into SessionPlan."""
+    def _execute_run(self, report: CoherenceReport) -> SessionPlan:
+        """Execute the agent logic: build prompt -> call router -> parse JSON."""
         system_prompt = (
             _load_prompt("strategist_system.md")
             + "\n\n"
