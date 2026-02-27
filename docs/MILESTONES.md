@@ -21,18 +21,27 @@
   title: "Slime Breeder browser playable at rfditservices.com"
   status: ACTIVE
   goals: [G1, G10]
+  tasks:
+    - Install pygbag and verify Slime Breeder launches
+    - Configure pygbag build output for browser
+    - Test in browser tab locally
+    - Deploy to rfditservices.com
   owner: human
   created: 2026-02-26
-  modified: 2026-02-26
+  modified: 2026-02-27
 
 - id: M_LOOP
   type: milestone
   title: "Core loop proven — Breeder feeds Dungeon"
   status: ACTIVE
   goals: [G2]
+  tasks:
+    - Connect bred slime to dungeon party slot
+    - Verify slime stats affect combat
+    - Test breed → dungeon → loss → breed cycle
   owner: human
   created: 2026-02-26
-  modified: 2026-02-26
+  modified: 2026-02-27
 
 - id: M_HUB
   type: milestone
