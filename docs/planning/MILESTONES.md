@@ -50,7 +50,7 @@ modified: 2026-02-25
 id: M5
 type: milestone
 title: All four demos playable
-status: ACTIVE
+status: PARKED
 goals: [G1, G4]
 tasks: []
 owner: human

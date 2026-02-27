@@ -487,8 +487,8 @@
     \ Dungeon Crawler"
   type: task
 - created: 2026-02-22
-  id: T039
-  modified: 2026-02-22
+  milestone: M_VISION
+  modified: 2026-02-27
   owner: human
   scope: tooling
   status: DONE

@@ -46,11 +46,11 @@
 - id: M_HUB
   type: milestone
   title: "Garden hub connects all worlds"
-  status: QUEUED
+  status: ACTIVE
   goals: [G3]
   owner: human
   created: 2026-02-26
-  modified: 2026-02-26
+  modified: 2026-02-27
 
 - id: M_ENGINE
   type: milestone
@@ -73,7 +73,7 @@
 - id: M_V2
   type: milestone
   title: "v2 complete — Racing and Conquest playable"
-  status: QUEUED
+  status: PARKED
   goals: [G4, G5]
   owner: human
   created: 2026-02-26
@@ -82,7 +82,7 @@
 - id: M_V3
   type: milestone
   title: "v3 complete — Living World with faction memory"
-  status: QUEUED
+  status: PARKED
   goals: [G7]
   owner: human
   created: 2026-02-26

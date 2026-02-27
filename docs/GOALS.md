@@ -73,7 +73,7 @@
   title: "APJ Swarm — Vision Aligned"
   description: "APJ swarm reads VISION.md. All session recommendations align to shipping order."
   status: ACTIVE
-  milestone: M_APJ
+  milestone: M_VISION
   owner: human
   created: 2026-02-26
   modified: 2026-02-27
@@ -83,7 +83,7 @@
   title: "Engine Capability — Shared Infrastructure"
   description: "All demos share src/shared/. No duplicate systems. Mathematical renderer shared."
   status: ACTIVE
-  milestone: M_ENGINE
+  milestone: M_VISION
   owner: human
   created: 2026-02-26
   modified: 2026-02-27
