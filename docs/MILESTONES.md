@@ -2,7 +2,7 @@
   type: milestone
   title: "VISION.md complete and in Archivist corpus"
   status: ACTIVE
-  goals: [G8]
+  goals: [G8, G9]
   owner: human
   created: 2026-02-26
   modified: 2026-02-26

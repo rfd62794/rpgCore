@@ -178,10 +178,10 @@ title: Dungeon Crawler — implement sprite-based room layout
 status: QUEUED
 scope: demo
 demo: dungeon_crawler
-milestone: M8
+milestone: M_LOOP
 owner: human
 created: 2026-02-20
-modified: 2026-02-25
+modified: 2026-02-27
 tags: [feat, dungeon-crawler]
 ---
 
@@ -218,10 +218,10 @@ title: Slime Breeder — save/load garden persistence
 status: QUEUED
 scope: demo
 demo: slime_breeder
-milestone: M11
+milestone: M_BROWSER
 owner: human
 created: 2026-02-20
-modified: 2026-02-25
+modified: 2026-02-27
 tags: [feat, slime-breeder]
 ---
 
@@ -232,10 +232,10 @@ title: Slime Breeder — slime personality emergence over time
 status: QUEUED
 scope: demo
 demo: slime_breeder
-milestone: M11
+milestone: M_BROWSER
 owner: human
 created: 2026-02-20
-modified: 2026-02-25
+modified: 2026-02-27
 tags: [feat, slime-breeder]
 ---
 
@@ -246,10 +246,10 @@ title: Dungeon Crawler — proc-gen floor layouts and connection logic
 status: QUEUED
 scope: demo
 demo: dungeon_crawler
-milestone: M8
+milestone: M_LOOP
 owner: human
 created: 2026-02-20
-modified: 2026-02-25
+modified: 2026-02-27
 tags: [feat, dungeon-crawler]
 ---
 
@@ -505,7 +505,8 @@ status: DONE
 scope: tooling
 owner: human
 created: 2026-02-22
-modified: 2026-02-22
+milestone: M_VISION
+modified: 2026-02-27
 tags: [tool, apj, completed]
 ---
 

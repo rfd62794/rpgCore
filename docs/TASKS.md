@@ -166,8 +166,8 @@
 - created: 2026-02-20
   demo: dungeon_crawler
   id: T014
-  milestone: M8
-  modified: 2026-02-25
+  milestone: M_LOOP
+  modified: 2026-02-27
   owner: human
   scope: demo
   status: QUEUED
@@ -204,8 +204,8 @@
 - created: 2026-02-20
   demo: slime_breeder
   id: T017
-  milestone: M11
-  modified: 2026-02-25
+  milestone: M_BROWSER
+  modified: 2026-02-27
   owner: human
   scope: demo
   status: QUEUED
@@ -217,8 +217,8 @@
 - created: 2026-02-20
   demo: slime_breeder
   id: T018
-  milestone: M11
-  modified: 2026-02-25
+  milestone: M_BROWSER
+  modified: 2026-02-27
   owner: human
   scope: demo
   status: QUEUED
@@ -230,8 +230,8 @@
 - created: 2026-02-20
   demo: dungeon_crawler
   id: T019
-  milestone: M8
-  modified: 2026-02-25
+  milestone: M_LOOP
+  modified: 2026-02-27
   owner: human
   scope: demo
   status: QUEUED
@@ -487,6 +487,7 @@
     \ Dungeon Crawler"
   type: task
 - created: 2026-02-22
+  id: T039
   milestone: M_VISION
   modified: 2026-02-27
   owner: human
