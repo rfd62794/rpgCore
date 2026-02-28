@@ -79,57 +79,108 @@ class BaseAgent:
         ])
     
     def _extract_json(self, raw: str) -> str:
-        """Brace-depth extraction - standard APJ pattern."""
+        """Enhanced JSON extraction with better error handling"""
         logger.debug(f"Raw LLM response: {raw[:200]}...")
         
+        # First try to find JSON in markdown code blocks
         fenced = re.search(r"```(?:json)?\s*({.*?})\s*```", raw, re.DOTALL)
         if fenced:
-            logger.debug(f"Found fenced JSON: {fenced.group(1)[:200]}...")
-            return fenced.group(1)
+            json_str = fenced.group(1)
+            logger.debug(f"Found fenced JSON: {json_str[:200]}...")
+            return json_str
         
+        # Try to find JSON between first { and last }
         start = raw.find("{")
         if start == -1:
             logger.debug("No JSON found in response")
             return raw.strip()
         
-        depth = 0
+        # Find the matching closing brace
+        brace_count = 0
         for i, char in enumerate(raw[start:], start):
             if char == "{":
-                depth += 1
+                brace_count += 1
             elif char == "}":
-                depth -= 1
-                if depth == 0:
-                    result = raw[start:i + 1]
-                    logger.debug(f"Extracted JSON: {result[:200]}...")
-                    return result
+                brace_count -= 1
+                if brace_count == 0:
+                    json_str = raw[start:i + 1]
+                    logger.debug(f"Extracted JSON: {json_str[:200]}...")
+                    
+                    # Validate JSON structure before returning
+                    if self._is_valid_json_structure(json_str):
+                        return json_str
+                    else:
+                        logger.debug("JSON structure invalid, attempting repair")
+                        return self._repair_json(json_str)
+        
+        logger.debug("No complete JSON found")
         return raw[start:].strip()
     
-    def _validate(self, json_str: str) -> BaseModel:
+    def _is_valid_json_structure(self, json_str: str) -> bool:
+        """Check if JSON has basic valid structure"""
         try:
-            logger.debug(f"Attempting to validate JSON: {json_str}")
-            
-            # First try loading as JSON to catch basic syntax errors
             data = json.loads(json_str)
-            logger.debug(f"JSON parsed successfully: {type(data)}")
+            # Check if it's a dict with expected keys
+            if isinstance(data, dict):
+                return True
+            return False
+        except:
+            return False
+    
+    def _repair_json(self, json_str: str) -> str:
+        """Attempt to repair common JSON issues"""
+        try:
+            # Remove trailing commas
+            json_str = re.sub(r',\s*}', '}', json_str)
+            json_str = re.sub(r',\s*]', ']', json_str)
             
-            # Check if it matches the expected schema structure
-            if hasattr(self.schema, 'model_fields'):
-                logger.debug(f"Expected fields: {list(self.schema.model_fields.keys())}")
+            # Add missing commas between objects
+            json_str = re.sub(r'}\s*{', '},{', json_str)
             
-            result = self.schema.model_validate(data)
-            logger.debug(f"Schema validation successful: {type(result)}")
-            return result
-            
-        except json.JSONDecodeError as e:
-            logger.warning(f"JSON decode error: {e}")
-            logger.warning(f"JSON content was: {json_str}")
-            logger.warning(f"Using fallback due to JSON decode error")
-            return self.schema.model_validate(self.config.fallback)
-        except Exception as e:
-            logger.warning(f"Agent {self.config.name} validation failed: {e}")
-            logger.warning(f"JSON content was: {json_str}")
-            logger.warning(f"Using fallback due to validation error")
-            return self.schema.model_validate(self.config.fallback)
+            # Try to parse the repaired JSON
+            json.loads(json_str)
+            return json_str
+        except:
+            return json_str
+    
+    def _validate(self, json_str: str) -> BaseModel:
+        max_retries = 3
+        for attempt in range(max_retries):
+            try:
+                logger.debug(f"Attempting to validate JSON (attempt {attempt + 1}): {json_str}")
+                
+                # First try loading as JSON to catch basic syntax errors
+                data = json.loads(json_str)
+                logger.debug(f"JSON parsed successfully: {type(data)}")
+                
+                # Check if it matches the expected schema structure
+                if hasattr(self.schema, 'model_fields'):
+                    logger.debug(f"Expected fields: {list(self.schema.model_fields.keys())}")
+                
+                result = self.schema.model_validate(data)
+                logger.debug(f"Schema validation successful: {type(result)}")
+                return result
+                
+            except json.JSONDecodeError as e:
+                logger.warning(f"JSON decode error (attempt {attempt + 1}): {e}")
+                if attempt < max_retries - 1:
+                    # Try to repair JSON
+                    json_str = self._repair_json(json_str)
+                    continue
+                else:
+                    logger.warning(f"JSON decode error after {max_retries} attempts: {e}")
+                    logger.warning(f"JSON content was: {json_str}")
+                    logger.warning(f"Using fallback due to JSON decode error")
+                    return self.schema.model_validate(self.config.fallback)
+            except Exception as e:
+                logger.warning(f"Agent {self.config.name} validation failed (attempt {attempt + 1}): {e}")
+                if attempt < max_retries - 1:
+                    continue
+                else:
+                    logger.warning(f"Agent {self.config.name} validation failed after {max_retries} attempts: {e}")
+                    logger.warning(f"JSON content was: {json_str}")
+                    logger.warning(f"Using fallback due to validation error")
+                    return self.schema.model_validate(self.config.fallback)
     
     def _serialize_input(self, task_input: Any) -> str:
         if isinstance(task_input, str):
