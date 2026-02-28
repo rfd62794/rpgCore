@@ -7,6 +7,8 @@ from src.apps.slime_breeder.garden.garden_ecs import GardenECS
 from src.shared.entities.creature import Creature
 from src.shared.genetics.genome import SlimeGenome
 from src.shared.physics.kinematics import Vector2
+from src.shared.ecs.components.kinematics_component import KinematicsComponent
+from src.shared.ecs.components.behavior_component import BehaviorComponent
 
 
 @pytest.fixture
