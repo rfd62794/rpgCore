@@ -11,7 +11,8 @@ def run_review(scene_name: str):
     pygame.init()
     
     # Use standard UISpec
-    spec = UISpec(screen_width=1280, screen_height=720)
+    from src.shared.ui.spec import SPEC_720
+    spec = SPEC_720
     screen = pygame.display.set_mode((spec.screen_width, spec.screen_height))
     pygame.display.set_caption(f"UI Review: {scene_name}")
     
