@@ -82,11 +82,15 @@ class SwarmCoordinator(BaseAgent):
                 "fallback": {
                     "recommended": {
                         "label": "FALLBACK",
-                        "title": "Manual planning",
-                        "rationale": "Agent planning failed",
+                        "title": "Manual task assignment",
+                        "rationale": "Swarm coordination failed - use manual analysis",
                         "risk": "low"
-                    }
-                }
+                    },
+                    "alternatives": []
+                },
+                "open_questions": ["Can you provide more specific details?"],
+                "archivist_risks_addressed": [],
+                "corpus_hash": ""
             },
             "coder": {
                 "name": "swarm_coder",
@@ -101,10 +105,11 @@ class SwarmCoordinator(BaseAgent):
                 "fallback": {
                     "recommended": {
                         "label": "FALLBACK",
-                        "title": "Manual coding",
-                        "rationale": "Agent coding failed",
+                        "title": "Manual task assignment",
+                        "rationale": "Swarm coordination failed - use manual analysis",
                         "risk": "low"
-                    }
+                    },
+                    "alternatives": []
                 }
             },
             "tester": {
@@ -120,11 +125,15 @@ class SwarmCoordinator(BaseAgent):
                 "fallback": {
                     "recommended": {
                         "label": "FALLBACK",
-                        "title": "Manual testing",
-                        "rationale": "Agent testing failed",
+                        "title": "Manual task assignment",
+                        "rationale": "Swarm coordination failed - use manual analysis",
                         "risk": "low"
-                    }
-                }
+                    },
+                    "alternatives": []
+                },
+                "open_questions": ["Can you provide more specific details?"],
+                "archivist_risks_addressed": [],
+                "corpus_hash": ""
             },
             "reviewer": {
                 "name": "swarm_reviewer",
@@ -139,11 +148,15 @@ class SwarmCoordinator(BaseAgent):
                 "fallback": {
                     "recommended": {
                         "label": "FALLBACK",
-                        "title": "Manual review",
-                        "rationale": "Agent review failed",
+                        "title": "Manual task assignment",
+                        "rationale": "Swarm coordination failed - use manual analysis",
                         "risk": "low"
-                    }
-                }
+                    },
+                    "alternatives": []
+                },
+                "open_questions": ["Can you provide more specific details?"],
+                "archivist_risks_addressed": [],
+                "corpus_hash": ""
             },
             "executor": {
                 "name": "swarm_executor",
@@ -158,11 +171,15 @@ class SwarmCoordinator(BaseAgent):
                 "fallback": {
                     "recommended": {
                         "label": "FALLBACK",
-                        "title": "Manual execution",
-                        "rationale": "Agent execution failed",
+                        "title": "Manual task assignment",
+                        "rationale": "Swarm coordination failed - use manual analysis",
                         "risk": "low"
-                    }
-                }
+                    },
+                    "alternatives": []
+                },
+                "open_questions": ["Can you provide more specific details?"],
+                "archivist_risks_addressed": [],
+                "corpus_hash": ""
             }
         }
         
@@ -202,8 +219,12 @@ class SwarmCoordinator(BaseAgent):
                     "title": "Manual fallback",
                     "rationale": "Agent system failed",
                     "risk": "low"
-                }
-            }
+                },
+                "alternatives": []
+            },
+            open_questions=["Can you provide more specific details?"],
+            archivist_risks_addressed=[],
+            corpus_hash=""
         )
         
         return BaseAgent(fallback_config)
