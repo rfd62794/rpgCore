@@ -280,7 +280,13 @@ class GardenScene(GardenSceneBase):
         self._render_team_status_bar(surface)
 
     def _render_right_panel(self, surface: pygame.Surface):
+        from src.shared.ui.profile_card import render_text
+        
         if len(self.selected_entities) != 1:
+            # Show selection hint
+            render_text(surface, "Select a slime", 
+                       self.right_panel_rect.center, 
+                       size=20, color=self.spec.color_text_dim, center=True)
             return
             
         s = self.selected_entities[0]
@@ -288,13 +294,13 @@ class GardenScene(GardenSceneBase):
         if not rs:
             return
 
-        # 1. Backgrounds
+        # 1. Backgrounds (Draw all three first)
         for rect in [self.profile_rect, self.stats_rect, self.actions_rect]:
             pygame.draw.rect(surface, self.spec.color_surface, rect, border_radius=6)
-            pygame.draw.rect(surface, self.spec.color_border, rect, width=2, border_radius=6)
+            pygame.draw.rect(surface, self.spec.color_border, rect, width=1, border_radius=6)
 
         # 2. Profile Sub-panel Content
-        from src.shared.ui.profile_card import render_slime_portrait, render_badge, render_text
+        from src.shared.ui.profile_card import render_slime_portrait, render_badge
         
         # Portrait (Top, slightly padded)
         portrait_size = 60
