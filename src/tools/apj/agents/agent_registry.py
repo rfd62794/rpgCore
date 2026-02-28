@@ -10,7 +10,7 @@ import yaml
 from pathlib import Path
 
 from .base_agent import BaseAgent, AgentConfig
-from ..registry import SCHEMA_REGISTRY
+from .registry import SCHEMA_REGISTRY
 
 class AgentType(Enum):
     """Agent types in the system"""
@@ -31,6 +31,7 @@ class AgentCapability(Enum):
     ARCHIVAL = "archival"
     COMMUNICATION = "communication"
     DOCUMENTATION = "documentation"
+    COORDINATION = "coordination"
 
 @dataclass
 class AgentMetadata:
