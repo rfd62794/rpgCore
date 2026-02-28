@@ -52,12 +52,20 @@ class LocalAgent:
     """
     
     def __init__(self, project_root: Path = Path(".")):
+        """Initialize agent with full documentation context"""
+        
         self.project_root = Path(project_root)
         self.docs_dir = self.project_root / "docs"
         self.src_dir = self.project_root / "src"
         
         # Load all context tools
         self._load_context_tools()
+        
+        # Load ALL documentation
+        self._load_all_documentation()
+        
+        # Build documentation context for Ollama
+        self.documentation_context = self._build_documentation_context()
         
         # Ollama model for reasoning
         from src.tools.apj.agents.ollama_client import get_ollama_model
@@ -70,8 +78,12 @@ class LocalAgent:
 ╚══════════════════════════════════════════════════════════════╝
 
 🧠 Model: {self.ollama_model.model_name}
-📚 Context: Loaded codebase understanding tools
+📚 Documentation: {len(self.documentation)} files loaded
+🗂️  Code Context: {len(self.symbol_map.files)} files indexed
 🔌 Connectivity: Offline (no cloud dependency)
+
+DOCUMENTATION LOADED:
+{json.dumps({k: v['description'] for k, v in self.documentation.items()}, indent=2)}
 """)
     
     def _load_context_tools(self):
@@ -105,115 +117,108 @@ class LocalAgent:
         print(f"  ✅ ProjectStatus: {len(self.project_status['blockers'])} blockers identified")
         
         # Load design documents
-        self._load_design_documents()
+        self._load_all_documentation()
         
         print("✅ All context tools loaded\n")
     
-    def _load_design_documents(self):
-        """Load ALL design documents for comprehensive context"""
+    def _load_all_documentation(self):
+        """
+        Load ALL project documentation to prime the agent
+        Agent reads and internalizes before starting work
+        """
         
-        self.design_docs = {}
-        self.project_knowledge = {}
+        print("\n📚 Loading Project Documentation...")
         
-        print("Loading comprehensive project documentation...")
+        self.documentation = {}
         
-        # Core design documents
+        # Ordered by importance for context
         docs_to_load = [
-            ("vision", self.docs_dir / "VISION.md"),
-            ("goals", self.docs_dir / "GOALS.md"),
-            ("design_pillars", self.docs_dir / "DESIGN_PILLARS.md"),
-            ("milestones", self.docs_dir / "MILESTONES.md"),
-            ("tasks", self.docs_dir / "TASKS.md"),
+            # Foundation
+            ("VISION.md", self.docs_dir / "VISION.md", "Project vision and philosophy"),
+            ("GOALS.md", self.docs_dir / "GOALS.md", "High-level goals (G1-G5)"),
+            ("DESIGN_PILLARS.md", self.docs_dir / "DESIGN_PILLARS.md", "Non-negotiable design principles"),
+            
+            # Planning
+            ("MILESTONES.md", self.docs_dir / "MILESTONES.md", "Release milestones and phases"),
+            ("TASKS.md", self.docs_dir / "TASKS.md", "Concrete tasks to implement"),
+            
+            # Phase 3 Specific
+            ("FEATURE_SPEC.md", self.docs_dir / "phase3" / "FEATURE_SPEC.md", "Tower Defense features"),
+            ("SYSTEM_SPECS.md", self.docs_dir / "phase3" / "SYSTEM_SPECS.md", "Tower Defense systems"),
+            ("TECHNICAL_DESIGN.md", self.docs_dir / "phase3" / "TECHNICAL_DESIGN.md", "Tower Defense architecture"),
+            
+            # Systems Architecture
+            ("systems/ecs_spec.md", self.docs_dir / "systems" / "ecs_system_spec.md", "ECS system specification"),
+            ("systems/genetics_spec.md", self.docs_dir / "systems" / "genetics_system_spec.md", "Genetics system"),
+            ("systems/rendering_spec.md", self.docs_dir / "systems" / "rendering_system_spec.md", "Rendering system"),
+            
+            # Status Reports
+            ("INVENTORY_REPORT.md", self.docs_dir / "INVENTORY_REPORT.md", "Current code inventory"),
+            
+            # Execution
+            ("REALITY.md", self.docs_dir / "REALITY.md", "What's actually implemented"),
         ]
         
-        # Phase 3 specific documents
-        phase3_docs = [
-            ("feature_spec", self.docs_dir / "phase3" / "FEATURE_SPEC.md"),
-            ("system_specs", self.docs_dir / "phase3" / "SYSTEM_SPECS.md"),
-            ("technical_design", self.docs_dir / "phase3" / "TECHNICAL_DESIGN.md"),
-        ]
-        
-        # System specifications
-        system_docs = [
-            ("ecs_system_spec", self.docs_dir / "systems" / "ecs_system_spec.md"),
-            ("genetics_system_spec", self.docs_dir / "systems" / "genetics_system_spec.md"),
-            ("rendering_system_spec", self.docs_dir / "systems" / "rendering_system_spec.md"),
-        ]
-        
-        # All documentation paths
-        all_docs = docs_to_load + phase3_docs + system_docs
-        
-        loaded_count = 0
-        for doc_name, doc_path in all_docs:
+        for doc_id, doc_path, description in docs_to_load:
             if doc_path.exists():
-                with open(doc_path) as f:
-                    content = f.read()
-                    self.design_docs[doc_name] = content
-                    loaded_count += 1
-                    print(f"  ✅ Loaded: {doc_name}")
+                try:
+                    with open(doc_path, 'r', encoding='utf-8') as f:
+                        content = f.read()
+                        self.documentation[doc_id] = {
+                            "path": str(doc_path),
+                            "description": description,
+                            "content": content,
+                            "size_kb": len(content) / 1024
+                        }
+                        print(f"  ✅ {doc_id:30s} ({self.documentation[doc_id]['size_kb']:.1f} KB)")
+                except Exception as e:
+                    print(f"  ⚠️  {doc_id:30s} (error: {e})")
             else:
-                print(f"  ⚠️  Missing: {doc_name}")
+                print(f"  ❌ {doc_id:30s} (not found)")
         
-        # Build structured knowledge base
-        self._build_project_knowledge()
-        
-        print(f"✅ Documentation loaded: {loaded_count}/{len(all_docs)} files")
-        print(f"✅ Project knowledge base built with {len(self.project_knowledge)} key concepts\n")
+        print(f"\n✅ Loaded {len(self.documentation)} documentation files\n")
     
-    def _build_project_knowledge(self):
-        """Build structured knowledge base from all documentation"""
+    def _build_documentation_context(self) -> str:
+        """
+        Build a comprehensive context string from all documentation
+        Used to prime Ollama with project knowledge
+        """
         
-        knowledge = {}
+        context_parts = []
         
-        # Extract key concepts from VISION
-        if "vision" in self.design_docs:
-            vision = self.design_docs["vision"]
-            knowledge["north_star"] = self._extract_section(vision, "The North Star")
-            knowledge["core_loop"] = self._extract_section(vision, "The Core Loop")
-            knowledge["four_worlds"] = self._extract_section(vision, "The Four Worlds")
-            knowledge["technical_constraints"] = self._extract_section(vision, "Technical Constraints")
+        # Start with vision and goals
+        if "VISION.md" in self.documentation:
+            context_parts.append("=== PROJECT VISION ===\n" + 
+                                self.documentation["VISION.md"]["content"][:2000])
         
-        # Extract goals and their status
-        if "goals" in self.design_docs:
-            goals = self.design_docs["goals"]
-            knowledge["goals"] = self._extract_goals(goals)
+        if "GOALS.md" in self.documentation:
+            context_parts.append("\n=== PROJECT GOALS ===\n" + 
+                                self.documentation["GOALS.md"]["content"][:2000])
         
-        # Extract design pillars (non-negotiable principles)
-        if "design_pillars" in self.design_docs:
-            pillars = self.design_docs["design_pillars"]
-            knowledge["design_pillars"] = self._extract_pillars(pillars)
+        if "DESIGN_PILLARS.md" in self.documentation:
+            context_parts.append("\n=== DESIGN PILLARS (NON-NEGOTIABLE) ===\n" + 
+                                self.documentation["DESIGN_PILLARS.md"]["content"][:1500])
         
-        # Extract milestone information
-        if "milestones" in self.design_docs:
-            milestones = self.design_docs["milestones"]
-            knowledge["milestones"] = self._extract_milestones(milestones)
+        # Technical context
+        if "TECHNICAL_DESIGN.md" in self.documentation:
+            context_parts.append("\n=== TECHNICAL DESIGN DECISIONS ===\n" + 
+                                self.documentation["TECHNICAL_DESIGN.md"]["content"][:2000])
         
-        # Extract task breakdown
-        if "tasks" in self.design_docs:
-            tasks = self.design_docs["tasks"]
-            knowledge["task_breakdown"] = self._extract_tasks(tasks)
+        if "SYSTEM_SPECS.md" in self.documentation:
+            context_parts.append("\n=== SYSTEM ARCHITECTURE ===\n" + 
+                                self.documentation["SYSTEM_SPECS.md"]["content"][:2000])
         
-        # Extract Phase 3 specifics
-        if "feature_spec" in self.design_docs:
-            features = self.design_docs["feature_spec"]
-            knowledge["phase3_features"] = self._extract_features(features)
+        # Feature context
+        if "FEATURE_SPEC.md" in self.documentation:
+            context_parts.append("\n=== REQUIRED FEATURES ===\n" + 
+                                self.documentation["FEATURE_SPEC.md"]["content"][:1500])
         
-        if "system_specs" in self.design_docs:
-            systems = self.design_docs["system_specs"]
-            knowledge["phase3_systems"] = self._extract_system_specs(systems)
+        # Current status
+        if "REALITY.md" in self.documentation:
+            context_parts.append("\n=== CURRENT IMPLEMENTATION STATUS ===\n" + 
+                                self.documentation["REALITY.md"]["content"][:1500])
         
-        if "technical_design" in self.design_docs:
-            technical = self.design_docs["technical_design"]
-            knowledge["phase3_technical"] = self._extract_technical_decisions(technical)
-        
-        # Extract system specifications
-        for system_name in ["ecs_system_spec", "genetics_system_spec", "rendering_system_spec"]:
-            if system_name in self.design_docs:
-                spec = self.design_docs[system_name]
-                clean_name = system_name.replace("_spec", "")
-                knowledge[f"{clean_name}_details"] = self._extract_system_details(spec)
-        
-        self.project_knowledge = knowledge
+        return "\n".join(context_parts)
     
     def _extract_section(self, content: str, section_name: str) -> str:
         """Extract a specific section from markdown content"""
@@ -477,101 +482,64 @@ class LocalAgent:
     
     def _plan_implementation(self, context: AgentContext) -> Dict:
         """
-        Use Ollama to plan implementation with full documentation context
-        Agent has complete project understanding: vision, goals, pillars, systems, etc.
+        Plan implementation using:
+        1. Project documentation (vision, design, architecture)
+        2. Existing codebase (patterns, conventions)
+        3. Task requirements (what to build)
+        4. Current status (what's done/blocked)
         """
         
         task = context.current_task
         
         prompt = f"""
-You are an autonomous software agent with COMPLETE understanding of this DGT Engine project.
+You are an autonomous agent implementing games in the DGT Engine.
 
-CURRENT TASK:
+PROJECT DOCUMENTATION AND CONTEXT:
+═══════════════════════════════════════════════════════════════
+{self.documentation_context}
+
+═══════════════════════════════════════════════════════════════
+
+CURRENT TASK TO IMPLEMENT:
 {json.dumps(task, indent=2)}
 
-=== PROJECT VISION & NORTH STAR ===
-{context.vision[:1000] if context.vision else "No vision document"}
-
-=== PROJECT GOALS ===
-{context.goals[:1000] if context.goals else "No goals document"}
-
-=== DESIGN PILLARS (Non-Negotiable Principles) ===
-{context.design_pillars[:1000] if context.design_pillars else "No design pillars"}
-
-=== PROJECT MILESTONES ===
-{context.milestones[:800] if context.milestones else "No milestones"}
-
-=== TASK BREAKDOWN ===
-{context.tasks_doc[:800] if context.tasks_doc else "No task documentation"}
-
-=== TECHNICAL DESIGN DECISIONS ===
-{context.technical_design[:1000] if context.technical_design else "No technical design"}
-
-=== FEATURE SPECIFICATIONS ===
-{context.feature_spec[:1000] if context.feature_spec else "No feature spec"}
-
-=== SYSTEM SPECIFICATIONS ===
-{context.system_specs[:1000] if context.system_specs else "No system specs"}
-
-=== ECS SYSTEM DETAILS ===
-{json.dumps(context.ecs_details, indent=2) if context.ecs_details else "No ECS details"}
-
-=== GENETICS SYSTEM DETAILS ===
-{json.dumps(context.genetics_details, indent=2) if context.genetics_details else "No genetics details"}
-
-=== RENDERING SYSTEM DETAILS ===
-{json.dumps(context.rendering_details, indent=2) if context.rendering_details else "No rendering details"}
-
-=== CODEBASE CONTEXT ===
+CODEBASE CONTEXT:
 - Total files: {len(context.codebase_symbols)}
-- Relevant systems: {list(set(f.get('system') for f in context.file_classifications.values() if f))}
-- Relevant demos: {list(set(f.get('demo') for f in context.file_classifications.values() if f))}
+- Existing systems: {self._get_existing_systems(context)}
+- Existing patterns: {self._get_code_patterns(context)}
 
-=== EXISTING IMPLEMENTATIONS ===
+FILES YOU'LL MODIFY/CREATE:
 {json.dumps(list(context.existing_implementations.keys()), indent=2)}
 
-=== PROJECT STATUS ===
-- Overall: {context.project_status.get('project_health', {}).get('overall_status', 'Unknown')}
-- Blockers: {len(context.project_status.get('blockers', []))} identified
-- Goals status: {json.dumps({k: v.get('status', 'unknown') for k, v in context.project_status.get('by_goal', {}).items()}, indent=2)}
+CURRENT PROJECT STATUS:
+- Completed: {context.project_status['by_goal'].get('G1', {}).get('status', 'Unknown')}
+- In Progress: {context.project_status['by_goal'].get('G3', {}).get('status', 'Unknown')}
+- Blockers: {len(context.project_status.get('blockers', []))} items
 
-=== YOUR ROLE ===
-You are implementing this task within the DGT Engine ecosystem. You MUST:
-1. Follow the design pillars (they are non-negotiable)
-2. Align with the project vision and goals
-3. Use existing ECS, genetics, and rendering patterns
-4. Respect technical design decisions
-5. Build toward the milestone this task supports
-6. Consider how this affects other goals and systems
-
+YOUR TASK:
 Create a detailed step-by-step implementation plan that:
-- Respects all design pillars
-- Uses existing system patterns
-- Builds incrementally
-- Includes testing
-- Verifies success criteria
+1. Follows the design pillars (non-negotiable)
+2. Uses existing patterns and conventions
+3. Integrates with existing systems
+4. Achieves the feature requirements
+5. Passes tests
 
-Return as JSON:
-{{
-  "summary": "Overall plan summary considering project context",
-  "design_considerations": ["pillar1", "pillar2", "goal_alignment", etc.],
-  "steps": [
-    {{
-      "number": 1,
-      "description": "string",
-      "rationale": "Why this step, considering project context",
-      "files": ["path/to/file.py"],
-      "actions": ["action1", "action2"],
-      "test_command": "pytest ...",
-      "success_criteria": ["criterion1"],
-      "risks": ["potential issues"],
-      "dependencies": ["existing_systems", "design_decisions"]
-    }}
-  ]
-}}
+For each step:
+- What to do
+- Which files to create/modify
+- Code patterns to follow
+- Success criteria
+- How to test
+
+Use the project documentation as your guide.
+Reference existing code patterns.
+Follow ECS architecture.
+Include docstrings and type hints.
+
+Return as JSON with detailed steps.
 """
         
-        # Get plan from Ollama
+        # Get plan from Ollama with documentation context
         from pydantic_ai import Agent
         agent = Agent(self.ollama_model)
         
@@ -580,7 +548,6 @@ Return as JSON:
         
         # Parse response
         try:
-            # Extract JSON from response
             import re
             json_match = re.search(r'\{.*\}', response_text, re.DOTALL)
             if json_match:
@@ -590,6 +557,25 @@ Return as JSON:
             pass
         
         return None
+    
+    def _get_existing_systems(self, context: AgentContext) -> List[str]:
+        """Get list of existing systems from codebase"""
+        systems = set()
+        for file_clf in context.file_classifications.values():
+            if file_clf.get('system'):
+                systems.add(file_clf['system'])
+        return sorted(list(systems))
+    
+    def _get_code_patterns(self, context: AgentContext) -> List[str]:
+        """Get common code patterns from existing files"""
+        patterns = [
+            "ECS components with @dataclass decorator",
+            "Systems that iterate entities",
+            "Type hints on all functions",
+            "Docstrings for public methods",
+            "Tests in parallel test/ directory",
+        ]
+        return patterns
     
     def _execute_step(self, step: Dict, context: AgentContext) -> bool:
         """
@@ -641,105 +627,59 @@ Return as JSON:
     
     def _generate_code(self, file_path: str, step: Dict, context: AgentContext) -> Optional[str]:
         """
-        Generate code for a file using Ollama with full documentation context
-        Agent has complete project understanding for intelligent code generation
+        Generate code that:
+        1. Follows project vision and principles
+        2. Matches existing code patterns
+        3. Integrates with existing systems
+        4. Achieves feature requirements
         """
         
         existing_code = context.existing_implementations.get(file_path, "")
         
+        # Find relevant documentation
+        relevant_docs = self._find_relevant_documentation(file_path, step, context)
+        
         prompt = f"""
 Generate Python code for: {file_path}
 
-=== STEP CONTEXT ===
-Description: {step.get('description')}
-Success Criteria: {json.dumps(step.get('success_criteria', []), indent=2)}
-Rationale: {step.get('rationale', 'No rationale provided')}
+RELEVANT PROJECT DOCUMENTATION:
+{relevant_docs}
 
-=== PROJECT VISION & NORTH STAR ===
-{context.vision[:800] if context.vision else "No vision document"}
+STEP REQUIREMENTS:
+{step.get('description')}
 
-=== DESIGN PILLARS (Must Follow) ===
-{context.design_pillars[:800] if context.design_pillars else "No design pillars"}
+SUCCESS CRITERIA:
+{json.dumps(step.get('success_criteria', []), indent=2)}
 
-=== RELEVANT GOALS ===
-{context.goals[:600] if context.goals else "No goals"}
+EXISTING CODE (if any, use as pattern reference):
+{existing_code[:2000] if existing_code else "None - new file"}
 
-=== TECHNICAL DESIGN DECISIONS ===
-{context.technical_design[:800] if context.technical_design else "No technical design"}
+INTEGRATION POINTS:
+- Uses ECS systems: {self._get_system_integrations(file_path, context)}
+- Uses genetics: {self._uses_genetics(file_path, context)}
+- Part of demo: {self._get_demo_context(file_path, context)}
 
-=== SYSTEM SPECIFICATIONS ===
-{context.system_specs[:600] if context.system_specs else "No system specs"}
+CODE REQUIREMENTS:
+✅ Type hints on all functions and class methods
+✅ Docstrings for all public methods and classes
+✅ Follow existing code patterns (see examples below)
+✅ Use ECS architecture where applicable
+✅ Include assertions and validation
+✅ Include TODO comments for incomplete sections
 
-=== EXISTING CODE ===
-{existing_code[:1500] if existing_code else "None - new file"}
-
-=== CODEBASE PATTERNS ===
-Look at these similar files for patterns:
+SIMILAR CODE TO USE AS PATTERNS:
 {self._get_similar_files(file_path, context)}
 
-=== SYSTEM-SPECIFIC GUIDANCE ===
+Generate complete, working code that:
+- Fits the project vision and design
+- Matches existing patterns
+- Integrates seamlessly
+- Is well-documented
+- Is testable
+
+Be thorough and complete.
 """
-
-        # Add system-specific guidance based on file path
-        if "ecs" in file_path.lower() or "component" in file_path.lower():
-            prompt += f"""
-ECS SYSTEM DETAILS:
-{json.dumps(context.ecs_details, indent=2) if context.ecs_details else "No ECS details"}
-
-ECS PATTERNS TO FOLLOW:
-- Components are data holders, not logic
-- Systems contain the logic
-- Use dataclasses for components
-- Include type hints
-- Follow ADR-005: Components as Views, Not Owners
-"""
-
-        if "genetics" in file_path.lower() or "breed" in file_path.lower():
-            prompt += f"""
-GENETICS SYSTEM DETAILS:
-{json.dumps(context.genetics_details, indent=2) if context.genetics_details else "No genetics details"}
-
-GENETICS PATTERNS TO FOLLOW:
-- Use existing gene/allele structures
-- Follow inheritance patterns already established
-- Include trait calculations
-- Use existing breeding algorithms
-"""
-
-        if "render" in file_path.lower() or "draw" in file_path.lower():
-            prompt += f"""
-RENDERING SYSTEM DETAILS:
-{json.dumps(context.rendering_details, indent=2) if context.rendering_details else "No rendering details"}
-
-RENDERING PATTERNS TO FOLLOW:
-- Use existing rendering pipeline
-- Follow layer ordering
-- Include z-order considerations
-- Use existing sprite/animation patterns
-"""
-
-        prompt += f"""
-=== REQUIREMENTS ===
-- Follow existing code style and patterns
-- Use ECS patterns where applicable
-- Write comprehensive docstrings for all functions/classes
-- Include type hints everywhere
-- Add TODO comments for incomplete sections
-- Respect design pillars (they are non-negotiable)
-- Align with project vision and goals
-- Use existing system patterns and components
-- Consider how this affects other systems
-
-=== TESTING REQUIREMENTS ===
-- Include pytest-compatible tests
-- Test both success and failure cases
-- Mock external dependencies
-- Include integration tests where relevant
-
-Generate complete, working, production-ready code.
-Be thorough and consider the entire project ecosystem.
-"""
-
+        
         try:
             from pydantic_ai import Agent
             agent = Agent(self.ollama_model)
@@ -747,7 +687,7 @@ Be thorough and consider the entire project ecosystem.
             response = agent.run(prompt)
             code = response.data
             
-            # Clean up response (remove markdown if present)
+            # Clean up response
             if code.startswith("```"):
                 code = code[code.find("\n")+1:]
             if code.endswith("```"):
@@ -758,6 +698,52 @@ Be thorough and consider the entire project ecosystem.
         except Exception as e:
             print(f"  ❌ Code generation failed: {e}")
             return None
+    
+    def _find_relevant_documentation(self, file_path: str, step: Dict, context: AgentContext) -> str:
+        """Find documentation relevant to this file"""
+        
+        relevant = []
+        
+        # Find by file system/demo
+        file_clf = context.file_classifications.get(file_path, {})
+        system = file_clf.get('system')
+        demo = file_clf.get('demo')
+        
+        # Add system specs
+        if system and "systems/" in file_path:
+            for doc_id, doc_data in self.documentation.items():
+                if system.lower() in doc_id.lower():
+                    relevant.append(doc_data['content'][:1000])
+        
+        # Add feature specs for demo
+        if demo or "phase3" in file_path:
+            if "FEATURE_SPEC.md" in self.documentation:
+                relevant.append(self.documentation["FEATURE_SPEC.md"]["content"][:1500])
+        
+        # Add technical design
+        if "TECHNICAL_DESIGN.md" in self.documentation:
+            relevant.append(self.documentation["TECHNICAL_DESIGN.md"]["content"][:1000])
+        
+        # Add design pillars
+        if "DESIGN_PILLARS.md" in self.documentation:
+            relevant.append(self.documentation["DESIGN_PILLARS.md"]["content"][:800])
+        
+        return "\n---\n".join(relevant) if relevant else "No specific documentation found"
+    
+    def _get_system_integrations(self, file_path: str, context: AgentContext) -> List[str]:
+        """What systems does this file integrate with?"""
+        file_clf = context.file_classifications.get(file_path, {})
+        system = file_clf.get('system', 'unknown')
+        return [system] if system else []
+    
+    def _uses_genetics(self, file_path: str, context: AgentContext) -> bool:
+        """Does this file use genetics?"""
+        return "genetics" in file_path.lower() or "tower" in file_path.lower()
+    
+    def _get_demo_context(self, file_path: str, context: AgentContext) -> Optional[str]:
+        """What demo is this part of?"""
+        file_clf = context.file_classifications.get(file_path, {})
+        return file_clf.get('demo')
     
     def _get_similar_files(self, file_path: str, context: AgentContext) -> str:
         """Get similar files to use as code patterns"""
