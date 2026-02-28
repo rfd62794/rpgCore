@@ -1243,6 +1243,114 @@ Provide as JSON with detailed steps.
         else:
             print(agent.failure_handler.handle_failure(failure))
     
+    # Swarm management commands
+    elif args.command == "swarm":
+        if not args.arg:
+            print("Usage: python adj.py swarm [status|list|add|templates|suggest]")
+            return
+        
+        if args.arg == "status":
+            print(f"\n🐝 Swarm Status:")
+            from src.tools.apj.agents.intent_parser import ConversationalInterface
+            chat = ConversationalInterface(self.root_dir, self._get_ollama())
+            
+            if chat.swarm:
+                status = chat.swarm.get_swarm_status()
+                print(f"Total Agents: {status['total_agents']}")
+                print(f"Available Roles: {', '.join(status['available_roles'])}")
+                print(f"\nAgent Details:")
+                for role, details in status['agent_details'].items():
+                    print(f"  {role}: {details['name']} ({details['capabilities_count']} capabilities)")
+            else:
+                print("❌ Swarm not initialized")
+        
+        elif args.arg == "list":
+            print(f"\n📋 Swarm Capabilities:")
+            from src.tools.apj.agents.swarm_manager import SwarmManager
+            from src.tools.apj.agents.intent_parser import ConversationalInterface
+            
+            chat = ConversationalInterface(self.root_dir, self._get_ollama())
+            if chat.swarm:
+                manager = SwarmManager(chat.swarm, self.root_dir)
+                capabilities = manager.get_swarm_capabilities()
+                
+                print(f"Total Agents: {capabilities['total_agents']}")
+                print(f"Total Templates: {capabilities['total_templates']}")
+                print(f"Available Roles: {', '.join(capabilities['available_roles'])}")
+                
+                print(f"\nAgent Capabilities:")
+                for role, details in capabilities['agent_details'].items():
+                    print(f"  {role}:")
+                    print(f"    Name: {details['name']}")
+                    print(f"    Capabilities: {details['capabilities_count']}")
+                    print(f"    Dependencies: {details['dependencies_count']}")
+                    print(f"    Can Coordinate: {details['can_coordinate']}")
+                    print(f"    Can Code: {details['can_code']}")
+                    print(f"    Can Test: {details['can_test']}")
+                    print(f"    Can Plan: {details['can_plan']}")
+            else:
+                print("❌ Swarm not initialized")
+        
+        elif args.arg == "templates":
+            print(f"\n📄 Agent Templates:")
+            from src.tools.apj.agents.swarm_manager import SwarmManager
+            from src.tools.apj.agents.intent_parser import ConversationalInterface
+            
+            chat = ConversationalInterface(self.root_dir, self._get_ollama())
+            if chat.swarm:
+                manager = SwarmManager(chat.swarm, self.root_dir)
+                manager.list_templates()
+            else:
+                print("❌ Swarm not initialized")
+        
+        elif args.arg == "add":
+            if not args.arg2:
+                print("Usage: python adj.py swarm add <template_name>")
+                return
+            
+            print(f"\n➕ Adding agent from template: {args.arg2}")
+            from src.tools.apj.agents.swarm_manager import SwarmManager
+            from src.tools.apj.agents.intent_parser import ConversationalInterface
+            
+            chat = ConversationalInterface(self.root_dir, self._get_ollama())
+            if chat.swarm:
+                manager = SwarmManager(chat.swarm, self.root_dir)
+                
+                # Try to get extension template
+                from src.tools.apj.agents.swarm_manager import get_extension_template
+                template = get_extension_template(args.arg2)
+                
+                if template:
+                    manager.add_agent_template(template)
+                    manager.create_agent_from_template(args.arg2)
+                else:
+                    print(f"❌ Unknown template: {args.arg2}")
+                    print("Available extensions: documentation, performance, security, deployment")
+            else:
+                print("❌ Swarm not initialized")
+        
+        elif args.arg == "suggest":
+            print(f"\n💡 Swarm Extension Suggestions:")
+            from src.tools.apj.agents.swarm_manager import SwarmManager
+            from src.tools.apj.agents.intent_parser import ConversationalInterface
+            
+            chat = ConversationalInterface(self.root_dir, self._get_ollama())
+            if chat.swarm:
+                manager = SwarmManager(chat.swarm, self.root_dir)
+                suggestions = manager.suggest_extensions()
+                
+                if suggestions:
+                    for suggestion in suggestions:
+                        print(f"  • {suggestion}")
+                else:
+                    print("  No specific suggestions - swarm is well-rounded")
+            else:
+                print("❌ Swarm not initialized")
+        
+        else:
+            print(f"Unknown swarm command: {args.arg}")
+            print("Available: status, list, templates, add, suggest")
+    
     # Existing commands
     elif args.command == "design":
         # Legacy design command still available
