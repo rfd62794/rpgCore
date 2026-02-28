@@ -11,7 +11,7 @@ from src.shared.ui.spec import UISpec
 from src.shared.ui.layouts import ArenaLayout
 from src.shared.teams.roster import Roster, RosterSlime, TeamRole
 from src.shared.racing.race_engine import RaceEngine
-from src.shared.racing.race_track import generate_track, SEGMENT_LENGTH
+from src.shared.racing.race_track import generate_track, generate_zones, TerrainType, SEGMENT_LENGTH
 from src.shared.racing.minimap import RaceMinimap
 from src.shared.racing.race_hud import RaceHUD
 from src.apps.slime_breeder.ui.slime_renderer import SlimeRenderer
