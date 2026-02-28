@@ -62,12 +62,13 @@ class AgentBootManager:
             
             # Phase 5: Start Initial Conversations
             logger.info("💬 Phase 5: Starting Initial Conversations")
-            conversation_results = self._start_initial_conversations(context.get('project_status', {}))
+            project_status = context.get('project_status', {}) if context else {}
+            conversation_results = self._start_initial_conversations(project_status)
             results["phases"]["conversations"] = conversation_results
             
             # Phase 6: Create Child Agents
             logger.info("👶 Phase 6: Creating Child Agents")
-            child_results = self._create_child_agents(context.get('project_status', {}))
+            child_results = self._create_child_agents(project_status)
             results["phases"]["child_agents"] = child_results
             
             # Phase 7: Auto-Execute Critical Tasks (NEW)
@@ -76,10 +77,11 @@ class AgentBootManager:
             results["phases"]["auto_execution"] = auto_results
             
             # Update context with analysis results
-            context.update({
-                "project_analysis": analysis_results.get("analysis", {}),
-                "auto_executed_tasks": auto_results.get("executed_tasks", [])
-            })
+            if context:
+                context.update({
+                    "project_analysis": analysis_results.get("analysis", {}),
+                    "auto_executed_tasks": auto_results.get("executed_tasks", [])
+                })
             
             logger.info("✅ Agent ecosystem boot completed successfully")
             
