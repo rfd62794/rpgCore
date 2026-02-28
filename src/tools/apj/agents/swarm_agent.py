@@ -75,7 +75,7 @@ class SwarmCoordinator(BaseAgent):
                 "department": "planning",
                 "model_preference": "local",
                 "prompts": {
-                    "system": "docs/agents/prompts/generic_system.md",
+                    "system": "docs/agents/prompts/planner_system.md",
                     "fewshot": "docs/agents/prompts/generic_system.md"
                 },
                 "schema_name": "ImplementationPlan",
@@ -98,7 +98,7 @@ class SwarmCoordinator(BaseAgent):
                 "department": "execution",
                 "model_preference": "local",
                 "prompts": {
-                    "system": "docs/agents/prompts/generic_system.md",
+                    "system": "docs/agents/prompts/coder_system.md",
                     "fewshot": "docs/agents/prompts/generic_system.md"
                 },
                 "schema_name": "CodeChanges",
@@ -110,7 +110,10 @@ class SwarmCoordinator(BaseAgent):
                         "risk": "low"
                     },
                     "alternatives": []
-                }
+                },
+                "open_questions": ["Can you provide more specific details?"],
+                "archivist_risks_addressed": [],
+                "corpus_hash": ""
             },
             "tester": {
                 "name": "swarm_tester",
@@ -118,7 +121,7 @@ class SwarmCoordinator(BaseAgent):
                 "department": "execution",
                 "model_preference": "local",
                 "prompts": {
-                    "system": "docs/agents/prompts/generic_system.md",
+                    "system": "docs/agents/prompts/tester_system.md",
                     "fewshot": "docs/agents/prompts/generic_system.md"
                 },
                 "schema_name": "TestResults",
