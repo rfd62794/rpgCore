@@ -309,3 +309,14 @@ class GardenScene(GardenSceneBase):
             if hasattr(self, 'racing_status_area') and self.racing_status_area.collidepoint(mouse_pos):
                 self.request_scene("team")
                 return
+            
+            # Handle slime selection
+            clicked_slime = self.pick_entity(mouse_pos)
+            if clicked_slime:
+                # Toggle selection
+                if clicked_slime in self.selected_entities:
+                    self.selected_entities.remove(clicked_slime)
+                else:
+                    self.selected_entities = [clicked_slime]
+                self.on_selection_changed()
+                return
