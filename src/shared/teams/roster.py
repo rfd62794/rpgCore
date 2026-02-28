@@ -1,13 +1,82 @@
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Optional, Dict
+from typing import Optional, Dict, TYPE_CHECKING
 from src.shared.genetics.genome import SlimeGenome
+
+if TYPE_CHECKING:
+    pass
 
 class TeamRole(Enum):
     DUNGEON  = "dungeon"
     RACING   = "racing"
     CONQUEST = "conquest"
     UNASSIGNED = "unassigned"
+
+# Legacy RosterSlime class for backward compatibility
+@dataclass
+class RosterSlime:
+    """DEPRECATED: Use Creature + RosterEntry instead"""
+    slime_id: str
+    name: str
+    genome: SlimeGenome
+    team: TeamRole = TeamRole.UNASSIGNED
+    locked: bool = False
+    alive: bool = True
+    generation: int = 1
+    level: int = 1
+    experience: int = 0
+    breeding_lock_level: int = 0
+    current_hp: float = -1.0
+    
+    def __post_init__(self):
+        if self.current_hp < 0:
+            from src.shared.teams.stat_calculator import calculate_hp
+            self.current_hp = float(calculate_hp(self.genome, self.level))
+    
+    @property
+    def max_hp(self) -> int:
+        from src.shared.teams.stat_calculator import calculate_hp
+        return calculate_hp(self.genome, self.level)
+    
+    @property
+    def is_elder(self) -> bool:
+        return self.level >= 10
+    
+    @property
+    def can_breed(self) -> bool:
+        """Min level 3 required, and must be above last bred level (drain mechanic)."""
+        return self.level >= 3 and self.level > self.breeding_lock_level
+
+    @property
+    def xp_to_next_level(self) -> int:
+        return 5 + (self.level * 2)
+
+    def gain_exp(self, amount: int) -> bool:
+        """Adds exp and returns True if leveled up."""
+        self.experience += amount
+        leveled_up = False
+        while self.experience >= self.xp_to_next_level:
+            self.experience -= self.xp_to_next_level
+            self.level += 1
+            leveled_up = True
+        return leveled_up
+    
+    @classmethod
+    def from_creature(cls, creature, team=TeamRole.UNASSIGNED, locked=False):
+        """Create legacy RosterSlime from Creature"""
+        return cls(
+            slime_id=creature.slime_id,
+            name=creature.name,
+            genome=creature.genome,
+            team=team,
+            locked=locked,
+            alive=creature.alive,
+            generation=creature.generation,
+            level=creature.level,
+            experience=creature.experience,
+            breeding_lock_level=creature.breeding_lock_level,
+            current_hp=creature.current_hp
+        )
 
 @dataclass
 class RosterEntry:
