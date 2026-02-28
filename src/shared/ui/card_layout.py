@@ -2,6 +2,7 @@ from typing import List, Dict, Any, Optional
 import pygame
 from src.shared.ui.base import UIComponent
 from src.shared.ui.card import Card
+from src.shared.ui.spec import UISpec
 
 class CardLayout(UIComponent):
     """Vertical stack layout manager for Cards with staggered fade-in animations."""
@@ -9,12 +10,14 @@ class CardLayout(UIComponent):
     def __init__(
         self,
         rect: pygame.Rect,
+        spec: UISpec,
         spacing: int = 15,
         fade_delay_ms: int = 150,
         fade_duration_ms: int = 300,
         z_order: int = 0
     ):
         super().__init__(rect, z_order)
+        self.spec = spec
         self.spacing = spacing
         self.fade_delay_ms = fade_delay_ms
         self.fade_duration_ms = fade_duration_ms
@@ -47,8 +50,10 @@ class CardLayout(UIComponent):
                 rect=temp_rect,
                 number=i + 1,
                 text=item["text"],
+                spec=self.spec,
                 stance_color=color,
-                on_click=make_callback()
+                on_click=make_callback(),
+                z_order=self.z_order
             )
             
             # Recalculate height based on text content

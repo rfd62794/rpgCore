@@ -105,7 +105,7 @@ def test_button_click_callback():
     assert clicked
 
 def test_card_layout_load_and_clear():
-    layout = CardLayout(pygame.Rect(0, 0, 400, 600))
+    layout = CardLayout(pygame.Rect(0, 0, 400, 600), SPEC_720)
     layout.load_cards([{"text": "A"}, {"text": "B"}, {"text": "C"}])
     
     assert len(layout.cards) == 3
@@ -116,7 +116,7 @@ def test_card_layout_load_and_clear():
     assert len(layout.cards) == 0
 
 def test_card_layout_skip_animations():
-    layout = CardLayout(pygame.Rect(0, 0, 400, 600))
+    layout = CardLayout(pygame.Rect(0, 0, 400, 600), SPEC_720)
     layout.load_cards([{"text": "A"}, {"text": "B"}])
     
     assert layout.cards[0].fade_alpha == 0.0
