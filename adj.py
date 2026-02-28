@@ -228,6 +228,28 @@ System: {system_name}
         for item in missing:
             print(f"  {item['symbol']} ({item['type']}) - {item['file']}:{item['line']}")
     
+    def save_inventory_report(self):
+        """Save inventory status to markdown file"""
+        symbol_map = self.data_loader.load_symbol_map()
+        
+        from src.tools.apj.inventory.classifier import FileClassifier
+        classifier = FileClassifier()
+        classifications = classifier.classify_all(symbol_map)
+        
+        from src.tools.apj.inventory.status_reporter import StatusReporter
+        reporter = StatusReporter(symbol_map, classifications)
+        status = reporter.get_status()
+        
+        # Generate markdown
+        report = self._generate_markdown_report(status, reporter)
+        
+        # Save to docs/INVENTORY_REPORT.md
+        report_file = self.docs_dir / "INVENTORY_REPORT.md"
+        with open(report_file, 'w') as f:
+            f.write(report)
+        
+        print(f"✅ Report saved: {report_file}")
+
     def show_phase_roadmap(self, phase_num: int):
         """Show complete roadmap for a phase"""
         self._record_layer("Layer 1: Data Files")
