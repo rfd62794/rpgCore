@@ -39,7 +39,14 @@ class DungeonPathScene(Scene):
         self.depth = kwargs.get('depth', 1)
         # Use a stable seed for the floor if possible, e.g. from session
         seed = getattr(self.session, 'seed', random.randint(0, 99999))
-        self.track = generate_dungeon_track(self.depth, seed=seed)
+        
+        # Check if track already exists in session
+        if hasattr(self.session, 'track') and self.session.track:
+            self.track = self.session.track
+        else:
+            self.track = generate_dungeon_track(self.depth, seed=seed)
+            self.session.track = self.track  # Store in session
+        
         self.engine = DungeonEngine(self.track, self.team)
         self.camera = RaceCamera()
         
