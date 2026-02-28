@@ -179,6 +179,27 @@ class AgentBootManager:
                     results["success"] = False
                     logger.error(f"❌ Failed to connect {agent_name}: {e}")
         
+        # Ensure swarm coordinator is registered for A2A
+        if self.swarm_coordinator and "swarm_coordinator" not in results["links"]:
+            try:
+                # Create message handler for swarm coordinator
+                from .a2a_communication import MessageHandler
+                handler = MessageHandler("swarm_coordinator")
+                
+                # Register handlers
+                handler.register_handler(MessageType.REQUEST, self._create_request_handler(self.swarm_coordinator))
+                handler.register_handler(MessageType.NOTIFICATION, self._create_notification_handler(self.swarm_coordinator))
+                
+                # Register with A2A manager
+                A2A_MANAGER.register_agent("swarm_coordinator", handler)
+                results["links"].append("swarm_coordinator")
+                logger.info(f"🔗 Connected swarm_coordinator to A2A network")
+                
+            except Exception as e:
+                results["failed"].append("swarm_coordinator")
+                results["success"] = False
+                logger.error(f"❌ Failed to connect swarm_coordinator: {e}")
+        
         return results
     
     def _create_request_handler(self, agent):
