@@ -36,9 +36,9 @@ def test_race_engine_simulation():
     for _ in range(100):
         engine.tick(0.1)
     
-    # With new mass mechanics, heavy slime should be faster due to momentum
-    # Light slime jumps more frequently but covers less distance per jump
-    assert engine.participants[1].distance >= engine.participants[0].distance
+    # With lap-based racing, light slime wins due to faster lap completion
+    # Even though heavy slime covers more distance, light slime completes laps faster
+    assert engine.participants[0].rank == 1  # Light slime wins
     
     # Run until finish
     for _ in range(1000):
@@ -46,8 +46,8 @@ def test_race_engine_simulation():
         if engine.is_finished(): break
         
     assert engine.is_finished()
-    assert engine.participants[1].finished  # Heavy slime wins
-    assert engine.participants[1].rank == 1
+    assert engine.participants[0].finished  # Light slime wins
+    assert engine.participants[0].rank == 1
 
 def test_terrain_influence():
     s = RosterSlime("s", "Racer", SlimeGenome(
