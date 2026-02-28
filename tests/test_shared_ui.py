@@ -6,6 +6,7 @@ from src.shared.ui import (
     Panel, Label, TextWindow, Button, Card, 
     CardLayout, ProgressBar, ScrollList, SceneBase
 )
+from src.shared.ui.spec import SPEC_720
 
 # ---------------------------------------------------------
 # Fixtures for Headless Pygame
@@ -30,8 +31,8 @@ def dummy_surface():
 # ---------------------------------------------------------
 
 def test_panel_renders_without_error(dummy_surface):
-    panel = Panel(pygame.Rect(0, 0, 100, 100), title="Test Panel")
-    child = Label(pygame.Rect(10, 10, 50, 20), text="Nested")
+    panel = Panel(pygame.Rect(0, 0, 100, 100), SPEC_720)
+    child = Label("Nested", (10, 10), SPEC_720)
     panel.add_child(child)
     
     # Should not crash headlessly
@@ -40,7 +41,7 @@ def test_panel_renders_without_error(dummy_surface):
     assert len(panel.children) == 1
 
 def test_label_set_text(dummy_surface):
-    label = Label(pygame.Rect(0, 0, 100, 20), text="Initial")
+    label = Label("Initial", (0, 0), SPEC_720)
     
     # Initial renders
     assert len(label._rendered_lines) > 0
@@ -76,7 +77,7 @@ def test_text_window_skip_reveal():
     assert win.current_text == win.full_text
 
 def test_button_hover_state():
-    btn = Button(pygame.Rect(10, 10, 100, 50))
+    btn = Button("Test", pygame.Rect(10, 10, 100, 50), None, SPEC_720)
     assert btn.state == "normal"
     
     # Simulate mouse motion over button
@@ -92,7 +93,7 @@ def test_button_click_callback():
         nonlocal clicked
         clicked = True
         
-    btn = Button(pygame.Rect(10, 10, 100, 50), on_click=on_click)
+    btn = Button("Test", pygame.Rect(10, 10, 100, 50), on_click, SPEC_720)
     
     # Mouse down
     btn.handle_event(pygame.event.Event(pygame.MOUSEBUTTONDOWN, pos=(50, 30), button=1))
