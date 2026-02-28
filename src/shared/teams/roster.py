@@ -119,6 +119,15 @@ class Team:
         self.members.append(entry)
         return True
     
+    def __contains__(self, slime_or_id) -> bool:
+        """Check if slime is in team (legacy compatibility)"""
+        if hasattr(slime_or_id, 'slime_id'):
+            slime_id = slime_or_id.slime_id
+        else:
+            slime_id = slime_or_id
+        
+        return any(member.slime_id == slime_id for member in self.members)
+    
     def remove(self, slime_id: str) -> bool:
         """Remove creature by slime_id reference"""
         member = next(
