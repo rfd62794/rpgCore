@@ -20,10 +20,11 @@ class ProfileCard(UIComponent):
         self.HEIGHT = spec.card_height
         self.PADDING = spec.padding_sm
         
-        # Calculate inner dimensions
+        # Calculate inner dimensions - account for stats panel on right
         self.CARD_INNER_WIDTH = self.WIDTH - (self.PADDING * 2)
         self.PORTRAIT_SIZE = 60
-        self.TEXT_AREA_WIDTH = self.CARD_INNER_WIDTH - self.PORTRAIT_SIZE - (self.PADDING * 3)
+        self.STATS_PANEL_WIDTH = 100  # Stats panel width
+        self.TEXT_AREA_WIDTH = self.CARD_INNER_WIDTH - self.PORTRAIT_SIZE - self.STATS_PANEL_WIDTH - (self.PADDING * 2)
         
         rect = pygame.Rect(position[0], position[1], self.WIDTH, self.HEIGHT)
         super().__init__(rect)
@@ -34,7 +35,7 @@ class ProfileCard(UIComponent):
         # Add StatsPanel with proper width constraint for right side
         stats_x = position[0] + self.PORTRAIT_SIZE + self.PADDING * 2
         stats_y = position[1] + self.PORTRAIT_SIZE + self.PADDING
-        self.stats_panel = StatsPanel(slime, (stats_x, stats_y), width=100)  # Smaller width for right side
+        self.stats_panel = StatsPanel(slime, (stats_x, stats_y), width=self.STATS_PANEL_WIDTH)
 
     def update(self, dt_ms: int):
         """No periodic updates needed for the card itself."""
@@ -112,8 +113,8 @@ class ProfileCard(UIComponent):
         render_badge(surface, self.slime.genome.cultural_base.value.upper(),
                     (text_x + 70, y + 60), culture_color)
         
-        # Stats panel on the right side
-        stats_x = x + self.WIDTH - 120  # Position stats on the right side
+        # Stats panel on the far right side
+        stats_x = x + self.WIDTH - 100  # Position stats at far right edge
         stats_y = y + 12  # Align with name
         self.stats_panel.position = (stats_x, stats_y)
         self.stats_panel.render(surface)
