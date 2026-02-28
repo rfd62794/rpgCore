@@ -98,14 +98,23 @@ def test_base_stat_inheritance():
     
     offspring = breed(g1, g2, mutation_chance=0) # Disable mutation
     
-    # HP: max(30, 20) = 30 * 1.10 = 33.0
-    assert offspring.base_hp == pytest.approx(33.0)
+    # diminishing returns: current + (cap - current) * 0.10
+    # HP: higher(30) + (40-30)*0.10 = 31.0
+    assert offspring.base_hp == pytest.approx(31.0)
     
-    # ATK: avg(8, 6) = 7 * 1.10 = 7.7
-    assert offspring.base_atk == pytest.approx(7.7)
+    # ATK: avg(8, 6)=7.0 + (9-7.0)*0.10 = 7.2
+    assert offspring.base_atk == pytest.approx(7.2)
     
-    # SPD: faster(10) * 0.95 * 1.10 = 10.45
-    assert offspring.base_spd == pytest.approx(10.45)
+    # SPD: faster(10)*0.95=9.5 + (13-9.5)*0.10 = 9.85
+    assert offspring.base_spd == pytest.approx(9.85)
+
+def test_generation_tracking():
+    g1 = generate_random()
+    g1.generation = 2
+    g2 = generate_random()
+    g2.generation = 5
+    offspring = breed(g1, g2)
+    assert offspring.generation == 6
 
 def test_stat_cap_logic():
     # HP cap for Moss is 40.0

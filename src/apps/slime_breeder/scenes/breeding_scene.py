@@ -142,7 +142,9 @@ class BreedingScene(Scene):
             if slime != self.parent_a:
                 self.parent_b = slime
                 self.state = BreedingState.PREVIEW
-                self.offspring_genome = breed(self.parent_a.genome, self.parent_b.genome)
+                # Check for Elder bonus
+                has_elder = self.parent_a.is_elder or self.parent_b.is_elder
+                self.offspring_genome = breed(self.parent_a.genome, self.parent_b.genome, elder_bonus=has_elder)
                 self.setup_ui()
 
     def start_breeding(self):

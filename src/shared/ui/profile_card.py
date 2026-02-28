@@ -44,14 +44,16 @@ class ProfileCard(UIComponent):
         portrait_rect = pygame.Rect(x + self.PADDING, y + self.PADDING, 60, 60)
         render_slime_portrait(surface, self.slime.genome, portrait_rect)
         
-        # Name & Level
+        # Name, Level & Generation
         render_text(surface, self.slime.name, 
                    (x + 80, y + 12), size=16, bold=True)
         render_text(surface, f"Lv.{self.slime.level}",
                    (x + self.WIDTH - 50, y + 12), size=14, color=(200, 200, 100))
+        render_text(surface, f"Gen {self.slime.generation}",
+                    (x + 80, y + 26), size=12, color=(160, 160, 180))
         
         # XP Bar
-        xp_rect = pygame.Rect(x + 80, y + 30, self.WIDTH - 90, 4)
+        xp_rect = pygame.Rect(x + 80, y + 36, self.WIDTH - 90, 4)
         pygame.draw.rect(surface, (40, 40, 50), xp_rect)
         xp_pct = min(1.0, self.slime.experience / self.slime.xp_to_next_level)
         if xp_pct > 0:
@@ -89,6 +91,7 @@ class ProfileCard(UIComponent):
                     (x + 150, y + 42), culture_color)
         
         # Stats via reusable panel
+        self.stats_panel.position = (x + 80, y + 66) # Nudge down for new labels
         self.stats_panel.render(surface)
         
         # Genetic trait hint (bottom)
