@@ -177,6 +177,7 @@ class Team:
                     # Check if already assigned to this team
                     if entry.team == self.role:
                         return False  # Already assigned to this team
+                    # Update team assignment
                     entry.team = self.role
                     entry._team_ref = self  # Set back-reference
                     # Add to team members if not already there
