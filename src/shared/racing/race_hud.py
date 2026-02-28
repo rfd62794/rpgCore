@@ -33,7 +33,7 @@ class RaceHUD:
         
         # Left: Rank and Name
         self._render_text(surface, f"#{player.rank}", (bar.x + 20, bar.y + 16), size="xl", bold=True, color=rank_color)
-        self._render_text(surface, player.name, (bar.x + 60, bar.y + 16), size="md", color=self.spec.color_text)
+        self._render_text(surface, player.slime.name, (bar.x + 60, bar.y + 16), size="md", color=self.spec.color_text)
         
         # Center: Lap counter
         lap_text = f"LAP {current_lap}/{total_laps}"
