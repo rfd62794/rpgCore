@@ -7,7 +7,7 @@ from src.apps.dungeon_crawler.world.floor import Floor
 from src.apps.dungeon_crawler.world.room_generator import RoomGenerator
 from src.apps.dungeon_crawler.hub.the_room import TheRoom
 from src.shared.combat.turn_order import TurnOrderManager
-from src.shared.teams.roster import Roster, TeamRole
+from src.shared.teams.roster import Roster, TeamRole, RosterSlime
 from src.shared.teams.roster_save import load_roster, save_roster
 from src.shared.teams.stat_calculator import calculate_hp, calculate_attack, calculate_speed
 
