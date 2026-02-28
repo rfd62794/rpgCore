@@ -23,6 +23,7 @@ class SlimeGenome:
     base_hp: float = 20.0
     base_atk: float = 5.0
     base_spd: float = 5.0
+    generation: int = 1
 
     # Cultural identity
     cultural_base: CulturalBase = CulturalBase.MIXED

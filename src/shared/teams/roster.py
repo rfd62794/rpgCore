@@ -17,6 +17,7 @@ class RosterSlime:
     team: TeamRole = TeamRole.UNASSIGNED
     locked: bool = False      # True when on active mission
     alive: bool = True
+    generation: int = 1
     
     # Progression
     level: int = 1
@@ -118,7 +119,8 @@ class Roster:
                         "cultural_base": s.genome.cultural_base.value,
                         "base_hp": s.genome.base_hp,
                         "base_atk": s.genome.base_atk,
-                        "base_spd": s.genome.base_spd
+                        "base_spd": s.genome.base_spd,
+                        "generation": s.genome.generation
                     },
                     "level": s.level,
                     "experience": s.experience,
@@ -152,7 +154,8 @@ class Roster:
                 alive=s["alive"],
                 level=s.get("level", 1),
                 experience=s.get("experience", 0),
-                breeding_lock_level=s.get("breeding_lock_level", 0)
+                breeding_lock_level=s.get("breeding_lock_level", 0),
+                generation=s.get("generation", 1)
             )
             roster.slimes.append(rs)
             if rs.team != TeamRole.UNASSIGNED:
