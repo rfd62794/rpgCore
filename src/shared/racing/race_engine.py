@@ -58,16 +58,22 @@ class RaceParticipant:
         terrain_mod = get_terrain_speed_modifier(terrain, self.slime.genome.cultural_base.value)
         
         # Distance gained during jump (affected by terrain)
+        distance_gained = 0.0
         if self.is_jumping:
             # Jumping OVER terrain: reduced penalty
             jump_terrain_mod = min(1.0, terrain_mod + 0.3)  # 30% less penalty when jumping
-            self.distance += self.jump_distance * jump_terrain_mod * dt
+            distance_gained = self.jump_distance * jump_terrain_mod * dt
         elif self.jump_cooldown > 0:
             # Recovery: slower movement
-            self.distance += self.jump_distance * 0.1 * terrain_mod * dt
+            distance_gained = self.jump_distance * 0.1 * terrain_mod * dt
         else:
             # Auto-jump: normal movement
-            self.distance += self.jump_distance * terrain_mod * dt
+            distance_gained = self.jump_distance * terrain_mod * dt
+        
+        self.distance += distance_gained
+        
+        # Update velocity for compatibility (distance gained per second)
+        self.velocity = distance_gained / dt if dt > 0 else 0.0
     
     def _update_jump(self, dt: float):
         """Update jump physics."""
