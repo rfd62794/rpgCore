@@ -477,6 +477,14 @@ Budget: Enforced by OpenRouter, fallback to Ollama if over budget
         
         return True
     
+    def _get_ollama_model(self):
+        """Get Ollama model for swarm"""
+        try:
+            from src.tools.apj.agents.ollama_client import get_ollama_model
+            return get_ollama_model()
+        except:
+            return None
+    
     def _run_game(self, demo_name: str) -> None:
         """Run a specific demo game"""
         print(f"\n🎮 Launching {demo_name} demo...\n")
