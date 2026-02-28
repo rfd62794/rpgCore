@@ -53,8 +53,8 @@ Be conversational and helpful.
 
 class ConversationalInterface:
     """
-    SIMPLE: Chat with user, use LLM for everything
-    Stop trying to parse commands - just chat
+    ENHANCED: Chat with user, use Agent Swarm for complex tasks
+    Single LLM for simple chat, swarm for complex work
     """
     
     def __init__(self, project_root, ollama_client=None):
@@ -62,11 +62,12 @@ class ConversationalInterface:
         self.ollama = ollama_client
         self.context = {}
         self.conversation_history = []
+        self.swarm = None  # Initialize on first use
     
     def run_chat_loop(self, initial_context: Dict = None) -> None:
         """
-        Simple chat loop
-        User types → LLM understands → Execute or clarify
+        Enhanced chat loop with swarm support
+        User types → Simple LLM response OR Swarm processing
         """
         
         if initial_context:
@@ -74,11 +75,16 @@ class ConversationalInterface:
         
         print(f"""
 ╔══════════════════════════════════════════════════════════════╗
-║              ADJ INTERACTIVE CHAT                             ║
+║              ADJ INTERACTIVE CHAT (WITH SWARM)                ║
 ╚══════════════════════════════════════════════════════════════╝
 
 Just chat naturally about what you want to do.
 I'll understand what you mean and suggest actions.
+
+For complex tasks, I'll use the Agent Swarm:
+- Multiple specialized agents working together
+- Coordinated code generation and testing
+- Comprehensive analysis and planning
 
 Type 'quit' or 'exit' to leave.
 
@@ -98,19 +104,62 @@ Type 'quit' or 'exit' to leave.
                 # Add to history
                 self.conversation_history.append(("user", user_input))
                 
-                # Ask LLM what to do
-                response = self._get_llm_response(user_input)
-                
-                print(f"\nadj> {response}\n")
+                # Determine if this needs swarm processing
+                if self._needs_swarm_processing(user_input):
+                    print(f"\n🐝 Using Agent Swarm for: {user_input}")
+                    swarm_result = self._process_with_swarm(user_input)
+                    print(f"\nadj> Swarm result:\n{swarm_result}\n")
+                else:
+                    # Simple LLM response
+                    response = self._get_llm_response(user_input)
+                    print(f"\nadj> {response}\n")
                 
                 # Add to history
-                self.conversation_history.append(("assistant", response))
+                self.conversation_history.append(("assistant", "Swarm processing complete"))
                 
             except KeyboardInterrupt:
                 print("\n\nExiting ADJ")
                 break
             except EOFError:
                 break
+    
+    def _needs_swarm_processing(self, user_input: str) -> bool:
+        """Determine if request needs swarm processing"""
+        
+        swarm_keywords = [
+            "implement", "build", "create", "generate", "refactor",
+            "test", "analyze", "plan", "execute", "code", "system",
+            "component", "feature", "complex", "architecture"
+        ]
+        
+        user_lower = user_input.lower()
+        return any(keyword in user_lower for keyword in swarm_keywords)
+    
+    def _process_with_swarm(self, user_input: str) -> str:
+        """Process request using Agent Swarm"""
+        
+        # Initialize swarm if needed
+        if not self.swarm:
+            from .agent_swarm import AgentSwarm
+            self.swarm = AgentSwarm(self.ollama, self.project_root)
+        
+        # Process through swarm
+        result = self.swarm.process_request(user_input, self.context)
+        
+        # Format result for display
+        if "error" in result:
+            return f"❌ Error: {result['error']}"
+        
+        formatted_result = "🐝 Swarm Processing Results:\n\n"
+        
+        for task_id, task_result in result.items():
+            if "error" in task_result:
+                formatted_result += f"❌ {task_id}: {task_result['error']}\n\n"
+            else:
+                formatted_result += f"✅ {task_id} ({task_result.get('agent', 'unknown')}):\n"
+                formatted_result += f"   {task_result.get('result', 'No result')[:200]}...\n\n"
+        
+        return formatted_result
     
     def _get_llm_response(self, user_input: str) -> str:
         """
@@ -132,6 +181,10 @@ Type 'quit' or 'exit' to leave.
         for role, msg in self.conversation_history[-4:]:  # Last 4 turns
             history_str += f"\n{role}: {msg}"
         
+        # Check if swarm is available
+        swarm_available = self.swarm is not None
+        swarm_status = f"\nAgent Swarm: {'✅ Available' if swarm_available else '❌ Not initialized'}"
+        
         prompt = f"""
 You are ADJ, an intelligent development assistant.
 You understand project state and help the user accomplish their goals.
@@ -145,6 +198,8 @@ CRITICAL BLOCKERS:
 RECOMMENDED NEXT ACTIONS:
 {actions_str}
 
+{swarm_status}
+
 CONVERSATION SO FAR:
 {history_str}
 
@@ -157,6 +212,7 @@ Now respond helpfully. You can:
 4. Ask clarifying questions
 5. Offer to execute actions (just say "Ready to execute X? (y/n)")
 6. Help the user understand the project
+7. For complex tasks (implement, build, code, test), mention that the Agent Swarm can help
 
 Be conversational and helpful. Use project context to inform your response.
 """
