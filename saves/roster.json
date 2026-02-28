@@ -4,7 +4,7 @@
       "slime_id": "glimmer_1",
       "name": "Glimmer 1",
       "team": "dungeon",
-      "locked": false,
+      "locked": true,
       "alive": true,
       "genome": {
         "shape": "crystalline",
@@ -109,7 +109,7 @@
       "slime_id": "ember_4",
       "name": "Ember 4",
       "team": "dungeon",
-      "locked": false,
+      "locked": true,
       "alive": true,
       "genome": {
         "shape": "crystalline",
