@@ -107,7 +107,7 @@ class RaceParticipant:
             distance_gained = self.jump_distance * 0.1 * terrain_mod * speed_modifier * dt
         else:
             # Auto-jump or continuous movement
-            if self.movement_type == MovementType.ROLLER:
+            if self.movement_type == MovementType.roller:
                 # Continuous rolling
                 distance_gained = self.jump_distance * terrain_mod * speed_modifier * dt
             else:
