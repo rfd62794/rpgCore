@@ -6,8 +6,11 @@ import yaml
 import re
 from typing import TYPE_CHECKING
 
+# Import TaskLoader unconditionally since it's used outside TYPE_CHECKING
+from .inventory.task_loader import TaskLoader
+
 if TYPE_CHECKING:
-    from .inventory.task_loader import TaskLoader
+    pass
 
 class DataLoader:
     """Load ADJ data from documentation files"""
