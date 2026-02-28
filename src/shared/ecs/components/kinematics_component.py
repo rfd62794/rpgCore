@@ -18,28 +18,40 @@ class KinematicsComponent:
     
     def get_position(self) -> Vector2:
         """Get current position from creature kinematics"""
-        # This will be populated by the creature reference
-        return getattr(self, '_creature', None).kinematics.position if hasattr(self, '_creature', None) else Vector2(0, 0)
+        creature = getattr(self, '_creature', None)
+        if creature:
+            return creature.kinematics.position
+        return Vector2(0, 0)
     
     def get_velocity(self) -> Vector2:
         """Get current velocity from creature kinematics"""
-        return getattr(self, '_creature', None).kinematics.velocity if hasattr(self, '_creature', None) else Vector2(0, 0)
+        creature = getattr(self, '_creature', None)
+        if creature:
+            return creature.kinematics.velocity
+        return Vector2(0, 0)
     
     def set_velocity(self, velocity: Vector2) -> None:
         """Set velocity on creature kinematics"""
-        if hasattr(self, '_creature', None):
-            self._creature.kinematics.velocity = velocity
+        creature = getattr(self, '_creature', None)
+        if creature:
+            creature.kinematics.velocity = velocity
     
     def apply_force(self, force: Vector2, dt: float) -> None:
         """Apply force to creature kinematics (legacy compatibility)"""
-        if hasattr(self, '_creature', None):
-            self._creature.kinematics.apply_force(force, dt)
+        creature = getattr(self, '_creature', None)
+        if creature:
+            creature.kinematics.apply_force(force, dt)
     
     def update_position(self, dt: float) -> None:
         """Update position using creature kinematics"""
-        if hasattr(self, '_creature', None):
-            self._creature.kinematics.update(dt)
+        creature = getattr(self, '_creature', None)
+        if creature:
+            creature.kinematics.update(dt)
     
     def set_creature_reference(self, creature) -> None:
         """Set back-reference to creature for state access"""
         self._creature = creature
+    
+    def get_creature(self):
+        """Get creature reference"""
+        return getattr(self, '_creature', None)
