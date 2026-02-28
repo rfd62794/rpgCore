@@ -3,6 +3,7 @@ from src.shared.engine.scene_manager import Scene
 from src.shared.ui.panel import Panel
 from src.shared.ui.label import Label
 from src.shared.ui.button import Button
+from src.shared.ui.spec import UISpec
 from src.apps.dungeon_crawler.ui.dungeon_session import DungeonSession
 
 class TheRoomScene(Scene):
@@ -10,8 +11,8 @@ class TheRoomScene(Scene):
     The Hub scene — The Room.
     A dark bedroom with interactive elements.
     """
-    def __init__(self, manager, session: DungeonSession, **kwargs):
-        super().__init__(manager, **kwargs)
+    def __init__(self, manager, spec: UISpec, session: DungeonSession, **kwargs):
+        super().__init__(manager, spec, **kwargs)
         self.session = session
         
         # Aesthetic colors
