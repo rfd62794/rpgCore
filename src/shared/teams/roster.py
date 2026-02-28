@@ -156,7 +156,7 @@ class Team:
         if not member:
             return False
         
-        # Check if creature is locked - check RosterSlime state via roster
+        # Check if creature is locked - check current RosterSlime state
         if hasattr(self, '_roster_ref') and self._roster_ref:
             # Find the RosterSlime in the roster's slimes list
             for roster_slime in self._roster_ref.slimes:
