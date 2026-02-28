@@ -182,8 +182,7 @@ class DungeonPathScene(Scene):
         # Cluster of dots for party
         for i, slime in enumerate(self.team[:4]):
             offset = (i - 1.5) * 4
-            from src.shared.genetics.cultural_base import CULTURAL_PARAMETERS
-            color = CULTURAL_PARAMETERS[slime.genome.cultural_base].color
+            color = slime.genome.base_color
             pygame.draw.circle(surface, color, (dot_x, dot_y + int(offset)), 3)
             pygame.draw.circle(surface, (255, 255, 255), (dot_x, dot_y + int(offset)), 3, width=1)
 
