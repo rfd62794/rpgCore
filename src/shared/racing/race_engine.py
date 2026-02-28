@@ -63,8 +63,6 @@ class RaceParticipant(BaseParticipant):
         if self.finished:
             self.velocity *= 0.9 # Slow down after finish
             return
-
-    # ... (skipping for now to see if I can do it in one chunk or need multiple)
             
         # Jump physics update
         self._update_jump(dt)
@@ -166,48 +164,36 @@ class RaceParticipant(BaseParticipant):
                 self.is_jumping = True
                 self.jump_phase = 0.0
 
-class RaceEngine:
+class RaceEngine(BaseEngine):
     def __init__(self, participants: List[RosterSlime], track: List[str], length: int = 1500):
-        self.participants = [RaceParticipant(p) for p in participants]
-        self.track = track
+        parts = [RaceParticipant(p) for p in participants]
+        super().__init__(parts, track)
         self.length = length
         self.total_laps = 3
         self.lap_distance = length / self.total_laps
         self._finish_order = []
-        self._finished = False
         
-    def tick(self, dt: float):
-        if self._finished:
-            return
+    def _update_participant(self, p: RaceParticipant, dt: float):
+        terrain = get_terrain_at(self.track, p.distance)
+        p.update(dt, terrain)
+        
+        # Lap crossing check (Odometer logic: distance never resets)
+        if p.distance >= self.lap_distance * (p.laps_complete + 1):
+            p.laps_complete += 1
             
-        for p in self.participants:
+            # Check if race finished
+            if p.laps_complete >= self.total_laps:
+                p.finished = True
+                p.finish_position = len(self._finish_order) + 1
+                self._finish_order.append(p)
+                p.rank = p.finish_position
+            
+        # Also check if reached final distance (backup)
+        elif p.distance >= self.length * self.total_laps:
+            p.distance = self.length * self.total_laps
             if not p.finished:
-                terrain = get_terrain_at(self.track, p.distance)
-                p.update(dt, terrain)
-                
-                # Lap crossing check (Odometer logic: distance never resets)
-                if p.distance >= self.lap_distance * (p.laps_complete + 1):
-                    p.laps_complete += 1
-                    
-                    # Check if race finished
-                    if p.laps_complete >= self.total_laps:
-                        p.finished = True
-                        p.finish_position = len(self._finish_order) + 1
-                        self._finish_order.append(p)
-                        p.rank = p.finish_position
-                    
-                # Also check if reached final distance (backup)
-                elif p.distance >= self.length * self.total_laps:
-                    p.distance = self.length * self.total_laps
-                    if not p.finished:
-                        p.finished = True
-                        p.laps_complete = self.total_laps
-                        p.finish_position = len(self._finish_order) + 1
-                        self._finish_order.append(p)
-                        p.rank = p.finish_position
-                    
-        if all(p.finished for p in self.participants):
-            self._finished = True
-            
-    def is_finished(self) -> bool:
-        return self._finished
+                p.finished = True
+                p.laps_complete = self.total_laps
+                p.finish_position = len(self._finish_order) + 1
+                self._finish_order.append(p)
+                p.rank = p.finish_position
