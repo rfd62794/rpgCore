@@ -3,7 +3,7 @@ import pygame
 from src.shared.genetics import SlimeGenome, breed, generate_random
 from src.apps.slime_breeder.entities.slime import Slime
 from src.apps.slime_breeder.garden.garden_state import GardenState
-from src.apps.slime_breeder.ui.slime_renderer import SlimeRenderer
+from src.shared.rendering.slime_renderer import SlimeRenderer
 from src.shared.physics import Vector2
 
 def test_genome_generates_valid_traits():
