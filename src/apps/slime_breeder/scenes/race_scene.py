@@ -190,7 +190,7 @@ class RaceScene(Scene):
             # Update current lap from player
             self.current_lap = player.laps_complete + 1 if not player.finished else self.engine.total_laps
             
-            full_dist = self.engine.length * self.engine.total_laps
+            full_dist = self.engine.length
             self.minimap.render(surface, self.engine.participants, full_dist, self.camera.x)
             self.hud.render(surface, self.engine.participants, self.current_lap, self.total_laps, self.terrain_ahead)
             
