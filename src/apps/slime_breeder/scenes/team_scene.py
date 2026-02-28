@@ -149,7 +149,9 @@ class TeamScene(Scene):
 
     def _enter_dungeon(self):
         logger.info("⚔️ Launching Dungeon Crawler...")
-        self.request_scene("dungeon")
+        from src.apps.dungeon_crawler.ui.dungeon_session import DungeonSession
+        session = DungeonSession()
+        self.request_scene("dungeon", session=session)
 
     def _assign_to_dungeon(self, slime: RosterSlime):
         if self.dungeon_team.assign(slime):
