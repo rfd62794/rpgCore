@@ -210,13 +210,13 @@ class DungeonPathScene(Scene):
         if self.engine.party.paused:
             # Floating icon above party
             pygame.draw.circle(surface, (255, 200, 0), (int(px), int(track_rect.top - 20)), 10)
-            render_text(surface, "!", (int(px), int(track_rect.top - 20)), size=18, color=(0,0,0), centered=True, bold=True)
+            render_text(surface, "!", (int(px), int(track_rect.top - 20)), size=18, color=(0,0,0), center=True, bold=True)
 
     def _render_hud(self, surface):
         # HUD Information in team_bar
         bar = self.layout.team_bar
         dist_text = f"DEPTH: {int(self.engine.party.distance)}m / {int(self.track.total_length)}m"
-        render_text(surface, dist_text, (bar.centerx, bar.y + 15), size=18, bold=True, centered=True)
+        render_text(surface, dist_text, (bar.centerx, bar.y + 15), size=18, bold=True, center=True)
 
     def _get_track_rect(self):
         h = int(self.spec.screen_height * self.track_height_ratio)
