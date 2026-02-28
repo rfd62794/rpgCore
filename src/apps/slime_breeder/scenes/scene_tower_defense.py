@@ -349,7 +349,6 @@ class TowerDefenseScene(Scene):
         """Add enemy to ECS system"""
         # Add behavior component
         behavior_component = BehaviorComponent()
-        behavior_component.set_creature_reference(enemy)
         self.component_registry.add_component(enemy.slime_id, BehaviorComponent, behavior_component)
     
     def _find_tower_grid_position(self, tower: Creature) -> Tuple[int, int]:
