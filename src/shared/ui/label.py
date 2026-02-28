@@ -1,29 +1,52 @@
 from typing import Tuple, List, Optional
 import pygame
 from src.shared.ui.base import UIComponent
+from src.shared.ui.spec import UISpec
 
 class Label(UIComponent):
-    """Text rendering component with alignment and word wrap."""
+    """Text rendering component with alignment and word wrap, driven by UISpec."""
     
     def __init__(
         self,
-        rect: pygame.Rect,
-        text: str = "",
-        font_size: int = 24,
-        color: Tuple[int, int, int] = (255, 255, 255),
-        align: str = "left",  # left, center, right
+        text: str,
+        position: Tuple[int, int],
+        spec: UISpec,
+        size: str = "md",
+        color: Optional[Tuple[int, int, int]] = None,
+        bold: bool = False,
+        centered: bool = False,
         wrap_width: Optional[int] = None,
         z_order: int = 0
     ):
+        # Map size names to spec values
+        font_sizes = {
+            "sm": spec.font_size_sm,
+            "md": spec.font_size_md,
+            "lg": spec.font_size_lg,
+            "xl": spec.font_size_xl,
+            "hd": spec.font_size_hd
+        }
+        self.font_size = font_sizes.get(size, spec.font_size_md)
+        self.color = color or spec.color_text
+        self.align = "center" if centered else "left"
+        
+        # Calculate rect based on position and wrap_width
+        # For now, we use a default width if not provided, rect will grow/shrink in render logic if needed?
+        # Actually Label's _cache_text uses self.rect and self.wrap_width.
+        rect = pygame.Rect(position[0], position[1], wrap_width or 200, self.font_size + 4)
+        if centered:
+             rect.x -= rect.width // 2
+             
         super().__init__(rect, z_order)
         self.text = text
-        self.font_size = font_size
-        self.color = color
-        self.align = align
         self.wrap_width = wrap_width or rect.width
+        self.bold = bold
+        self.spec = spec
         
         try:
             self.font = pygame.font.Font(None, self.font_size)
+            if self.bold:
+                self.font.set_bold(True)
         except:
             self.font = None
             

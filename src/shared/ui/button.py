@@ -1,3 +1,5 @@
+import pygame
+from typing import Callable, Tuple, Optional
 from src.shared.ui.spec import UISpec
 from src.shared.ui.panel import Panel
 from src.shared.ui.label import Label
