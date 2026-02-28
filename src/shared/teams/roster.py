@@ -375,9 +375,7 @@ class Roster:
                     roster.teams[entry.team].members.append(entry)
         
         # Set all back-references after loading (for both legacy and new formats)
-        print(f"DEBUG: About to call _set_back_references with {len(roster.entries)} entries")
         roster._set_back_references()
-        print("DEBUG: _set_back_references completed")
         return roster
     
     def _set_back_references(self):
