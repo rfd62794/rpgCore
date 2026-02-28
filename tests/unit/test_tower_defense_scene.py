@@ -16,14 +16,16 @@ from src.shared.physics.kinematics import Vector2
 def scene_manager():
     """Create a mock scene manager"""
     manager = Mock()
-    manager.spec = SPEC_720
+    # The scene manager should have the spec, but the scene constructor takes it directly
     return manager
 
 
 @pytest.fixture
-def tower_defense_scene(scene_manager):
+def tower_defense_scene():
     """Create a tower defense scene"""
-    scene = TowerDefenseScene(scene_manager, SPEC_720)
+    # Create a mock scene manager with proper spec
+    manager = Mock()
+    scene = TowerDefenseScene(manager, SPEC_720)
     return scene
 
 

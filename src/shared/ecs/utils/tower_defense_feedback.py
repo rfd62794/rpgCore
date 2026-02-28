@@ -20,6 +20,7 @@ def end_tower_defense_session(session: TowerDefenseSession, roster: Roster) -> D
         "enemies_escaped": session.enemies_escaped,
         "towers_placed": session.towers_placed,
         "victory": session.victory,
+        "result": "Victory" if session.victory else "Defeat",
         "achievements": [],
         "statistics": session.get_statistics(),
     }
