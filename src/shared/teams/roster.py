@@ -312,8 +312,9 @@ class Roster:
             )
             roster.entries.append(entry)
             
-            # Add to appropriate team
+            # Add to appropriate team and set back-reference
             if entry.team != TeamRole.UNASSIGNED:
+                entry._team_ref = roster.teams[entry.team]
                 roster.teams[entry.team].members.append(entry)
         
         return roster
