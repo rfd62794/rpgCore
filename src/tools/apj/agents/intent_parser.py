@@ -106,6 +106,13 @@ class ConversationalInterface:
                 # Initialize swarm coordinator
                 self.swarm = SwarmCoordinator(swarm_config)
                 
+                # Initialize autonomous swarm
+                from .autonomous_swarm import AUTONOMOUS_SWARM
+                from .swarm_workflows import WORKFLOWS
+                
+                self.autonomous_swarm = AUTONOMOUS_SWARM
+                self.available_workflows = list(WORKFLOWS.keys())
+                
                 # Boot complete agent ecosystem
                 boot_results = AGENT_BOOT_MANAGER.boot_ecosystem(self.context)
                 
@@ -200,11 +207,16 @@ Type 'quit' or 'exit' to leave.
             "implement", "build", "create", "generate", "refactor",
             "test", "analyze", "plan", "execute", "code", "system",
             "component", "feature", "complex", "architecture",
-            "swarm", "ecs", "rendering", "dungeon", "tower defense"
+            "swarm", "ecs", "rendering", "dungeon", "tower defense",
+            "autonomous", "round robin", "workflow", "self-sufficient"
         ]
         
         # Also check for explicit swarm requests
-        explicit_swarm = ["engage the swarm", "use swarm", "swarm help", "delegate to swarm"]
+        explicit_swarm = [
+            "engage the swarm", "use swarm", "swarm help", "delegate to swarm",
+            "start autonomous", "run workflow", "execute workflow", 
+            "autonomous swarm", "round robin"
+        ]
         
         user_lower = user_input.lower()
         return (any(keyword in user_lower for keyword in swarm_keywords) or 
