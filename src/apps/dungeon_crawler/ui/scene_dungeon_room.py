@@ -47,11 +47,21 @@ class DungeonRoomScene(Scene):
         self._setup_ui()
 
     def on_enter(self, combat_result=None, **kwargs):
+        logger.info("DungeonRoomScene.on_enter called")
         self.kwargs = kwargs
-        self.session = kwargs.get("session")
+        session = kwargs.get("session")
+        logger.info(f"Session received: {session}")
+        self.session = session
+        
+        if not self.session:
+            logger.error("No session provided to DungeonRoomScene")
+            return
         
         if not self.session.floor:
+            logger.info("Session floor is None, calling descend()")
             self.session.descend()
+        
+        logger.info(f"Session floor after descend: {self.session.floor}")
         
         # Check for combat result
         if combat_result == "victory":
