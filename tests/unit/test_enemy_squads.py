@@ -1,5 +1,6 @@
 import random
-from src.shared.dungeon.enemy_squads import generate_combat_squad, generate_dungeon_track, DungeonZoneType
+from src.shared.dungeon.enemy_squads import generate_combat_squad
+from src.shared.dungeon.dungeon_track import generate_dungeon_track, DungeonZoneType
 
 def test_squad_generation_deterministic():
     rng1 = random.Random(42)
