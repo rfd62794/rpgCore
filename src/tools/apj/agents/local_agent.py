@@ -90,6 +90,254 @@ class LocalAgent:
 ✅ Context confirmed and ready to proceed
 """)
     
+    def _analyze_project_state(self):
+        """Analyze current project state from loaded context"""
+        
+        self.project_analysis = {
+            "demo_status": self._analyze_demos(),
+            "system_status": self._analyze_systems(),
+            "goal_progress": self._analyze_goals(),
+            "blockers": self.project_status.get("blockers", []),
+            "next_focus": self._determine_next_focus()
+        }
+    
+    def _analyze_demos(self) -> Dict:
+        """Analyze status of each demo"""
+        demos = {}
+        
+        # Get demo information from classifications
+        for file_path, classification in self.classifications.items():
+            demo = classification.get("demo")
+            if demo and demo not in demos:
+                demos[demo] = {
+                    "files": 0,
+                    "systems": set(),
+                    "status": "unknown"
+                }
+            if demo:
+                demos[demo]["files"] += 1
+                system = classification.get("system")
+                if system:
+                    demos[demo]["systems"].add(system)
+        
+        # Determine status based on project status
+        for demo, info in demos.items():
+            info["systems"] = sorted(list(info["systems"]))
+            
+            # Check if demo is mentioned in project status
+            demo_status = self.project_status.get("by_demo", {}).get(demo, {})
+            if demo_status:
+                info["status"] = demo_status.get("status", "unknown")
+            else:
+                # Default status based on file count
+                if info["files"] > 20:
+                    info["status"] = "likely_complete"
+                elif info["files"] > 5:
+                    info["status"] = "in_progress"
+                else:
+                    info["status"] = "minimal"
+        
+        return demos
+    
+    def _analyze_systems(self) -> Dict:
+        """Analyze status of each system"""
+        systems = {}
+        
+        # Get system information from classifications
+        for file_path, classification in self.classifications.items():
+            system = classification.get("system")
+            if system and system not in systems:
+                systems[system] = {
+                    "files": 0,
+                    "demos": set(),
+                    "status": "unknown"
+                }
+            if system:
+                systems[system]["files"] += 1
+                demo = classification.get("demo")
+                if demo:
+                    systems[system]["demos"].add(demo)
+        
+        # Determine status
+        for system, info in systems.items():
+            info["demos"] = sorted(list(info["demos"]))
+            
+            # Check system status from project status
+            system_status = self.project_status.get("by_system", {}).get(system, {})
+            if system_status:
+                info["status"] = system_status.get("status", "unknown")
+            else:
+                # Default status based on file count
+                if info["files"] > 10:
+                    info["status"] = "production_ready"
+                elif info["files"] > 3:
+                    info["status"] = "developing"
+                else:
+                    info["status"] = "minimal"
+        
+        return systems
+    
+    def _analyze_goals(self) -> Dict:
+        """Analyze progress toward goals"""
+        goals = {}
+        
+        # Extract goal information from project status
+        for goal_id, goal_data in self.project_status.get("by_goal", {}).items():
+            goals[goal_id] = {
+                "status": goal_data.get("status", "unknown"),
+                "description": goal_data.get("description", ""),
+                "blocked_by": goal_data.get("blocked_by"),
+                "evidence": goal_data.get("evidence", "")
+            }
+        
+        return goals
+    
+    def _determine_next_focus(self) -> Dict:
+        """Determine what should be focused on next"""
+        
+        # Find critical blockers
+        critical_blockers = [
+            blocker for blocker in self.project_status.get("blockers", [])
+            if "critical" in blocker.get("blocker", "").lower() or 
+               "rendering" in blocker.get("blocker", "").lower()
+        ]
+        
+        # Find incomplete goals
+        incomplete_goals = [
+            goal_id for goal_id, goal_data in self.project_analysis["goal_progress"].items()
+            if goal_data.get("status") in ["🔄 IN PROGRESS", "❌ BLOCKED"]
+        ]
+        
+        # Find minimal demos
+        minimal_demos = [
+            demo for demo, demo_data in self.project_analysis["demo_status"].items()
+            if demo_data.get("status") in ["minimal", "in_progress"]
+        ]
+        
+        return {
+            "critical_blockers": critical_blockers,
+            "incomplete_goals": incomplete_goals,
+            "minimal_demos": minimal_demos,
+            "recommended_action": self._get_recommended_action(critical_blockers, incomplete_goals, minimal_demos)
+        }
+    
+    def _get_recommended_action(self, blockers: list, goals: list, demos: list) -> str:
+        """Get recommended next action"""
+        
+        if blockers:
+            return f"Address critical blockers: {blockers[0].get('blocker', 'Unknown')}"
+        elif "G3_Multi_Genre" in goals:
+            return "Complete Tower Defense to prove multi-genre support"
+        elif demos:
+            return f"Polish {demos[0]} demo to strengthen multi-genre proof"
+        else:
+            return "Continue polishing existing systems and demos"
+    
+    def _show_context_summary_and_confirm(self):
+        """Show comprehensive context summary and ask for confirmation"""
+        
+        print(f"""
+╔══════════════════════════════════════════════════════════════╗
+║                PROJECT CONTEXT ANALYSIS                       ║
+║              Agent has analyzed your project                   ║
+╚══════════════════════════════════════════════════════════════╝
+
+📊 PROJECT OVERVIEW
+═════════════════════════════════════════════════════════════════
+Documentation: {len(self.documentation)} files loaded ({sum(v['size_kb'] for v in self.documentation.values()):.1f} KB)
+Code Files: {len(self.symbol_map.files)} files indexed
+Systems: {len(self.project_analysis['system_status'])} systems identified
+Demos: {len(self.project_analysis['demo_status'])} demos found
+Blockers: {len(self.project_analysis['blockers'])} items identified
+
+🎮 DEMO STATUS
+═════════════════════════════════════════════════════════════════
+""")
+        
+        for demo, info in self.project_analysis["demo_status"].items():
+            status_icon = {
+                "likely_complete": "✅",
+                "in_progress": "🔄",
+                "minimal": "❌"
+            }.get(info["status"], "❓")
+            
+            print(f"{status_icon} {demo:15s} ({info['files']:3d} files, {info['status']})")
+            if info["systems"]:
+                print(f"    Systems: {', '.join(info['systems'])}")
+            print()
+        
+        print(f"""
+🔧 SYSTEM STATUS
+═════════════════════════════════════════════════════════════════
+""")
+        
+        for system, info in self.project_analysis["system_status"].items():
+            status_icon = {
+                "production_ready": "✅",
+                "developing": "🔄",
+                "minimal": "❌"
+            }.get(info["status"], "❓")
+            
+            print(f"{status_icon} {system:15s} ({info['files']:3d} files, {info['status']})")
+            if info["demos"]:
+                print(f"    Used in: {', '.join(info['demos'])}")
+            print()
+        
+        print(f"""
+🎯 GOAL PROGRESS
+═════════════════════════════════════════════════════════════════
+""")
+        
+        for goal_id, goal_data in self.project_analysis["goal_progress"].items():
+            status = goal_data.get("status", "unknown")
+            if "✅" in status:
+                icon = "✅"
+            elif "🔄" in status:
+                icon = "🔄"
+            elif "❌" in status:
+                icon = "❌"
+            else:
+                icon = "❓"
+            
+            print(f"{icon} {goal_id:20s} {status}")
+            if goal_data.get("blocked_by"):
+                print(f"    Blocked by: {goal_data['blocked_by']}")
+            print()
+        
+        print(f"""
+🚫 CRITICAL BLOCKERS
+═════════════════════════════════════════════════════════════════
+""")
+        
+        if self.project_analysis["blockers"]:
+            for blocker in self.project_analysis["blockers"][:3]:  # Show top 3
+                print(f"❌ {blocker.get('blocker', 'Unknown')}")
+                print(f"   Impact: {blocker.get('impact', 'Unknown')[:80]}...")
+                print(f"   Task: {blocker.get('task', 'Unknown')}")
+                print()
+        else:
+            print("✅ No critical blockers identified")
+        
+        print(f"""
+🎯 RECOMMENDED NEXT FOCUS
+═════════════════════════════════════════════════════════════════
+{self.project_analysis['next_focus']['recommended_action']}
+
+═════════════════════════════════════════════════════════════════
+""")
+        
+        # Ask for confirmation
+        while True:
+            response = input("Continue with this context? (y/n): ").strip().lower()
+            if response in ['y', 'yes']:
+                print("✅ Context confirmed. Proceeding with initialization...\n")
+                break
+            elif response in ['n', 'no']:
+                print("❌ Context not confirmed. Exiting.")
+                sys.exit(0)
+            else:
+                print("Please enter 'y' or 'n'")
+    
     def _load_context_tools(self):
         """Load all codebase understanding tools"""
         
