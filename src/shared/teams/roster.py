@@ -126,6 +126,11 @@ class Team:
             slime_id = slime_or_id.slime_id
             # Update the RosterSlime object's team for legacy compatibility
             slime_or_id.team = self.role
+            
+            # Add RosterSlime to roster if not already there
+            if hasattr(self, '_roster_ref') and self._roster_ref:
+                if slime_id not in self._roster_ref._roster_slimes:
+                    self._roster_ref.add_slime(slime_or_id)
         else:
             slime_id = slime_or_id
         
