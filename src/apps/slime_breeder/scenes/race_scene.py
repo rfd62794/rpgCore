@@ -31,8 +31,8 @@ class RaceScene(Scene):
             self.roster = load_roster()
             
         self.engine: Optional[RaceEngine] = None
-        self.track = generate_track(3000)
-        self.terrain_zones = generate_zones(3000)
+        self.track = generate_track(3000, 3)
+        self.terrain_zones = generate_zones(3000, 3)
         self.renderer = SlimeRenderer()
         self.minimap = RaceMinimap(spec)
         self.hud = RaceHUD(spec, self.layout)
@@ -192,7 +192,8 @@ class RaceScene(Scene):
             # Update current lap from player
             self.current_lap = player.laps_complete + 1 if not player.finished else self.engine.total_laps
             
-            self.minimap.render(surface, self.engine.participants, 3000, self.camera.x)
+            full_dist = self.engine.length * self.engine.total_laps
+            self.minimap.render(surface, self.engine.participants, full_dist, self.camera.x)
             self.hud.render(surface, self.engine.participants, self.current_lap, self.total_laps, self.terrain_ahead)
             
         if self.start_countdown > 0:
@@ -218,6 +219,7 @@ class RaceScene(Scene):
         
         # Render all arena content to arena_surf
         self._render_track_content(arena_surf, arena_w, arena_h, track_y, track_h)
+        self._render_lap_lines(arena_surf, arena_w, track_y, track_h)
         
         # Blit arena surface to main surface
         surface.blit(arena_surf, arena_rect.topleft)
@@ -281,18 +283,43 @@ class RaceScene(Scene):
             for dx in range(0, arena_w, 40):
                 pygame.draw.line(surface, (100, 100, 100), (dx, ly), (dx + 20, ly), 1)
 
-        # 4. Finish Line (checkered pattern, not blocking)
-        fx = self.world_to_screen_x(3000)
-        if -20 < fx < arena_w + 20:
-            # Checkered pattern — alternating black/white squares
-            square_h = 16
-            squares = track_h // square_h
+    def _render_lap_lines(self, surface, arena_w, track_y, track_h):
+        if not self.engine: return
+        
+        # Lap line positions in world space: [3000, 6000, 9000]
+        lap_dist = self.engine.lap_distance
+        total_laps = self.engine.total_laps
+        lap_positions = [lap_dist * i for i in range(1, total_laps + 1)]
+        
+        from src.shared.ui.profile_card import render_text
+        
+        for i, world_x in enumerate(lap_positions):
+            screen_x = self.world_to_screen_x(world_x)
             
-            for i in range(squares):
-                color = (255, 255, 255) if i % 2 == 0 else (0, 0, 0)
-                pygame.draw.rect(surface, color, (fx - 3, track_y + i * square_h, 6, square_h))
+            # Clip: only render if on screen
+            if screen_x < -50 or screen_x > arena_w + 50:
+                continue
+                
+            lap_num = i + 1
+            is_finish = (lap_num == total_laps)
             
-            # No collision. No blocking. Visual only.
+            if is_finish:
+                # Checkered finish line
+                square_h = 16
+                squares = track_h // square_h
+                for j in range(squares):
+                    color = (255, 255, 255) if j % 2 == 0 else (0, 0, 0)
+                    pygame.draw.rect(surface, color, (screen_x - 4, track_y + j * square_h, 8, square_h))
+                label = "FINISH"
+                color = (255, 215, 0) # Gold
+            else:
+                # Regular lap line
+                pygame.draw.line(surface, (255, 255, 255), (screen_x, track_y), (screen_x, track_y + track_h), 3)
+                label = f"LAP {lap_num}"
+                color = (255, 255, 255)
+            
+            # Label above track
+            render_text(surface, label, (int(screen_x), track_y - 20), size=14, color=color, center=True)
 
         # 5. Participants
         if self.engine:

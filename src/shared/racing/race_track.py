@@ -49,38 +49,39 @@ CULTURAL_TERRAIN_BONUS = {
     "mixed": None,  # no terrain advantage
 }
 
-def generate_zones(track_length: float) -> list[TerrainZone]:
-    """Generate wide terrain zones instead of thin segments."""
-    zones = []
+def generate_zones(track_length: float, total_laps: int = 3) -> list[TerrainZone]:
+    """Generate terrain zones for all laps continuously."""
+    all_zones = []
+    
+    # Generate one lap pattern first
+    lap_zones = []
     current = 0.0
-    
     while current < track_length:
-        # Grass stretches: 200-400 units
         grass_width = random.uniform(200, 400)
-        zones.append(TerrainZone(
-            TerrainType.GRASS, current, 
-            current + grass_width))
-        current += grass_width
+        end = min(current + grass_width, track_length)
+        lap_zones.append((TerrainType.GRASS, current, end))
+        current = end
         
-        # Obstacle zone: 150-300 units
-        terrain = random.choice([
-            TerrainType.WATER,
-            TerrainType.ROCK, 
-            TerrainType.MUD
-        ])
+        if current >= track_length: break
+        
+        terrain = random.choice([TerrainType.WATER, TerrainType.ROCK, TerrainType.MUD])
         obstacle_width = random.uniform(150, 300)
-        zones.append(TerrainZone(
-            terrain, current,
-            current + obstacle_width))
-        current += obstacle_width
-    
-    return zones
+        end = min(current + obstacle_width, track_length)
+        lap_zones.append((terrain, current, end))
+        current = end
 
-def generate_track(length: int = TRACK_LENGTH_LOGIC):
-    """Generate a simple terrain track as a list of terrain types.
-    Probabilities: 50% Grass, 20% Water, 20% Rock, 10% Mud.
-    """
-    segment_count = int(length / SEGMENT_LENGTH) + 10
+    # Duplicate pattern with offsets
+    for lap in range(total_laps):
+        offset = lap * track_length
+        for terrain, start, end in lap_zones:
+            all_zones.append(TerrainZone(terrain, start + offset, end + offset))
+    
+    return all_zones
+
+def generate_track(length: int = TRACK_LENGTH_LOGIC, total_laps: int = 3):
+    """Generate terrain segments for full race distance."""
+    total_length = length * total_laps
+    segment_count = int(total_length / SEGMENT_LENGTH) + 10
     track = []
     for _ in range(segment_count):
         r = random.random()

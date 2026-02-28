@@ -180,9 +180,8 @@ class RaceEngine:
                 terrain = get_terrain_at(self.track, p.distance)
                 p.update(dt, terrain)
                 
-                # Lap crossing check
-                if p.distance >= self.lap_distance:
-                    p.distance -= self.lap_distance  # wrap position
+                # Lap crossing check (Odometer logic: distance never resets)
+                if p.distance >= self.lap_distance * (p.laps_complete + 1):
                     p.laps_complete += 1
                     
                     # Check if race finished
@@ -193,10 +192,11 @@ class RaceEngine:
                         p.rank = p.finish_position
                     
                 # Also check if reached final distance (backup)
-                elif p.distance >= self.length:
-                    p.distance = self.length
+                elif p.distance >= self.length * self.total_laps:
+                    p.distance = self.length * self.total_laps
                     if not p.finished:
                         p.finished = True
+                        p.laps_complete = self.total_laps
                         p.finish_position = len(self._finish_order) + 1
                         self._finish_order.append(p)
                         p.rank = p.finish_position
