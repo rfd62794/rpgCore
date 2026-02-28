@@ -1,0 +1,31 @@
+{
+  "slimes": [
+    {
+      "slime_id": "glimmer_1",
+      "name": "Glimmer 1",
+      "team": "unassigned",
+      "locked": false,
+      "alive": true,
+      "genome": {
+        "shape": "crystalline",
+        "size": "small",
+        "base_color": [
+          121,
+          168,
+          113
+        ],
+        "pattern": "solid",
+        "pattern_color": [
+          163,
+          190,
+          75
+        ],
+        "accessory": "none",
+        "curiosity": 0.652144893998522,
+        "energy": 0.540587938100305,
+        "affection": 0.014757856495650534,
+        "shyness": 0.09326277618383594
+      }
+    }
+  ]
+}
