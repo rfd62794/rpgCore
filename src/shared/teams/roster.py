@@ -136,6 +136,12 @@ class Roster:
             # Cast culture string back to Enum
             from src.shared.genetics.cultural_base import CulturalBase
             g_data["cultural_base"] = CulturalBase(g_data.get("cultural_base", "mixed"))
+            
+            # Ensure base stats exist (for backward compatibility if needed)
+            if "base_hp" not in g_data: g_data["base_hp"] = 20.0
+            if "base_atk" not in g_data: g_data["base_atk"] = 5.0
+            if "base_spd" not in g_data: g_data["base_spd"] = 5.0
+            
             genome = SlimeGenome(**g_data)
             rs = RosterSlime(
                 slime_id=s["slime_id"],
