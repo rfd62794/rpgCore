@@ -1,6 +1,8 @@
 from dataclasses import dataclass, field
 from typing import Tuple
 
+from .cultural_base import CulturalBase
+
 @dataclass
 class SlimeGenome:
     # Visual traits
@@ -16,3 +18,6 @@ class SlimeGenome:
     energy: float     # movement speed and frequency
     affection: float  # moves toward player cursor
     shyness: float    # retreats from sudden input
+    
+    # Cultural identity
+    cultural_base: CulturalBase = CulturalBase.MIXED

@@ -17,6 +17,30 @@ class RosterSlime:
     team: TeamRole = TeamRole.UNASSIGNED
     locked: bool = False      # True when on active mission
     alive: bool = True
+    
+    # Progression
+    level: int = 1
+    experience: int = 0
+    breeding_lock_level: int = 0 # Cannot breed if level <= breeding_lock_level
+    
+    @property
+    def can_breed(self) -> bool:
+        """Min level 3 required, and must be above last bred level (drain mechanic)."""
+        return self.level >= 3 and self.level > self.breeding_lock_level
+
+    @property
+    def xp_to_next_level(self) -> int:
+        return 5 + (self.level * 2)
+
+    def gain_exp(self, amount: int) -> bool:
+        """Adds exp and returns True if leveled up."""
+        self.experience += amount
+        leveled_up = False
+        while self.experience >= self.xp_to_next_level:
+            self.experience -= self.xp_to_next_level
+            self.level += 1
+            leveled_up = True
+        return leveled_up
 
 @dataclass  
 class Team:
@@ -89,7 +113,10 @@ class Roster:
                         "energy": s.genome.energy,
                         "affection": s.genome.affection,
                         "shyness": s.genome.shyness
-                    }
+                    },
+                    "level": s.level,
+                    "experience": s.experience,
+                    "breeding_lock_level": s.breeding_lock_level
                 }
                 for s in self.slimes
             ]
@@ -106,7 +133,10 @@ class Roster:
                 genome=genome,
                 team=TeamRole(s["team"]),
                 locked=s["locked"],
-                alive=s["alive"]
+                alive=s["alive"],
+                level=s.get("level", 1),
+                experience=s.get("experience", 0),
+                breeding_lock_level=s.get("breeding_lock_level", 0)
             )
             roster.slimes.append(rs)
             if rs.team != TeamRole.UNASSIGNED:
