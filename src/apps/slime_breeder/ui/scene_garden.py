@@ -58,6 +58,15 @@ class GardenScene(GardenSceneBase):
         self.stats_rect = pygame.Rect(self.profile_rect.right + padding, self.right_panel_rect.y + padding, stats_w, top_h)
         self.actions_rect = pygame.Rect(self.right_panel_rect.x + padding, self.profile_rect.bottom + padding, self.right_panel_rect.width - padding * 2, bottom_h)
 
+        # Disable base detail_panel background to prevent overdrawing our custom sub-panels
+        self.detail_panel.bg_color = None
+        self.detail_panel.border_width = 0
+
+        # For UI Review: force selection of the first slime if nothing is selected
+        if not self.selected_entities and self.garden_state.slimes:
+            self.selected_entities = [self.garden_state.slimes[0]]
+            self.on_selection_changed()
+
         # 2. Team Buttons (Stacked in actions_rect)
         btn_y = self.actions_rect.y + 10
         btn_w = self.actions_rect.width - 20
