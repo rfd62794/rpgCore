@@ -35,11 +35,15 @@ class GardenScene(GardenSceneBase):
         btn_w = self.layout.side_panel.width - self.spec.padding_md * 2
         btn_h = self.spec.button_height_sm
         
-        self.assign_btn = Button("→ Dungeon Team", pygame.Rect(self.detail_rect.x + self.spec.padding_md, btn_y, btn_w, btn_h), self._assign_to_dungeon, self.spec)
-        self.assign_btn.set_visible(False)
-        self.detail_panel.add_child(self.assign_btn)
+        self.dungeon_btn = Button("⚔ Dungeon Team", pygame.Rect(self.detail_rect.x + self.spec.padding_md, btn_y, btn_w, btn_h), self._assign_to_dungeon, self.spec)
+        self.dungeon_btn.set_visible(False)
+        self.detail_panel.add_child(self.dungeon_btn)
 
-        self.remove_btn = Button("Remove from Team", pygame.Rect(self.detail_rect.x + self.spec.padding_md, btn_y + btn_h + 8, btn_w, btn_h), self._remove_from_team, self.spec)
+        self.racing_btn = Button("◎ Racing Team", pygame.Rect(self.detail_rect.x + self.spec.padding_md, btn_y + btn_h + 8, btn_w, btn_h), self._assign_to_racing, self.spec)
+        self.racing_btn.set_visible(False)
+        self.detail_panel.add_child(self.racing_btn)
+
+        self.remove_btn = Button("Remove from Team", pygame.Rect(self.detail_rect.x + self.spec.padding_md, btn_y + (btn_h + 8) * 2, btn_w, btn_h), self._remove_from_team, self.spec)
         self.remove_btn.set_visible(False)
         self.detail_panel.add_child(self.remove_btn)
         
@@ -268,3 +272,23 @@ class GardenScene(GardenSceneBase):
     def on_exit(self):
         """Cleanup logic."""
         pass
+
+    def handle_event(self, event: pygame.event.Event) -> None:
+        # First, let the base class handle UI components
+        for comp in reversed(self.ui_components):
+            if hasattr(comp, 'handle_event') and comp.handle_event(event):
+                return
+        
+        # Handle status bar clicks
+        if event.type == pygame.MOUSEBUTTONDOWN:
+            mouse_pos = pygame.mouse.get_pos()
+            
+            # Check if clicking on dungeon status area
+            if hasattr(self, 'dungeon_status_area') and self.dungeon_status_area.collidepoint(mouse_pos):
+                self.request_scene("team")
+                return
+            
+            # Check if clicking on racing status area  
+            if hasattr(self, 'racing_status_area') and self.racing_status_area.collidepoint(mouse_pos):
+                self.request_scene("team")
+                return
