@@ -3,7 +3,7 @@
     {
       "slime_id": "glimmer_1",
       "name": "Glimmer 1",
-      "team": "racing",
+      "team": "dungeon",
       "locked": false,
       "alive": true,
       "genome": {
@@ -108,7 +108,7 @@
     {
       "slime_id": "ember_4",
       "name": "Ember 4",
-      "team": "unassigned",
+      "team": "dungeon",
       "locked": false,
       "alive": true,
       "genome": {
