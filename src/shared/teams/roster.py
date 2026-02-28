@@ -197,6 +197,143 @@ class RosterSlime:
             breeding_lock_level=creature.breeding_lock_level,
             current_hp=creature.current_hp
         )
+
+# Extend Roster class with legacy methods
+@dataclass
+class Roster:
+    """Team composition reference layer - points to Creatures in Garden"""
+    entries: list[RosterEntry] = field(default_factory=list)
+    teams: dict[TeamRole, Team] = field(default_factory=lambda: {
+        TeamRole.DUNGEON: Team(role=TeamRole.DUNGEON, slots=4),
+        TeamRole.RACING:  Team(role=TeamRole.RACING,  slots=1),
+    })
+    
+    # Reference to Garden for creature lookups
+    _garden_ref: Optional[object] = None  # Will be set by GardenState
+    
+    def set_garden_reference(self, garden_state):
+        """Set reference to GardenState for creature lookups"""
+        self._garden_ref = garden_state
+    
+    def get_creature(self, slime_id: str):
+        """Get creature from Garden by slime_id"""
+        if self._garden_ref:
+            return self._garden_ref.get_creature(slime_id)
+        return None
+    
+    def add_creature(self, slime_id: str):
+        """Add creature reference to roster"""
+        # Check if already exists
+        for entry in self.entries:
+            if entry.slime_id == slime_id:
+                return  # Already in roster
+        
+        entry = RosterEntry(slime_id=slime_id)
+        self.entries.append(entry)
+    
+    def remove_creature(self, slime_id: str) -> bool:
+        """Remove creature reference from roster"""
+        for i, entry in enumerate(self.entries):
+            if entry.slime_id == slime_id:
+                if not entry.locked:
+                    # Remove from any team first
+                    self.teams[entry.team].remove(slime_id)
+                    del self.entries[i]
+                    return True
+        return False
+    
+    def get_dungeon_team(self) -> Team:
+        """Get dungeon team with creature references"""
+        return self.teams[TeamRole.DUNGEON]
+    
+    def get_racing_team(self) -> Team:
+        """Get racing team with creature references"""
+        return self.teams[TeamRole.RACING]
+    
+    def unassigned(self) -> list[str]:
+        """Get slime_ids of unassigned creatures"""
+        assigned_ids = set(entry.slime_id for entry in self.entries 
+                         if entry.team != TeamRole.UNASSIGNED)
+        all_ids = set(entry.slime_id for entry in self.entries)
+        return list(all_ids - assigned_ids)
+    
+    def get_team_creatures(self, role: TeamRole) -> list:
+        """Get actual Creature objects for a team"""
+        team = self.teams.get(role)
+        if not team or not self._garden_ref:
+            return []
+        
+        creatures = []
+        for entry in team.members:
+            creature = self.get_creature(entry.slime_id)
+            if creature:
+                creatures.append(creature)
+        return creatures
+    
+    def to_dict(self) -> dict:
+        """Serialize roster references (not full creature data)"""
+        return {
+            "entries": [
+                {
+                    "slime_id": entry.slime_id,
+                    "team": entry.team.value,
+                    "locked": entry.locked
+                }
+                for entry in self.entries
+            ]
+        }
+    
+    @classmethod
+    def from_dict(cls, data: dict) -> "Roster":
+        """Restore roster references"""
+        roster = cls()
+        for e_data in data.get("entries", []):
+            entry = RosterEntry(
+                slime_id=e_data["slime_id"],
+                team=TeamRole(e_data["team"]),
+                locked=e_data.get("locked", False)
+            )
+            roster.entries.append(entry)
+            
+            # Add to appropriate team
+            if entry.team != TeamRole.UNASSIGNED:
+                roster.teams[entry.team].members.append(entry)
+        
+        return roster
+
+    # === Legacy compatibility methods (deprecated) ===
+    @property
+    def slimes(self) -> list[RosterSlime]:
+        """Legacy compatibility - convert entries to RosterSlime objects"""
+        roster_slimes = []
+        for entry in self.entries:
+            creature = self.get_creature(entry.slime_id)
+            if creature:
+                roster_slime = RosterSlime.from_creature(
+                    creature, 
+                    team=entry.team, 
+                    locked=entry.locked
+                )
+                roster_slimes.append(roster_slime)
+        return roster_slimes
+    
+    def add_slime(self, slime: RosterSlime):
+        """Legacy compatibility - convert RosterSlime to entry"""
+        # Add creature reference if not exists
+        self.add_creature(slime.slime_id)
+        
+        # Update team assignment
+        for entry in self.entries:
+            if entry.slime_id == slime.slime_id:
+                entry.team = slime.team
+                entry.locked = slime.locked
+                # Add to team if not unassigned
+                if slime.team != TeamRole.UNASSIGNED:
+                    if slime.team not in self.teams:
+                        self.teams[slime.team] = Team(role=slime.team)
+                    if entry not in self.teams[slime.team].members:
+                        self.teams[slime.team].members.append(entry)
+                break
     
     def add_slime(self, slime: RosterSlime):
         self.slimes.append(slime)
