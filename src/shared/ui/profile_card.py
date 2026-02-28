@@ -28,6 +28,12 @@ class ProfileCard(UIComponent):
     def update(self, dt_ms: int) -> None:
         pass
     
+    def update(self, dt_ms: int):
+        """No periodic updates needed for the card itself."""
+        # Note: We don't need to manually update children if the scene manager or parent does it,
+        # but UIComponent might expect it. StatsPanel doesn't use update anyway.
+        pass
+
     def render(self, surface: pygame.Surface):
         x, y = self.position
         
