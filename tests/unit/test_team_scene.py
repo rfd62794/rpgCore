@@ -4,6 +4,7 @@ from unittest.mock import MagicMock
 from src.apps.slime_breeder.scenes.team_scene import TeamScene
 from src.shared.teams.roster import RosterSlime, TeamRole, Team
 from src.shared.genetics.genome import SlimeGenome
+from src.shared.ui.spec import SPEC_720
 
 @pytest.fixture
 def mock_manager():
@@ -31,7 +32,7 @@ def test_team_scene_initialization(mock_manager, sample_roster, monkeypatch):
     monkeypatch.setattr("src.apps.slime_breeder.scenes.team_scene.load_roster", lambda: sample_roster)
     monkeypatch.setattr("src.apps.slime_breeder.scenes.team_scene.save_roster", lambda r: None)
     
-    scene = TeamScene(mock_manager)
+    scene = TeamScene(mock_manager, SPEC_720)
     scene.on_enter()
     
     assert scene.roster == sample_roster
@@ -42,7 +43,7 @@ def test_team_scene_assign_slime(mock_manager, sample_roster, monkeypatch):
     monkeypatch.setattr("src.apps.slime_breeder.scenes.team_scene.load_roster", lambda: sample_roster)
     monkeypatch.setattr("src.apps.slime_breeder.scenes.team_scene.save_roster", MagicMock())
     
-    scene = TeamScene(mock_manager)
+    scene = TeamScene(mock_manager, SPEC_720)
     scene.on_enter()
     
     slime = sample_roster.slimes[0]

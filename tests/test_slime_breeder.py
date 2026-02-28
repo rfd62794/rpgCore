@@ -72,12 +72,14 @@ def test_garden_scene_initializes(monkeypatch):
     monkeypatch.setattr("src.apps.slime_breeder.ui.scene_garden.save_roster", lambda r: None)
     
     from src.apps.slime_breeder.ui.scene_garden import GardenScene
+    from src.shared.ui.spec import SPEC_720
+    
     # Mock manager
     class MockManager:
         def __init__(self):
             self.width = 1024
             self.height = 768
-    scene = GardenScene(MockManager())
+    scene = GardenScene(MockManager(), SPEC_720)
     # SceneManager calls initialize which calls on_enter
     scene.initialize()
     # Should have exactly 1 slime (added during on_enter since roster was empty)
