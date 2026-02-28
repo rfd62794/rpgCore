@@ -144,8 +144,34 @@ class DungeonCombatScene(CombatSceneBase):
         self.btn_attack.enabled = can_act
         self.btn_flee.enabled = can_act
         
-        if self.active_actor_id and self.active_actor_id.startswith("slime"):
+        if self.active_actor_id and self.active_actor_id.startswith("enemy_"):
             self._enemy_turn()
+
+    def handle_event(self, event: pygame.event.Event) -> None:
+        super().handle_event(event) # Handle action buttons
+        
+        if event.type == pygame.MOUSEBUTTONDOWN:
+            mouse_pos = pygame.mouse.get_pos()
+            # Check for clicking on enemy/party slots to set target
+            slot_h = (self.party_rect.height // 5) - self.spec.margin_sm
+            
+            # Party slots (LHS)
+            for i in range(5):
+                slot_rect = pygame.Rect(self.party_rect.x, self.party_rect.y + i*(slot_h + self.spec.margin_sm), self.party_rect.width, slot_h)
+                if slot_rect.collidepoint(mouse_pos):
+                    if self.party[i]: 
+                        self.target_actor_id = self.party[i].id
+                        self.add_log(f"Targeting {self.party[i].name}")
+                        return
+                    
+            # Enemy slots (RHS)
+            for i in range(5):
+                slot_rect = pygame.Rect(self.enemy_rect.x, self.enemy_rect.y + i*(slot_h + self.spec.margin_sm), self.enemy_rect.width, slot_h)
+                if slot_rect.collidepoint(mouse_pos):
+                    if self.enemies[i]:
+                        self.target_actor_id = self.enemies[i].id
+                        self.add_log(f"Targeting {self.enemies[i].name}")
+                        return
 
     def _draw_unit_slot(self, surface: pygame.Surface, x: int, y: int, w: int, h: int, entity: Optional[DungeonUnit], side: str):
         super()._draw_unit_slot(surface, x, y, w, h, entity, side)
@@ -162,10 +188,17 @@ class DungeonCombatScene(CombatSceneBase):
         attacker = next((u for u in self.party if u and u.id == self.active_actor_id), None)
         if not attacker: return
 
-        # Pick first alive enemy
-        target = next((e for e in self.enemies if e and e.stats["hp"] > 0), None)
+        # Use explicitly selected target or fallback to first alive enemy
+        target = None
+        if self.target_actor_id:
+            target = next((e for e in self.enemies if e and e.id == self.target_actor_id and e.stats["hp"] > 0), None)
+            
+        if not target:
+            target = next((e for e in self.enemies if e and e.stats["hp"] > 0), None)
+            
         if not target: return
         
+        self.target_actor_id = target.id # Stick to chosen target
         atk_mod = attacker.stats["attack"]
         resolver = D20Resolver()
         roll_res = resolver.ability_check(modifier=atk_mod, difficulty_class=10 + target.stats["defense"])
