@@ -140,12 +140,14 @@ class ProfileCard(UIComponent):
 
 # --- Local Rendering Helpers ---
 
-def render_text(surface, text, pos, size=14, color=(255, 255, 255), bold=False):
+def render_text(surface, text, pos, size=14, color=(255, 255, 255), bold=False, center=False):
     try:
         font = pygame.font.Font(None, size)
         if bold:
             font.set_bold(True)
         img = font.render(text, True, color)
+        if center:
+            pos = (pos[0] - img.get_width() // 2, pos[1] - img.get_height() // 2)
         surface.blit(img, pos)
     except:
         pass
