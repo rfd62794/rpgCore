@@ -58,7 +58,8 @@ def test_turn_order_advances_after_action(mock_session, manager):
 def test_hp_bar_updates_on_damage(mock_session, manager):
     pygame.init()
     scene = DungeonCombatScene(manager, SPEC_720, session=mock_session)
-    scene.on_enter(session=mock_session, enemy_entity=MagicMock())
+    scene.on_enter()
+    scene.on_combat_enter(session=mock_session, enemy_entity=MagicMock())
     
     enemy = scene.enemies[0]
     initial_hp = enemy.stats["hp"]
@@ -69,7 +70,8 @@ def test_hp_bar_updates_on_damage(mock_session, manager):
 def test_flee_returns_to_exploration(mock_session, manager):
     pygame.init()
     scene = DungeonCombatScene(manager, SPEC_720, session=mock_session)
-    scene.on_enter(session=mock_session, enemy_entity=MagicMock())
+    scene.on_enter()
+    scene.on_combat_enter(session=mock_session, enemy_entity=MagicMock())
     
     with patch.object(scene, 'request_scene') as mock_request:
         scene._handle_flee()
@@ -79,7 +81,8 @@ def test_flee_returns_to_exploration(mock_session, manager):
 def test_combat_victory_triggers_on_last_enemy_defeat(mock_session, manager):
     pygame.init()
     scene = DungeonCombatScene(manager, SPEC_720, session=mock_session)
-    scene.on_enter(session=mock_session, enemy_entity=MagicMock())
+    scene.on_enter()
+    scene.on_combat_enter(session=mock_session, enemy_entity=MagicMock())
     
     enemy = scene.enemies[0]
     enemy.stats["hp"] = 0
