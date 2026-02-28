@@ -491,22 +491,22 @@ class TowerDefenseScene(Scene):
         self.score_label.set_text(f"Score: {self.session.score}")
         
         # Draw labels
-        self.wave_label.render(surface, (10, 10))
-        self.gold_label.render(surface, (150, 10))
-        self.lives_label.render(surface, (300, 10))
-        self.score_label.render(surface, (450, 10))
+        self.wave_label.render(surface)
+        self.gold_label.render(surface)
+        self.lives_label.render(surface)
+        self.score_label.render(surface)
         
         # Draw buttons
         if not self.session.game_active:
-            self.start_button.render(surface, (10, 30))
+            self.start_button.render(surface)
         else:
-            self.pause_button.render(surface, (10, 30))
-        self.menu_button.render(surface, (100, 30))
+            self.pause_button.render(surface)
+        self.menu_button.render(surface)
         
         # Draw game state
         if self.session.game_paused:
-            pause_text = Label("PAUSED", self.spec.color_text, 24)
-            pause_text.render(surface, (self.spec.screen_width // 2 - 50, 30))
+            pause_text = Label("PAUSED", (self.spec.screen_width // 2 - 50, 30), self.spec, "md", self.spec.color_text)
+            pause_text.render(surface)
         
         # Draw game over
         if self.session.game_over:
@@ -580,26 +580,28 @@ class TowerDefenseScene(Scene):
                        self.spec.color_surface)
         
         # Draw title
-        title = Label("GAME OVER", self.spec.color_text, 32)
-        title.render(surface, (self.spec.screen_width // 2 - 100, self.spec.screen_height // 2 - 80))
+        title = Label("GAME OVER", (self.spec.screen_width // 2 - 100, self.spec.screen_height // 2 - 80), self.spec, "md", self.spec.color_text)
+        title.render(surface)
         
         # Draw result
         result_text = "VICTORY" if self.session.victory else "DEFEAT"
-        result_label = Label(result_text, 
-                           self.spec.color_success if self.session.victory else self.spec.color_danger, 24)
-        result_label.render(surface, (self.spec.screen_width // 2 - 100, self.spec.screen_height // 2 - 40))
+        result_label = Label(result_text, (self.spec.screen_width // 2 - 100, self.spec.screen_height // 2 - 40), self.spec, "md", 
+                           self.spec.color_success if self.session.victory else self.spec.color_danger)
+        result_label.render(surface)
         
         # Draw statistics
         stats = self.session.get_statistics()
         stats_text = f"Waves: {stats['completed_waves']} | Killed: {stats['enemies_killed']} | Score: {stats['final_score']}"
-        stats_label = Label(stats_text, self.spec.color_text, 16)
-        stats_label.render(surface, (self.spec.screen_width // 2 - 180, self.spec.screen_height // 2))
+        stats_label = Label(stats_text, (self.spec.screen_width // 2 - 180, self.spec.screen_height // 2), self.spec, "md", self.spec.color_text)
+        stats_label.render(surface)
         
         # Draw menu button
-        self.menu_button.render(surface, (self.spec.screen_width // 2 - 50, self.spec.screen_height - 50))
+        self.menu_button.rect.x = self.spec.screen_width // 2 - 50
+        self.menu_button.rect.y = self.spec.screen_height - 50
+        self.menu_button.render(surface)
         
         # Draw achievements
         if stats['achievements']:
             achievements_text = "Achievements: " + ", ".join(stats['achievements'][:3])
-            achievements_label = Label(achievements_text, self.spec.color_text, 14)
-            achievements_label.render(surface, (self.spec.screen_width // 2 - 180, self.spec.screen_height // 2 + 20))
+            achievements_label = Label(achievements_text, (self.spec.screen_width // 2 - 180, self.spec.screen_height // 2 + 20), self.spec, "md", self.spec.color_text)
+            achievements_label.render(surface)
