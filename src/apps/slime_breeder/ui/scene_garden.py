@@ -31,7 +31,8 @@ class GardenScene(GardenSceneBase):
         race_result = self._kwargs.get('race_result')
         
         if run_result:
-            self._show_banner(f"Run complete — Floor {run_result.floors_cleared}", self.spec.color_success)
+            floors = run_result.get('floors_cleared', 1) if isinstance(run_result, dict) else 1
+            self._show_banner(f"Run complete — Floor {floors}", self.spec.color_success)
         elif race_result:
             self._show_banner(f"Race finished — {race_result['position']} place", self.spec.color_success)
             

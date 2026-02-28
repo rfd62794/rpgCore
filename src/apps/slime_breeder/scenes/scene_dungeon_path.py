@@ -188,7 +188,7 @@ class DungeonPathScene(Scene):
         self._handle_combat() # Reuses combat for now
 
     def _on_complete(self):
-        self.manager.switch_to("garden", run_result="Success")
+        self.manager.switch_to("garden", run_result={"floors_cleared": getattr(self.track, 'depth', 1)})
 
     def _retreat(self):
         self.manager.switch_to("garden", message="Team retreated from the dungeon")
