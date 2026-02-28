@@ -38,10 +38,31 @@ class DungeonCombatScene(CombatSceneBase):
         hero = self.session.hero
         self.party[0] = DungeonUnit("hero", hero.name, hero.stats, "party", hero)
         
-        enemy_data = kwargs.get("enemy_entity")
-        enemy_name = getattr(enemy_data, "name", "Giant Slime")
-        enemy_stats = {"hp": 20, "max_hp": 20, "attack": 4, "defense": 2, "speed": 5, "stance": "Aggressive"}
-        self.enemies[0] = DungeonUnit("slime_0", enemy_name, enemy_stats, "enemy", enemy_data)
+        # FIX 4: Use passed enemies from kwargs
+        enemy_list = kwargs.get("enemies", [])
+        if not enemy_list:
+            # Fallback
+            enemy_list = [{
+                "id": "slime_0", 
+                "name": "Wild Slime", 
+                "stats": {"hp":20, "max_hp":20, "attack":4, "defense":2, "speed":5, "stance":"Aggressive"}
+            }]
+            
+        for i, edata in enumerate(enemy_list):
+            if i >= 4: break
+            # Setup visuals
+            from src.shared.genetics import generate_random
+            genome = edata.get("genome") or generate_random()
+            
+            class MockEnemy:
+                def __init__(self, g):
+                    self.genome = g
+                    class Kinematics:
+                        def __init__(self): self.position = pygame.Vector2(0,0)
+                    self.kinematics = Kinematics()
+            
+            mock_enemy = MockEnemy(genome)
+            self.enemies[i] = DungeonUnit(edata["id"], edata["name"], edata["stats"], "enemy", mock_enemy)
         
         # 2. Setup Party Slimes
         for i, slime in enumerate(self.session.party_slimes):
@@ -76,7 +97,10 @@ class DungeonCombatScene(CombatSceneBase):
         for unit in self.party:
             if unit and unit.id != "hero":
                 self.session.turn_manager.add_combatant(unit.id, unit.stats["speed"])
-        self.session.turn_manager.add_combatant("slime_0", 5)
+        
+        for unit in self.enemies:
+            if unit:
+                self.session.turn_manager.add_combatant(unit.id, unit.stats["speed"])
         
         self.add_log("Combat started!")
         self._next_turn()
@@ -137,8 +161,9 @@ class DungeonCombatScene(CombatSceneBase):
         attacker = next((u for u in self.party if u and u.id == self.active_actor_id), None)
         if not attacker: return
 
-        target = self.enemies[0]
-        if not target or target.stats["hp"] <= 0: return
+        # Pick first alive enemy
+        target = next((e for e in self.enemies if e and e.stats["hp"] > 0), None)
+        if not target: return
         
         atk_mod = attacker.stats["attack"]
         resolver = D20Resolver()
@@ -155,11 +180,21 @@ class DungeonCombatScene(CombatSceneBase):
             
         if target.stats["hp"] <= 0:
             target.stats["hp"] = 0
-            self._handle_victory()
+            # Check if all enemies defeated
+            if all(not e or e.stats["hp"] <= 0 for e in self.enemies):
+                self._handle_victory()
+            else:
+                self.add_log(f"{target.name} defeated!")
+                self._next_turn()
         else:
             self._next_turn()
 
     def _enemy_turn(self):
+        attacker = next((u for u in self.enemies if u and u.id == self.active_actor_id), None)
+        if not attacker: 
+            self._next_turn()
+            return
+
         valid_targets = [u for u in self.party if u and u.stats["hp"] > 0]
         if not valid_targets: return
         
@@ -170,9 +205,9 @@ class DungeonCombatScene(CombatSceneBase):
         roll_res = resolver.ability_check(modifier=3, difficulty_class=10 + target.stats["defense"])
         
         if roll_res.success:
-            damage = 4
+            damage = attacker.stats["attack"] + 1
             target.stats["hp"] -= damage
-            self.add_log(f"Slime HITS {target.name} for {damage}!")
+            self.add_log(f"{attacker.name} HITS {target.name} for {damage}!")
             self.trigger_flash((200, 0, 0))
         else:
             self.add_log("Slime MISSES!")
@@ -193,16 +228,22 @@ class DungeonCombatScene(CombatSceneBase):
     def _handle_victory(self):
         self.add_log("Victory!")
         self._sync_back_hp()
+        if self.session:
+            self.session.last_combat_result = "victory"
         self.manager.pop(combat_result="victory")
 
     def _handle_defeat(self):
         self.add_log("Hero has fallen...")
-        self.session.end_run(cause="Killed in combat")
-        self.manager.switch_to("garden", message="Team defeated in combat")
+        if self.session:
+            self.session.end_run(cause="Killed in combat")
+            self.session.last_combat_result = "defeat"
+        self.manager.pop(combat_result="defeat")
 
     def _handle_flee(self):
         self.add_log("Fleeing...")
         self._sync_back_hp()
+        if self.session:
+            self.session.last_combat_result = "flee"
         self.manager.pop(combat_result="flee")
 
     def _sync_back_hp(self):

@@ -50,6 +50,23 @@ class DungeonPathScene(Scene):
         # Visual Constants
         self.track_height_ratio = 0.4
         self.track_rect = self._get_track_rect()
+        
+        # FIX 2: Pre-generate enemy positions to avoid jitter
+        self._zone_enemy_positions = {}
+        self._generate_zone_visuals()
+
+    def _generate_zone_visuals(self):
+        for zone in self.track.zones:
+            if zone.zone_type in [DungeonZoneType.COMBAT, DungeonZoneType.BOSS]:
+                count = 3 if zone.zone_type == DungeonZoneType.COMBAT else 1
+                positions = []
+                for i in range(count):
+                    positions.append({
+                        'offset_x': (i - 1) * 25,
+                        'offset_y': random.choice([-15, 0, 15]),
+                        'size': 14 if zone.zone_type == DungeonZoneType.COMBAT else 30
+                    })
+                self._zone_enemy_positions[id(zone)] = positions
 
     def _setup_ui(self):
         self.ui_components = []
@@ -67,9 +84,20 @@ class DungeonPathScene(Scene):
         # Team Status Bar (Bottom)
         Panel(self.layout.team_bar, self.spec, variant="surface").add_to(self.ui_components)
 
-    def on_enter(self) -> None:
+    def on_enter(self, **kwargs) -> None:
         self.camera.x = 0.0
         self.camera.zoom_x = 1.0
+
+    def on_resume(self, **kwargs) -> None:
+        """Called when returning from combat or other pushed scenes."""
+        result = kwargs.get('combat_result')
+        if not result and self.session:
+            result = getattr(self.session, 'last_combat_result', None)
+            
+        if result == "victory" or result == "flee":
+            self.engine.resume()
+        elif result == "defeat":
+            self._retreat()
 
     def handle_event(self, event: pygame.event.Event) -> None:
         for comp in reversed(self.ui_components):
@@ -106,15 +134,47 @@ class DungeonPathScene(Scene):
             self._on_complete()
 
     def _handle_combat(self):
-        # Pause logic is handled by engine. Tick returns event once.
+        # Generate enemies based on zone type and depth
+        enemies = self._generate_enemy_group(
+            self.engine.party.current_zone, 
+            depth=getattr(self.track, 'depth', 1)
+        )
+        
         # Push to combat scene
         self.manager.push("dungeon_combat", 
                           session=self.session, 
                           party_slimes=self.team,
-                          on_complete=self._on_encounter_resolved)
+                          enemies=enemies)
+
+    def _generate_enemy_group(self, zone, depth: int) -> List[dict]:
+        """Creates a list of enemy data dicts for the combat scene."""
+        enemies = []
+        count = 1 if zone.zone_type == DungeonZoneType.BOSS else random.randint(1, 3)
+        name_prefix = "Boss" if zone.zone_type == DungeonZoneType.BOSS else "Wild"
+        
+        for i in range(count):
+            hp = 15 + depth * 5
+            if zone.zone_type == DungeonZoneType.BOSS:
+                hp *= 3
+                
+            enemies.append({
+                "id": f"enemy_{i}",
+                "name": f"{name_prefix} Slime {i+1}" if count > 1 else f"{name_prefix} Slime",
+                "stats": {
+                    "hp": hp,
+                    "max_hp": hp,
+                    "attack": 3 + depth,
+                    "defense": 1 + depth // 2,
+                    "speed": 4 + random.randint(0, 2),
+                    "stance": "Aggressive"
+                },
+                "genome": None # Could generate random genome for visuals
+            })
+        return enemies
 
     def _on_encounter_resolved(self, result=None):
-        self.engine.resume()
+        # No longer used, handled by on_resume
+        pass
 
     def _handle_rest(self):
         # Simple animation/delay and resume for now
@@ -211,13 +271,12 @@ class DungeonPathScene(Scene):
                 if not zone.resolved:
                     zone_center_x = self.camera.to_screen_x((zone.start_dist + zone.end_dist) / 2, 0)
                     if zone.zone_type in [DungeonZoneType.COMBAT, DungeonZoneType.BOSS]:
-                        # Enemy Silhouettes
-                        count = 3 if zone.zone_type == DungeonZoneType.COMBAT else 1
-                        size = 14 if zone.zone_type == DungeonZoneType.COMBAT else 30
-                        for i in range(count):
-                            ex = zone_center_x + (i - 1) * 25
-                            ey = track_rect.centery + random.randint(-15, 15)
-                            pygame.draw.circle(surface, (30, 10, 10), (int(ex), int(ey)), size)
+                        # Stored Enemy Silhouettes (FIX 2)
+                        positions = self._zone_enemy_positions.get(id(zone), [])
+                        for pos in positions:
+                            ex = zone_center_x + pos['offset_x']
+                            ey = track_rect.centery + pos['offset_y']
+                            pygame.draw.circle(surface, (30, 10, 10), (int(ex), int(ey)), pos['size'])
                             pygame.draw.circle(surface, (200, 20, 20), (int(ex-4), int(ey-4)), 3)
                             pygame.draw.circle(surface, (200, 20, 20), (int(ex+4), int(ey-4)), 3)
                 else:
@@ -239,15 +298,16 @@ class DungeonPathScene(Scene):
         px = self.camera.to_screen_x(self.engine.party.distance, 0)
         py = track_rect.centery
         
-        # Cluster of slime portraits for party
-        for i, slime in enumerate(self.team[:4]):
-            ox = (i % 2) * 24 - 12
-            oy = (i // 2) * 24 - 12
-            
+        # FIX 3: Vertical Squad Formation
+        SLIME_SPACING = 28
+        total_h = len(self.team[:5]) * SLIME_SPACING
+        start_y = py - total_h // 2 + SLIME_SPACING // 2
+        
+        for i, slime in enumerate(self.team[:5]):
+            sy = start_y + i * SLIME_SPACING
             # Use SlimeRenderer or similar for visuals
-            # For path, we just draw small slimes
             from src.apps.slime_breeder.entities.slime import Slime
-            dummy = Slime(slime.name, slime.genome, (px + ox, py + oy))
+            dummy = Slime(slime.name, slime.genome, (px, sy))
             self.renderer.render(surface, dummy)
 
         # Pause Indicator
