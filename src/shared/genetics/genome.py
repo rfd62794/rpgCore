@@ -50,7 +50,7 @@ def calculate_race_stats(genome) -> dict:
     jump_force = 50.0 * (1.0 + strength * 0.3)
     jump_distance = (jump_force / mass) * body_size
     jump_cooldown = 0.2 + (mass * 0.4) * (1.0 - strength * 0.2)
-    jump_height = (jump_force / mass) * 14  # Reduced from 18 to 14px max
+    jump_height = 14  # Fixed 14px max for subtle bounce
     
     return {
         "mass": mass,
