@@ -355,7 +355,20 @@ class Roster:
                     entry._team_ref = roster.teams[entry.team]
                     roster.teams[entry.team].members.append(entry)
         
+        # Set all back-references after loading
+        roster._set_back_references()
         return roster
+    
+    def _set_back_references(self):
+        """Set back-references after loading (called from from_dict)"""
+        # Set roster reference for teams
+        for team in self.teams.values():
+            team._roster_ref = self
+        
+        # Set team reference for entries (in case it wasn't set during loading)
+        for entry in self.entries:
+            if entry.team != TeamRole.UNASSIGNED and not hasattr(entry, '_team_ref'):
+                entry._team_ref = self.teams[entry.team]
 
     # === Legacy compatibility methods (deprecated) ===
     @property
