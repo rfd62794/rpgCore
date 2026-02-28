@@ -20,11 +20,13 @@ class ProfileCard(UIComponent):
         self.HEIGHT = spec.card_height
         self.PADDING = spec.padding_sm
         
-        # Calculate inner dimensions - account for stats panel on right
+        # Calculate inner dimensions - right-anchored stats panel
         self.CARD_INNER_WIDTH = self.WIDTH - (self.PADDING * 2)
         self.PORTRAIT_SIZE = 60
         self.STATS_PANEL_WIDTH = 100  # Stats panel width
-        self.TEXT_AREA_WIDTH = self.CARD_INNER_WIDTH - self.PORTRAIT_SIZE - self.STATS_PANEL_WIDTH - (self.PADDING * 2)
+        # Left content area: card width minus stats panel minus padding
+        self.LEFT_CONTENT_MAX_X = self.WIDTH - self.STATS_PANEL_WIDTH - (self.PADDING * 2)
+        self.TEXT_AREA_WIDTH = self.LEFT_CONTENT_MAX_X - self.PORTRAIT_SIZE - (self.PADDING * 2)
         
         rect = pygame.Rect(position[0], position[1], self.WIDTH, self.HEIGHT)
         super().__init__(rect)
@@ -113,8 +115,9 @@ class ProfileCard(UIComponent):
         render_badge(surface, self.slime.genome.cultural_base.value.upper(),
                     (text_x + 70, y + 60), culture_color)
         
-        # Stats panel positioned just past the text content area
-        stats_x = x + self.PADDING + self.PORTRAIT_SIZE + self.PADDING + self.TEXT_AREA_WIDTH + self.PADDING
+        # Stats panel anchored to RIGHT edge of card
+        card_rect = pygame.Rect(x, y, self.WIDTH, self.HEIGHT)
+        stats_x = card_rect.right - self.PADDING - self.STATS_PANEL_WIDTH
         stats_y = y + 12  # Align with name
         self.stats_panel.position = (stats_x, stats_y)
         self.stats_panel.render(surface)
