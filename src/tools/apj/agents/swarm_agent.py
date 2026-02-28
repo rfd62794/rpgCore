@@ -250,16 +250,9 @@ Use the SwarmTaskAssignment schema for structured output.
         agent = self.swarm_agents[agent_type]
         
         try:
-            # Use the agent's model and prompt system
-            if hasattr(agent, '_agent') and agent._agent:
-                # Use pydantic_ai Agent
-                import asyncio
-                response = asyncio.run(agent._agent.run(prompt))
-                return response.data if hasattr(response, 'data') else response
-            else:
-                # Use direct model call
-                response = agent.model_name.run(prompt)
-                return response
+            # Use BaseAgent.run() method with the prompt
+            result = agent.run(prompt)
+            return result
                 
         except Exception as e:
             logger.error(f"Error calling {agent_type}: {e}")
