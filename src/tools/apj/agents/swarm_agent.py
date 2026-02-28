@@ -38,9 +38,17 @@ class SwarmCoordinator(BaseAgent):
                 "model_preference": "local",
                 "prompts": {
                     "system": "docs/agents/prompts/coordinator_system.md",
-                    "fewshot": "docs/agents/prompts/coordinator_fewshot.md"
+                    "fewshot": "docs/agents/prompts/generic_system.md"
                 },
-                "schema": "SwarmTaskAssignment"
+                "schema_name": "SwarmTaskAssignment",
+                "fallback": {
+                    "recommended": {
+                        "label": "FALLBACK",
+                        "title": "Use single agent analysis",
+                        "rationale": "Swarm coordination failed",
+                        "risk": "low"
+                    }
+                }
             },
             "analyzer": {
                 "name": "swarm_analyzer",
@@ -49,9 +57,17 @@ class SwarmCoordinator(BaseAgent):
                 "model_preference": "local",
                 "prompts": {
                     "system": "docs/agents/prompts/analyzer_system.md",
-                    "fewshot": "docs/agents/prompts/analyzer_fewshot.md"
+                    "fewshot": "docs/agents/prompts/generic_system.md"
                 },
-                "schema": "AnalysisReport"
+                "schema_name": "AnalysisReport",
+                "fallback": {
+                    "recommended": {
+                        "label": "FALLBACK",
+                        "title": "Manual analysis",
+                        "rationale": "Agent analysis failed",
+                        "risk": "low"
+                    }
+                }
             },
             "planner": {
                 "name": "swarm_planner",
@@ -59,10 +75,18 @@ class SwarmCoordinator(BaseAgent):
                 "department": "planning",
                 "model_preference": "local",
                 "prompts": {
-                    "system": "docs/agents/prompts/planner_system.md",
-                    "fewshot": "docs/agents/prompts/planner_fewshot.md"
+                    "system": "docs/agents/prompts/generic_system.md",
+                    "fewshot": "docs/agents/prompts/generic_system.md"
                 },
-                "schema": "ImplementationPlan"
+                "schema_name": "ImplementationPlan",
+                "fallback": {
+                    "recommended": {
+                        "label": "FALLBACK",
+                        "title": "Manual planning",
+                        "rationale": "Agent planning failed",
+                        "risk": "low"
+                    }
+                }
             },
             "coder": {
                 "name": "swarm_coder",
@@ -70,10 +94,18 @@ class SwarmCoordinator(BaseAgent):
                 "department": "execution",
                 "model_preference": "local",
                 "prompts": {
-                    "system": "docs/agents/prompts/coder_system.md",
-                    "fewshot": "docs/agents/prompts/coder_fewshot.md"
+                    "system": "docs/agents/prompts/generic_system.md",
+                    "fewshot": "docs/agents/prompts/generic_system.md"
                 },
-                "schema": "CodeChanges"
+                "schema_name": "CodeChanges",
+                "fallback": {
+                    "recommended": {
+                        "label": "FALLBACK",
+                        "title": "Manual coding",
+                        "rationale": "Agent coding failed",
+                        "risk": "low"
+                    }
+                }
             },
             "tester": {
                 "name": "swarm_tester",
@@ -81,10 +113,18 @@ class SwarmCoordinator(BaseAgent):
                 "department": "execution",
                 "model_preference": "local",
                 "prompts": {
-                    "system": "docs/agents/prompts/tester_system.md",
-                    "fewshot": "docs/agents/prompts/tester_fewshot.md"
+                    "system": "docs/agents/prompts/generic_system.md",
+                    "fewshot": "docs/agents/prompts/generic_system.md"
                 },
-                "schema": "TestResults"
+                "schema_name": "TestResults",
+                "fallback": {
+                    "recommended": {
+                        "label": "FALLBACK",
+                        "title": "Manual testing",
+                        "rationale": "Agent testing failed",
+                        "risk": "low"
+                    }
+                }
             },
             "reviewer": {
                 "name": "swarm_reviewer",
@@ -92,10 +132,18 @@ class SwarmCoordinator(BaseAgent):
                 "department": "analysis",
                 "model_preference": "local",
                 "prompts": {
-                    "system": "docs/agents/prompts/reviewer_system.md",
-                    "fewshot": "docs/agents/prompts/reviewer_fewshot.md"
+                    "system": "docs/agents/prompts/generic_system.md",
+                    "fewshot": "docs/agents/prompts/generic_system.md"
                 },
-                "schema": "ReviewReport"
+                "schema_name": "ReviewReport",
+                "fallback": {
+                    "recommended": {
+                        "label": "FALLBACK",
+                        "title": "Manual review",
+                        "rationale": "Agent review failed",
+                        "risk": "low"
+                    }
+                }
             },
             "executor": {
                 "name": "swarm_executor",
@@ -103,10 +151,18 @@ class SwarmCoordinator(BaseAgent):
                 "department": "execution",
                 "model_preference": "local",
                 "prompts": {
-                    "system": "docs/agents/prompts/executor_system.md",
-                    "fewshot": "docs/agents/prompts/executor_fewshot.md"
+                    "system": "docs/agents/prompts/generic_system.md",
+                    "fewshot": "docs/agents/prompts/generic_system.md"
                 },
-                "schema": "ExecutionReport"
+                "schema_name": "ExecutionReport",
+                "fallback": {
+                    "recommended": {
+                        "label": "FALLBACK",
+                        "title": "Manual execution",
+                        "rationale": "Agent execution failed",
+                        "risk": "low"
+                    }
+                }
             }
         }
         
@@ -137,9 +193,17 @@ class SwarmCoordinator(BaseAgent):
             model_preference="local",
             prompts={
                 "system": "docs/agents/prompts/generic_system.md",
-                "fewshot": "docs/agents/prompts/generic_fewshot.md"
+                "fewshot": "docs/agents/prompts/generic_system.md"
             },
-            schema="GenericResponse"
+            schema_name="GenericResponse",
+            fallback={
+                "recommended": {
+                    "label": "FALLBACK",
+                    "title": "Manual fallback",
+                    "rationale": "Agent system failed",
+                    "risk": "low"
+                }
+            }
         )
         
         return BaseAgent(fallback_config)
