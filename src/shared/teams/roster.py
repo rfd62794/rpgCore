@@ -23,6 +23,17 @@ class RosterSlime:
     level: int = 1
     experience: int = 0
     breeding_lock_level: int = 0 # Cannot breed if level <= breeding_lock_level
+    current_hp: float = -1.0
+    
+    def __post_init__(self):
+        if self.current_hp < 0:
+            from src.shared.teams.stat_calculator import calculate_hp
+            self.current_hp = float(calculate_hp(self.genome, self.level))
+    
+    @property
+    def max_hp(self) -> int:
+        from src.shared.teams.stat_calculator import calculate_hp
+        return calculate_hp(self.genome, self.level)
     
     @property
     def is_elder(self) -> bool:
@@ -129,7 +140,8 @@ class Roster:
                     },
                     "level": s.level,
                     "experience": s.experience,
-                    "breeding_lock_level": s.breeding_lock_level
+                    "breeding_lock_level": s.breeding_lock_level,
+                    "current_hp": s.current_hp
                 }
                 for s in self.slimes
             ]
@@ -161,6 +173,7 @@ class Roster:
                 level=s.get("level", 1),
                 experience=s.get("experience", 0),
                 breeding_lock_level=s.get("breeding_lock_level", 0),
+                current_hp=s.get("current_hp", -1.0),
                 generation=s.get("generation", 1)
             )
             roster.slimes.append(rs)
