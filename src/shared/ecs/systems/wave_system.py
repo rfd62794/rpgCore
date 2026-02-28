@@ -72,7 +72,7 @@ class WaveSystem:
         # Set enemy stats based on wave difficulty
         hp = int(base_hp * self.wave_component.enemy_hp_multiplier)
         enemy.current_hp = hp
-        enemy.max_hp = hp
+        # max_hp is a calculated property, don't set it
         enemy.base_damage = int(base_damage * self.wave_component.enemy_speed_multiplier)
         enemy.kinematics.velocity = Vector2(base_speed * self.wave_component.enemy_speed_multiplier, 0)
         enemy.reward = int(10 * self.wave_component.enemy_reward_multiplier)
