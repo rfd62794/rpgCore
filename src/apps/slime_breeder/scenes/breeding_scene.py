@@ -171,7 +171,8 @@ class BreedingScene(Scene):
             name=self.offspring_name,
             genome=self.offspring_genome,
             team=TeamRole.UNASSIGNED,
-            level=start_level
+            level=start_level,
+            generation=self.offspring_genome.generation
         )
         self.roster.add_slime(self.offspring_slime)
         
