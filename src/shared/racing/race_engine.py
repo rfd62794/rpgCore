@@ -27,11 +27,9 @@ class RaceParticipant:
             self.velocity *= 0.9 # Slow down after finish
             return
             
-        # 1. Calculate Acceleration
-        # Base acceleration modified by terrain
-        terrain_mod = 1.0
-        if terrain == "water": terrain_mod = 0.5
-        elif terrain == "rock": terrain_mod = 0.4
+        # 1. Calculate Acceleration with terrain and cultural advantage
+        cultural_base = self.slime.genome.cultural_base.value
+        terrain_mod = get_terrain_speed_modifier(terrain, cultural_base)
         
         accel = self.acceleration_base * terrain_mod
         
