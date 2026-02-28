@@ -26,3 +26,9 @@ class UIComponent(ABC):
     def set_visible(self, v: bool) -> None:
         """Set component visibility."""
         self.visible = v
+
+    def add_to(self, container: list):
+        """Helper to add this component to a list and return self."""
+        if self not in container:
+            container.append(self)
+        return self
