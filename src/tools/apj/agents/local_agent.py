@@ -33,6 +33,16 @@ class AgentContext:
     technical_design: Dict            # Architecture decisions
     feature_spec: Dict                # What must exist
     system_specs: Dict                # How systems work
+    # NEW: Full documentation context
+    project_knowledge: Dict           # Structured knowledge from all docs
+    vision: str                       # Project vision and north star
+    goals: str                        # Project goals and objectives
+    design_pillars: str               # Non-negotiable principles
+    milestones: str                   # Project milestones and phases
+    tasks_doc: str                    # Task breakdown documentation
+    ecs_details: Dict                 # ECS system specifications
+    genetics_details: Dict            # Genetics system specifications
+    rendering_details: Dict           # Rendering system specifications
 
 
 class LocalAgent:
@@ -100,22 +110,273 @@ class LocalAgent:
         print("✅ All context tools loaded\n")
     
     def _load_design_documents(self):
-        """Load design documents for context"""
+        """Load ALL design documents for comprehensive context"""
         
         self.design_docs = {}
+        self.project_knowledge = {}
         
-        # Try to load each design doc
+        print("Loading comprehensive project documentation...")
+        
+        # Core design documents
         docs_to_load = [
+            ("vision", self.docs_dir / "VISION.md"),
+            ("goals", self.docs_dir / "GOALS.md"),
             ("design_pillars", self.docs_dir / "DESIGN_PILLARS.md"),
+            ("milestones", self.docs_dir / "MILESTONES.md"),
+            ("tasks", self.docs_dir / "TASKS.md"),
+        ]
+        
+        # Phase 3 specific documents
+        phase3_docs = [
             ("feature_spec", self.docs_dir / "phase3" / "FEATURE_SPEC.md"),
             ("system_specs", self.docs_dir / "phase3" / "SYSTEM_SPECS.md"),
             ("technical_design", self.docs_dir / "phase3" / "TECHNICAL_DESIGN.md"),
         ]
         
-        for doc_name, doc_path in docs_to_load:
+        # System specifications
+        system_docs = [
+            ("ecs_system_spec", self.docs_dir / "systems" / "ecs_system_spec.md"),
+            ("genetics_system_spec", self.docs_dir / "systems" / "genetics_system_spec.md"),
+            ("rendering_system_spec", self.docs_dir / "systems" / "rendering_system_spec.md"),
+        ]
+        
+        # All documentation paths
+        all_docs = docs_to_load + phase3_docs + system_docs
+        
+        loaded_count = 0
+        for doc_name, doc_path in all_docs:
             if doc_path.exists():
                 with open(doc_path) as f:
-                    self.design_docs[doc_name] = f.read()
+                    content = f.read()
+                    self.design_docs[doc_name] = content
+                    loaded_count += 1
+                    print(f"  ✅ Loaded: {doc_name}")
+            else:
+                print(f"  ⚠️  Missing: {doc_name}")
+        
+        # Build structured knowledge base
+        self._build_project_knowledge()
+        
+        print(f"✅ Documentation loaded: {loaded_count}/{len(all_docs)} files")
+        print(f"✅ Project knowledge base built with {len(self.project_knowledge)} key concepts\n")
+    
+    def _build_project_knowledge(self):
+        """Build structured knowledge base from all documentation"""
+        
+        knowledge = {}
+        
+        # Extract key concepts from VISION
+        if "vision" in self.design_docs:
+            vision = self.design_docs["vision"]
+            knowledge["north_star"] = self._extract_section(vision, "The North Star")
+            knowledge["core_loop"] = self._extract_section(vision, "The Core Loop")
+            knowledge["four_worlds"] = self._extract_section(vision, "The Four Worlds")
+            knowledge["technical_constraints"] = self._extract_section(vision, "Technical Constraints")
+        
+        # Extract goals and their status
+        if "goals" in self.design_docs:
+            goals = self.design_docs["goals"]
+            knowledge["goals"] = self._extract_goals(goals)
+        
+        # Extract design pillars (non-negotiable principles)
+        if "design_pillars" in self.design_docs:
+            pillars = self.design_docs["design_pillars"]
+            knowledge["design_pillars"] = self._extract_pillars(pillars)
+        
+        # Extract milestone information
+        if "milestones" in self.design_docs:
+            milestones = self.design_docs["milestones"]
+            knowledge["milestones"] = self._extract_milestones(milestones)
+        
+        # Extract task breakdown
+        if "tasks" in self.design_docs:
+            tasks = self.design_docs["tasks"]
+            knowledge["task_breakdown"] = self._extract_tasks(tasks)
+        
+        # Extract Phase 3 specifics
+        if "feature_spec" in self.design_docs:
+            features = self.design_docs["feature_spec"]
+            knowledge["phase3_features"] = self._extract_features(features)
+        
+        if "system_specs" in self.design_docs:
+            systems = self.design_docs["system_specs"]
+            knowledge["phase3_systems"] = self._extract_system_specs(systems)
+        
+        if "technical_design" in self.design_docs:
+            technical = self.design_docs["technical_design"]
+            knowledge["phase3_technical"] = self._extract_technical_decisions(technical)
+        
+        # Extract system specifications
+        for system_name in ["ecs_system_spec", "genetics_system_spec", "rendering_system_spec"]:
+            if system_name in self.design_docs:
+                spec = self.design_docs[system_name]
+                clean_name = system_name.replace("_spec", "")
+                knowledge[f"{clean_name}_details"] = self._extract_system_details(spec)
+        
+        self.project_knowledge = knowledge
+    
+    def _extract_section(self, content: str, section_name: str) -> str:
+        """Extract a specific section from markdown content"""
+        import re
+        
+        # Look for ## section_name
+        pattern = rf"^##\s*{re.escape(section_name)}\s*$(.*?)(?=^##|\Z)"
+        match = re.search(pattern, content, re.MULTILINE | re.DOTALL)
+        
+        if match:
+            return match.group(1).strip()
+        
+        # Try with # section_name
+        pattern = rf"^#\s*{re.escape(section_name)}\s*$(.*?)(?=^#|\Z)"
+        match = re.search(pattern, content, re.MULTILINE | re.DOTALL)
+        
+        if match:
+            return match.group(1).strip()
+        
+        return f"Section '{section_name}' not found"
+    
+    def _extract_goals(self, content: str) -> Dict:
+        """Extract goals with their descriptions"""
+        import re
+        
+        goals = {}
+        
+        # Look for G1, G2, etc.
+        pattern = r"^###\s*(G\d+_[A-Za-z_]+)\s*\n(.*?)(?=^###|\Z)"
+        matches = re.findall(pattern, content, re.MULTILINE | re.DOTALL)
+        
+        for goal_id, description in matches:
+            goals[goal_id] = {
+                "description": description.strip(),
+                "status": "unknown"  # Will be updated from project status
+            }
+        
+        return goals
+    
+    def _extract_pillars(self, content: str) -> Dict:
+        """Extract design pillars (non-negotiable principles)"""
+        import re
+        
+        pillars = {}
+        
+        # Look for ### Pillar sections
+        pattern = r"^###\s*Pillar\s*\d+:\s*([^\n]+)\s*\n(.*?)(?=^###|\Z)"
+        matches = re.findall(pattern, content, re.MULTILINE | re.DOTALL)
+        
+        for i, (pillar_name, description) in enumerate(matches, 1):
+            pillars[f"pillar_{i}"] = {
+                "name": pillar_name.strip(),
+                "description": description.strip()
+            }
+        
+        return pillars
+    
+    def _extract_milestones(self, content: str) -> Dict:
+        """Extract milestone information"""
+        import re
+        
+        milestones = {}
+        
+        # Look for milestone sections
+        pattern = r"^###\s*([^\n]+)\s*\n(.*?)(?=^###|\Z)"
+        matches = re.findall(pattern, content, re.MULTILINE | re.DOTALL)
+        
+        for milestone_name, description in matches:
+            milestones[milestone_name.strip()] = {
+                "description": description.strip(),
+                "status": "unknown"
+            }
+        
+        return milestones
+    
+    def _extract_tasks(self, content: str) -> Dict:
+        """Extract task breakdown"""
+        import re
+        
+        tasks = {}
+        
+        # Look for task sections
+        pattern = r"^###\s*(T_\d+_[^\n]*)\s*\n(.*?)(?=^###|\Z)"
+        matches = re.findall(pattern, content, re.MULTILINE | re.DOTALL)
+        
+        for task_id, description in matches:
+            tasks[task_id] = {
+                "title": task_id,
+                "description": description.strip()
+            }
+        
+        return tasks
+    
+    def _extract_features(self, content: str) -> Dict:
+        """Extract feature specifications"""
+        import re
+        
+        features = {}
+        
+        # Look for feature sections
+        pattern = r"^###\s*Feature\s*\d+:\s*([^\n]+)\s*\n(.*?)(?=^###|\Z)"
+        matches = re.findall(pattern, content, re.MULTILINE | re.DOTALL)
+        
+        for i, (feature_name, description) in enumerate(matches, 1):
+            features[f"feature_{i}"] = {
+                "name": feature_name.strip(),
+                "description": description.strip()
+            }
+        
+        return features
+    
+    def _extract_system_specs(self, content: str) -> Dict:
+        """Extract system specifications"""
+        import re
+        
+        systems = {}
+        
+        # Look for system sections
+        pattern = r"^##\s*\d+\.\s*([^\n]+)\s*\n(.*?)(?=^##|\Z)"
+        matches = re.findall(pattern, content, re.MULTILINE | re.DOTALL)
+        
+        for i, (system_name, description) in enumerate(matches, 1):
+            systems[f"system_{i}"] = {
+                "name": system_name.strip(),
+                "description": description.strip()
+            }
+        
+        return systems
+    
+    def _extract_technical_decisions(self, content: str) -> Dict:
+        """Extract technical design decisions"""
+        import re
+        
+        decisions = {}
+        
+        # Look for decision sections
+        pattern = r"^###\s*\d+\.\s*([^\n]+)\s*\n(.*?)(?=^###|\Z)"
+        matches = re.findall(pattern, content, re.MULTILINE | re.DOTALL)
+        
+        for i, (decision_name, description) in enumerate(matches, 1):
+            decisions[f"decision_{i}"] = {
+                "name": decision_name.strip(),
+                "description": description.strip()
+            }
+        
+        return decisions
+    
+    def _extract_system_details(self, content: str) -> Dict:
+        """Extract detailed system specifications"""
+        import re
+        
+        details = {}
+        
+        # Extract components, systems, integration points
+        components_section = self._extract_section(content, "Components")
+        systems_section = self._extract_section(content, "System")
+        integration_section = self._extract_section(content, "Integration")
+        
+        details["components"] = components_section
+        details["system"] = systems_section
+        details["integration"] = integration_section
+        
+        return details
     
     def execute_task(self, task: Dict) -> bool:
         """
@@ -175,7 +436,7 @@ class LocalAgent:
         return success
     
     def _build_task_context(self, task: Dict) -> AgentContext:
-        """Build complete context for task execution"""
+        """Build complete context for task execution with full documentation"""
         
         return AgentContext(
             project_root=self.project_root,
@@ -187,7 +448,17 @@ class LocalAgent:
             existing_implementations=self._get_existing_code(task),
             technical_design=self.design_docs.get("technical_design", ""),
             feature_spec=self.design_docs.get("feature_spec", ""),
-            system_specs=self.design_docs.get("system_specs", "")
+            system_specs=self.design_docs.get("system_specs", ""),
+            # NEW: Full project knowledge from all documentation
+            project_knowledge=self.project_knowledge,
+            vision=self.design_docs.get("vision", ""),
+            goals=self.design_docs.get("goals", ""),
+            design_pillars=self.design_docs.get("design_pillars", ""),
+            milestones=self.design_docs.get("milestones", ""),
+            tasks_doc=self.design_docs.get("tasks", ""),
+            ecs_details=self.project_knowledge.get("ecs_details", {}),
+            genetics_details=self.project_knowledge.get("genetics_details", {}),
+            rendering_details=self.project_knowledge.get("rendering_details", {})
         )
     
     def _get_existing_code(self, task: Dict) -> Dict:
