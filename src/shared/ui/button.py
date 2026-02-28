@@ -1,52 +1,73 @@
-import pygame
-from typing import Callable, Tuple, Optional
-from src.shared.ui.base import UIComponent
+from src.shared.ui.spec import UISpec
 from src.shared.ui.panel import Panel
 from src.shared.ui.label import Label
 
 class Button(Panel):
-    """Interactive clickable region with states."""
+    """Interactive clickable region with states, driven by UISpec."""
     
     def __init__(
         self,
+        label: str,
         rect: pygame.Rect,
-        text: str = "",
-        on_click: Optional[Callable[[], None]] = None,
-        on_hover: Optional[Callable[[], None]] = None,
-        keyboard_index: Optional[int] = None,
-        bg_color_normal: Tuple[int, int, int] = (30, 30, 40),
-        bg_color_hover: Tuple[int, int, int] = (50, 50, 70),
-        bg_color_pressed: Tuple[int, int, int] = (20, 20, 30),
-        bg_color_disabled: Tuple[int, int, int] = (15, 15, 20),
-        border_color: Tuple[int, int, int] = (100, 100, 120),
-        border_width: int = 2,
+        on_click: Optional[Callable[[], None]],
+        spec: UISpec,
+        variant: str = "primary",
+        enabled: bool = True,
         z_order: int = 0
     ):
+        self.spec = spec
+        self.variant = variant
+        self.enabled = enabled
+        
+        # Build variant styling based on spec
+        variants = {
+            "primary":   {"bg": spec.color_accent,   "text": (255,255,255)},
+            "secondary": {"bg": spec.color_surface,  "text": spec.color_text},
+            "danger":    {"bg": spec.color_danger,   "text": (255,255,255)},
+            "ghost":     {"bg": (0,0,0,0),           "text": spec.color_text, "border": spec.color_border},
+        }
+        style = variants.get(variant, variants["primary"])
+        
+        self.bg_color_normal = style["bg"]
+        # Derive hover/pressed colors if not ghost
+        if variant == "ghost":
+            self.bg_color_hover = (style["bg"][0], style["bg"][1], style["bg"][2], 30) # faint highlight
+            self.bg_color_pressed = (style["bg"][0], style["bg"][1], style["bg"][2], 60)
+            border_color = style.get("border", spec.color_border)
+        else:
+            # Simple brightening for hover
+            self.bg_color_hover = tuple(min(255, c + 20) for c in style["bg"])
+            self.bg_color_pressed = tuple(max(0, c - 20) for c in style["bg"])
+            border_color = spec.color_border
+
         super().__init__(
             rect=rect, 
-            bg_color=bg_color_normal, 
-            border_color=border_color, 
-            border_width=border_width, 
+            spec=spec,
+            variant="card" if variant != "ghost" else "surface", # Map to Panel variant
             z_order=z_order
         )
+        # Override Panel's bg/border with our variant style
+        self.bg_color = self.bg_color_normal
+        self.border_color = border_color
         
-        self.text = text
+        self.text = label
         self.on_click = on_click
-        self.on_hover = on_hover
-        self.keyboard_index = keyboard_index
+        self.on_hover = None # Simplified for now
         
-        self.bg_color_normal = bg_color_normal
-        self.bg_color_hover = bg_color_hover
-        self.bg_color_pressed = bg_color_pressed
-        self.bg_color_disabled = bg_color_disabled
+        self.bg_color_disabled = (spec.color_bg[0]+5, spec.color_bg[1]+5, spec.color_bg[2]+5)
         
-        self.state = "normal"  # normal, hover, pressed, disabled
-        self.enabled = True
+        self.state = "normal" if enabled else "disabled"
         
-        # Center the label inside the button by default
-        label_rect = pygame.Rect(rect.x + border_width, rect.y + border_width, rect.width - border_width*2, rect.height - border_width*2)
-        self.label = Label(label_rect, text=text, align="center")
-        self.add_child(self.label)
+        # Center the label inside the button
+        self.label_comp = Label(
+            text=label, 
+            position=(rect.centerx, rect.centery), 
+            spec=spec,
+            size="md",
+            color=style["text"],
+            centered=True
+        )
+        self.add_child(self.label_comp)
         
         self._was_hovered = False
 
@@ -92,16 +113,6 @@ class Button(Panel):
                 self.bg_color = self.bg_color_hover if self.state == "hover" else self.bg_color_normal
                 if self.contains_point(event.pos[0], event.pos[1]) and self.on_click:
                     self.on_click()
-                return True
-                
-        # Optional keyboard number trigger
-        elif event.type == pygame.KEYDOWN and self.keyboard_index is not None:
-            # Check both top-row and KP_ equivalents
-            main_key = getattr(pygame, f"K_{self.keyboard_index}", None)
-            kp_key = getattr(pygame, f"K_KP_{self.keyboard_index}", None)
-            
-            if (event.key == main_key or (kp_key is not None and event.key == kp_key)) and self.on_click:
-                self.on_click()
                 return True
                 
         return False
