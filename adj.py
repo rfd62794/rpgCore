@@ -495,6 +495,112 @@ Examples:
 What would you like to do?
 """)
         
+        # Interactive loop - wait for user input
+        while True:
+            try:
+                user_input = input("adj> ").strip()
+                
+                if user_input.lower() in ['exit', 'quit', 'q']:
+                    print("\n✅ Exiting ADJ")
+                    break
+                
+                if user_input.lower().startswith('polish '):
+                    demo = user_input.replace('polish ', '').strip()
+                    print(f"\n🎨 Creating polish plan for {demo}...")
+                    
+                    # Execute polish command
+                    from src.tools.apj.agents.local_agent import LocalAgent
+                    agent = LocalAgent(self.root_dir)
+                    
+                    # Create polish task
+                    task = {
+                        "id": f"POLISH_{demo.upper()}",
+                        "title": f"Polish {demo} Demo",
+                        "description": f"Complete and polish {demo} demo based on project status",
+                        "files": [],  # Auto-detect from agent
+                        "hours": 10
+                    }
+                    
+                    success = agent.execute_task(task)
+                    
+                    if success:
+                        print(f"\n✅ Polish complete. Ready to test.")
+                        # Offer to run game
+                        should_test = input("Run game? (y/n): ").strip().lower() == 'y'
+                        if should_test:
+                            self._run_game(demo)
+                    
+                    # Continue interactive loop
+                    continue
+                
+                elif user_input.lower().startswith('execute '):
+                    action = user_input.replace('execute ', '').strip()
+                    print(f"\n🚀 Executing: {action}...")
+                    
+                    from src.tools.apj.agents.local_agent import LocalAgent
+                    agent = LocalAgent(self.root_dir)
+                    
+                    # Create task from action
+                    task = {
+                        "id": "ACTION_" + action.split(':')[0].replace(' ', '_').upper(),
+                        "title": action,
+                        "description": f"Execute: {action}",
+                        "files": [],
+                        "hours": 10
+                    }
+                    
+                    success = agent.execute_task(task)
+                    
+                    if success:
+                        print(f"\n✅ Action complete.")
+                    
+                    # Continue interactive loop
+                    continue
+                
+                elif user_input.lower().startswith('plan '):
+                    action = user_input.replace('plan ', '').strip()
+                    print(f"\n📋 Creating detailed plan for: {action}...\n")
+                    
+                    from src.tools.apj.agents.local_agent import LocalAgent
+                    agent = LocalAgent(self.root_dir)
+                    
+                    # Use agent to create plan
+                    plan_prompt = f"""
+Create a detailed step-by-step implementation plan for:
+{action}
+
+Consider:
+- Current project state and blockers
+- Existing code and patterns
+- Design pillars and technical decisions
+- Estimated effort per step
+- Success criteria for completion
+
+Provide as JSON with detailed steps.
+"""
+                    
+                    from pydantic_ai import Agent
+                    plan_agent = Agent(agent.ollama_model)
+                    response = plan_agent.run(plan_prompt)
+                    print(response.data)
+                    
+                    # Continue interactive loop
+                    continue
+                
+                elif user_input.lower() == 'status':
+                    print(f"\n")
+                    detector.print_summary()
+                    continue
+                
+                else:
+                    print("Unknown command. Try: polish, execute, plan, status, or quit")
+            
+            except KeyboardInterrupt:
+                print("\n✅ Exiting ADJ")
+                break
+            except EOFError:
+                break
+        
         return True
     
     def _run_game(self, demo_name: str) -> None:
