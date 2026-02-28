@@ -248,6 +248,19 @@ class ProjectAnalyzer:
         
         lines = content.split('\n')
         for i, line in enumerate(lines, 1):
+            # Skip lines that are too short or clearly not blockers
+            if len(line.strip()) < 10:
+                continue
+                
+            # Skip lines that are clearly code comments or debug output
+            if line.strip().startswith(('#', '//', 'print(', 'logger.', '"""', "'''")):
+                continue
+                
+            # Skip lines that are clearly variable assignments or function definitions
+            if any(pattern in line for pattern in ['=', 'def ', 'class ', 'import ', 'from ']):
+                continue
+                
+            # Only look for actual blocker patterns in meaningful text
             for pattern in self.blocker_patterns:
                 if re.search(pattern, line, re.IGNORECASE):
                     # Extract the blocker description
@@ -255,24 +268,30 @@ class ProjectAnalyzer:
                     if blocker_text.startswith(('•', '-', '*', '#')):
                         blocker_text = blocker_text[1:].strip()
                     
+                    # Skip if it's clearly not a real blocker
+                    if len(blocker_text) < 5 or blocker_text.startswith(('logger.', 'print(', 'return ', 'if ')):
+                        continue
+                    
                     # Determine priority
                     priority = self._determine_priority(blocker_text)
                     
-                    # Determine what it blocks
-                    impact = self._extract_impact(blocker_text, content)
-                    
-                    issue = ProjectIssue(
-                        title=f"Blocker: {blocker_text[:50]}...",
-                        description=blocker_text,
-                        location=f"{file_path}:{i}",
-                        priority=priority,
-                        state=ProjectState.BLOCKED,
-                        impact=impact,
-                        suggested_action=self._suggest_blocker_action(blocker_text),
-                        confidence=0.8
-                    )
-                    
-                    self.issues.append(issue)
+                    # Only process if it's actually critical
+                    if priority == Priority.CRITICAL:
+                        # Determine what it blocks
+                        impact = self._extract_impact(blocker_text, content)
+                        
+                        issue = ProjectIssue(
+                            title=f"Blocker: {blocker_text[:50]}...",
+                            description=blocker_text,
+                            location=f"{file_path}:{i}",
+                            priority=priority,
+                            state=ProjectState.BLOCKED,
+                            impact=impact,
+                            suggested_action=self._suggest_blocker_action(blocker_text),
+                            confidence=0.8
+                        )
+                        
+                        self.issues.append(issue)
     
     def _find_goals(self, content: str, file_path: str):
         """Find goal completion status"""
