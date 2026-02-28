@@ -527,24 +527,26 @@ class TowerDefenseScene(Scene):
                        self.spec.color_surface)
         
         # Draw title
-        title = Label("Select Tower", self.spec.color_text, 20)
-        title.render(surface, (self.spec.screen_width - 280, 20))
+        title = Label("Select Tower", (self.spec.screen_width - 280, 20), self.spec, "md", self.spec.color_text)
+        title.render(surface)
         
         # Draw tower buttons
         for i, button in enumerate(self.tower_buttons):
             y_pos = 60 + i * 40
-            button.render(surface, (self.spec.screen_width - 280, y_pos))
+            button.rect.y = y_pos
+            button.rect.x = self.spec.screen_width - 280
+            button.render(surface)
         
         # Draw slime info if selected
         if self.selected_slime:
             info_text = f"Selected: {self.selected_slime.name}"
-            info_label = Label(info_text, self.spec.color_text, 16)
-            info_label.render(surface, (self.spec.screen_width - 280, 400))
+            info_label = Label(info_text, (self.spec.screen_width - 280, 400), self.spec, "md", self.spec.color_text)
+            info_label.render(surface)
             
             # Draw stats
             stats_text = f"Level: {self.selected_slime.level}"
-            stats_label = Label(stats_text, self.spec.color_text, 14)
-            stats_label.render(surface, (self.spec.screen_width - 280, 420))
+            stats_label = Label(stats_text, (self.spec.screen_width - 280, 420), self.spec, "md", self.spec.color_text)
+            stats_label.render(surface)
     
     def _render_upgrade_menu(self, surface) -> None:
         """Render upgrade menu"""
@@ -555,17 +557,19 @@ class TowerDefenseScene(Scene):
                        self.spec.color_surface)
         
         # Draw title
-        title = Label(f"Upgrade {self.selected_tower.name}", self.spec.color_text, 16)
-        title.render(surface, (self.spec.screen_width - 180, self.spec.screen_height // 2 - 65))
+        title = Label(f"Upgrade {self.selected_tower.name}", (self.spec.screen_width - 180, self.spec.screen_height // 2 - 65), self.spec, "md", self.spec.color_text)
+        title.render(surface)
         
         # Draw upgrade buttons
         y_offset = self.spec.screen_height // 2 - 35
         for i, (upgrade_type, button) in enumerate(self.upgrade_buttons.items()):
-            button.render(surface, (self.spec.screen_width - 180, y_offset + i * 35))
+            button.rect.y = y_offset + i * 35
+            button.rect.x = self.spec.screen_width - 180
+            button.render(surface)
         
         # Draw gold
-        gold_label = Label(f"Gold: {self.session.gold}", self.spec.color_text, 14)
-        gold_label.render(surface, (self.spec.screen_width - 180, self.spec.screen_height // 2 + 5))
+        gold_label = Label(f"Gold: {self.session.gold}", (self.spec.screen_width - 180, self.spec.screen_height // 2 + 5), self.spec, "md", self.spec.color_text)
+        gold_label.render(surface)
     
     def _render_game_over(self, surface) -> None:
         """Render game over screen"""
