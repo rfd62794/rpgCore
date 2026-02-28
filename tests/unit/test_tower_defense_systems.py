@@ -23,7 +23,7 @@ def sample_creature():
         pattern="solid", 
         pattern_color=(0, 0, 0),
         accessory="none",
-        curiosity=0.8, energy=0.5, affection=0.3, shyness=0.2
+        curiosity=0.5, energy=0.5, affection=0.3, shyness=0.2
     )
     creature = Creature(
         name="TestSlime",
