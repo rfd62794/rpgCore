@@ -1,23 +1,30 @@
 """
-Swarm Agent - Integration of swarm coordination with existing BaseAgent system
-Uses the robust BaseAgent framework while providing swarm coordination
+Swarm Agent Integration - Integrates existing agents with swarm coordination
+Uses BaseAgent framework, tools, child agents, and A2A communication
 """
 
+import logging
 import json
-from typing import Dict, List, Optional, Any
-from pathlib import Path
-from loguru import logger
+from typing import Dict, List, Any, Optional
+from datetime import datetime
+import uuid
 
-from src.tools.apj.agents.base_agent import BaseAgent, AgentConfig
-from src.tools.apj.agents.model_router import ModelRouter, RoutingDecision
-from src.tools.apj.agents.registry import SchemaRegistry
-from pydantic_ai import Agent
+from .base_agent import BaseAgent, AgentConfig, PromptConfig
+from .agent_registry import AGENT_REGISTRY, AgentCapability, AgentType
+from .tools import TOOL_REGISTRY, ToolResult
+from .child_agent import CHILD_AGENT_MANAGER, ChildAgentManager
+from .a2a_communication import A2A_MANAGER, MessageHandler, MessageType, MessagePriority, A2AMessage
+
+logger = logging.getLogger(__name__)
 
 
 class SwarmCoordinator(BaseAgent):
     """
-    Swarm Coordinator that uses BaseAgent framework
-    Coordinates multiple specialized agents using existing infrastructure
+    Enhanced Swarm Coordinator with full agent ecosystem integration
+    - Integrates existing agents (strategist, archivist, herald, docstring)
+    - Provides tools to agents
+    - Enables child agent creation
+    - Supports agent-to-agent communication
     """
     
     def __init__(self, config: AgentConfig, force_reinit: bool = False):
@@ -25,6 +32,78 @@ class SwarmCoordinator(BaseAgent):
         self.model_router = ModelRouter()
         self.swarm_agents = {}
         self._initialize_swarm_agents(force_reinit)
+        self._setup_a2a_handler()
+        self._integrate_existing_agents()
+    
+    def _setup_a2a_handler(self):
+        """Setup A2A communication handler"""
+        self.message_handler = MessageHandler(self.config.name)
+        
+        # Register message handlers
+        self.message_handler.register_handler(MessageType.REQUEST, self._handle_request)
+        self.message_handler.register_handler(MessageType.TASK, self._handle_task)
+        self.message_handler.register_handler(MessageType.NOTIFICATION, self._handle_notification)
+        
+        # Register with A2A manager
+        A2A_MANAGER.register_agent(self.config.name, self.message_handler)
+    
+    def _handle_request(self, message: A2AMessage) -> Optional[A2AMessage]:
+        """Handle incoming request messages"""
+        try:
+            # Process the request
+            content = message.content
+            task = content.get("task", "")
+            context = content.get("context", {})
+            
+            result = self.process_request(task, context)
+            
+            # Send response
+            return A2AMessage(
+                id=str(uuid.uuid4()),
+                sender=self.config.name,
+                recipient=message.sender,
+                message_type=MessageType.RESPONSE,
+                priority=MessagePriority.NORMAL,
+                content={"result": result, "original_request_id": message.id},
+                timestamp=datetime.now(),
+                reply_to=message.id
+            )
+        except Exception as e:
+            return A2AMessage(
+                id=str(uuid.uuid4()),
+                sender=self.config.name,
+                recipient=message.sender,
+                message_type=MessageType.RESPONSE,
+                priority=MessagePriority.NORMAL,
+                content={"error": str(e), "original_request_id": message.id},
+                timestamp=datetime.now(),
+                reply_to=message.id
+            )
+    
+    def _handle_task(self, message: A2AMessage) -> Optional[A2AMessage]:
+        """Handle task assignment messages"""
+        # Similar to request handling but for task delegation
+        return self._handle_request(message)
+    
+    def _handle_notification(self, message: A2AMessage) -> Optional[A2AMessage]:
+        """Handle notification messages (no response needed)"""
+        # Log or process notification
+        logger.info(f"Received notification from {message.sender}: {message.content}")
+        return None
+    
+    def _integrate_existing_agents(self):
+        """Integrate existing agents into swarm"""
+        existing_agents = AGENT_REGISTRY.get_agents_by_type(AgentType.SPECIALIST)
+        
+        for agent_metadata in existing_agents:
+            if agent_metadata.config_file:
+                try:
+                    agent = AGENT_REGISTRY.create_agent_instance(agent_metadata.name)
+                    if agent:
+                        self.swarm_agents[agent_metadata.name] = agent
+                        logger.info(f"Integrated existing agent: {agent_metadata.name}")
+                except Exception as e:
+                    logger.warning(f"Failed to integrate agent {agent_metadata.name}: {e}")
     
     def _initialize_swarm_agents(self, force_reinit: bool = False) -> None:
         """Initialize all swarm agents using existing BaseAgent framework"""
@@ -50,7 +129,10 @@ class SwarmCoordinator(BaseAgent):
                         "rationale": "Swarm coordination failed",
                         "risk": "low"
                     }
-                }
+                },
+                "open_questions": ["Can you provide more specific details?"],
+                "archivist_risks_addressed": [],
+                "corpus_hash": ""
             },
             "analyzer": {
                 "name": "swarm_analyzer",
@@ -69,7 +151,10 @@ class SwarmCoordinator(BaseAgent):
                         "rationale": "Agent analysis failed",
                         "risk": "low"
                     }
-                }
+                },
+                "open_questions": ["Can you provide more specific details?"],
+                "archivist_risks_addressed": [],
+                "corpus_hash": ""
             },
             "planner": {
                 "name": "swarm_planner",
@@ -87,8 +172,7 @@ class SwarmCoordinator(BaseAgent):
                         "title": "Manual task assignment",
                         "rationale": "Swarm coordination failed - use manual analysis",
                         "risk": "low"
-                    },
-                    "alternatives": []
+                    }
                 },
                 "open_questions": ["Can you provide more specific details?"],
                 "archivist_risks_addressed": [],
