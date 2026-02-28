@@ -35,10 +35,10 @@ MOVEMENT_PROFILES = {
         "speed_modifier": 0.85,    # slow start
         "momentum_buildup": 0.15,    # accelerates over time
         "terrain_mods": {
-            TerrainType.grass: 1.2,  # rolls fast on flat
-            TerrainType.rock: 0.6,  # loses traction
-            TerrainType.mud: 0.5, # bogs down badly
-            TerrainType.water: 0.7, # partially floats
+            TerrainType.GRASS: 1.2,  # rolls fast on flat
+            TerrainType.ROCK: 0.6,  # loses traction
+            TerrainType.MUD: 0.5, # bogs down badly
+            TerrainType.WATER: 0.7, # partially floats
         }
     },
 }
