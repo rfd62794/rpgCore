@@ -241,10 +241,10 @@ Return as JSON with task assignments.
                 # Handle both "tasks" array and direct task object
                 if "tasks" in task_assignments:
                     return self._execute_task_assignments(task_assignments["tasks"], context)
-                else:
-                    return self._execute_task_assignments(task_assignments, context)
             else:
-                return {"error": "Could not find JSON in coordinator response"}
+                return self._execute_task_assignments([task_assignments], context)
+        else:
+            return {"error": "Could not find JSON in coordinator response"}
                 
     except json.JSONDecodeError as e:
         return {"error": f"JSON decode error: {e}"}
@@ -261,7 +261,7 @@ def _execute_task_assignments(self, assignments, context: Dict) -> Dict:
         # It's a list of task objects
         for task in assignments:
             task_id = task.get("task_id", f"task_{len(results)}")
-            print(f"🔄 Executing task: {task_id}")
+            print(f" Executing task: {task_id}")
                 
             # Determine which agent to use
             agents = task.get("agents", [])
@@ -299,7 +299,7 @@ Execute this task and provide detailed results.
     else:
         # It's a dict of tasks (original format)
         for task_id, task_info in assignments.items():
-            print(f"🔄 Executing task: {task_id}")
+            print(f" Executing task: {task_id}")
                 
             # Determine which agent to use
             agent_role = self._map_task_to_agent(task_info.get("task_type", ""))
@@ -334,7 +334,6 @@ def _call_agent(self, role: AgentRole, prompt: str, expected_format: str = "text
     """Call a specific agent with the given prompt"""
         
     agent = self.agents[role]
-        agent = self.agents[role]
         
         agent_prompt = f"""
 You are {agent.name}, the {agent.description}.
