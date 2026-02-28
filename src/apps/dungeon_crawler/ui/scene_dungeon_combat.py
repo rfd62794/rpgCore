@@ -83,7 +83,7 @@ class DungeonCombatScene(CombatSceneBase):
                 
                 mock_enemy = MockEnemy(genome)
                 stats = {"hp":20, "max_hp":20, "attack":4, "defense":2, "speed":5, "stance":"Aggressive"}
-                self.enemies.append(DungeonUnit(f"enemy_{i}", f"Wild Slime {i}", stats, "enemy", mock_enemy))
+                self.enemies[i] = DungeonUnit(f"enemy_{i}", f"Wild Slime {i}", stats, "enemy", mock_enemy)
         
         # Load team from kwargs
         self.team = kwargs.get("team", [])
