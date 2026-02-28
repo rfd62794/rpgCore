@@ -144,11 +144,11 @@ class DataLoader:
         task_loader = self.load_task_loader()
         milestone = task_loader.milestones.get(milestone_id)
         
-        if not milestone:
+        if not milestone or not milestone.linked_tasks:
             return []
         
         tasks = []
-        for task_id in (milestone.linked_tasks or []):
+        for task_id in milestone.linked_tasks:
             task = task_loader.tasks.get(task_id)
             if task:
                 # Convert task to dict format for executor
