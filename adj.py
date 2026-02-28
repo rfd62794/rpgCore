@@ -496,7 +496,44 @@ What would you like to do?
 """)
         
         return True
-
+    
+    def _run_game(self, demo_name: str) -> None:
+        """Run a specific demo game"""
+        print(f"\n🎮 Launching {demo_name} demo...\n")
+        
+        # Try different demo entry points
+        demo_paths = [
+            self.src_dir / "demos" / demo_name / "main.py",
+            self.src_dir / "demos" / demo_name / "scene.py",
+            self.src_dir / "apps" / f"{demo_name}.py"
+        ]
+        
+        game_script = None
+        for path in demo_paths:
+            if path.exists():
+                game_script = path
+                break
+        
+        if not game_script:
+            print(f"⚠️  Could not find {demo_name} demo executable")
+            return
+        
+        try:
+            import subprocess
+            # Run game (blocks until window closes)
+            game_process = subprocess.Popen(
+                [sys.executable, str(game_script)],
+                cwd=self.project_root
+            )
+            
+            # Wait for game to close
+            game_process.wait()
+            
+            print("✅ Game closed")
+        
+        except Exception as e:
+            print(f"❌ Failed to run game: {e}")
+    
     def show_phase_roadmap(self, phase_num: int):
         """Show complete roadmap for a phase"""
         self._record_layer("Layer 1: Data Files")
