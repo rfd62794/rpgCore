@@ -376,7 +376,7 @@ class TowerDefenseScene(Scene):
         self.session.save_to_file()
         
         # Feed back to roster
-        from src.shared.teams.roster import load_roster, save_roster
+        from src.shared.teams.roster_save import load_roster, save_roster
         roster = load_roster()
         results = end_tower_defense_session(self.session, roster)
         save_roster(roster)

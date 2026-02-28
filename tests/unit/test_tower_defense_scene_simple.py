@@ -127,7 +127,6 @@ def test_tower_defense_scene_ecs_integration(scene_manager, sample_creature):
         from src.shared.ecs.components.tower_component import TowerComponent
         from src.shared.ecs.components.behavior_component import BehaviorComponent
         from src.shared.ecs.components.grid_position_component import GridPositionComponent
-        
         assert scene.component_registry.get_component(
             sample_creature.slime_id, 
             TowerComponent
@@ -153,7 +152,6 @@ def test_tower_defense_scene_ecs_integration(scene_manager, sample_creature):
         assert found_tower.slime_id == sample_creature.slime_id
         
         # Test enemy addition
-        from src.shared.ecs.components.behavior_component import BehaviorComponent
         scene._add_enemy_to_ecs(sample_creature)
         assert scene.component_registry.get_component(
             sample_creature.slime_id, 

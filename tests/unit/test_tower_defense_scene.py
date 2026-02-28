@@ -23,8 +23,10 @@ def scene_manager():
 @pytest.fixture
 def tower_defense_scene(scene_manager):
     """Create a tower defense scene"""
-    scene = TowerDefenseScene(scene_manager, SPEC_720)
-    return scene
+    # Mock the UI setup to avoid UI issues
+    with patch.object(TowerDefenseScene, '_setup_ui'):
+        scene = TowerDefenseScene(scene_manager, SPEC_720)
+        return scene
 
 
 @pytest.fixture
