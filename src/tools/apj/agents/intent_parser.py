@@ -212,11 +212,14 @@ Confidence should reflect how sure you are (0.5 = unsure, 0.9 = very sure).
         try:
             from pydantic_ai import Agent
             agent = Agent(self.ollama)
-            response = agent.run(prompt)
+            
+            # Run the agent synchronously
+            import asyncio
+            response = asyncio.run(agent.run(prompt))
             
             import json
             import re
-            json_match = re.search(r'\{.*\}', response.data, re.DOTALL)
+            json_match = re.search(r'\{.*\}', response, re.DOTALL)
             
             if json_match:
                 data = json.loads(json_match.group())
