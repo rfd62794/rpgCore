@@ -444,7 +444,54 @@ class AgentBootManager:
         
         return status
     
-    def _calculate_ecosystem_health(self) -> Dict[str, Any]:
+    def _auto_detect_work(self) -> Dict[str, Any]:
+        """Auto-detect work from project documentation"""
+        
+        try:
+            from .project_analyzer import PROJECT_ANALYZER
+            
+            # Analyze project
+            analysis = PROJECT_ANALYZER.analyze_project()
+            
+            return {
+                "success": True,
+                "analysis": analysis,
+                "issues_detected": analysis["issues_detected"],
+                "recommendations": analysis["recommendations"],
+                "critical_issues": analysis["critical_issues"],
+                "project_health": analysis["project_health"]
+            }
+            
+        except Exception as e:
+            logger.error(f"❌ Auto-detection failed: {e}")
+            return {
+                "success": False,
+                "error": str(e),
+                "analysis": {}
+            }
+    
+    def _auto_execute_critical_tasks(self) -> Dict[str, Any]:
+        """Auto-execute critical tasks if possible"""
+        
+        try:
+            from .project_analyzer import PROJECT_ANALYZER
+            
+            # Get critical tasks
+            executed_tasks = PROJECT_ANALYZER.auto_execute_critical_tasks()
+            
+            return {
+                "success": True,
+                "executed_tasks": executed_tasks,
+                "count": len(executed_tasks)
+            }
+            
+        except Exception as e:
+            logger.error(f"❌ Auto-execution failed: {e}")
+            return {
+                "success": False,
+                "error": str(e),
+                "executed_tasks": []
+            }
         """Calculate overall ecosystem health metrics"""
         
         health = {
