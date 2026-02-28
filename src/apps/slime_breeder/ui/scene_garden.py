@@ -41,27 +41,47 @@ class GardenScene(GardenSceneBase):
             
         self._sync_roster_with_garden()
         
-        # 1. Custom Details UI (Profile Card)
-        self.profile_card: Optional[ProfileCard] = None
+        # 1. Right Panel Layout (Exactly as sketched)
+        padding = 8
+        right_x = 880
+        screen_w = self.spec.screen_width
+        screen_h = self.spec.screen_height
         
-        # Position buttons below the card area
-        btn_y = self.detail_rect.y + self.spec.card_height + self.spec.margin_md
-        btn_w = self.layout.side_panel.width - self.spec.padding_md * 2
-        btn_h = self.spec.button_height_sm
+        self.right_panel_rect = pygame.Rect(right_x, 48, screen_w - right_x, screen_h - 48 - 36)
         
-        self.dungeon_btn = Button("⚔ Dungeon Team", pygame.Rect(self.detail_rect.x + self.spec.padding_md, btn_y, btn_w, btn_h), self._assign_to_dungeon, self.spec)
+        profile_w = int(self.right_panel_rect.width * 0.55)
+        stats_w = self.right_panel_rect.width - profile_w - padding * 3
+        bottom_h = 110
+        top_h = self.right_panel_rect.height - bottom_h - padding * 3
+        
+        self.profile_rect = pygame.Rect(self.right_panel_rect.x + padding, self.right_panel_rect.y + padding, profile_w, top_h)
+        self.stats_rect = pygame.Rect(self.profile_rect.right + padding, self.right_panel_rect.y + padding, stats_w, top_h)
+        self.actions_rect = pygame.Rect(self.right_panel_rect.x + padding, self.profile_rect.bottom + padding, self.right_panel_rect.width - padding * 2, bottom_h)
+
+        # 2. Team Buttons (Stacked in actions_rect)
+        btn_y = self.actions_rect.y + 10
+        btn_w = self.actions_rect.width - 20
+        btn_h = 40
+        
+        # We'll use these specific buttons for the actions area
+        self.dungeon_btn = Button("→ Dungeon Team", pygame.Rect(self.actions_rect.x + 10, btn_y, btn_w, btn_h), self._assign_to_dungeon, self.spec)
+        self.racing_btn = Button("→ Racing Team", pygame.Rect(self.actions_rect.x + 10, btn_y + btn_h + 8, btn_w, btn_h), self._assign_to_racing, self.spec)
+        self.remove_btn = Button("Remove", pygame.Rect(self.actions_rect.x + 10, btn_y + btn_h + 8, btn_w, btn_h), self._remove_from_team, self.spec, variant="danger")
+        self.mission_btn = Button("ON MISSION", pygame.Rect(self.actions_rect.x + 10, btn_y, btn_w, btn_h), None, self.spec, variant="warning")
+        
+        # Hide initially
         self.dungeon_btn.set_visible(False)
-        self.detail_panel.add_child(self.dungeon_btn)
-
-        self.racing_btn = Button("◎ Racing Team", pygame.Rect(self.detail_rect.x + self.spec.padding_md, btn_y + btn_h + 8, btn_w, btn_h), self._assign_to_racing, self.spec)
         self.racing_btn.set_visible(False)
-        self.detail_panel.add_child(self.racing_btn)
-
-        self.remove_btn = Button("Remove from Team", pygame.Rect(self.detail_rect.x + self.spec.padding_md, btn_y + (btn_h + 8) * 2, btn_w, btn_h), self._remove_from_team, self.spec)
         self.remove_btn.set_visible(False)
-        self.detail_panel.add_child(self.remove_btn)
+        self.mission_btn.set_visible(False)
         
-        # 2. Custom Action Bar Buttons
+        # Add to detail panel (assuming detail_panel is the right panel)
+        self.detail_panel.add_child(self.dungeon_btn)
+        self.detail_panel.add_child(self.racing_btn)
+        self.detail_panel.add_child(self.remove_btn)
+        self.detail_panel.add_child(self.mission_btn)
+        
+        # 3. Custom Action Bar Buttons
         btn_y = self.bar_rect.y + 10
         btn_w, btn_h = 130, 44
         
@@ -171,48 +191,41 @@ class GardenScene(GardenSceneBase):
         return None
 
     def on_selection_changed(self):
-        """Update profile card and button visibility based on selection."""
-        # Clear existing profile card
-        if self.profile_card:
-            self.detail_panel.remove_child(self.profile_card)
-            self.profile_card = None
-            
-        # Update button visibility
+        """Update sub-panel content and button visibility based on selection."""
+        # Reset visibility
         self.dungeon_btn.set_visible(False)
         self.racing_btn.set_visible(False)
         self.remove_btn.set_visible(False)
+        self.mission_btn.set_visible(False)
         
         if len(self.selected_entities) == 1:
             s = self.selected_entities[0]
             rs = next((r for r in self.roster.slimes if r.name == s.name), None)
             if rs:
-                self.profile_card = ProfileCard(rs, (self.detail_rect.x + 10, self.detail_rect.y + 10), self.spec)
-                self.detail_panel.add_child(self.profile_card)
-                
+                # Update Action Buttons based on state
+                btn_y = self.actions_rect.y + 12
                 if rs.locked:
-                    # Locked slime - show mission status
-                    self.dungeon_btn.set_visible(False)
-                    self.racing_btn.set_visible(False)
-                    self.remove_btn.set_visible(False)
+                    self.mission_btn.set_visible(True)
+                    self.mission_btn.set_enabled(False)
                 elif rs.team == TeamRole.UNASSIGNED:
-                    # Unassigned slime - show available team options
-                    self.dungeon_btn.set_visible(not self.roster.get_dungeon_team().is_full())
-                    self.racing_btn.set_visible(not self.roster.get_racing_team().is_full())
-                    self.remove_btn.set_visible(False)
+                    self.dungeon_btn.set_visible(True)
+                    self.dungeon_btn.rect.y = btn_y
+                    self.dungeon_btn.set_enabled(not self.roster.get_dungeon_team().is_full())
+                    
+                    self.racing_btn.set_visible(True)
+                    self.racing_btn.rect.y = btn_y + 48
+                    self.racing_btn.set_enabled(not self.roster.get_racing_team().is_full())
                 else:
-                    # Assigned slime - show remove option
-                    self.dungeon_btn.set_visible(False)
-                    self.racing_btn.set_visible(False)
+                    # Already on a team
+                    label = "✓ Dungeon Team" if rs.team == TeamRole.DUNGEON else "✓ Racing Team"
+                    btn = self.dungeon_btn if rs.team == TeamRole.DUNGEON else self.racing_btn
+                    btn.text = label
+                    btn.set_visible(True)
+                    btn.set_enabled(False)
+                    btn.rect.y = btn_y
+                    
                     self.remove_btn.set_visible(True)
-            else:
-                self.dungeon_btn.set_visible(False)
-                self.racing_btn.set_visible(False)
-                self.remove_btn.set_visible(False)
-
-        else:
-            self.dungeon_btn.set_visible(False)
-            self.racing_btn.set_visible(False)
-            self.remove_btn.set_visible(False)
+                    self.remove_btn.rect.y = btn_y + 48
 
     def _assign_to_dungeon(self):
         if len(self.selected_entities) == 1:
@@ -258,7 +271,98 @@ class GardenScene(GardenSceneBase):
             self.renderer.render(surface, slime, is_selected)
             
         self._render_banner(surface)
+        self._render_right_panel(surface)
         self._render_team_status_bar(surface)
+
+    def _render_right_panel(self, surface: pygame.Surface):
+        if len(self.selected_entities) != 1:
+            return
+            
+        s = self.selected_entities[0]
+        rs = next((r for r in self.roster.slimes if r.name == s.name), None)
+        if not rs:
+            return
+
+        # 1. Backgrounds
+        for rect in [self.profile_rect, self.stats_rect, self.actions_rect]:
+            pygame.draw.rect(surface, self.spec.color_surface, rect, border_radius=6)
+            pygame.draw.rect(surface, self.spec.color_border, rect, width=2, border_radius=6)
+
+        # 2. Profile Sub-panel Content
+        from src.shared.ui.profile_card import render_slime_portrait, render_badge, render_text
+        
+        # Portrait (Top, slightly padded)
+        portrait_size = 60
+        portrait_rect = pygame.Rect(self.profile_rect.x + 12, self.profile_rect.y + 12, portrait_size, portrait_size)
+        render_slime_portrait(surface, rs.genome, portrait_rect)
+        
+        # Text details
+        text_x = self.profile_rect.x + 12
+        y = portrait_rect.bottom + 8
+        render_text(surface, rs.name, (text_x, y), size=18, bold=True)
+        y += 22
+        render_text(surface, f"Lv.{rs.level} | Gen {rs.generation}", (text_x, y), size=14, color=(200, 200, 100))
+        y += 20
+        
+        # Culture badge
+        culture_color = {
+            "ember":   (200, 80, 40),
+            "crystal": (140, 200, 255),
+            "moss":    (80, 180, 80),
+            "coastal": (80, 140, 180),
+            "void":    (100, 40, 140),
+            "mixed":   (140, 140, 140)
+        }.get(rs.genome.cultural_base.value, (140, 140, 140))
+        render_badge(surface, rs.genome.cultural_base.value.upper(), (text_x, y), culture_color)
+        
+        # Team badge
+        team_label = rs.team.value.upper()
+        team_color = (80, 80, 80)
+        if rs.locked:
+            team_label = "ON MISSION"
+            team_color = (200, 140, 0)
+        elif rs.team == TeamRole.DUNGEON:
+            team_color = (180, 60, 60)
+        render_badge(surface, team_label, (text_x + 75, y), team_color)
+        y += 24
+        
+        # DNA line (simple genetic hint)
+        dna_text = rs.genome.dna[:16] + "..."
+        render_text(surface, dna_text, (text_x, y), size=12, color=(100, 100, 120))
+
+        # 3. Stats Sub-panel Content
+        from src.shared.teams.stat_calculator import calculate_hp, calculate_attack, calculate_speed
+        stats_x = self.stats_rect.x + 12
+        stats_y = self.stats_rect.y + 12
+        
+        render_text(surface, "STATS", (stats_x, stats_y), size=12, color=self.spec.color_text_dim)
+        stats_y += 20
+        
+        bar_w = self.stats_rect.width - 24
+        bar_h = 10
+        
+        # Stat Bars
+        stats = [
+            ("HP", calculate_hp(rs.genome, rs.level), 100, (100, 200, 100)),
+            ("ATK", calculate_attack(rs.genome, rs.level), 50, (200, 100, 100)),
+            ("SPD", calculate_speed(rs.genome, rs.level), 50, (100, 100, 200)),
+        ]
+        
+        for label, val, max_val, color in stats:
+            render_text(surface, label, (stats_x, stats_y), size=14)
+            render_text(surface, str(int(val)), (stats_x + bar_w - 30, stats_y), size=14, bold=True)
+            stats_y += 18
+            
+            # Draw bar
+            pygame.draw.rect(surface, (40, 40, 50), (stats_x, stats_y, bar_w, bar_h), border_radius=2)
+            fill_w = int(bar_w * min(1.0, val / max_val))
+            pygame.draw.rect(surface, color, (stats_x, stats_y, fill_w, bar_h), border_radius=2)
+            stats_y += 22
+
+        # 4. Actions Sub-panel Content (Buttons rendered by base system or manually)
+        for btn in [self.dungeon_btn, self.racing_btn, self.remove_btn, self.mission_btn]:
+            if btn.visible:
+                btn.render(surface)
 
     def _render_team_status_bar(self, surface: pygame.Surface):
         dungeon_team = self.roster.get_dungeon_team()
@@ -332,7 +436,12 @@ class GardenScene(GardenSceneBase):
         pass
 
     def handle_event(self, event: pygame.event.Event) -> None:
-        # First, let the base class handle UI components
+        # First, check specialized team buttons
+        for btn in [self.dungeon_btn, self.racing_btn, self.remove_btn, self.mission_btn]:
+            if btn.visible and hasattr(btn, "handle_event") and btn.handle_event(event):
+                return
+
+        # Then, let the base class handle other UI components
         for comp in reversed(self.ui_components):
             if hasattr(comp, 'handle_event') and comp.handle_event(event):
                 return
