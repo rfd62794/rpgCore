@@ -241,43 +241,43 @@ Return as JSON with task assignments.
                 # Handle both "tasks" array and direct task object
                 if "tasks" in task_assignments:
                     return self._execute_task_assignments(task_assignments["tasks"], context)
+                else:
+                    return self._execute_task_assignments([task_assignments], context)
             else:
-                return self._execute_task_assignments([task_assignments], context)
-        else:
-            return {"error": "Could not find JSON in coordinator response"}
+                return {"error": "Could not find JSON in coordinator response"}
                 
-    except json.JSONDecodeError as e:
-        return {"error": f"JSON decode error: {e}"}
-    except Exception as e:
-        return {"error": f"Failed to process coordinator response: {e}"}
+        except json.JSONDecodeError as e:
+            return {"error": f"JSON decode error: {e}"}
+        except Exception as e:
+            return {"error": f"Failed to process coordinator response: {e}"}
     
-def _execute_task_assignments(self, assignments, context: Dict) -> Dict:
-    """Execute the task assignments from coordinator"""
+    def _execute_task_assignments(self, assignments, context: Dict) -> Dict:
+        """Execute the task assignments from coordinator"""
         
-    results = {}
+        results = {}
         
-    # Handle both list of tasks and dict of tasks
-    if isinstance(assignments, list):
-        # It's a list of task objects
-        for task in assignments:
-            task_id = task.get("task_id", f"task_{len(results)}")
-            print(f" Executing task: {task_id}")
+        # Handle both list of tasks and dict of tasks
+        if isinstance(assignments, list):
+            # It's a list of task objects
+            for task in assignments:
+                task_id = task.get("task_id", f"task_{len(results)}")
+                print(f" Executing task: {task_id}")
                 
-            # Determine which agent to use
-            agents = task.get("agents", [])
-            if agents:
-                # Use the first agent in the list
-                agent_name = agents[0].lower()
-                agent_role = self._map_task_to_agent(agent_name)
+                # Determine which agent to use
+                agents = task.get("agents", [])
+                if agents:
+                    # Use the first agent in the list
+                    agent_name = agents[0].lower()
+                    agent_role = self._map_task_to_agent(agent_name)
                     
-                if not agent_role:
-                    results[task_id] = {"error": f"No agent available for: {agent_name}"}
-                    continue
+                    if not agent_role:
+                        results[task_id] = {"error": f"No agent available for: {agent_name}"}
+                        continue
                     
-                # Call the agent
-                agent_result = self._call_agent(
-                    agent_role,
-                    f"""
+                    # Call the agent
+                    agent_result = self._call_agent(
+                        agent_role,
+                        f"""
 Task: {task.get('description', '')}
 
 Context:
@@ -285,33 +285,33 @@ Context:
 
 Execute this task and provide detailed results.
 """,
-                    task.get("output_format", "text")
-                )
+                        task.get("output_format", "text")
+                    )
                     
-                results[task_id] = {
-                    "agent": agent_role.value,
-                    "result": agent_result,
-                    "status": "completed"
-                }
-            else:
-                results[task_id] = {"error": "No agents specified for task"}
+                    results[task_id] = {
+                        "agent": agent_role.value,
+                        "result": agent_result,
+                        "status": "completed"
+                    }
+                else:
+                    results[task_id] = {"error": "No agents specified for task"}
         
-    else:
-        # It's a dict of tasks (original format)
-        for task_id, task_info in assignments.items():
-            print(f" Executing task: {task_id}")
+        else:
+            # It's a dict of tasks (original format)
+            for task_id, task_info in assignments.items():
+                print(f" Executing task: {task_id}")
                 
-            # Determine which agent to use
-            agent_role = self._map_task_to_agent(task_info.get("task_type", ""))
+                # Determine which agent to use
+                agent_role = self._map_task_to_agent(task_info.get("task_type", ""))
                 
-            if not agent_role:
-                results[task_id] = {"error": f"No agent available for task type: {task_info.get('task_type')}"}
-                continue
+                if not agent_role:
+                    results[task_id] = {"error": f"No agent available for task type: {task_info.get('task_type')}"}
+                    continue
                 
-            # Call the agent
-            agent_result = self._call_agent(
-                agent_role,
-                f"""
+                # Call the agent
+                agent_result = self._call_agent(
+                    agent_role,
+                    f"""
 Task: {task_info.get('description', '')}
 
 Context:
@@ -319,21 +319,21 @@ Context:
 
 Execute this task and provide detailed results.
 """,
-                task_info.get("output_format", "text")
-            )
+                    task_info.get("output_format", "text")
+                )
                 
-            results[task_id] = {
-                "agent": agent_role.value,
-                "result": agent_result,
-                "status": "completed"
-            }
+                results[task_id] = {
+                    "agent": agent_role.value,
+                    "result": agent_result,
+                    "status": "completed"
+                }
         
-    return results
+        return results
     
-def _call_agent(self, role: AgentRole, prompt: str, expected_format: str = "text") -> str:
-    """Call a specific agent with the given prompt"""
+    def _call_agent(self, role: AgentRole, prompt: str, expected_format: str = "text") -> str:
+        """Call a specific agent with the given prompt"""
         
-    agent = self.agents[role]
+        agent = self.agents[role]
         
         agent_prompt = f"""
 You are {agent.name}, the {agent.description}.
