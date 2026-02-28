@@ -31,10 +31,10 @@ class ProfileCard(UIComponent):
         self.position = position
         self.spec = spec
         
-        # Add StatsPanel with proper width constraint
+        # Add StatsPanel with proper width constraint for right side
         stats_x = position[0] + self.PORTRAIT_SIZE + self.PADDING * 2
         stats_y = position[1] + self.PORTRAIT_SIZE + self.PADDING
-        self.stats_panel = StatsPanel(slime, (stats_x, stats_y), width=self.TEXT_AREA_WIDTH)
+        self.stats_panel = StatsPanel(slime, (stats_x, stats_y), width=100)  # Smaller width for right side
 
     def update(self, dt_ms: int):
         """No periodic updates needed for the card itself."""
@@ -70,19 +70,19 @@ class ProfileCard(UIComponent):
         render_text(surface, self.slime.name, 
                    (text_x, y + 12), size=16, bold=True)
         render_text(surface, f"Lv.{self.slime.level}",
-                   (x + self.WIDTH - 50, y + 12), size=14, color=(200, 200, 100))
+                   (text_x, y + 26), size=14, color=(200, 200, 100))
         render_text(surface, f"Gen {self.slime.generation}",
-                    (text_x, y + 26), size=12, color=(160, 160, 180))
+                    (text_x, y + 40), size=12, color=(160, 160, 180))
         
         # XP Bar (constrained to text area)
-        xp_rect = pygame.Rect(text_x, y + 36, self.TEXT_AREA_WIDTH, 4)
+        xp_rect = pygame.Rect(text_x, y + 50, self.TEXT_AREA_WIDTH // 2, 4)
         pygame.draw.rect(surface, (40, 40, 50), xp_rect)
         xp_pct = min(1.0, self.slime.experience / self.slime.xp_to_next_level)
         if xp_pct > 0:
             fill_rect = pygame.Rect(xp_rect.x, xp_rect.y, int(xp_rect.width * xp_pct), xp_rect.height)
             pygame.draw.rect(surface, (100, 200, 100), fill_rect)
 
-        # Team & Culture badges
+        # Team & Culture badges (below XP bar)
         team_color = {
             TeamRole.DUNGEON:    (180, 60,  60),
             TeamRole.UNASSIGNED: (80,  80,  80),
@@ -97,7 +97,7 @@ class ProfileCard(UIComponent):
             team_color = (60, 60, 60)
             
         render_badge(surface, team_label, 
-                    (x + 80, y + 42), team_color)
+                    (text_x, y + 60), team_color)
         
         # Culture badge
         culture_color = {
@@ -110,10 +110,12 @@ class ProfileCard(UIComponent):
         }.get(self.slime.genome.cultural_base.value, (140, 140, 140))
         
         render_badge(surface, self.slime.genome.cultural_base.value.upper(),
-                    (x + 150, y + 42), culture_color)
+                    (text_x + 70, y + 60), culture_color)
         
-        # Stats via reusable panel
-        self.stats_panel.position = (x + 80, y + 66)
+        # Stats panel on the right side
+        stats_x = x + self.WIDTH - 120  # Position stats on the right side
+        stats_y = y + 12  # Align with name
+        self.stats_panel.position = (stats_x, stats_y)
         self.stats_panel.render(surface)
         
         # Genetic trait hint (bottom) - render as separate badges
