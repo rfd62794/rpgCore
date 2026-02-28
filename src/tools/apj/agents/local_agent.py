@@ -77,6 +77,11 @@ class LocalAgent:
         from src.tools.apj.agents.ollama_client import get_ollama_model
         self.ollama_model = get_ollama_model()
         
+        # Failure detection system
+        from src.tools.apj.agents.failure_detector import FailureDetector, GracefulFailureHandler
+        self.failure_detector = FailureDetector()
+        self.failure_handler = GracefulFailureHandler()
+        
         print(f"""
 ╔══════════════════════════════════════════════════════════════╗
 ║              LOCAL AGENT INITIALIZED                          ║
