@@ -246,14 +246,43 @@ class RaceScene(Scene):
         # 2. Track Terrain Zones (Inside road)
         visible_start = int(self.camera_x / SEGMENT_LENGTH)
         visible_end = visible_start + (arena_w // SEGMENT_LENGTH) + 4
+        
+        # Terrain colors
+        terrain_colors = {
+            "grass": (60, 120, 60),   # base track color
+            "water": (40, 100, 180),  # blue, slightly lighter
+            "rock":  (100, 90, 80),   # grey-brown
+            "mud":   (90, 70, 50),    # dark brown
+        }
+        
         for i in range(visible_start, visible_end):
             if i >= len(self.track): break
             terrain = self.track[i]
-            if terrain == "grass": continue # Just use road base
+            if terrain == "grass": continue  # Just use road base
             
+            # Render terrain as horizontal band inside track
+            terrain_color = terrain_colors.get(terrain, (60, 60, 60))
             rect = pygame.Rect(i * SEGMENT_LENGTH - self.camera_x, track_y, SEGMENT_LENGTH, track_h)
-            color = (30, 50, 80) if terrain == "water" else (60, 60, 60) # Rock is lighter grey
-            pygame.draw.rect(surface, color, rect)
+            pygame.draw.rect(surface, terrain_color, rect)
+            
+            # Add terrain boundary marker at transitions
+            if i > visible_start and terrain != self.track[i-1]:
+                marker_x = i * SEGMENT_LENGTH - self.camera_x
+                if 0 < marker_x < arena_w:
+                    # Dashed vertical line at terrain boundary
+                    for y in range(track_y, track_y + track_h, 10):
+                        pygame.draw.line(surface, (80, 80, 80), (marker_x, y), (marker_x, y + 5), 1)
+                    
+                    # Terrain label
+                    label_text = terrain.upper()
+                    if terrain == "water": label_text = "~ POND"
+                    elif terrain == "rock": label_text = "▲ ROCKS"
+                    elif terrain == "mud": label_text = "◼ MUD"
+                    
+                    # Simple text rendering for terrain label
+                    font = pygame.font.Font(None, 10)
+                    text_surface = font.render(label_text, True, (200, 200, 200))
+                    surface.blit(text_surface, (marker_x + 5, track_y + 5))
             
         # 3. Track Borders & Lanes
         # Top/Bottom borders
