@@ -31,6 +31,7 @@ class RaceScene(Scene):
             
         self.engine: Optional[RaceEngine] = None
         self.track = generate_track(3000)
+        self.terrain_zones = generate_zones(3000)
         self.renderer = SlimeRenderer()
         self.minimap = RaceMinimap(spec)
         self.hud = RaceHUD(spec, self.layout)
