@@ -48,7 +48,10 @@ class TeamMembersList(list):
                 result = self._team_ref._roster_ref._roster_slimes.get(entry.slime_id)
                 print(f"DEBUG: Found RosterSlime: {result}")
                 return result
-        print(f"DEBUG: Returning entry as fallback")
+            else:
+                print(f"DEBUG: _team_ref exists but no _roster_ref")
+        else:
+            print(f"DEBUG: No _team_ref")
         return entry
 
 class TeamRole(Enum):
@@ -183,6 +186,7 @@ class Team:
                     # Add to team members if not already there
                     if entry not in self.members:
                         self.members.append(entry)
+                    print(f"DEBUG: Updated existing entry {slime_id} to team {self.role}")
                     return True
         else:
             slime_id = slime_or_id
