@@ -38,6 +38,13 @@ class FileRecord:
     functions: list[FunctionRecord] = field(default_factory=list)
     imports: list[ImportRecord] = field(default_factory=list)
     line_count: int = 0
+    
+    # NEW FIELDS - OPTIONAL, BACKWARD COMPATIBLE
+    file_purpose: str | None = None      # "system:ecs", "demo:racing", "ui", etc
+    demo_name: str | None = None         # "racing", "dungeon", "tower_defense", etc
+    system_name: str | None = None       # "ecs", "genetics", "physics", etc
+    content_summary: str | None = None   # One-line summary of what file does
+    dependencies: list[str] | None = None # Other files this depends on
 
 @dataclass
 class SymbolMap:
