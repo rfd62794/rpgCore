@@ -79,11 +79,13 @@ class RaceHUD:
             racer_text = f"{racer.name}: {gap_text}"
             self._render_text(surface, racer_text, (gap_x, gap_y), size="sm", color=self.spec.color_text_dim)
     
-    def _render_text(self, surface, text, pos, size="md", centered=False, color=(255, 255, 255), right_aligned=False):
+    def _render_text(self, surface, text, pos, size="md", centered=False, color=(255, 255, 255), right_aligned=False, bold=False):
         """Simple text rendering helper."""
         try:
             font_sizes = {"xs": 10, "sm": 12, "md": 14, "lg": 16, "xl": 18, "hd": 24}
             font = pygame.font.Font(None, font_sizes.get(size, 14))
+            if bold:
+                font.set_bold(True)
             text_surface = font.render(text, True, color)
             
             if centered:
