@@ -122,6 +122,11 @@ def test_registry_centralization():
     assert snapshot_result.success, f"World snapshot failed: {snapshot_result.error}"
     
     snapshot = snapshot_result.value
+    # Check that we have at least our 3 registered entities
+    registered_entity_ids = [e.entity_id for e in snapshot.entities]
+    expected_ids = ["entity_1", "entity_2", "entity_3"]
+    for expected_id in expected_ids:
+        assert expected_id in registered_entity_ids, f"Expected entity {expected_id} not found in registry"
     assert len(snapshot.entities) >= 3  # At least our 3 entities
     assert snapshot.game_active == True
     print("✅ World snapshot contains all entities")
