@@ -5,6 +5,7 @@ Continuously works through tasks until completion without human intervention
 
 import logging
 import time
+import asyncio
 from typing import Dict, List, Any, Optional
 from dataclasses import dataclass, field
 from enum import Enum
@@ -13,9 +14,12 @@ import uuid
 import json
 
 from .a2a_communication import A2A_MANAGER, MessageType, MessagePriority
-from .agent_registry import AGENT_REGISTRY
+from .agent_registry import AGENT_REGISTRY, AgentRegistry
 from .child_agent import CHILD_AGENT_MANAGER
 from .agent_boot import AGENT_BOOT_MANAGER
+from .task_classifier import TaskClassifier
+from .task_router import TaskRouter
+from .specialist_executors import get_executor_for_agent
 
 # Import extended components
 try:
@@ -112,6 +116,12 @@ class AutonomousSwarm:
         self.learning_system = SwarmLearning() if SwarmLearning else None
         self.monitor = SwarmMonitor() if SwarmMonitor else None
         
+        # Initialize routing components
+        self.task_classifier = TaskClassifier()
+        self.registry = AGENT_REGISTRY
+        self.registry.initialize_specialists()  # Register all specialists
+        self.task_router = TaskRouter(self.registry, self.agent_workloads, self.self_healer)
+        
         # Performance tracking
         self.task_durations: Dict[str, float] = {}
         self.agent_success_rates: Dict[str, float] = {}
@@ -196,175 +206,72 @@ class AutonomousSwarm:
                         break
                 
                 if deps_resolved:
-                    tasks_at_level.append(step.id)
-            
-            if not tasks_at_level:
-                # Break remaining circular dependencies
-                for step in remaining_steps:
-                    if step.dependencies:
-                        # Clear problematic dependencies
-                        step.dependencies = []
-                        tasks_at_level.append(step.id)
-                        logger.warning(f"⚠️ Circular dependency detected or missing dependencies - cleared dependencies for {step.id}")
-                        break
-            
-            levels[current_level] = tasks_at_level
-            
-            # Remove processed tasks
-            remaining_steps = [s for s in remaining_steps if s.id not in tasks_at_level]
-            current_level += 1
+                    self.task_queue.append(task_id)
         
-        if iterations >= max_iterations:
-            logger.warning("⚠️ Max iterations reached in dependency calculation")
-        
-        return levels
+        logger.info(f"✅ Classified {len(self.tasks)} tasks")
     
-    def _build_task_queue(self):
-        """Build ordered task queue based on dependencies and priority"""
+    async def _execute_autonomous_round_robin(self) -> None:
+        """Execute tasks with intelligent routing and parallel execution"""
         
-        # Simple topological sort with priority ordering
-        remaining_tasks = list(self.tasks.values())
-        levels = self._calculate_dependency_levels(remaining_tasks)
-        
-        self.task_queue = []
-        
-        for level in levels.values():
-            for task_id in level:
-                self.task_queue.append(task_id)
-    
-    def start_autonomous_execution(self) -> bool:
-        """Start autonomous round-robin execution with specialized agents"""
-        
-        if self.state == SwarmState.ACTIVE:
-            logger.warning("⚠️ Swarm is already active")
-            return False
-        
-        if not self.task_queue:
-            logger.warning("⚠️ No tasks in queue to execute")
-            return False
-        
-        self.state = SwarmState.ACTIVE
-        self.start_time = datetime.now()
-        
-        print(f"🚀 Starting autonomous execution with {len(self.task_queue)} tasks")
-        print(f"🤖 {len(self.active_tasks)} agents available for work")
-        
-        # Start execution in background thread
-        import threading
-        self.execution_thread = threading.Thread(target=self._execute_autonomous_round_robin, daemon=True)
-        self.execution_thread.start()
-        
-        return True
-    
-    def _execute_autonomous_round_robin(self):
-        """Execute tasks in round-robin fashion with specialized agents"""
-        
-        print("🔄 Starting round-robin execution...")
+        logger.info("🔄 Starting intelligent round-robin execution")
         
         while self.state == SwarmState.ACTIVE and self.task_queue:
             try:
-                # Get next task
-                task_id = self.task_queue.pop(0)
-                task = self.tasks[task_id]
+                # Get pending tasks with dependencies met
+                pending = [self.tasks[task_id] for task_id in self.task_queue 
+                         if self._can_execute(task_id)]
                 
-                print(f"🎯 Executing task: {task.title}")
-                print(f"🤖 Agent: {task.assigned_agent} | Priority: {task.priority}")
+                if not pending:
+                    # No tasks ready to run; wait a bit
+                    await asyncio.sleep(0.1)
+                    continue
                 
-                # Start timing
-                task_start_time = datetime.now()
+                # Route each task to best available agent
+                assignments = []  # List of (task_id, agent_name) tuples
                 
-                # Execute task based on agent type
-                try:
-                    if task.assigned_agent == "ecs_specialist":
-                        self._execute_ecs_task(task)
-                    elif task.assigned_agent == "dungeon_specialist":
-                        self._execute_dungeon_task(task)
-                    elif task.assigned_agent == "tower_defense_specialist":
-                        self._execute_tower_defense_task(task)
-                    elif task.assigned_agent == "code_quality_specialist":
-                        self._execute_code_quality_task(task)
-                    elif task.assigned_agent == "performance_specialist":
-                        self._execute_performance_task(task)
-                    elif task.assigned_agent == "testing_specialist":
-                        self._execute_testing_task(task)
-                    elif task.assigned_agent == "documentation_specialist":
-                        self._execute_documentation_task(task)
-                    elif task.assigned_agent == "architecture_specialist":
-                        self._execute_architecture_task(task)
-                    elif task.assigned_agent == "genetics_specialist":
-                        self._execute_genetics_task(task)
-                    elif task.assigned_agent == "ui_specialist":
-                        self._execute_ui_task(task)
-                    elif task.assigned_agent == "integration_specialist":
-                        self._execute_integration_task(task)
-                    elif task.assigned_agent == "debugging_specialist":
-                        self._execute_debugging_task(task)
-                    else:
-                        self._execute_generic_task(task)
+                for task in pending:
+                    agent_name = self.task_router.route_task(task, task.classification)
                     
-                    # Record success
-                    task_duration = (datetime.now() - task_start_time).total_seconds()
-                    self.task_durations[task_id] = task_duration
+                    if agent_name is None:
+                        # Task deferred (agent busy), skip for now
+                        continue
                     
-                    if self.learning_system:
-                        self.learning_system.record_success(
-                            task.assigned_agent, 
-                            task.agent_type, 
-                            f"standard_{task.agent_type}_approach"
-                        )
+                    # Check if we've hit max concurrent tasks
+                    active_count = sum(1 for w in self.agent_workloads.values() if w.current_task)
+                    if active_count >= self.max_concurrent_tasks:
+                        break  # Stop assigning; execute what we have
                     
-                    # Mark as completed
-                    task.status = TaskStatus.COMPLETED
-                    task.completed_at = datetime.now()
-                    self.completed_tasks.append(task_id)
+                    assignments.append((task.id, agent_name))
                     
-                    print(f"✅ Completed: {task.title}")
+                    # Update task state
+                    task.status = TaskStatus.IN_PROGRESS
+                    task.assigned_agent = agent_name
+                    self.agent_workloads[agent_name].current_task = task.id
                     
-                except Exception as e:
-                    # Handle failure with self-healing
-                    task_duration = (datetime.now() - task_start_time).total_seconds()
-                    self.task_durations[task_id] = task_duration
-                    
-                    print(f"❌ Task failed: {e}")
-                    
-                    # Try to recover
-                    if self.self_healer:
-                        recovered = self.self_healer.detect_and_recover(
-                            task.assigned_agent, e, task_id
-                        )
-                        
-                        if recovered:
-                            print(f"🔄 Recovery successful - retrying task")
-                            # Put task back in queue for retry
-                            self.task_queue.insert(0, task_id)
-                        else:
-                            print(f"💀 Recovery failed - marking as failed")
-                            task.status = TaskStatus.FAILED
-                            task.error = str(e)
-                            task.completed_at = datetime.now()
-                            self.failed_tasks.append(task_id)
-                            
-                            if self.learning_system:
-                                self.learning_system.record_failure(
-                                    task.assigned_agent,
-                                    task.agent_type,
-                                    f"standard_{task.agent_type}_approach",
-                                    str(e)
-                                )
-                    else:
-                        # No self-healer available - mark as failed
-                        task.status = TaskStatus.FAILED
-                        task.error = str(e)
-                        task.completed_at = datetime.now()
-                        self.failed_tasks.append(task_id)
+                    # Remove from queue
+                    if task.id in self.task_queue:
+                        self.task_queue.remove(task.id)
                 
-                # Update monitoring
-                if self.monitor:
-                    swarm_state = self._get_swarm_state()
-                    self.monitor.collect_metrics(swarm_state)
+                if not assignments:
+                    # No tasks ready to run; wait a bit
+                    await asyncio.sleep(0.1)
+                    continue
+                
+                # Execute assigned tasks concurrently
+                logger.info(f"🎯 Executing {len(assignments)} tasks concurrently")
+                print(f"🎯 Executing {len(assignments)} tasks concurrently")
+                
+                results = await asyncio.gather(*[
+                    self._execute_task_async(task_id, agent_name)
+                    for task_id, agent_name in assignments
+                ])
+                
+                # Track results
+                for result in results:
+                    self._update_after_execution(result)
                 
                 # Small delay to prevent overwhelming
-                time.sleep(0.1)
+                await asyncio.sleep(0.1)
                 
             except Exception as e:
                 logger.error(f"❌ Task execution failed: {e}")
@@ -372,12 +279,105 @@ class AutonomousSwarm:
         
         self.state = SwarmState.IDLE
         print("🎉 All tasks completed!")
+        logger.info("🎉 Autonomous swarm execution completed")
     
-    def _execute_ecs_task(self, task):
-        """Execute ECS-related task"""
-        print(f"🎮 ECS Specialist working on: {task.title}")
-        # Simulate ECS work
-        self._simulate_work("ecs", task.estimated_hours * 0.1)
+    async def _execute_task_async(self, task_id: str, agent_name: str) -> Any:
+        """Execute a single task asynchronously"""
+        
+        task = self.tasks[task_id]
+        start_time = asyncio.get_event_loop().time()
+        
+        try:
+            logger.info(f"🎯 Executing task: {task.title}")
+            print(f"🎯 Executing task: {task.title}")
+            print(f"🤖 Agent: {agent_name} | Priority: {task.priority}")
+            
+            # Get executor for agent
+            executor = get_executor_for_agent(agent_name)
+            if not executor:
+                # Fallback to generic execution
+                result = await self._execute_generic_task_async(task)
+            else:
+                # Use specialist executor
+                result = await executor(task)
+            
+            # Record success
+            duration = asyncio.get_event_loop().time() - start_time
+            self.task_durations[task_id] = duration
+            
+            if self.learning_system:
+                self.learning_system.record_success(
+                    agent_name, 
+                    task.agent_type, 
+                    f"standard_{task.agent_type}_approach"
+                )
+            
+            # Mark as completed
+            task.status = TaskStatus.COMPLETED
+            task.completed_at = datetime.now()
+            self.completed_tasks.append(task_id)
+            
+            # Update workload
+            if agent_name in self.agent_workloads:
+                self.agent_workloads[agent_name].current_task = None
+                self.agent_workloads[agent_name].tasks_completed += 1
+            
+            print(f"✅ Completed: {task.title}")
+            logger.info(f"✅ Completed task {task_id}")
+            
+            return result
+            
+        except Exception as e:
+            # Handle failure with self-healing
+            duration = asyncio.get_event_loop().time() - start_time
+            self.task_durations[task_id] = duration
+            
+            print(f"❌ Task failed: {e}")
+            logger.error(f"❌ Task {task_id} failed: {e}")
+            
+            # Try to recover
+            if self.self_healer:
+                recovered = self.self_healer.detect_and_recover(
+                    agent_name, e, task_id
+                )
+                
+                if recovered:
+                    print(f"🔄 Recovery successful - retrying task")
+                    logger.info(f"🔄 Task {task_id} recovery successful - retrying")
+                    # Put task back in queue for retry
+                    self.task_queue.insert(0, task_id)
+                else:
+                    print(f"💀 Recovery failed - marking as failed")
+                    logger.error(f"💀 Task {task_id} recovery failed")
+                    task.status = TaskStatus.FAILED
+                    task.error = str(e)
+                    task.completed_at = datetime.now()
+                    self.failed_tasks.append(task_id)
+                    
+                    if self.learning_system:
+                        self.learning_system.record_failure(
+                            agent_name,
+                            task.agent_type,
+                            f"standard_{task.agent_type}_approach",
+                            str(e)
+                        )
+            else:
+                # No self-healer available - mark as failed
+                task.status = TaskStatus.FAILED
+                task.error = str(e)
+                task.completed_at = datetime.now()
+                self.failed_tasks.append(task_id)
+            
+            # Update workload
+            if agent_name in self.agent_workloads:
+                self.agent_workloads[agent_name].current_task = None
+            
+            # Update monitoring
+            if self.monitor:
+                swarm_state = self._get_swarm_state()
+                self.monitor.collect_metrics(swarm_state)
+            
+            return {"success": False, "error": str(e)}
     
     def _execute_dungeon_task(self, task):
         """Execute dungeon demo task"""
