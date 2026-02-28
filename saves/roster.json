@@ -57,7 +57,7 @@
     {
       "slime_id": "sage_3",
       "name": "Sage 3",
-      "team": "unassigned",
+      "team": "dungeon",
       "locked": false,
       "alive": true,
       "genome": {
