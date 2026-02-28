@@ -230,6 +230,7 @@ Confidence should reflect how sure you are (0.5 = unsure, 0.9 = very sure).
                     explanation=data.get("explanation", "LLM parsing")
                 )
         except Exception as e:
+            error_msg = str(e)
             pass
         
         return ParsedCommand(
@@ -238,7 +239,7 @@ Confidence should reflect how sure you are (0.5 = unsure, 0.9 = very sure).
             demo=None,
             target=None,
             confidence=0.0,
-            explanation=f"LLM parsing failed: {str(e)}"
+            explanation=f"LLM parsing failed: {error_msg}"
         )
     
     def _extract_demo(self, user_input: str) -> Optional[str]:
