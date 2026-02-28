@@ -16,6 +16,9 @@ class TowerDefenseBehaviorSystem:
                tower: TowerComponent, dt: float) -> Vector2:
         """Determine tower behavior based on slime genetics"""
         
+        # Assign tower component to creature for reference
+        slime.tower_component = tower
+        
         # Tower type is determined by genetics
         if slime.genome.curiosity > 0.7:
             return self._scout_tower_behavior(slime, tower, dt)
