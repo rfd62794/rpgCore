@@ -448,7 +448,7 @@ class TowerDefenseScene(Scene):
             
             # Draw tower (simple circle for now)
             pygame.draw.circle(surface, (x_pos + self.tile_size // 2, y_pos + self.tile_size // 2), 
-                           self.tile_size // 3, self.spec.color_tower)
+                           self.tile_size // 3, self.spec.color_success)
             
             # Draw tower type indicator
             if hasattr(tower, 'tower_component'):
@@ -470,19 +470,19 @@ class TowerDefenseScene(Scene):
             # Draw enemy (simple circle for now)
             pygame.draw.circle(surface, 
                            (int(enemy.kinematics.position.x), int(enemy.kinematics.position.y)), 
-                           8, self.spec.color_enemy)
+                           8, self.spec.color_danger)
     
     def _render_projectiles(self, surface) -> None:
         """Render projectiles"""
         for projectile in self.collision_system.projectiles:
             pygame.draw.circle(surface, 
                            (int(projectile.position.x), int(projectile.position.y)), 
-                           3, self.spec.color_projectile)
+                           3, self.spec.color_accent)
     
     def _render_ui(self, surface) -> None:
         """Render UI elements"""
         # Draw HUD
-        pygame.draw.rect(surface, (0, 0, self.spec.screen_width, 60), self.spec.color_panel)
+        pygame.draw.rect(surface, (0, 0, self.spec.screen_width, 60), self.spec.color_surface)
         
         # Update labels
         self.wave_label.set_text(f"Wave: {self.session.wave}")
@@ -524,7 +524,7 @@ class TowerDefenseScene(Scene):
         # Draw panel
         pygame.draw.rect(surface, 
                        (self.spec.screen_width - 300, 0, 300, self.spec.screen_height), 
-                       self.spec.color_panel)
+                       self.spec.color_surface)
         
         # Draw title
         title = Label("Select Tower", self.spec.color_text, 20)
@@ -552,7 +552,7 @@ class TowerDefenseScene(Scene):
         pygame.draw.rect(surface, 
                        (self.spec.screen_width - 200, 
                         self.spec.screen_height // 2 - 75, 200, 150), 
-                       self.spec.color_panel)
+                       self.spec.color_surface)
         
         # Draw title
         title = Label(f"Upgrade {self.selected_tower.name}", self.spec.color_text, 16)
@@ -573,7 +573,7 @@ class TowerDefenseScene(Scene):
         pygame.draw.rect(surface, 
                        (self.spec.screen_width // 2 - 200, 
                         self.spec.screen_height // 2 - 100, 400, 200), 
-                       self.spec.color_panel)
+                       self.spec.color_surface)
         
         # Draw title
         title = Label("GAME OVER", self.spec.color_text, 32)
