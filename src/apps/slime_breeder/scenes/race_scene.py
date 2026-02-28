@@ -14,6 +14,7 @@ from src.shared.racing.race_engine import RaceEngine
 from src.shared.racing.race_track import generate_track, generate_zones, TerrainType, SEGMENT_LENGTH
 from src.shared.racing.minimap import RaceMinimap
 from src.shared.racing.race_hud import RaceHUD
+from src.shared.racing.race_camera import RaceCamera
 from src.apps.slime_breeder.ui.slime_renderer import SlimeRenderer
 from src.shared.genetics.inheritance import generate_random
 
@@ -35,18 +36,13 @@ class RaceScene(Scene):
         self.renderer = SlimeRenderer()
         self.minimap = RaceMinimap(spec)
         self.hud = RaceHUD(spec, self.layout)
+        self.camera = RaceCamera()
         
         self.ui_components = []
         self._setup_ui()
         
         # Camera & Animation State
         self.start_countdown = 3.0
-        self.camera_x = 0.0
-        self.camera_vel = 0.0
-        self.camera_zoom = 1.0
-        self.target_zoom = 1.0
-        
-        # Shake state
         self.shake_mag = 0.0
         self.shake_timer = 0.0
         
@@ -59,28 +55,18 @@ class RaceScene(Scene):
         self.track_border_width = 8
         self.lane_count = 4
         
-        # Fixed slime render size - zoom affects world coordinates, not render size
-        self.SLIME_RENDER_RADIUS = 24  # Fixed pixels always
-        
-        # Zoom levels
-        self.ZOOM_NORMAL = 1.0   # standard follow
-        self.ZOOM_OUT_MAX = 0.55  # show full pack
-        self.ZOOM_FINISH = 1.3   # tighten on final stretch
-        
         # Race state
         self.current_lap = 1
         self.total_laps = 3
         self.terrain_ahead = None
     
     def world_to_screen_x(self, world_x: float) -> float:
-        """Convert world X coordinate to screen X with zoom."""
-        screen_center_x = self.layout.arena.width // 2
-        return (world_x - self.camera_x) * self.camera_zoom + screen_center_x
+        """Convert world X coordinate to screen X using camera."""
+        return self.camera.to_screen_x(world_x, self.layout.arena.x)
     
     def world_to_screen_y(self, lane: int, track_top: int, track_height: int) -> int:
         """Convert lane to screen Y coordinate (never affected by zoom)."""
-        lane_h = track_height // self.lane_count
-        return int(track_top + (lane + 0.5) * lane_h)
+        return self.camera.to_screen_y(lane, track_top, track_height)
 
     def _setup_ui(self):
         self.ui_components = []
@@ -101,10 +87,8 @@ class RaceScene(Scene):
             
         self.engine = RaceEngine(participants, self.track, length=3000)
         self.start_countdown = 3.0
-        self.camera_x = 0.0
-        self.camera_vel = 0.0
-        self.camera_zoom = 1.0
-        self.target_zoom = 1.0
+        self.camera.x = 0.0
+        self.camera.zoom_x = 1.0
 
     def trigger_shake(self, magnitude: float, duration: float):
         self.shake_mag = magnitude
