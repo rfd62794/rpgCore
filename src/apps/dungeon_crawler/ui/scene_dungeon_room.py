@@ -191,28 +191,27 @@ class DungeonRoomScene(Scene):
         )
 
     def render(self, surface: pygame.Surface) -> None:
-        # Diagnostic prints
-        print(f"DEBUG: DungeonRoomScene.render called on surface {surface.get_size()}")
-        print(f"DEBUG: grid_offset_x={self.grid_offset_x}, grid_offset_y={self.grid_offset_y}")
-        print(f"DEBUG: main_area={self.layout.main_area}")
-        
         surface.fill(self.spec.color_bg)
         
         if not self.session or not self.session.floor:
-            print("DEBUG: No session or floor in render")
             return
 
-        # 1. Grid Background
+        # 1. Draw UI Background Panels first
+        for comp in self.ui_components:
+            if isinstance(comp, Panel):
+                comp.render(surface)
+
+        # 2. Draw Grid & World Content
         grid_w = self.grid_cols * self.tile_size
         grid_h = self.grid_rows * self.tile_size
         pygame.draw.rect(surface, (30, 30, 35), (self.grid_offset_x - 10, self.grid_offset_y - 10, grid_w + 20, grid_h + 20))
         
-        # 2. Torches
+        # Torches
         torch_color = (int(200 * self.torch_flicker), int(100 * self.torch_flicker), 0)
         for tx, ty in [(self.grid_offset_x-10, self.grid_offset_y-10), (self.grid_offset_x+grid_w+10, self.grid_offset_y-10)]:
             pygame.draw.circle(surface, torch_color, (tx, ty), 8)
         
-        # 3. Grid Tiles
+        # Grid Tiles
         for r in range(self.grid_rows):
             for c in range(self.grid_cols):
                 rect = self._get_tile_rect(c, r)
@@ -220,16 +219,16 @@ class DungeonRoomScene(Scene):
                 pygame.draw.rect(surface, color, rect)
                 pygame.draw.rect(surface, (15, 10, 10), rect, 1)
 
-        # 4. Hero
+        # 3. Hero
         hx = self.grid_offset_x + (self.hero_grid_pos[0] + 0.5) * self.tile_size
         hy = self.grid_offset_y + (self.hero_grid_pos[1] + 0.5) * self.tile_size
         pygame.draw.rect(surface, self.spec.color_accent_alt, (hx - 15, hy - 20, 30, 40), border_radius=4)
 
-        # 5. Enemy
+        # 4. Enemy
         if not self.enemy_defeated:
             self.slime_renderer.render(surface, self.slime_entity)
             
-        # 6. Exit Flag (at 7,7)
+        # 5. Exit Flag (at 7,7)
         if self.enemy_defeated:
             flag_rect = self._get_tile_rect(7, 7)
             fx, fy = flag_rect.centerx, flag_rect.centery
@@ -240,8 +239,10 @@ class DungeonRoomScene(Scene):
             if self.hero_grid_pos == [7, 7]:
                 self._on_run_complete("victory")
 
+        # 6. Interactive UI & Labels on top
         for comp in self.ui_components:
-            comp.render(surface)
+            if not isinstance(comp, Panel):
+                comp.render(surface)
 
     def on_exit(self):
         pass
