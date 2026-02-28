@@ -234,8 +234,10 @@ Use the SwarmTaskAssignment schema for structured output.
         
         # Step 2: Execute task assignments
         if hasattr(coordinator_result, 'tasks'):
+            # Pydantic object format
             return self._execute_swarm_tasks(coordinator_result.tasks, context)
         elif isinstance(coordinator_result, dict) and 'tasks' in coordinator_result:
+            # Dict format
             return self._execute_swarm_tasks(coordinator_result['tasks'], context)
         else:
             # Fallback: single agent execution
@@ -264,8 +266,21 @@ Use the SwarmTaskAssignment schema for structured output.
         results = {}
         
         for task in tasks:
-            task_id = task.get("task_id", f"task_{len(results)}")
-            agent_type = task.get("agent", "analyzer")  # Default to analyzer
+            # Handle both dict and Pydantic object formats
+            if hasattr(task, 'task_id'):
+                # Pydantic object format
+                task_id = task.task_id
+                agent_type = task.agent
+                description = task.description
+                focus = getattr(task, 'focus', None)
+            else:
+                # Dict format
+                task_id = task.get("task_id", f"task_{len(results)}")
+                agent_type = task.get("agent", "analyzer")
+                description = task.get("description", "")
+                focus = task.get("focus", None)
+            
+            print(f" Executing task: {task_id}")
             
             # Normalize agent type
             agent_type = self._normalize_agent_type(agent_type)
@@ -276,13 +291,13 @@ Use the SwarmTaskAssignment schema for structured output.
             
             # Execute task using BaseAgent
             task_prompt = f"""
-Task: {task.get('description', '')}
+Task: {description}
 
 Context:
 {json.dumps(context, indent=2)}
 
 Execute this task and provide detailed results.
-Focus on: {task.get('focus', 'general analysis')}
+Focus: {focus if focus else 'general analysis'}
 """
             
             try:
