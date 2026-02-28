@@ -234,7 +234,11 @@ Type 'quit' or 'exit' to leave.
             # Check for specific task execution
             user_lower = user_input.lower()
             
-            if "ecs" in user_lower and ("rendering" in user_lower or "system" in user_lower):
+            if "autonomous" in user_lower or "round robin" in user_lower:
+                return self._execute_autonomous_swarm(user_input)
+            elif "workflow" in user_lower:
+                return self._execute_workflow(user_input)
+            elif "ecs" in user_lower and ("rendering" in user_lower or "system" in user_lower):
                 return self._execute_ecs_rendering_task()
             elif "dungeon" in user_lower:
                 return self._execute_dungeon_task()
@@ -277,6 +281,112 @@ Type 'quit' or 'exit' to leave.
             
         except Exception as e:
             return f"❌ Swarm processing failed: {e}"
+    
+    def _execute_autonomous_swarm(self, user_input: str) -> str:
+        """Execute autonomous swarm with round-robin task execution"""
+        
+        try:
+            # Determine which workflow to run
+            if "ecs" in user_input:
+                workflow_name = "ecs_rendering"
+            elif "dungeon" in user_input:
+                workflow_name = "dungeon_demo"
+            elif "tower defense" in user_input:
+                workflow_name = "tower_defense"
+            elif "complete" in user_input or "all" in user_input:
+                workflow_name = "complete_project"
+            else:
+                # Default to ECS rendering
+                workflow_name = "ecs_rendering"
+            
+            # Get workflow tasks
+            from .swarm_workflows import get_workflow
+            workflow_tasks = get_workflow(workflow_name)
+            
+            # Define workflow in autonomous swarm
+            success = self.autonomous_swarm.define_task_workflow(workflow_name, workflow_tasks)
+            
+            if not success:
+                return f"❌ Failed to define workflow: {workflow_name}"
+            
+            # Start autonomous execution
+            print(f"\n🚀 STARTING AUTONOMOUS SWARM: {workflow_name.upper()}")
+            print("=" * 60)
+            print(f"📋 Tasks: {len(workflow_tasks)}")
+            print(f"⏱️  Estimated: {sum(task['estimated_hours'] for task in workflow_tasks):.1f} hours")
+            print(f"🔄 Mode: Round-robin execution until completion")
+            print("=" * 60)
+            
+            # Start execution (this will run until completion)
+            execution_success = self.autonomous_swarm.start_autonomous_execution()
+            
+            if execution_success:
+                # Get final status
+                status = self.autonomous_swarm.get_swarm_status()
+                
+                return f"""
+🎯 **AUTONOMOUS SWARM EXECUTION COMPLETED**
+
+📊 **Final Status**:
+• State: {status['state']}
+• Progress: {status['progress']['progress_percentage']}
+• Completed: {status['progress']['completed']}/{status['progress']['total_tasks']}
+• Failed: {status['progress']['failed']}
+• Runtime: {status['runtime']}
+
+🤖 **Agent Performance**:
+{chr(10).join(f"• {agent}: {data['tasks_completed']} tasks, {data['efficiency']} efficiency" 
+              for agent, data in status['agents'].items() if data['tasks_completed'] > 0)}
+
+🎉 **Workflow '{workflow_name}' completed autonomously!**
+The swarm worked round-robin through all tasks until completion.
+"""
+            else:
+                return f"❌ Autonomous swarm execution failed for workflow: {workflow_name}"
+                
+        except Exception as e:
+            return f"❌ Failed to execute autonomous swarm: {e}"
+    
+    def _execute_workflow(self, user_input: str) -> str:
+        """Execute specific workflow"""
+        
+        try:
+            # Parse workflow name from input
+            workflow_name = None
+            for available in self.available_workflows:
+                if available in user_input.lower():
+                    workflow_name = available
+                    break
+            
+            if not workflow_name:
+                return f"❌ Please specify a workflow. Available: {', '.join(self.available_workflows)}"
+            
+            # Get workflow summary
+            from .swarm_workflows import get_workflow_summary
+            summary = get_workflow_summary(workflow_name)
+            
+            return f"""
+📋 **WORKFLOW: {workflow_name.upper()}**
+
+📊 **Summary**:
+• Total Tasks: {summary['total_tasks']}
+• Estimated Hours: {summary['total_estimated_hours']:.1f}
+• Critical Path: {summary['critical_path_hours']:.1f} hours
+
+🤖 **Agent Distribution**:
+{chr(10).join(f"• {agent}: {count} tasks" for agent, count in summary['agent_distribution'].items())}
+
+🎯 **Priority Distribution**:
+• Priority 1 (Critical): {summary['priority_distribution'][1]} tasks
+• Priority 2 (High): {summary['priority_distribution'][2]} tasks
+• Priority 3 (High): {summary['priority_distribution'][3]} tasks
+
+💡 **To execute this workflow autonomously, say:**
+"start autonomous {workflow_name} workflow"
+"""
+            
+        except Exception as e:
+            return f"❌ Failed to process workflow: {e}"
     
     def _execute_ecs_rendering_task(self) -> str:
         """Execute ECS Rendering System task"""
