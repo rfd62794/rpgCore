@@ -54,6 +54,7 @@ class BreedingScene(Scene):
         
         # Animation timer
         self.anim_timer = 0.0
+        self._complete_timer = 0.0
         # Input for naming
         self.name_font = pygame.font.Font(None, int(48 * spec.scale_factor))
 
@@ -243,6 +244,7 @@ class BreedingScene(Scene):
         save_roster(self.roster)
         
         self.state = BreedingState.COMPLETE
+        self._complete_timer = 3.0
         self._setup_ui()
 
     def update(self, dt: float):
@@ -256,6 +258,12 @@ class BreedingScene(Scene):
                 self.state = BreedingState.NAMING
                 self.offspring_name = f"Slug-{random.randint(10, 99)}"
                 self._setup_ui()
+                
+        if self.state == BreedingState.COMPLETE:
+            if self._complete_timer > 0:
+                self._complete_timer -= dt
+                if self._complete_timer <= 0:
+                    self.manager.switch_to("garden")
 
     def render(self, surface: pygame.Surface):
         surface.fill(self.spec.color_bg)

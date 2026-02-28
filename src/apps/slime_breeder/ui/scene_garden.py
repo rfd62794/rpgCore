@@ -17,10 +17,24 @@ from src.shared.ui.panel import Panel
 NAMES = ["Mochi", "Pip", "Glimmer", "Bloop", "Sage", "Dew", "Ember", "Fizz", "Lumen", "Nook"]
 
 class GardenScene(GardenSceneBase):
-    def on_garden_enter(self) -> None:
+    def on_enter(self, **kwargs) -> None:
         self.garden_state = GardenState()
         self.renderer = SlimeRenderer()
         
+        # Banner state
+        self._banner_msg = ""
+        self._banner_timer = 0.0
+        self._banner_color = (255, 255, 255)
+        
+        # Context from return
+        run_result = kwargs.get('run_result')
+        race_result = kwargs.get('race_result')
+        
+        if run_result:
+            self._show_banner(f"Run complete — Floor {run_result.floors_cleared}", self.spec.color_success)
+        elif race_result:
+            self._show_banner(f"Race finished — {race_result['position']} place", self.spec.color_success)
+            
         # Respect injected roster if provided (for UI Review)
         if not hasattr(self, "roster") or not self.roster:
             self.roster = load_roster()
@@ -228,6 +242,9 @@ class GardenScene(GardenSceneBase):
                     self.on_selection_changed()
 
     def update_garden(self, dt: float):
+        if self._banner_timer > 0:
+            self._banner_timer -= dt
+            
         mouse_pos = pygame.mouse.get_pos()
         # Only pass cursor if in garden area
         cursor = mouse_pos if self.garden_rect.collidepoint(mouse_pos) else None
@@ -240,6 +257,7 @@ class GardenScene(GardenSceneBase):
             is_selected = (slime in self.selected_entities)
             self.renderer.render(surface, slime, is_selected)
             
+        self._render_banner(surface)
         self._render_team_status_bar(surface)
 
     def _render_team_status_bar(self, surface: pygame.Surface):
@@ -285,6 +303,29 @@ class GardenScene(GardenSceneBase):
         # Store click areas for interaction
         self.dungeon_status_area = pygame.Rect(16, bar_rect.y, center_x - 26, bar_rect.height)
         self.racing_status_area = pygame.Rect(center_x + 10, bar_rect.y, bar_rect.right - center_x - 26, bar_rect.height)
+
+    def _show_banner(self, msg: str, color: Tuple[int, int, int]):
+        self._banner_msg = msg
+        self._banner_color = color
+        self._banner_timer = 3.0
+
+    def _render_banner(self, surface: pygame.Surface):
+        if self._banner_timer <= 0:
+            return
+            
+        alpha = int(min(1.0, self._banner_timer) * 255)
+        banner_h = 40
+        banner_rect = pygame.Rect(self.garden_rect.x, self.garden_rect.y, self.garden_rect.width, banner_h)
+        
+        # BG
+        s = pygame.Surface((banner_rect.width, banner_rect.height), pygame.SRCALPHA)
+        s.fill((*self.spec.color_surface, alpha // 2))
+        surface.blit(s, banner_rect.topleft)
+        
+        # Text
+        from src.shared.ui.profile_card import render_text
+        render_text(surface, self._banner_msg, (banner_rect.centerx, banner_rect.centery), 
+                    size=20, color=(*self._banner_color, alpha), center=True)
 
     def on_exit(self):
         """Cleanup logic."""

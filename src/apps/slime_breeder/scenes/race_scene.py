@@ -62,6 +62,11 @@ class RaceScene(Scene):
         self.current_lap = 1
         self.total_laps = 3
         self.terrain_ahead = None
+        
+        # Results state
+        self._show_results = False
+        self._results_timer = 0.0
+        self._race_results = []
     
     def world_to_screen_x(self, world_x: float) -> float:
         """Convert world X coordinate to screen X using camera."""
@@ -77,7 +82,7 @@ class RaceScene(Scene):
         Panel(self.layout.team_bar, self.spec, variant="surface").add_to(self.ui_components)
         Label("SLIME DERBY", (self.layout.header.centerx, self.layout.header.centery), self.spec, size="lg", bold=True, centered=True).add_to(self.ui_components)
         Button("EXIT", pygame.Rect(self.layout.header.x + 10, self.layout.header.y + 5, 80, self.layout.header.height - 10),
-               lambda: self.manager.switch_to("garden"), self.spec, variant="secondary").add_to(self.ui_components)
+               self._exit_race, self.spec, variant="secondary").add_to(self.ui_components)
 
     def on_enter(self) -> None:
         team = self.roster.teams[TeamRole.RACING].members
@@ -129,6 +134,15 @@ class RaceScene(Scene):
             
             # 3. Speed Lines
             self._update_speed_lines(dt)
+
+            if self.engine.is_finished() and not self._show_results:
+                self._on_race_complete()
+            
+        if self._show_results:
+            self._results_timer -= dt
+            if self._results_timer <= 0:
+                self.manager.switch_to("garden", race_result=self._race_results[0] if self._race_results else None)
+                return
             
         if self.shake_timer > 0:
             self.shake_timer -= dt
@@ -184,6 +198,9 @@ class RaceScene(Scene):
         if self.start_countdown > 0:
             msg = "READY" if self.start_countdown > 2 else "SET" if self.start_countdown > 1 else "GO!"
             Label(msg, (self.spec.screen_width // 2, self.spec.screen_height // 2), self.spec, size="hd", color=(255, 255, 255), centered=True).render(surface)
+
+        if self._show_results:
+            self._render_results_overlay(surface)
 
     def _render_arena_content(self, surface: pygame.Surface):
         # Render within arena bounds
@@ -341,6 +358,51 @@ class RaceScene(Scene):
         for line in self.speed_lines:
             ly = line["y"] - self.layout.arena.y
             pygame.draw.line(surface, (240, 240, 255, 150), (line["x"], ly), (line["x"] + line["len"], ly), 2)
+
+    def _exit_race(self):
+        self.manager.switch_to("garden")
+
+    def _on_race_complete(self):
+        self._show_results = True
+        self._results_timer = 5.0
+        # Rank participants
+        ranked = sorted(self.engine.participants, key=lambda p: p.distance, reverse=True)
+        self._race_results = []
+        for i, p in enumerate(ranked):
+            p.rank = i + 1
+            self._race_results.append({
+                "name": p.slime.name,
+                "position": i + 1
+            })
+
+    def _render_results_overlay(self, surface: pygame.Surface):
+        overlay = pygame.Surface((self.spec.screen_width, self.spec.screen_height), pygame.SRCALPHA)
+        overlay.fill((0, 0, 0, 180))
+        surface.blit(overlay, (0, 0))
+        
+        center_x = self.spec.screen_width // 2
+        y = self.spec.screen_height // 3
+        
+        Label("RACE COMPLETE", (center_x, y), self.spec, size="hd", color=self.spec.color_accent, centered=True).render(surface)
+        y += 60
+        
+        for i, res in enumerate(self._race_results[:4]):
+            color = (255, 215, 0) if i == 0 else (200, 200, 200) if i == 1 else (205, 127, 50) if i == 2 else (255, 255, 255)
+            Label(f"{i+1}st: {res['name']}" if i==0 else f"{i+1}nd: {res['name']}" if i==1 else f"{i+1}rd: {res['name']}" if i==2 else f"{i+1}th: {res['name']}",
+                  (center_x, y), self.spec, size="lg", color=color, centered=True).render(surface)
+            y += 40
+            
+        y += 20
+        Label("Returning to garden...", (center_x, y), self.spec, size="md", color=self.spec.color_text_dim, centered=True).render(surface)
+        
+        # Countdown bar
+        bar_w = 200
+        bar_h = 8
+        bar_x = center_x - bar_w // 2
+        bar_y = y + 30
+        pygame.draw.rect(surface, (60, 60, 60), (bar_x, bar_y, bar_w, bar_h))
+        progress_w = int(bar_w * (self._results_timer / 5.0))
+        pygame.draw.rect(surface, self.spec.color_accent, (bar_x, bar_y, progress_w, bar_h))
 
     def on_exit(self):
         pass

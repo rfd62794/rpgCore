@@ -46,12 +46,15 @@ class DungeonRoomScene(Scene):
         self.ui_components = []
         self._setup_ui()
 
-    def on_enter(self, combat_result=None, **kwargs):
+    def on_enter(self, **kwargs):
         logger.info("DungeonRoomScene.on_enter called")
-        # Session already captured in __init__ - no need to extract from kwargs
+        # Ensure session is captured
+        if not self.session:
+            self.session = kwargs.get('session')
         
         if not self.session:
-            logger.error("No session available in DungeonRoomScene")
+            logger.error("No session available in DungeonRoomScene, aborting to garden")
+            self.manager.switch_to("garden")
             return
         
         if not self.session.floor:
@@ -61,9 +64,13 @@ class DungeonRoomScene(Scene):
         logger.info(f"Session floor after descend: {self.session.floor}")
         
         # Check for combat result
+        combat_result = kwargs.get('combat_result')
         if combat_result == "victory":
             self.enemy_defeated = True
             logger.info("🏆 Victory confirmed in Exploration Mode")
+        elif combat_result == "defeat":
+             self._on_run_complete("defeat")
+             return
             
         self._setup_ui()
 
@@ -99,8 +106,18 @@ class DungeonRoomScene(Scene):
                 nx += 130
 
     def _handle_flee(self):
-        logger.info("🏃 Flee to previous room")
-        self.request_scene("dungeon", session=self.session)
+        logger.info("🏃 Flee to garden")
+        self.manager.switch_to("garden")
+
+    def _on_run_complete(self, result):
+        from dataclasses import dataclass
+        @dataclass
+        class RunResult:
+            floors_cleared: int
+            status: str
+            
+        res = RunResult(floors_cleared=self.session.floor.depth if self.session.floor else 0, status=result)
+        self.manager.switch_to("garden", run_result=res)
 
     def _handle_move(self, target_id: str):
         if self.session.floor.move_to(target_id):
@@ -209,6 +226,10 @@ class DungeonRoomScene(Scene):
             fx, fy = flag_rect.centerx, flag_rect.centery
             pygame.draw.line(surface, (150, 150, 150), (fx, fy + 15), (fx, fy - 15), 2)
             pygame.draw.polygon(surface, self.spec.color_accent, [(fx, fy - 15), (fx + 15, fy - 7), (fx, fy)])
+            
+            # If hero touches flag, floor clear
+            if self.hero_grid_pos == [7, 7]:
+                self._on_run_complete("victory")
 
         for comp in self.ui_components:
             comp.render(surface)
