@@ -64,15 +64,15 @@ class InventoryOverlay(Scene):
 
         # Main Overlay Panel
         bg_rect = pygame.Rect(50, 50, w - 100, h - 100)
-        main_panel = Panel(bg_rect, bg_color=self.panel_bg)
+        main_panel = Panel(bg_rect, self.spec, variant="surface")
         self.panels.append(main_panel)
 
         # Left: Equipment Slots
         eq_y = 100
         slots = ["Head", "Body", "Weapon", "Offhand", "Accessory"]
         for slot in slots:
-            main_panel.add_child(Label(pygame.Rect(80, eq_y, 100, 20), text=f"{slot}:", font_size=18, color=(150, 150, 160)))
-            main_panel.add_child(Label(pygame.Rect(180, eq_y, 150, 20), text="[Empty]", font_size=18, color=(100, 100, 100)))
+            main_panel.add_child(Label(f"{slot}:", (80, eq_y), self.spec, size="md", color=(150, 150, 160)))
+            main_panel.add_child(Label("[Empty]", (180, eq_y), self.spec, size="md", color=(100, 100, 100)))
             eq_y += 40
 
         # Center: Grid Inventory (Simple 4x5)
@@ -83,32 +83,30 @@ class InventoryOverlay(Scene):
                 rect = pygame.Rect(grid_x + c * cell_size, grid_y + r * cell_size, cell_size - 2, cell_size - 2)
                 # Draw grid background cells
                 # pygame.draw.rect(surface, (20, 20, 25), rect) # Will be handled in render or by child panels
-                main_panel.add_child(Panel(rect, bg_color=(20, 20, 25)))
+                main_panel.add_child(Panel(rect, self.spec, variant="surface"))
 
         # Right: Stats Panel
         stat_x = w - 280
-        main_panel.add_child(Label(pygame.Rect(stat_x, 100, 200, 25), text="Character Stats", font_size=22, color=(200, 150, 50)))
+        main_panel.add_child(Label("Character Stats", (stat_x, 100), self.spec, size="lg", color=(200, 150, 50)))
         if self.session.hero:
             stats = [
                 f"HP: {self.session.hero.stats.get('hp')}/{self.session.hero.stats.get('max_hp')}",
                 f"ATK: {self.session.hero.effective_stat('attack')}",
                 f"DEF: {self.session.hero.effective_stat('defense')}",
                 f"SPD: {self.session.hero.effective_stat('speed')}",
-                f"Gold: {self.session.hero.inventory.get_gold()}"
             ]
             sy = 140
-            for s in stats:
-                main_panel.add_child(Label(pygame.Rect(stat_x, sy, 200, 20), text=s, font_size=18, color=self.text_color))
-                sy += 30
+            for stat in stats:
+                main_panel.add_child(Label(stat, (stat_x, sy), self.spec, size="md"))
+                sy += 25
 
         # Close Button
-        btn_close = Button(pygame.Rect(w - 150, h - 140, 80, 40), text="Close", on_click=self._handle_close)
-        self.buttons.append(btn_close)
+        close_btn = Button("Close", pygame.Rect(w // 2 - 60, h - 120, 120, 40), self._handle_close, self.spec)
+        self.buttons.append(close_btn)
 
     def _handle_close(self):
         # Return to previous scene
         self.request_scene("the_room", session=self.session) # Simple fallback, could be smarter if tracked history
-
 
     def handle_events(self, events: list[pygame.event.Event]) -> None:
         for event in events:
