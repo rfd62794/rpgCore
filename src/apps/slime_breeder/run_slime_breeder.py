@@ -4,6 +4,7 @@ from src.apps.slime_breeder.ui.scene_garden import GardenScene
 from src.apps.slime_breeder.scenes.team_scene import TeamScene
 from src.apps.slime_breeder.scenes.breeding_scene import BreedingScene
 from src.apps.slime_breeder.scenes.race_scene import RaceScene
+from src.apps.dungeon_crawler.ui.scene_the_room import TheRoomScene
 from src.shared.engine.scene_manager import SceneManager
 from src.shared.ui.spec import SPEC_720
 
@@ -22,6 +23,7 @@ def create_app() -> SceneManager:
     manager.register("teams", TeamScene)
     manager.register("breeding", BreedingScene)
     manager.register("racing", RaceScene)
+    manager.register("dungeon", TheRoomScene)
     
     return manager
 
