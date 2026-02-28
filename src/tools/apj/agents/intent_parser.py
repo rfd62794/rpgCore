@@ -171,102 +171,177 @@ class IntentParser:
     
     def _llm_parse(self, user_input: str, context: Dict) -> ParsedCommand:
         """
-        Use Ollama to understand intent
-        More sophisticated understanding
+        Use Ollama to understand intent - SIMPLIFIED VERSION
+        No JSON parsing, just text pattern matching
         """
         
-        # Build context about available options
         available_actions = list(self.action_names.keys())
         available_demos = list(self.demo_names.keys())
         
         prompt = f"""
-You are parsing what a user wants to do in a game development system.
-
 User said: "{user_input}"
 
-Available actions:
-- Build T_3_0: ECS Rendering System
-- Complete Dungeon Demo
-- Execute Tower Defense Phase 3
+What does the user want to do?
 
-Available demos:
-- dungeon
-- racing
-- breeding
-- tower_defense
-- slime_breeder
+Available actions: {', '.join(available_actions)}
+Available demos: {', '.join(available_demos)}
 
-Determine user's intent. Return JSON:
-{{
-  "intent": "execute_action|create_plan|check_capability|show_status|polish_demo|explain_blocker|list_options|get_help|quit|unknown",
-  "action": "action name or null",
-  "demo": "demo name or null",
-  "confidence": 0.0-1.0,
-  "explanation": "why you think this is what they want"
-}}
+Respond in ONE LINE only:
 
-Be conversational. If ambiguous, pick most likely interpretation.
-Confidence should reflect how sure you are (0.5 = unsure, 0.9 = very sure).
+If they want to EXECUTE: respond "EXECUTE: [action name]"
+If they want a PLAN: respond "PLAN: [action/demo name]"
+If they want to CHECK: respond "CHECK: [action name]"
+If they want STATUS: respond "STATUS"
+If they want to POLISH: respond "POLISH: [demo name]"
+If they want to UNDERSTAND: respond "EXPLAIN: [blocker/system/etc]"
+If they want OPTIONS: respond "OPTIONS"
+If they want HELP: respond "HELP"
+If they want QUIT: respond "QUIT"
+If unsure: respond "UNCLEAR: [what you think they want]"
+
+Just respond with the one-line command, nothing else.
 """
         
         try:
-            from pydantic_ai import Agent
-            agent = Agent(self.ollama)
+            response = self.ollama.analyze_blockers(prompt)
             
-            # Run the agent synchronously
-            import asyncio
-            response = asyncio.run(agent.run(prompt))
+            # Simple text parsing - no JSON needed
+            response = response.strip().upper()
             
-            # Extract the actual data from AgentRunResult
-            response_text = response.data if hasattr(response, 'data') else str(response)
-            
-            # Try to extract JSON more robustly
-            import json
-            import re
-            
-            # First try standard JSON extraction
-            json_match = re.search(r'\{.*\}', response_text, re.DOTALL)
-            
-            if not json_match:
-                # Try to find JSON with quotes
-                json_match = re.search(r'"\{.*?\}"', response_text, re.DOTALL)
-            
-            if not json_match:
-                # Try to find JSON without quotes
-                json_match = re.search(r'\{.*?\}', response_text, re.DOTALL)
-            
-            if json_match:
-                try:
-                    data = json.loads(json_match.group())
-                except json.JSONDecodeError:
-                    # Try to fix common JSON issues
-                    json_str = json_match.group()
-                    # Replace single quotes with double quotes
-                    json_str = json_str.replace("'", '"')
-                    # Remove trailing commas
-                    json_str = re.sub(r',\s*}', '', json_str)
-                    data = json.loads(json_str)
-                
+            # Parse the one-line response
+            if response.startswith("EXECUTE:"):
+                action = response.replace("EXECUTE:", "").strip()
                 return ParsedCommand(
-                    intent=Intent[data.get("intent", "UNKNOWN").upper()],
-                    action=data.get("action"),
-                    demo=data.get("demo"),
-                    target=data.get("action") or data.get("demo"),
-                    confidence=float(data.get("confidence", 0.5)),
-                    explanation=data.get("explanation", "LLM parsing")
+                    intent=Intent.EXECUTE_ACTION,
+                    action=action,
+                    demo=None,
+                    target=action,
+                    confidence=0.85,
+                    explanation=f"LLM detected execute intent for: {action}"
                 )
-        except Exception as e:
-            error_msg = str(e)
-            pass
+            
+            elif response.startswith("PLAN:"):
+                target = response.replace("PLAN:", "").strip()
+                demo = self._extract_demo_from_text(target)
+                action = self._extract_action_from_text(target) if not demo else None
+                return ParsedCommand(
+                    intent=Intent.CREATE_PLAN,
+                    action=action,
+                    demo=demo,
+                    target=target,
+                    confidence=0.85,
+                    explanation=f"LLM detected plan intent for: {target}"
+                )
+            
+            elif response.startswith("CHECK:"):
+                action = response.replace("CHECK:", "").strip()
+                return ParsedCommand(
+                    intent=Intent.CHECK_CAPABILITY,
+                    action=action,
+                    demo=None,
+                    target=action,
+                    confidence=0.85,
+                    explanation=f"LLM detected check intent for: {action}"
+                )
+            
+            elif response.startswith("STATUS"):
+                return ParsedCommand(
+                    intent=Intent.SHOW_STATUS,
+                    action=None,
+                    demo=None,
+                    target=None,
+                    confidence=0.85,
+                    explanation="LLM detected status request"
+                )
+            
+            elif response.startswith("POLISH:"):
+                demo = response.replace("POLISH:", "").strip()
+                return ParsedCommand(
+                    intent=Intent.POLISH_DEMO,
+                    action=None,
+                    demo=demo,
+                    target=demo,
+                    confidence=0.85,
+                    explanation=f"LLM detected polish intent for: {demo}"
+                )
+            
+            elif response.startswith("EXPLAIN:"):
+                target = response.replace("EXPLAIN:", "").strip()
+                return ParsedCommand(
+                    intent=Intent.EXPLAIN_BLOCKER,
+                    action=None,
+                    demo=None,
+                    target=target,
+                    confidence=0.85,
+                    explanation=f"LLM detected explain intent for: {target}"
+                )
+            
+            elif response.startswith("OPTIONS"):
+                return ParsedCommand(
+                    intent=Intent.LIST_OPTIONS,
+                    action=None,
+                    demo=None,
+                    target=None,
+                    confidence=0.85,
+                    explanation="LLM detected options request"
+                )
+            
+            elif response.startswith("HELP"):
+                return ParsedCommand(
+                    intent=Intent.GET_HELP,
+                    action=None,
+                    demo=None,
+                    target=None,
+                    confidence=0.85,
+                    explanation="LLM detected help request"
+                )
+            
+            elif response.startswith("QUIT"):
+                return ParsedCommand(
+                    intent=Intent.QUIT,
+                    action=None,
+                    demo=None,
+                    target=None,
+                    confidence=0.85,
+                    explanation="LLM detected quit intent"
+                )
+            
+            elif response.startswith("UNCLEAR:"):
+                what = response.replace("UNCLEAR:", "").strip()
+                return ParsedCommand(
+                    intent=Intent.UNKNOWN,
+                    action=None,
+                    demo=None,
+                    target=None,
+                    confidence=0.3,
+                    explanation=f"LLM unclear: {what}"
+                )
+            
+            else:
+                # Fallback to fast parse if response format unexpected
+                return self._fast_parse(user_input)
         
-        return ParsedCommand(
-            intent=Intent.UNKNOWN,
-            action=None,
-            demo=None,
-            target=None,
-            confidence=0.0,
-            explanation=f"LLM parsing failed: {error_msg}"
-        )
+        except Exception as e:
+            # If LLM fails, fall back to fast parsing
+            return self._fast_parse(user_input)
+    
+    def _extract_demo_from_text(self, text: str) -> str:
+        """Extract demo name from text"""
+        text = text.lower()
+        for demo, keywords in self.demo_names.items():
+            for keyword in keywords:
+                if keyword in text:
+                    return demo
+        return None
+    
+    def _extract_action_from_text(self, text: str) -> str:
+        """Extract action name from text"""
+        text = text.lower()
+        for action, keywords in self.action_names.items():
+            for keyword in keywords:
+                if keyword in text:
+                    return action
+        return None
     
     def _extract_demo(self, user_input: str) -> Optional[str]:
         """Extract demo name from input"""
