@@ -134,15 +134,30 @@ class RaceParticipant:
                 self.jump_phase = 0.0
                 self.jump_height = 0.0
                 self.jump_cooldown = self.jump_recovery
+                
+                # Start ground time for scooters
+                if self.movement_type == MovementType.SCOOPER:
+                    self.ground_time = self.profile["ground_time"]
         
         elif self.jump_cooldown > 0:
             # Recovery — brief pause on ground
             self.jump_cooldown -= dt
         
+        elif self.ground_time > 0:
+            # Ground time for scooters
+            self.ground_time -= dt
+        
         else:
             # Auto-jump: slimes jump continuously
-            self.is_jumping = True
-            self.jump_phase = 0.0
+            if self.movement_type == MovementType.ROLLER:
+                # Rollers never jump - continuous movement
+                self.is_jumping = False
+                self.jump_phase = 0.0
+                self.jump_height = 0.0
+            else:
+                # Auto-jump: normal movement
+                self.is_jumping = True
+                self.jump_phase = 0.0
 
 class RaceEngine:
     def __init__(self, participants: List[RosterSlime], track: List[str], length: int = 1500):
