@@ -26,6 +26,10 @@ class DungeonSession:
         self.floor: Optional[Floor] = None
         self.turn_manager: Optional[TurnOrderManager] = None
         self.ancestors: List[dict] = [] # List of {name, class, floor, kills}
+        
+        # Team Roster Integration
+        self.roster = load_roster()
+        self.party_slimes = [] # List of RosterSlime
 
     def generate_hero_name(self) -> str:
         return f"{random.choice(FIRST_NAMES)} {random.choice(LAST_NAMES)}"
@@ -42,8 +46,7 @@ class DungeonSession:
         
         self.turn_manager = TurnOrderManager()
         
-        self.roster = load_roster()
-        self.party_slimes = [] # List of RosterSlime
+        self.party_slimes = [] # Reset for new run
         self._initialize_party_from_roster()
 
     def _initialize_party_from_roster(self):
