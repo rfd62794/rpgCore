@@ -135,3 +135,28 @@ class SlimeRenderer:
         eye_off = radius // 3
         pygame.draw.circle(surface, eye_color, (pos[0] - eye_off, pos[1] - eye_off), max(1, radius // 10))
         pygame.draw.circle(surface, eye_color, (pos[0] + eye_off, pos[1] - eye_off), max(1, radius // 10))
+
+    def render_at(self, surface: pygame.Surface, slime: any, x: int, y: int, radius: int = None, selected: bool = False) -> None:
+        """Utility to render a slime at a specific coordinate, for UI use."""
+        # Create a temporary mock object to reuse the existing render logic
+        class RenderProxy:
+            def __init__(self, s, px, py):
+                self.genome = s.genome
+                self.level = getattr(s, 'level', 1)
+                class Kinematics:
+                    def __init__(self, kx, ky): self.position = pygame.Vector2(kx, ky)
+                self.kinematics = Kinematics(px, py)
+        
+        proxy = RenderProxy(slime, x, y)
+        
+        # If radius is provided, we temporarily override the size_map for this render
+        if radius is not None:
+            old_size = self.size_map.get(slime.genome.size)
+            self.size_map[slime.genome.size] = radius
+            try:
+                self.render(surface, proxy, selected)
+            finally:
+                if old_size is not None:
+                    self.size_map[slime.genome.size] = old_size
+        else:
+            self.render(surface, proxy, selected)
