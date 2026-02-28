@@ -227,9 +227,10 @@ def test_tower_defense_scene_add_enemy_to_ecs(tower_defense_scene, sample_creatu
     tower_defense_scene._add_enemy_to_ecs(sample_creature)
     
     # Check behavior component was added
+    from src.shared.ecs.components.behavior_component import BehaviorComponent
     assert tower_defense_scene.component_registry.get_component(
         sample_creature.slime_id, 
-        tower_defense_scene.component_registry.BehaviorComponent
+        BehaviorComponent
     ) is not None
 
 
