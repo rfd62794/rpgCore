@@ -66,10 +66,16 @@ class ConversationalInterface:
         # Initialize swarm using existing BaseAgent framework
         if self.ollama:
             try:
-                # Import swarm schemas to ensure registration
+                # Import all agent systems
                 import src.tools.apj.agents.swarm_schemas
+                import src.tools.apj.agents.agent_registry
+                import src.tools.apj.agents.tools
+                import src.tools.apj.agents.child_agent
+                import src.tools.apj.agents.a2a_communication
+                import src.tools.apj.agents.agent_boot
                 
                 from .swarm_agent import SwarmCoordinator
+                from .agent_boot import AGENT_BOOT_MANAGER
                 from .base_agent import AgentConfig, PromptConfig
                 
                 # Create swarm coordinator config
@@ -89,12 +95,37 @@ class ConversationalInterface:
                             "title": "Use single agent analysis",
                             "rationale": "Swarm coordination failed",
                             "risk": "low"
-                        }
-                    }
+                        },
+                        "alternatives": []
+                    },
+                    open_questions=["Can you provide more specific details?"],
+                    archivist_risks_addressed=[],
+                    corpus_hash=""
                 )
                 
+                # Initialize swarm coordinator
                 self.swarm = SwarmCoordinator(swarm_config)
-                print("🐝 Agent Swarm initialized with BaseAgent framework")
+                
+                # Boot complete agent ecosystem
+                boot_results = AGENT_BOOT_MANAGER.boot_ecosystem(self.context)
+                
+                if boot_results["success"]:
+                    print("🐝 Agent Swarm initialized with BaseAgent framework")
+                    print(f"🤖 Initialized {len(boot_results['phases']['existing_agents']['agents'])} existing agents")
+                    print(f"🔗 Established {len(boot_results['phases']['communication']['links'])} communication links")
+                    print(f"💬 Started {len(boot_results['phases']['conversations']['conversations'])} initial conversations")
+                    print(f"👶 Created {len(boot_results['phases']['child_agents']['children'])} specialized child agents")
+                    
+                    # Show ecosystem health
+                    health = boot_results["phases"]["status"]["ecosystem_health"]
+                    print(f"🏥 Ecosystem Health: {health['overall'].upper()}")
+                    
+                    if health["issues"]:
+                        print(f"⚠️  Issues: {', '.join(health['issues'])}")
+                else:
+                    print("⚠️  Agent ecosystem boot completed with issues")
+                    for error in boot_results.get("errors", []):
+                        print(f"   ❌ {error}")
                 
             except Exception as e:
                 print(f"⚠️  Failed to initialize swarm: {e}")

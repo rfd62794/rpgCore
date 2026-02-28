@@ -6,6 +6,7 @@ Wakes up agents, establishes communication, and sets up initial conversations
 import logging
 from typing import Dict, List, Any
 from datetime import datetime
+import uuid
 
 from .agent_registry import AGENT_REGISTRY, AgentType, AgentCapability
 from .swarm_agent import SwarmCoordinator
