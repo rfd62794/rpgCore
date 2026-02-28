@@ -5,19 +5,24 @@ from src.apps.slime_breeder.scenes.team_scene import TeamScene
 from src.apps.slime_breeder.scenes.breeding_scene import BreedingScene
 from src.apps.slime_breeder.scenes.race_scene import RaceScene
 from src.shared.engine.scene_manager import SceneManager
+from src.shared.ui.spec import SPEC_720
 
 def create_app() -> SceneManager:
     """Create and configure the Slime Breeder app."""
+    # Initialize Manager with Standard Spec
     manager = SceneManager(
-        width=1024,
-        height=768,
-        title="Slime Breeder — Creation Aspect",
-        fps=60
+        width=SPEC_720.screen_width,
+        height=SPEC_720.screen_height,
+        title="Slime Breeder — Core Pass",
+        fps=60,
+        spec=SPEC_720
     )
+    
     manager.register("garden", GardenScene)
     manager.register("teams", TeamScene)
     manager.register("breeding", BreedingScene)
     manager.register("racing", RaceScene)
+    
     return manager
 
 def main():
