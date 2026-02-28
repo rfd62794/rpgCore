@@ -11,6 +11,7 @@ from pathlib import Path
 
 from .base_agent import BaseAgent, AgentConfig
 from .registry import SCHEMA_REGISTRY
+from .task_classifier import TaskClassificationResult
 
 class AgentType(Enum):
     """Agent types in the system"""
@@ -47,6 +48,11 @@ class AgentMetadata:
     supports_a2a: bool = False  # Agent-to-Agent communication
     parent_agent: Optional[str] = None
     child_agents: List[str] = None
+    # New fields for specialists
+    specialty: Optional[str] = None  # e.g., "documentation", "architecture"
+    tool_categories: List[str] = None  # e.g., ["file_ops", "code_ops"]
+    context_size: int = 2000
+    dependencies: List[str] = None  # Other agents this agent depends on
 
 class AgentRegistry:
     """Central registry for all agents"""
@@ -236,6 +242,236 @@ class AgentRegistry:
         if name in self._agent_instances:
             return self._agent_instances[name]
         return self.create_agent_instance(name)
+    
+    def register_specialist(
+        self,
+        agent_name: str,
+        specialty: str,
+        capabilities: List[str],
+        tool_categories: List[str],
+        context_size: int = 2000,
+        dependencies: Optional[List[str]] = None
+    ) -> None:
+        """Register a specialized agent"""
+        
+        # Convert string capabilities to AgentCapability enum
+        agent_capabilities = []
+        for cap in capabilities:
+            try:
+                agent_capabilities.append(AgentCapability(cap))
+            except ValueError:
+                # Skip unknown capabilities
+                continue
+        
+        # Validate dependencies exist
+        if dependencies:
+            for dep in dependencies:
+                if dep not in self._agents:
+                    raise ValueError(f"Dependency agent '{dep}' not found in registry")
+        
+        # Create AgentMetadata for the specialist
+        metadata = AgentMetadata(
+            name=agent_name,
+            agent_type=AgentType.SPECIALIST,
+            capabilities=agent_capabilities,
+            department="specialists",
+            description=f"Specialist agent for {specialty}",
+            tools=tool_categories,
+            can_create_children=False,
+            supports_a2a=True,
+            specialty=specialty,
+            tool_categories=tool_categories,
+            context_size=context_size,
+            dependencies=dependencies or []
+        )
+        
+        # Store in registry
+        self._agents[agent_name] = metadata
+    
+    def find_agent_by_specialty(self, specialty: str) -> Optional[AgentMetadata]:
+        """Find agent by specialty (e.g., "documentation" → documentation_specialist)"""
+        
+        for agent_name, metadata in self._agents.items():
+            if metadata.specialty == specialty:
+                return metadata
+        
+        return None
+    
+    def find_agent_by_capability(self, capability: str) -> Optional[AgentMetadata]:
+        """Find agent that has a specific capability (e.g., "fix_bug" → debugging_specialist)"""
+        
+        try:
+            target_capability = AgentCapability(capability)
+        except ValueError:
+            # Convert string to known capability
+            capability_map = {
+                "fix_bug": "debugging",
+                "generate_docstrings": "documentation",
+                "analyze_architecture": "architecture",
+                "implement_genetics": "genetics",
+                "design_ui": "ui",
+                "test_integration": "integration"
+            }
+            target_str = capability_map.get(capability, capability)
+            try:
+                target_capability = AgentCapability(target_str)
+            except ValueError:
+                return None
+        
+        for agent_name, metadata in self._agents.items():
+            if target_capability in metadata.capabilities:
+                return metadata
+        
+        return None
+    
+    def find_best_agent_for_task(
+        self,
+        task_id: str,
+        task_classification: TaskClassificationResult
+    ) -> AgentMetadata:
+        """Find best agent for a task (primary routing method)"""
+        
+        # Priority: specialty match > capability match > fallback to generic
+        
+        # Try specialty match first
+        if task_classification.detected_type != "generic":
+            specialty_agent = self.find_agent_by_specialty(task_classification.detected_type)
+            if specialty_agent:
+                print(f"Task {task_id} routed to {specialty_agent.name} (specialty match, confidence {task_classification.confidence})")
+                return specialty_agent
+        
+        # Try capability match
+        for keyword in task_classification.keywords:
+            capability_agent = self.find_agent_by_capability(keyword)
+            if capability_agent:
+                print(f"Task {task_id} routed to {capability_agent.name} (capability match, confidence {task_classification.confidence})")
+                return capability_agent
+        
+        # Fallback to generic agent
+        generic_agent = self.get_agent_metadata("generic_agent")
+        if not generic_agent:
+            # Create a generic agent if it doesn't exist
+            generic_agent = AgentMetadata(
+                name="generic_agent",
+                agent_type=AgentType.SPECIALIST,
+                capabilities=[AgentCapability.EXECUTION],
+                department="general",
+                description="Generic agent for general tasks",
+                tools=["file_ops", "code_ops"]
+            )
+            self._agents["generic_agent"] = generic_agent
+        
+        print(f"Task {task_id} routed to {generic_agent.name} (fallback, confidence {task_classification.confidence})")
+        return generic_agent
+    
+    def get_agent_availability(self, agent_name: str) -> Dict[str, Any]:
+        """Check if agent is available (not already executing max tasks)"""
+        
+        metadata = self.get_agent_metadata(agent_name)
+        if not metadata:
+            return {
+                "is_available": False,
+                "current_task": None,
+                "tasks_completed": 0,
+                "efficiency_score": 0.0,
+                "error": "Agent not found"
+            }
+        
+        # For now, assume all agents are available
+        # In a full implementation, this would check agent workload
+        return {
+            "is_available": True,
+            "current_task": None,
+            "tasks_completed": 0,
+            "efficiency_score": 1.0,
+            "max_concurrent_tasks": 1,
+            "current_load": 0
+        }
+    
+    def initialize_specialists(self) -> None:
+        """Auto-register all SpecializedAgents from specialized_agents.py"""
+        
+        try:
+            from ..swarm.agents.specialized_agents import (
+                DOCUMENTATION_SPECIALIST,
+                ARCHITECTURE_SPECIALIST,
+                GENETICS_SPECIALIST,
+                UI_SPECIALIST,
+                INTEGRATION_SPECIALIST,
+                DEBUGGING_SPECIALIST
+            )
+            
+            specialists = [
+                DOCUMENTATION_SPECIALIST,
+                ARCHITECTURE_SPECIALIST,
+                GENETICS_SPECIALIST,
+                UI_SPECIALIST,
+                INTEGRATION_SPECIALIST,
+                DEBUGGING_SPECIALIST
+            ]
+            
+            for specialist in specialists:
+                self.register_specialist(
+                    agent_name=specialist.name,
+                    specialty=specialist.specialty.value,
+                    capabilities=specialist.capabilities,
+                    tool_categories=specialist.tools,
+                    context_size=specialist.context_size,
+                    dependencies=specialist.dependencies
+                )
+                
+                print(f"✅ Registered specialist: {specialist.name} ({specialty.specialty.value})")
+        
+        except ImportError as e:
+            print(f"⚠️  Could not import specialist agents: {e}")
+            # Fallback: register basic specialists manually
+            self._register_fallback_specialists()
+    
+    def _register_fallback_specialists(self) -> None:
+        """Register basic specialists if import fails"""
+        
+        fallback_specialists = {
+            "documentation_specialist": {
+                "specialty": "documentation",
+                "capabilities": ["documentation", "analysis"],
+                "tools": ["file_ops", "code_ops", "doc_ops"]
+            },
+            "architecture_specialist": {
+                "specialty": "architecture", 
+                "capabilities": ["analysis", "planning", "design"],
+                "tools": ["file_ops", "code_ops", "analysis_ops"]
+            },
+            "genetics_specialist": {
+                "specialty": "genetics",
+                "capabilities": ["coding", "testing"],
+                "tools": ["file_ops", "code_ops", "test_ops", "genetics_ops"]
+            },
+            "ui_systems_specialist": {
+                "specialty": "ui",
+                "capabilities": ["coding", "design"],
+                "tools": ["file_ops", "code_ops", "test_ops", "ui_ops"]
+            },
+            "integration_specialist": {
+                "specialty": "integration",
+                "capabilities": ["testing", "analysis"],
+                "tools": ["file_ops", "code_ops", "test_ops", "integration_ops"]
+            },
+            "debugging_specialist": {
+                "specialty": "debugging",
+                "capabilities": ["analysis", "coding", "testing"],
+                "tools": ["file_ops", "code_ops", "test_ops", "debug_ops"]
+            }
+        }
+        
+        for agent_name, config in fallback_specialists.items():
+            self.register_specialist(
+                agent_name=agent_name,
+                specialty=config["specialty"],
+                capabilities=config["capabilities"],
+                tool_categories=config["tools"]
+            )
+            
+            print(f"✅ Registered fallback specialist: {agent_name}")
 
 # Global agent registry
 AGENT_REGISTRY = AgentRegistry()
