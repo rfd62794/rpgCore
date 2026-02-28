@@ -643,8 +643,9 @@ System: {system_name}
 def main():
     """Main CLI interface"""
     parser = argparse.ArgumentParser(description="ADJ System - DGT Engine Governance")
-    parser.add_argument("command", choices=["status", "phase", "priorities", "blockers", "next", "approve", "update", "strategy"])
-    parser.add_argument("arg", nargs="?", help="Argument for command (phase number, approval target)")
+    parser.add_argument("command", choices=["status", "phase", "priorities", "blockers", "next", "approve", "update", "strategy", "inventory"])
+    parser.add_argument("arg", nargs="?", help="Argument for command")
+    parser.add_argument("arg2", nargs="?", help="Second argument for command")
     
     args = parser.parse_args()
     
@@ -675,6 +676,19 @@ def main():
             print("❌ Phase number required. Use: 1, 2, or 3")
             return
         adj.show_strategy(args.arg)
+    elif args.command == "inventory":
+        if not args.arg:
+            adj.show_inventory_status()
+        elif args.arg == "report":
+            adj.save_inventory_report()
+        elif args.arg == "demo" and args.arg2:
+            adj.show_inventory_demo(args.arg2)
+        elif args.arg == "system" and args.arg2:
+            adj.show_inventory_system(args.arg2)
+        elif args.arg == "missing":
+            adj.show_missing_docstrings()
+        else:
+            print("Usage: python adj.py inventory [status|report|demo <name>|system <name>|missing]")
     else:
         print("❌ Unknown command")
         parser.print_help()
