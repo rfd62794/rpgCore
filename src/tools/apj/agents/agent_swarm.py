@@ -235,6 +235,8 @@ Return as JSON with task assignments.
                 # Clean up the JSON content
                 json_content = json_content.strip()
                 
+                print(f"🔍 Debug: Extracted JSON content: {json_content[:200]}...")
+                
                 # Parse the JSON
                 task_assignments = json.loads(json_content)
                 
@@ -244,11 +246,16 @@ Return as JSON with task assignments.
                 else:
                     return self._execute_task_assignments([task_assignments], context)
             else:
+                print("🔍 Debug: No JSON found in coordinator response")
+                print(f"🔍 Debug: Coordinator result preview: {coordinator_result[:500]}...")
                 return {"error": "Could not find JSON in coordinator response"}
                 
         except json.JSONDecodeError as e:
+            print(f"🔍 Debug: JSON decode error: {e}")
+            print(f"🔍 Debug: JSON content was: {json_content if 'json_content' in locals() else 'N/A'}")
             return {"error": f"JSON decode error: {e}"}
         except Exception as e:
+            print(f"🔍 Debug: General error: {e}")
             return {"error": f"Failed to process coordinator response: {e}"}
     
     def _execute_task_assignments(self, assignments, context: Dict) -> Dict:
