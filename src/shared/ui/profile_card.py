@@ -14,8 +14,9 @@ from src.shared.ui.spec import UISpec
 
 class ProfileCard(UIComponent):
     def __init__(self, slime: RosterSlime, position: Tuple[int, int], spec: UISpec):
-        # Card dimensions from spec
-        self.WIDTH = spec.card_width
+        # Card dimensions: respect parent panel boundaries
+        self.WIDTH = min(spec.card_width, spec.screen_width // 4) # Fallback limit
+        # In garden, we should probably pass the actual panel width if we can
         self.HEIGHT = spec.card_height
         self.PADDING = spec.padding_sm
         
@@ -101,8 +102,9 @@ class ProfileCard(UIComponent):
         
         # Genetic trait hint (bottom)
         trait_hint = get_dominant_trait(self.slime.genome)
-        breeding_status = "" if self.slime.can_breed else "(Young)"
-        render_text(surface, f"Trait: {trait_hint} {breeding_status}",
+        breeding_status = "" if self.slime.can_breed else " (Young)"
+        trait_text = f"Trait: {trait_hint}{breeding_status}"
+        render_text(surface, trait_text,
                    (x + self.PADDING, y + self.HEIGHT - 18),
                    size=12, color=(140, 140, 160))
 
