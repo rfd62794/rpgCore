@@ -49,6 +49,71 @@ def test_race_engine_simulation():
     assert engine.participants[0].finished  # Light slime wins
     assert engine.participants[0].rank == 1
 
+def test_jumper_classification():
+    """Test that high wobble, medium size slimes are classified as jumpers."""
+    slime = RosterSlime("test", "Jumper", SlimeGenome(
+        shape="round", size="medium", base_color=(100, 100, 100),
+        pattern="solid", pattern_color=(0,0,0), accessory="none",
+        curiosity=0.5, energy=1.5, affection=0.5, shyness=0.1,
+        cultural_base=CulturalBase.MOSS
+    ), level=1)
+    
+    from src.shared.racing.race_engine import RaceParticipant
+    participant = RaceParticipant(slime)
+    
+    # High wobble frequency should classify as JUMPER
+    assert participant.movement_type.value == "jumper"
+
+def test_scooter_classification():
+    """Test that low wobble, small slimes are classified as scooters."""
+    slime = RosterSlime("test", "Scooter", SlimeGenome(
+        shape="round", size="small", base_color=(100, 100, 100),
+        pattern="solid", pattern_color=(0,0,0), accessory="none",
+        curiosity=0.5, energy=0.3, affection=0.5, shyness=0.1,
+        cultural_base=CulturalBase.COASTAL
+    ), level=1)
+    
+    from src.shared.racing.race_engine import RaceParticipant
+    participant = RaceParticipant(slime)
+    
+    # Low wobble frequency + small size should classify as SCOOTER
+    assert participant.movement_type.value == "scooter"
+
+def test_roller_classification():
+    """Test that very round, large slimes are classified as rollers."""
+    # Create a custom genome with roundness for testing
+    from src.shared.genetics.genome import SlimeGenome
+    genome = SlimeGenome(
+        shape="round", size="large", base_color=(100, 100, 100),
+        pattern="solid", pattern_color=(0,0,0), accessory="none",
+        curiosity=0.5, energy=0.8, affection=0.5, shyness=0.1,
+        cultural_base=CulturalBase.VOID
+    )
+    # Add roundness attribute for testing
+    genome.body_roundness = 0.8  # Very round
+    
+    slime = RosterSlime("test", "Roller", genome, level=1)
+    
+    from src.shared.racing.race_engine import RaceParticipant
+    participant = RaceParticipant(slime)
+    
+    # High roundness + large size should classify as ROLLER
+    assert participant.movement_type.value == "roller"
+
+def test_jump_height_within_bounds():
+    """Test that jump height never exceeds reasonable bounds."""
+    from src.shared.racing.race_engine import RaceParticipant
+    from src.shared.genetics.inheritance import generate_random
+    
+    # Test multiple random slimes
+    for _ in range(10):
+        slime = RosterSlime("test", "Random", generate_random(), level=1)
+        participant = RaceParticipant(slime)
+        
+        # Jump height should be within reasonable bounds (0-18px)
+        assert participant.max_jump_height <= 18
+        assert participant.max_jump_height >= 0
+
 def test_terrain_influence():
     s = RosterSlime("s", "Racer", SlimeGenome(
         shape="round", size="medium", base_color=(100, 100, 100),
