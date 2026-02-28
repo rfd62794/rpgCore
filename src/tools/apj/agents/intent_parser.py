@@ -66,8 +66,11 @@ class ConversationalInterface:
         # Initialize swarm using existing BaseAgent framework
         if self.ollama:
             try:
+                # Import swarm schemas to ensure registration
+                import src.tools.apj.agents.swarm_schemas
+                
                 from .swarm_agent import SwarmCoordinator
-                from .base_agent import AgentConfig
+                from .base_agent import AgentConfig, PromptConfig
                 
                 # Create swarm coordinator config
                 swarm_config = AgentConfig(
@@ -75,11 +78,19 @@ class ConversationalInterface:
                     role="Coordinate swarm tasks and manage agent orchestration",
                     department="planning",
                     model_preference="local",
-                    prompts={
-                        "system": "docs/agents/prompts/coordinator_system.md",
-                        "fewshot": "docs/agents/prompts/generic_system.md"
-                    },
-                    schema="SwarmTaskAssignment"
+                    prompts=PromptConfig(
+                        system="docs/agents/prompts/coordinator_system.md",
+                        fewshot="docs/agents/prompts/generic_system.md"
+                    ),
+                    schema_name="SwarmTaskAssignment",
+                    fallback={
+                        "recommended": {
+                            "label": "FALLBACK",
+                            "title": "Use single agent analysis",
+                            "rationale": "Swarm coordination failed",
+                            "risk": "low"
+                        }
+                    }
                 )
                 
                 self.swarm = SwarmCoordinator(swarm_config)
