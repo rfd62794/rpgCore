@@ -383,9 +383,9 @@ class Roster:
         for team in self.teams.values():
             team._roster_ref = self
         
-        # Set team reference for entries (in case it wasn't set during loading)
+        # Set team reference for entries (always set to ensure consistency)
         for entry in self.entries:
-            if entry.team != TeamRole.UNASSIGNED and not hasattr(entry, '_team_ref'):
+            if entry.team != TeamRole.UNASSIGNED:
                 entry._team_ref = self.teams[entry.team]
                 print(f"DEBUG: Set _team_ref for entry {entry.slime_id}")
             elif hasattr(entry, '_team_ref'):
