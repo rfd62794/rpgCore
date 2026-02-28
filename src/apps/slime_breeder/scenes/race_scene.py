@@ -244,46 +244,46 @@ class RaceScene(Scene):
         road_rect = pygame.Rect(0, track_y, arena_w, track_h)
         pygame.draw.rect(surface, (40, 40, 40), road_rect) # Slate dark grey road
         
-        # 2. Track Terrain Zones (Inside road)
-        visible_start = int(self.camera_x / SEGMENT_LENGTH)
-        visible_end = visible_start + (arena_w // SEGMENT_LENGTH) + 4
-        
+        # 2. Track Terrain Zones (Wide blocks, not stripes)
         # Terrain colors
         terrain_colors = {
-            "grass": (60, 120, 60),   # base track color
-            "water": (40, 100, 180),  # blue, slightly lighter
-            "rock":  (100, 90, 80),   # grey-brown
-            "mud":   (90, 70, 50),    # dark brown
+            TerrainType.GRASS: (55, 110, 55),   # base track color
+            TerrainType.WATER: (40, 100, 180),  # blue, slightly lighter
+            TerrainType.ROCK:  (100, 90, 80),   # grey-brown
+            TerrainType.MUD:   (90, 70, 50),    # dark brown
         }
         
-        for i in range(visible_start, visible_end):
-            if i >= len(self.track): break
-            terrain = self.track[i]
-            if terrain == "grass": continue  # Just use road base
+        # Render zones as wide blocks
+        screen_center_x = arena_w // 2
+        for zone in self.terrain_zones:
+            screen_start = (zone.start_dist - self.camera_x + screen_center_x)
+            screen_end   = (zone.end_dist - self.camera_x + screen_center_x)
             
-            # Render terrain as horizontal band inside track
-            terrain_color = terrain_colors.get(terrain, (60, 60, 60))
-            rect = pygame.Rect(i * SEGMENT_LENGTH - self.camera_x, track_y, SEGMENT_LENGTH, track_h)
-            pygame.draw.rect(surface, terrain_color, rect)
+            # Clip to screen
+            visible_start = max(screen_start, 0)
+            visible_end   = min(screen_end, arena_w)
             
-            # Add terrain boundary marker at transitions
-            if i > visible_start and terrain != self.track[i-1]:
-                marker_x = i * SEGMENT_LENGTH - self.camera_x
-                if 0 < marker_x < arena_w:
-                    # Dashed vertical line at terrain boundary
-                    for y in range(track_y, track_y + track_h, 10):
-                        pygame.draw.line(surface, (80, 80, 80), (marker_x, y), (marker_x, y + 5), 1)
-                    
-                    # Terrain label
-                    label_text = terrain.upper()
-                    if terrain == "water": label_text = "~ POND"
-                    elif terrain == "rock": label_text = "▲ ROCKS"
-                    elif terrain == "mud": label_text = "◼ MUD"
+            if visible_end <= visible_start:
+                continue  # off screen
+            
+            width = visible_end - visible_start
+            
+            # Skip grass zones (use road base color)
+            if zone.terrain_type != TerrainType.GRASS:
+                terrain_color = terrain_colors.get(zone.terrain_type, (60, 60, 60))
+                pygame.draw.rect(surface, terrain_color, (visible_start, track_y, width, track_h))
+                
+                # Zone label at entry point
+                if screen_start > 0 and screen_start < arena_w:
+                    label = zone.terrain_type.value.upper()
+                    if zone.terrain_type == TerrainType.WATER: label = "~ POND"
+                    elif zone.terrain_type == TerrainType.ROCK: label = "▲ ROCKS"
+                    elif zone.terrain_type == TerrainType.MUD: label = "◼ MUD"
                     
                     # Simple text rendering for terrain label
-                    font = pygame.font.Font(None, 10)
-                    text_surface = font.render(label_text, True, (200, 200, 200))
-                    surface.blit(text_surface, (marker_x + 5, track_y + 5))
+                    font = pygame.font.Font(None, 14)
+                    text_surface = font.render(label, True, (255, 255, 255, 180))
+                    surface.blit(text_surface, (visible_start + 8, track_y + 8))
             
         # 3. Track Borders & Lanes
         # Top/Bottom borders
