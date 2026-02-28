@@ -340,6 +340,20 @@ class Roster:
                     if entry.slime_id == rs.slime_id:
                         entry._team_ref = roster.teams[rs.team]
                         break
+        else:
+            # New format - restore entries only
+            for e_data in data.get("entries", []):
+                entry = RosterEntry(
+                    slime_id=e_data["slime_id"],
+                    team=TeamRole(e_data["team"]),
+                    locked=e_data.get("locked", False)
+                )
+                roster.entries.append(entry)
+                
+                # Add to appropriate team and set back-reference
+                if entry.team != TeamRole.UNASSIGNED:
+                    entry._team_ref = roster.teams[entry.team]
+                    roster.teams[entry.team].members.append(entry)
         
         # Set all back-references after loading (for both legacy and new formats)
         roster._set_back_references()
