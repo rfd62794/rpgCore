@@ -25,8 +25,6 @@ MOVEMENT_PROFILES = {
             TerrainType.water: 1.1,  # skims surface
             TerrainType.mud: 0.95, # barely affected
             TerrainType.rock: 0.75, # scrapes badly
-            TerrainType.MUD: 0.95, # barely affected
-            TerrainType.ROCK: 0.75, # scrapes badly
         }
     },
 
