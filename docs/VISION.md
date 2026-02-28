@@ -76,6 +76,9 @@ Win races → earn respect → unlock trade.
 Genetics matter: agility, acceleration, drafting.
 Chocobo Racing energy. FF7 Golden Saucer spirit.
 
+> [!IMPORTANT]
+> The camera follow in the racing prototype created genuine presence. The player felt speed before the art was finished. Racing polish priority: camera behavior first, terrain art second, slime art third. The sensation of motion is the product.
+
 ## The Faction World
 
 ### Five Slime Cultures
