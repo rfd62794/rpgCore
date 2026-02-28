@@ -106,7 +106,7 @@ class RaceScene(Scene):
                 # Rank tag if finished
                 if p.finished:
                     txt = f"Rank {p.rank}"
-                    Label(txt, (int(screen_x), lane_y - 40), size=18, color=(255, 255, 0)).render(surface)
+                    Label(txt, (int(screen_x), lane_y - 40), font_size=18, color=(255, 255, 0)).render(surface)
 
         # UI
         for comp in self.ui_components:
