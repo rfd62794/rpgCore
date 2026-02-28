@@ -4,6 +4,7 @@ from unittest.mock import MagicMock, patch
 from src.apps.dungeon_crawler.ui.scene_dungeon_combat import DungeonCombatScene
 from src.apps.dungeon_crawler.ui.dungeon_session import DungeonSession
 from src.apps.dungeon_crawler.entities.hero import Hero
+from src.shared.ui.spec import SPEC_720
 
 @pytest.fixture
 def mock_session():
@@ -25,7 +26,7 @@ def manager():
 
 def test_combat_attack_button_resolves_turn(mock_session, manager):
     pygame.init()
-    scene = DungeonCombatScene(manager, session=mock_session)
+    scene = DungeonCombatScene(manager, SPEC_720, session=mock_session)
     # Mock some enemies and party
     scene.on_enter(session=mock_session, enemy_entity=MagicMock())
     
@@ -41,7 +42,7 @@ def test_combat_attack_button_resolves_turn(mock_session, manager):
 
 def test_turn_order_advances_after_action(mock_session, manager):
     pygame.init()
-    scene = DungeonCombatScene(manager, session=mock_session)
+    scene = DungeonCombatScene(manager, SPEC_720, session=mock_session)
     scene.on_enter(session=mock_session, enemy_entity=MagicMock())
     
     first_actor = scene.active_actor_id
@@ -54,7 +55,7 @@ def test_turn_order_advances_after_action(mock_session, manager):
 
 def test_hp_bar_updates_on_damage(mock_session, manager):
     pygame.init()
-    scene = DungeonCombatScene(manager, session=mock_session)
+    scene = DungeonCombatScene(manager, SPEC_720, session=mock_session)
     scene.on_enter(session=mock_session, enemy_entity=MagicMock())
     
     enemy = scene.enemies[0]
@@ -65,7 +66,7 @@ def test_hp_bar_updates_on_damage(mock_session, manager):
 
 def test_flee_returns_to_exploration(mock_session, manager):
     pygame.init()
-    scene = DungeonCombatScene(manager, session=mock_session)
+    scene = DungeonCombatScene(manager, SPEC_720, session=mock_session)
     scene.on_enter(session=mock_session, enemy_entity=MagicMock())
     
     with patch.object(scene, 'request_scene') as mock_request:
@@ -75,7 +76,7 @@ def test_flee_returns_to_exploration(mock_session, manager):
 
 def test_combat_victory_triggers_on_last_enemy_defeat(mock_session, manager):
     pygame.init()
-    scene = DungeonCombatScene(manager, session=mock_session)
+    scene = DungeonCombatScene(manager, SPEC_720, session=mock_session)
     scene.on_enter(session=mock_session, enemy_entity=MagicMock())
     
     enemy = scene.enemies[0]
