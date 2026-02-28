@@ -125,6 +125,15 @@ class RosterEntry:
     
     # Note: All other data (name, genome, level, HP, etc.) comes from Creature
     # This eliminates duplication and ensures single source of truth
+    
+    @property
+    def name(self) -> str:
+        """Legacy compatibility - get name from roster's stored RosterSlime"""
+        if hasattr(self, '_team_ref') and self._team_ref and hasattr(self._team_ref, '_roster_ref') and self._team_ref._roster_ref:
+            roster_slime = self._team_ref._roster_ref._roster_slimes.get(self.slime_id)
+            if roster_slime:
+                return roster_slime.name
+        return f"Creature_{self.slime_id}"
 
 @dataclass  
 class Team:
@@ -159,6 +168,7 @@ class Team:
                 return False  # Already assigned
         
         entry = RosterEntry(slime_id=slime_id, team=self.role)
+        entry._team_ref = self  # Set back-reference for legacy compatibility
         self.members.append(entry)
         return True
     
