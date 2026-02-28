@@ -60,10 +60,17 @@ def test_slime_renderer_initializes():
     renderer = SlimeRenderer()
     assert renderer.size_map["tiny"] == 8
 
-def test_garden_scene_initializes():
+def test_garden_scene_initializes(monkeypatch):
     # Need pygame for scene init (mostly fonts/surfaces)
     pygame.init()
     surface = pygame.Surface((1024, 768))
+    
+    # Mock roster to ensure clean state
+    from src.shared.teams.roster import Roster
+    mock_roster = Roster()
+    monkeypatch.setattr("src.apps.slime_breeder.ui.scene_garden.load_roster", lambda: mock_roster)
+    monkeypatch.setattr("src.apps.slime_breeder.ui.scene_garden.save_roster", lambda r: None)
+    
     from src.apps.slime_breeder.ui.scene_garden import GardenScene
     # Mock manager
     class MockManager:
@@ -73,6 +80,7 @@ def test_garden_scene_initializes():
     scene = GardenScene(MockManager())
     # SceneManager calls initialize which calls on_enter
     scene.initialize()
+    # Should have exactly 1 slime (added during on_enter since roster was empty)
     assert len(scene.garden_state.slimes) == 1
     assert scene.detail_panel is not None
     pygame.quit()
