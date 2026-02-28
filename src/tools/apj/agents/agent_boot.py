@@ -367,12 +367,23 @@ class AgentBootManager:
         }
         
         try:
+            # Import extended specialized agents
+            from ..swarm.agents.specialized_agents import (
+                DOCUMENTATION_SPECIALIST,
+                ARCHITECTURE_SPECIALIST,
+                GENETICS_SPECIALIST,
+                UI_SPECIALIST,
+                INTEGRATION_SPECIALIST,
+                DEBUGGING_SPECIALIST
+            )
+            
             # Analyze project status to determine needed agents
             critical_issues = project_status.get("critical_issues", 0)
             demos = project_status.get("demos", {})
             
             print(f"👶 Creating specialized child agents for {critical_issues} critical issues...")
             
+            # Original agents (keep existing)
             # Child Agent 1: ECS Rendering Specialist
             if critical_issues > 0:
                 child_id = self.swarm_coordinator.create_child_agent(
@@ -424,8 +435,113 @@ class AgentBootManager:
                     })
                     print(f"🎯 Created Tower Defense Architect: {child_id[:8]}...")
             
-            # Child Agent 4: Code Quality Specialist
+            # NEW EXTENDED AGENTS
+            
+            # Child Agent 4: Documentation Specialist
+            if critical_issues > 5:
+                child_id = self.swarm_coordinator.create_child_agent(
+                    purpose=DOCUMENTATION_SPECIALIST.description,
+                    capabilities=DOCUMENTATION_SPECIALIST.capabilities,
+                    tools=DOCUMENTATION_SPECIALIST.tools,
+                    lifespan=100
+                )
+                if child_id:
+                    results["children"].append({
+                        "id": child_id,
+                        "purpose": DOCUMENTATION_SPECIALIST.name,
+                        "capabilities": DOCUMENTATION_SPECIALIST.capabilities,
+                        "priority": 4
+                    })
+                    print(f"📝 Created Documentation Specialist: {child_id[:8]}...")
+            
+            # Child Agent 5: Architecture Specialist
             if critical_issues > 10:
+                child_id = self.swarm_coordinator.create_child_agent(
+                    purpose=ARCHITECTURE_SPECIALIST.description,
+                    capabilities=ARCHITECTURE_SPECIALIST.capabilities,
+                    tools=ARCHITECTURE_SPECIALIST.tools,
+                    lifespan=120
+                )
+                if child_id:
+                    results["children"].append({
+                        "id": child_id,
+                        "purpose": ARCHITECTURE_SPECIALIST.name,
+                        "capabilities": ARCHITECTURE_SPECIALIST.capabilities,
+                        "priority": 5
+                    })
+                    print(f"🏗️ Created Architecture Specialist: {child_id[:8]}...")
+            
+            # Child Agent 6: Genetics System Specialist
+            if demos.get("tower_defense", "INCOMPLETE") == "INCOMPLETE":
+                child_id = self.swarm_coordinator.create_child_agent(
+                    purpose=GENETICS_SPECIALIST.description,
+                    capabilities=GENETICS_SPECIALIST.capabilities,
+                    tools=GENETICS_SPECIALIST.tools,
+                    lifespan=140
+                )
+                if child_id:
+                    results["children"].append({
+                        "id": child_id,
+                        "purpose": GENETICS_SPECIALIST.name,
+                        "capabilities": GENETICS_SPECIALIST.capabilities,
+                        "priority": 6
+                    })
+                    print(f"🧬 Created Genetics Specialist: {child_id[:8]}...")
+            
+            # Child Agent 7: UI Systems Specialist
+            if critical_issues > 15:
+                child_id = self.swarm_coordinator.create_child_agent(
+                    purpose=UI_SPECIALIST.description,
+                    capabilities=UI_SPECIALIST.capabilities,
+                    tools=UI_SPECIALIST.tools,
+                    lifespan=110
+                )
+                if child_id:
+                    results["children"].append({
+                        "id": child_id,
+                        "purpose": UI_SPECIALIST.name,
+                        "capabilities": UI_SPECIALIST.capabilities,
+                        "priority": 7
+                    })
+                    print(f"🎨 Created UI Specialist: {child_id[:8]}...")
+            
+            # Child Agent 8: Integration Specialist
+            if critical_issues > 20:
+                child_id = self.swarm_coordinator.create_child_agent(
+                    purpose=INTEGRATION_SPECIALIST.description,
+                    capabilities=INTEGRATION_SPECIALIST.capabilities,
+                    tools=INTEGRATION_SPECIALIST.tools,
+                    lifespan=130
+                )
+                if child_id:
+                    results["children"].append({
+                        "id": child_id,
+                        "purpose": INTEGRATION_SPECIALIST.name,
+                        "capabilities": INTEGRATION_SPECIALIST.capabilities,
+                        "priority": 8
+                    })
+                    print(f"🔗 Created Integration Specialist: {child_id[:8]}...")
+            
+            # Child Agent 9: Debugging Specialist
+            if critical_issues > 25:
+                child_id = self.swarm_coordinator.create_child_agent(
+                    purpose=DEBUGGING_SPECIALIST.description,
+                    capabilities=DEBUGGING_SPECIALIST.capabilities,
+                    tools=DEBUGGING_SPECIALIST.tools,
+                    lifespan=90
+                )
+                if child_id:
+                    results["children"].append({
+                        "id": child_id,
+                        "purpose": DEBUGGING_SPECIALIST.name,
+                        "capabilities": DEBUGGING_SPECIALIST.capabilities,
+                        "priority": 9
+                    })
+                    print(f"🐛 Created Debugging Specialist: {child_id[:8]}...")
+            
+            # Original agents (continued)
+            # Child Agent 10: Code Quality Specialist
+            if critical_issues > 30:
                 child_id = self.swarm_coordinator.create_child_agent(
                     purpose="Improve code quality and fix critical issues",
                     capabilities=["refactoring", "testing", "documentation"],
@@ -437,12 +553,12 @@ class AgentBootManager:
                         "id": child_id,
                         "purpose": "Code Quality Specialist",
                         "capabilities": ["refactoring", "testing", "documentation"],
-                        "priority": 4
+                        "priority": 10
                     })
                     print(f"🎯 Created Code Quality Specialist: {child_id[:8]}...")
             
-            # Child Agent 5: Performance Optimization Specialist
-            if critical_issues > 20:
+            # Child Agent 11: Performance Optimization Specialist
+            if critical_issues > 35:
                 child_id = self.swarm_coordinator.create_child_agent(
                     purpose="Optimize performance and fix bottlenecks",
                     capabilities=["performance", "profiling", "optimization"],
@@ -454,12 +570,12 @@ class AgentBootManager:
                         "id": child_id,
                         "purpose": "Performance Specialist",
                         "capabilities": ["performance", "profiling", "optimization"],
-                        "priority": 5
+                        "priority": 11
                     })
                     print(f"🎯 Created Performance Specialist: {child_id[:8]}...")
             
-            # Child Agent 6: Testing Specialist
-            if critical_issues > 5:
+            # Child Agent 12: Testing Specialist
+            if critical_issues > 40:
                 child_id = self.swarm_coordinator.create_child_agent(
                     purpose="Create comprehensive test suites",
                     capabilities=["unit_testing", "integration_testing", "test_automation"],
@@ -471,7 +587,7 @@ class AgentBootManager:
                         "id": child_id,
                         "purpose": "Testing Specialist",
                         "capabilities": ["unit_testing", "integration_testing", "test_automation"],
-                        "priority": 6
+                        "priority": 12
                     })
                     print(f"🎯 Created Testing Specialist: {child_id[:8]}...")
             
