@@ -27,8 +27,9 @@ def manager():
 def test_combat_attack_button_resolves_turn(mock_session, manager):
     pygame.init()
     scene = DungeonCombatScene(manager, SPEC_720, session=mock_session)
+    scene.on_enter()
     # Mock some enemies and party
-    scene.on_enter(session=mock_session, enemy_entity=MagicMock())
+    scene.on_combat_enter(session=mock_session, enemy_entity=MagicMock())
     
     # Hero turn is active by default in on_enter if speeds match
     initial_hp = scene.enemies[0].stats["hp"]
@@ -43,7 +44,8 @@ def test_combat_attack_button_resolves_turn(mock_session, manager):
 def test_turn_order_advances_after_action(mock_session, manager):
     pygame.init()
     scene = DungeonCombatScene(manager, SPEC_720, session=mock_session)
-    scene.on_enter(session=mock_session, enemy_entity=MagicMock())
+    scene.on_enter()
+    scene.on_combat_enter(session=mock_session, enemy_entity=MagicMock())
     
     first_actor = scene.active_actor_id
     scene._next_turn()
