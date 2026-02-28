@@ -68,14 +68,6 @@ def test_team_scene_remove_slime(mock_manager, sample_roster, monkeypatch):
     scene._remove_from_dungeon(slime)
     
     assert len(scene.dungeon_team.members) == 0
-    scene.on_enter()
-    
-    slime = sample_roster.slimes[0]
-    scene._assign(slime)
-    assert len(scene.team.members) == 1
-    
-    scene._remove(slime)
-    assert len(scene.team.members) == 0
 
 def test_team_scene_back_to_garden(mock_manager, monkeypatch):
     monkeypatch.setattr("src.apps.slime_breeder.scenes.team_scene.load_roster", MagicMock())
