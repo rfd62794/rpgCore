@@ -162,12 +162,19 @@ class ProjectAnalyzer:
         # Look for blocker mentions in docs
         for root, dirs, files in os.walk(self.project_root):
             # Skip certain directories
-            dirs[:] = [d for d in dirs if not d.startswith('.') and d not in ['node_modules', '__pycache__']]
+            dirs[:] = [d for d in dirs if not d.startswith('.') and d not in ['node_modules', '__pycache__', '.git']]
             
             for file in files:
-                if file.endswith(('.md', '.txt', '.json')):
-                    file_path = os.path.join(root, file)
-                    self._analyze_file(file_path, "blockers")
+                # Only analyze relevant file types
+                if not file.endswith(('.md', '.txt', '.json', '.py', '.yaml', '.yml')):
+                    continue
+                
+                # Skip certain files
+                if file.startswith(('session_', 'test_', '.', '~')):
+                    continue
+                
+                file_path = os.path.join(root, file)
+                self._analyze_file(file_path, "blockers")
     
     def _analyze_goals(self):
         """Analyze project goals and completion status"""
@@ -204,8 +211,21 @@ class ProjectAnalyzer:
         """Analyze a single file for issues"""
         
         try:
-            with open(file_path, 'r', encoding='utf-8') as f:
-                content = f.read()
+            # Try different encodings
+            encodings = ['utf-8', 'latin-1', 'cp1252']
+            content = None
+            
+            for encoding in encodings:
+                try:
+                    with open(file_path, 'r', encoding=encoding) as f:
+                        content = f.read()
+                    break
+                except UnicodeDecodeError:
+                    continue
+            
+            if content is None:
+                logger.warning(f"Could not decode {file_path} with any encoding")
+                return
             
             relative_path = os.path.relpath(file_path, self.project_root)
             
