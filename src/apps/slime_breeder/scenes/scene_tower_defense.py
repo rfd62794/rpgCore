@@ -6,7 +6,7 @@ import pygame
 from typing import List, Optional, Tuple
 from loguru import logger
 
-from src.shared.engine.scene import Scene
+from src.shared.engine.scene_manager import Scene, SceneManager
 from src.shared.ui.spec import UISpec
 from src.shared.ui.label import Label
 from src.shared.ui.button import Button
