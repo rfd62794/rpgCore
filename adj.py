@@ -50,6 +50,14 @@ class ADJSystem:
         # Track layers used
         self.layers_used = []
     
+    def run_command(self, cmd: List[str]) -> str:
+        """Run command and return output"""
+        try:
+            result = subprocess.run(cmd, capture_output=True, text=True, cwd=self.root_dir)
+            return result.stdout.strip()
+        except Exception as e:
+            return f"Error: {e}"
+    
     def _record_layer(self, layer: str):
         """Track which layers are used"""
         self.layers_used.append(layer)
