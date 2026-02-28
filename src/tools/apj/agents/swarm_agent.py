@@ -276,8 +276,21 @@ Use the SwarmTaskAssignment schema for structured output.
         agent = self.swarm_agents[agent_type]
         
         try:
-            # Use BaseAgent.run() method with the prompt
-            result = agent.run(prompt)
+            # For coordinator, use lower temperature for more consistent JSON
+            if agent_type == "coordinator":
+                # Temporarily adjust model temperature for coordinator
+                original_temp = getattr(agent.model_name, 'temperature', 0.3)
+                if hasattr(agent.model_name, 'temperature'):
+                    agent.model_name.temperature = 0.1  # Lower temperature for consistent JSON
+                
+                result = agent.run(prompt)
+                
+                # Restore original temperature
+                if hasattr(agent.model_name, 'temperature'):
+                    agent.model_name.temperature = original_temp
+            else:
+                result = agent.run(prompt)
+            
             return result
                 
         except Exception as e:

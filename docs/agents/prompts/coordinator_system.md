@@ -47,6 +47,26 @@ The JSON must be perfectly formatted with:
 }
 ```
 
+## EXAMPLE VALID JSON:
+```json
+{
+  "tasks": [
+    {
+      "task_id": "ANALYZE_CODEBASE",
+      "description": "Analyze the codebase to identify areas for improvement",
+      "agent": "analyzer",
+      "priority": "HIGH",
+      "dependencies": [],
+      "output_format": "AnalysisReport",
+      "focus": "overall_project_structure"
+    }
+  ],
+  "rationale": "The analyzer agent is best suited for this task",
+  "dependencies": {},
+  "estimated_duration": "2 hours"
+}
+```
+
 ## JSON SYNTAX CHECKLIST:
 ✅ All strings use double quotes
 ✅ No trailing commas
