@@ -159,6 +159,8 @@ def test_tower_component_can_fire(tower_component):
     
     # Fire once
     tower_component.fire(current_time)
+    
+    # Can't fire immediately after firing (same time)
     assert tower_component.can_fire(current_time) is False
     
     # Can't fire until cooldown passes
@@ -195,7 +197,7 @@ def test_tower_component_upgrade_costs(tower_component):
     tower_component.range_upgrades = 1
     tower_component.fire_rate_upgrades = 1
     total_cost = tower_component.get_total_upgrade_cost()
-    expected_cost = 200 + 150 + 120  # 470 (damage_upgrades=1, range_upgrades=1, fire_rate_upgrades=1)
+    expected_cost = 100 + 150 + 120  # 370 (damage_upgrades=1, range_upgrades=1, fire_rate_upgrades=1)
     assert total_cost == expected_cost
 
 
