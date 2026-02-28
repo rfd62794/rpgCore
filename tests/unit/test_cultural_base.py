@@ -85,27 +85,27 @@ def test_breeding_lock_mechanic():
     assert rs.can_breed is True
 
 def test_base_stat_inheritance():
-    # Setup parents with known base stats within Moss cap (HP cap=40, ATK cap=18, SPD cap=26)
+    # Setup parents within Moss caps (HP:40, ATK:9, SPD:13)
     g1 = generate_random(CulturalBase.MOSS)
     g1.base_hp = 30.0
-    g1.base_atk = 15.0
-    g1.base_spd = 20.0
+    g1.base_atk = 8.0
+    g1.base_spd = 10.0
     
     g2 = generate_random(CulturalBase.MOSS)
     g2.base_hp = 20.0
-    g2.base_atk = 10.0
-    g2.base_spd = 10.0
+    g2.base_atk = 6.0
+    g2.base_spd = 8.0
     
     offspring = breed(g1, g2, mutation_chance=0) # Disable mutation
     
     # HP: max(30, 20) = 30 * 1.10 = 33.0
     assert offspring.base_hp == pytest.approx(33.0)
     
-    # ATK: avg(15, 10) = 12.5 * 1.10 = 13.75
-    assert offspring.base_atk == pytest.approx(13.75)
+    # ATK: avg(8, 6) = 7 * 1.10 = 7.7
+    assert offspring.base_atk == pytest.approx(7.7)
     
-    # SPD: faster(20) * 0.95 * 1.10 = 20.9
-    assert offspring.base_spd == pytest.approx(20.9)
+    # SPD: faster(10) * 0.95 * 1.10 = 10.45
+    assert offspring.base_spd == pytest.approx(10.45)
 
 def test_stat_cap_logic():
     # HP cap for Moss is 40.0
