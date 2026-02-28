@@ -33,6 +33,7 @@ class RaceScene(Scene):
         self.track = generate_track(3000)
         self.renderer = SlimeRenderer()
         self.minimap = RaceMinimap(spec)
+        self.hud = RaceHUD(spec, self.layout)
         
         self.ui_components = []
         self._setup_ui()
