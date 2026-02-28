@@ -11,6 +11,7 @@ from src.apps.dungeon_crawler.ui.dungeon_session import DungeonSession
 from src.shared.combat.d20_resolver import D20Resolver
 from src.shared.combat.turn_order import TurnOrderManager
 from src.apps.slime_breeder.ui.slime_renderer import SlimeRenderer
+from src.shared.teams.stat_calculator import calculate_hp, calculate_attack, calculate_speed
 
 class DungeonUnit:
     """Wrapper for combatants in the 5v5 grid."""
@@ -36,9 +37,37 @@ class DungeonCombatScene(CombatSceneBase):
         enemy_stats = {"hp": 15, "max_hp": 15, "attack": 4, "defense": 2, "speed": 5, "stance": "Aggressive"}
         self.enemies[0] = DungeonUnit("slime_0", enemy_name, enemy_stats, "enemy", enemy_data)
         
-        # 2. Setup Turn Order
+        # 2. Setup Party Slimes (Slots 1-4)
+        for i, slime in enumerate(self.session.party_slimes):
+            if i >= 4: break # Max 4 slimes + 1 hero
+            slot_idx = i + 1
+            stats = {
+                "hp": calculate_hp(slime.genome),
+                "max_hp": calculate_hp(slime.genome),
+                "attack": calculate_attack(slime.genome),
+                "defense": 2,
+                "speed": calculate_speed(slime.genome),
+                "stance": "Aggressive"
+            }
+            # Mocking slime entity for renderer (it expects Slime entity with kinematics)
+            # Create a minimal object that renderer can handle
+            class MockSlime:
+                def __init__(self, genome):
+                    self.genome = genome
+                    class Kinematics:
+                        def __init__(self): self.position = pygame.Vector2(0,0)
+                    self.kinematics = Kinematics()
+            
+            mock_slime = MockSlime(slime.genome)
+            self.party[slot_idx] = DungeonUnit(f"party_{slot_idx}", slime.name, stats, "party", mock_slime)
+        
+        # 3. Setup Turn Order
         self.session.turn_manager.reset()
         self.session.turn_manager.add_combatant("hero", hero.stats["speed"])
+        for unit in self.party:
+            if unit and unit.id != "hero":
+                self.session.turn_manager.add_combatant(unit.id, unit.stats["speed"])
+        
         self.session.turn_manager.add_combatant("slime_0", 5)
         
         self.add_log("Combat started!")
@@ -98,6 +127,10 @@ class DungeonCombatScene(CombatSceneBase):
         
         # Enable/Disable buttons
         can_act = (self.active_actor_id == "hero")
+        # For this demo, we'll allow player to control all party slimes too
+        if self.active_actor_id and self.active_actor_id.startswith("party_"):
+            can_act = True
+            
         self.btn_attack.enabled = can_act
         self.btn_flee.enabled = can_act
         
@@ -109,8 +142,8 @@ class DungeonCombatScene(CombatSceneBase):
         # Call base to draw container, name, HP bar
         super()._draw_unit_slot(surface, x, y, w, h, entity, side)
         
-        # Add SlimeRenderer visuals if it's an enemy slime
-        if entity and side == "enemy" and entity.entity:
+        # Add SlimeRenderer visuals if it's an enemy or party slime
+        if entity and entity.entity:
             # We need to temporarily set kinematics pos for the renderer
             # centered in the slot middle-upper area
             if hasattr(entity.entity, "kinematics"):
@@ -129,23 +162,27 @@ class DungeonCombatScene(CombatSceneBase):
                 entity.entity.kinematics.position.y = old_y
 
     def _handle_player_attack(self):
-        if self.active_actor_id != "hero": return
+        if not self.active_actor_id or (self.active_actor_id != "hero" and not self.active_actor_id.startswith("party_")): 
+            return
         
-        hero = self.party[0]
+        # Get active unit
+        attacker = next((u for u in self.party if u and u.id == self.active_actor_id), None)
+        if not attacker: return
+
         target = self.enemies[0]
         if not target or target.stats["hp"] <= 0: return
         
-        atk_mod = hero.stats["attack"]
+        atk_mod = attacker.stats["attack"]
         resolver = D20Resolver()
         roll_res = resolver.ability_check(modifier=atk_mod, difficulty_class=10 + target.stats["defense"])
         
         if roll_res.success:
             damage = atk_mod + 2
             target.stats["hp"] -= damage
-            self.add_log(f"Hero HITS Slime for {damage}!")
+            self.add_log(f"{attacker.name} HITS Slime for {damage}!")
             self.trigger_flash((255, 100, 100)) # Red flash
         else:
-            self.add_log(f"Hero MISSES Slime!")
+            self.add_log(f"{attacker.name} MISSES Slime!")
             self.trigger_flash((255, 255, 255)) # White flash
             
         if target.stats["hp"] <= 0:
@@ -155,24 +192,37 @@ class DungeonCombatScene(CombatSceneBase):
             self._next_turn()
 
     def _enemy_turn(self):
-        hero = self.party[0]
+        # Target hero first, then random party slime
+        valid_targets = [u for u in self.party if u and u.stats["hp"] > 0]
+        if not valid_targets: return
+        
+        hero_unit = next((u for u in valid_targets if u.id == "hero"), None)
+        target = hero_unit if hero_unit else random.choice(valid_targets)
+        
         slime = self.enemies[0]
         
         resolver = D20Resolver()
-        roll_res = resolver.ability_check(modifier=3, difficulty_class=10 + hero.stats["defense"])
+        roll_res = resolver.ability_check(modifier=3, difficulty_class=10 + target.stats["defense"])
         
         if roll_res.success:
             damage = 4
-            hero.stats["hp"] -= damage
-            self.add_log(f"Slime HITS Hero for {damage}!")
+            target.stats["hp"] -= damage
+            self.add_log(f"Slime HITS {target.name} for {damage}!")
             self.trigger_flash((200, 0, 0))
         else:
             self.add_log("Slime MISSES!")
             self.trigger_flash((200, 200, 200))
             
-        if hero.stats["hp"] <= 0:
-            hero.stats["hp"] = 0
+        if target.id == "hero" and target.stats["hp"] <= 0:
+            target.stats["hp"] = 0
             self._handle_defeat()
+        elif target.stats["hp"] <= 0:
+            target.stats["hp"] = 0
+            self.add_log(f"{target.name} has fallen!")
+            # Mark as dead in roster context
+            rs = next((s for s in self.session.party_slimes if s.name == target.name), None)
+            if rs: rs.alive = False
+            self._next_turn()
         else:
             self._next_turn()
 
