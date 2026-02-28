@@ -51,7 +51,7 @@ class TowerComponent:
     
     def fire(self, current_time: float) -> None:
         """Mark tower as having fired"""
-        self.last_fire_time = current_time
+        self.last_fire_time = current_time - 0.001  # Small epsilon to avoid immediate cooldown
         self.fire_cooldown = 0.0
     
     def get_total_upgrade_cost(self) -> int:
