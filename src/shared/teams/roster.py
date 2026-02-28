@@ -112,7 +112,8 @@ class Roster:
                         "curiosity": s.genome.curiosity,
                         "energy": s.genome.energy,
                         "affection": s.genome.affection,
-                        "shyness": s.genome.shyness
+                        "shyness": s.genome.shyness,
+                        "cultural_base": s.genome.cultural_base.value
                     },
                     "level": s.level,
                     "experience": s.experience,
@@ -126,7 +127,11 @@ class Roster:
     def from_dict(cls, data: dict) -> "Roster":
         roster = cls()
         for s in data.get("slimes", []):
-            genome = SlimeGenome(**s["genome"])
+            g_data = s["genome"]
+            # Cast culture string back to Enum
+            from src.shared.genetics.cultural_base import CulturalBase
+            g_data["cultural_base"] = CulturalBase(g_data.get("cultural_base", "mixed"))
+            genome = SlimeGenome(**g_data)
             rs = RosterSlime(
                 slime_id=s["slime_id"],
                 name=s["name"],
