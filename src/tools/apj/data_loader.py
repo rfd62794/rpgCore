@@ -106,3 +106,17 @@ class DataLoader:
     def _default_tasks(self) -> Dict:
         """Default tasks structure"""
         return {}
+    
+    def load_symbol_map(self):
+        """Load SymbolMap from cache or scan if missing"""
+        from .inventory.cache import load_cache
+        
+        cache_file = self.docs_dir / "agents" / "inventory" / "symbol_map_cache.json"
+        
+        if cache_file.exists():
+            return load_cache(self.root_dir)
+        else:
+            # Fallback: run scanner
+            from .inventory.scanner import ASTScanner
+            scanner = ASTScanner(self.root_dir)
+            return scanner.scan()
