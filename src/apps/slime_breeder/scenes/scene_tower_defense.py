@@ -11,8 +11,8 @@ from src.shared.ui.spec import UISpec
 from src.shared.ui.label import Label
 from src.shared.ui.button import Button
 from src.shared.ui.panel import Panel
-from src.shared.teams.roster import Roster, load_roster, save_roster
-from src.shared.teams.roster_save import load_roster
+from src.shared.teams.roster import Roster
+from src.shared.teams.roster_save import load_roster, save_roster
 from src.shared.ecs.sessions.tower_defense_session import TowerDefenseSession
 from src.shared.ecs.registry.component_registry import ComponentRegistry
 from src.shared.ecs.systems.system_runner import SystemRunner
