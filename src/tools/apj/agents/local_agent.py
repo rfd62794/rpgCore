@@ -366,7 +366,11 @@ Generate complete, working code. Be thorough.
 """
         
         try:
-            code = self.ollama.analyze_blockers(prompt)
+            from pydantic_ai import Agent
+            agent = Agent(self.ollama_model)
+            
+            response = agent.run(prompt)
+            code = response.data
             
             # Clean up response (remove markdown if present)
             if code.startswith("```"):
