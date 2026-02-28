@@ -170,8 +170,10 @@ class Team:
                     self._roster_ref.add_slime(slime_or_id)
             
             # Update existing entry in roster if it exists
+            entry_found = False
             for entry in self._roster_ref.entries:
                 if entry.slime_id == slime_id:
+                    entry_found = True
                     # Check if already assigned to this team
                     if entry.team == self.role:
                         return False  # Already assigned to this team
@@ -181,6 +183,14 @@ class Team:
                     if entry not in self.members:
                         self.members.append(entry)
                     return True
+            
+            # If no existing entry found, create one
+            if not entry_found:
+                entry = RosterEntry(slime_id=slime_id, team=self.role)
+                entry._team_ref = self  # Set back-reference
+                self._roster_ref.entries.append(entry)
+                self.members.append(entry)
+                return True
         else:
             slime_id = slime_or_id
         
