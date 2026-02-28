@@ -40,7 +40,9 @@ class DungeonCombatScene(CombatSceneBase):
         
         # Load enemy squad from kwargs
         enemy_squad = kwargs.get("enemy_squad")
-        self.enemies = []  # Clear existing enemies
+        # Clear existing enemies but maintain list size
+        for i in range(5):
+            self.enemies[i] = None
         
         if enemy_squad and hasattr(enemy_squad, 'members'):
             # Use pre-generated squad
@@ -64,7 +66,7 @@ class DungeonCombatScene(CombatSceneBase):
                         self.kinematics = Kinematics()
                 
                 mock_enemy = MockEnemy(enemy.genome, enemy.level)
-                self.enemies.append(DungeonUnit(f"enemy_{i}", enemy.name, stats, "enemy", mock_enemy))
+                self.enemies[i] = DungeonUnit(f"enemy_{i}", enemy.name, stats, "enemy", mock_enemy)
         else:
             # Fallback - create random enemies
             for i in range(3):
