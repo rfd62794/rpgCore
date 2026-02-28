@@ -50,8 +50,8 @@ class LocalAgent:
         self._load_context_tools()
         
         # Ollama model for reasoning
-        from src.tools.apj.agents.ollama_client import OllamaClient
-        self.ollama = OllamaClient()
+        from src.tools.apj.agents.ollama_client import get_ollama_model
+        self.ollama_model = get_ollama_model()
         
         print(f"""
 ╔══════════════════════════════════════════════════════════════╗
@@ -59,7 +59,7 @@ class LocalAgent:
 ║            Using Ollama (fully autonomous)                    ║
 ╚══════════════════════════════════════════════════════════════╝
 
-🧠 Model: {self.ollama.current_model}
+🧠 Model: {self.ollama_model.model_name}
 📚 Context: Loaded codebase understanding tools
 🔌 Connectivity: Offline (no cloud dependency)
 """)
@@ -264,7 +264,11 @@ Return as JSON:
 """
         
         # Get plan from Ollama
-        response_text = self.ollama.analyze_blockers(prompt)
+        from pydantic_ai import Agent
+        agent = Agent(self.ollama_model)
+        
+        response = agent.run(prompt)
+        response_text = response.data
         
         # Parse response
         try:
