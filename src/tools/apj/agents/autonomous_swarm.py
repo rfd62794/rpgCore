@@ -6,9 +6,9 @@ Continuously works through tasks until completion without human intervention
 import logging
 import time
 from typing import Dict, List, Any, Optional
-from datetime import datetime, timedelta
+from dataclasses import dataclass, field
 from enum import Enum
-from dataclasses import dataclass
+from datetime import datetime, timedelta
 import uuid
 
 from .a2a_communication import A2A_MANAGER, MessageType, MessagePriority
@@ -47,12 +47,13 @@ class SwarmTask:
     priority: int  # 1-10, lower is higher priority
     estimated_hours: float
     dependencies: List[str]  # Task IDs that must complete first
+    assigned_agent: str = "generic"  # Which specific agent is assigned
     status: TaskStatus = TaskStatus.PENDING
-    assigned_to: Optional[str] = None
+    created_at: datetime = field(default_factory=datetime.now)
     started_at: Optional[datetime] = None
     completed_at: Optional[datetime] = None
-    result: Optional[Dict[str, Any]] = None
-    error_message: Optional[str] = None
+    result: Optional[str] = None
+    error: Optional[str] = None
     retry_count: int = 0
     max_retries: int = 3
 
