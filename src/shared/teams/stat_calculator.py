@@ -18,10 +18,14 @@ def calculate_hp(genome: SlimeGenome, level: int = 1) -> int:
     return int(genome.base_hp * cultural_mod * size_mod * level_mod)
 
 def calculate_attack(genome: SlimeGenome, level: int = 1) -> int:
-    """Attack = base_atk * cultural_mod * level_mod."""
+    """Attack = (base_atk + energy_bonus) * cultural_mod * level_mod."""
     cultural_mod = CULTURAL_PARAMETERS[genome.cultural_base].attack_modifier
+    
+    # Energy gives a small bonus to attack
+    energy_bonus = genome.energy * 2.0
+    
     level_mod = 1.0 + (level - 1) * 0.1
-    return int(genome.base_atk * cultural_mod * level_mod)
+    return int((genome.base_atk + energy_bonus) * cultural_mod * level_mod)
 
 def calculate_speed(genome: SlimeGenome, level: int = 1) -> int:
     """Speed = (base_spd + energy_bonus) * cultural_mod * level_mod."""
