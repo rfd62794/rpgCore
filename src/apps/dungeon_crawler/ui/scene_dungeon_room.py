@@ -48,13 +48,10 @@ class DungeonRoomScene(Scene):
 
     def on_enter(self, combat_result=None, **kwargs):
         logger.info("DungeonRoomScene.on_enter called")
-        self.kwargs = kwargs
-        session = kwargs.get("session")
-        logger.info(f"Session received: {session}")
-        self.session = session
+        # Session already captured in __init__ - no need to extract from kwargs
         
         if not self.session:
-            logger.error("No session provided to DungeonRoomScene")
+            logger.error("No session available in DungeonRoomScene")
             return
         
         if not self.session.floor:
