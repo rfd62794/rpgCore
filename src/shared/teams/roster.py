@@ -168,30 +168,20 @@ class Team:
             if hasattr(self, '_roster_ref') and self._roster_ref:
                 if slime_id not in self._roster_ref._roster_slimes:
                     self._roster_ref.add_slime(slime_or_id)
-            
-            # Update existing entry in roster if it exists
-            entry_found = False
-            for entry in self._roster_ref.entries:
-                if entry.slime_id == slime_id:
-                    entry_found = True
+                    return True  # Successfully added new slime
+                else:
                     # Check if already assigned to this team
-                    if entry.team == self.role:
-                        return False  # Already assigned to this team
-                    # Update team assignment
-                    entry.team = self.role
-                    entry._team_ref = self  # Set back-reference
-                    # Add to team members if not already there
-                    if entry not in self.members:
-                        self.members.append(entry)
-                    return True
-            
-            # If no existing entry found, create one
-            if not entry_found:
-                entry = RosterEntry(slime_id=slime_id, team=self.role)
-                entry._team_ref = self  # Set back-reference
-                self._roster_ref.entries.append(entry)
-                self.members.append(entry)
-                return True
+                    for entry in self._roster_ref.entries:
+                        if entry.slime_id == slime_id and entry.team == self.role:
+                            return False  # Already assigned to this team
+                    # Update existing entry to this team
+                    for entry in self._roster_ref.entries:
+                        if entry.slime_id == slime_id:
+                            entry.team = self.role
+                            entry._team_ref = self  # Set back-reference
+                            if entry not in self.members:
+                                self.members.append(entry)
+                            return True
         else:
             slime_id = slime_or_id
         
