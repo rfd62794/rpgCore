@@ -25,13 +25,8 @@ class ProfileCard(UIComponent):
         # Add StatsPanel as a "child" (manually rendered for now)
         self.stats_panel = StatsPanel(slime, (position[0] + 80, position[1] + 60), width=self.WIDTH - 90)
 
-    def update(self, dt_ms: int) -> None:
-        pass
-    
     def update(self, dt_ms: int):
         """No periodic updates needed for the card itself."""
-        # Note: We don't need to manually update children if the scene manager or parent does it,
-        # but UIComponent might expect it. StatsPanel doesn't use update anyway.
         pass
 
     def render(self, surface: pygame.Surface):
