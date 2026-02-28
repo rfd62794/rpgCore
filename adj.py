@@ -250,6 +250,85 @@ System: {system_name}
         
         print(f"✅ Report saved: {report_file}")
 
+    def execute_batch(self, milestone_id: str, approval_callback=None):
+        """Start executing all tasks for a milestone"""
+        self._record_layer("Layer 1: Data Files")
+        self._record_layer("Layer 2: Local Analysis")
+        
+        # Load tasks for milestone
+        tasks = self.data_loader.load_milestone_tasks(milestone_id)
+        
+        if not tasks:
+            print(f"No tasks found for milestone {milestone_id}")
+            return
+        
+        # Create batch ID
+        from datetime import datetime
+        batch_id = f"{milestone_id}_{datetime.now().strftime('%Y%m%d_%H%M%S')}"
+        
+        # Run batch
+        from src.tools.apj.executor.orchestrator import ExecutionOrchestrator
+        orchestrator = ExecutionOrchestrator(self.root_dir)
+        
+        report = orchestrator.start_batch(batch_id, milestone_id, tasks)
+        
+        # Save report
+        self._save_execution_report(batch_id, report)
+        
+        return report
+
+    def resume_batch(self, batch_id: str):
+        """Resume a batch from where it left off"""
+        from src.tools.apj.executor.orchestrator import ExecutionOrchestrator
+        orchestrator = ExecutionOrchestrator(self.root_dir)
+        
+        report = orchestrator.resume_batch(batch_id)
+        
+        if not report:
+            print(f"Batch {batch_id} not found")
+            return
+        
+        # Save report
+        self._save_execution_report(batch_id, report)
+        
+        return report
+
+    def get_batch_status(self, batch_id: str):
+        """Get status of a batch"""
+        from src.tools.apj.executor.orchestrator import ExecutionOrchestrator
+        orchestrator = ExecutionOrchestrator(self.root_dir)
+        
+        status = orchestrator.get_execution_status(batch_id)
+        
+        if not status:
+            print(f"Batch {batch_id} not found")
+            return
+        
+        print(f"""
+Batch: {status['batch_id']}
+Milestone: {status['milestone_id']}
+Status: {status['status']}
+
+Progress: {status['tasks_completed']}/{status['tasks_attempted']} completed
+Tests: {status['total_test_passing']} passing
+
+{'─'*60}
+
+""")
+        
+        if status['status'] == 'blocked':
+            print(f"❌ BLOCKED: {status['blocker_reason']}")
+            print(f"\nResume with: python adj.py execute resume {status['batch_id']}")
+
+    def _save_execution_report(self, batch_id: str, report):
+        """Save execution report"""
+        report_dir = self.docs_dir / "execution"
+        report_dir.mkdir(parents=True, exist_ok=True)
+        
+        report_file = report_dir / f"{batch_id}_report.json"
+        with open(report_file, 'w') as f:
+            json.dump(report.to_dict(), f, indent=2)
+
     def show_phase_roadmap(self, phase_num: int):
         """Show complete roadmap for a phase"""
         self._record_layer("Layer 1: Data Files")
