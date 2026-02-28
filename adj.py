@@ -228,27 +228,210 @@ System: {system_name}
         for item in missing:
             print(f"  {item['symbol']} ({item['type']}) - {item['file']}:{item['line']}")
     
-    def save_inventory_report(self):
-        """Save inventory status to markdown file"""
+    def show_phase_roadmap(self, phase_num: int):
+        """Show complete roadmap for a phase"""
+        self._record_layer("Layer 1: Data Files")
+        self._record_layer("Layer 2: Local Analysis")
+        
+        task_loader = self.data_loader.load_task_loader()
         symbol_map = self.data_loader.load_symbol_map()
         
         from src.tools.apj.inventory.classifier import FileClassifier
         classifier = FileClassifier()
         classifications = classifier.classify_all(symbol_map)
         
-        from src.tools.apj.inventory.status_reporter import StatusReporter
-        reporter = StatusReporter(symbol_map, classifications)
-        status = reporter.get_status()
+        from src.tools.apj.inventory.task_file_mapper import TaskFileMapper
+        mapper = TaskFileMapper(task_loader, classifications)
+        mapper.build_mappings()
         
-        # Generate markdown
-        report = self._generate_markdown_report(status, reporter)
+        from src.tools.apj.inventory.plan_reporter import PlanReporter
+        reporter = PlanReporter(task_loader, mapper)
+        roadmap = reporter.get_phase_roadmap(phase_num)
         
-        # Save to docs/INVENTORY_REPORT.md
-        report_file = self.docs_dir / "INVENTORY_REPORT.md"
-        with open(report_file, 'w') as f:
-            f.write(report)
+        self._print_phase_roadmap(roadmap)
+        self.show_cost()
+
+    def show_goal_status(self, goal_id: str):
+        """Show implementation status for a goal"""
+        self._record_layer("Layer 1: Data Files")
+        self._record_layer("Layer 2: Local Analysis")
         
-        print(f"✅ Report saved: {report_file}")
+        task_loader = self.data_loader.load_task_loader()
+        symbol_map = self.data_loader.load_symbol_map()
+        
+        from src.tools.apj.inventory.classifier import FileClassifier
+        classifier = FileClassifier()
+        classifications = classifier.classify_all(symbol_map)
+        
+        from src.tools.apj.inventory.task_file_mapper import TaskFileMapper
+        mapper = TaskFileMapper(task_loader, classifications)
+        mapper.build_mappings()
+        
+        from src.tools.apj.inventory.plan_reporter import PlanReporter
+        reporter = PlanReporter(task_loader, mapper)
+        status = reporter.get_goal_implementation_status(goal_id)
+        
+        self._print_goal_status(status)
+        self.show_cost()
+
+    def show_file_context(self, file_path: str):
+        """Show what goal/task a file implements"""
+        self._record_layer("Layer 1: Data Files")
+        self._record_layer("Layer 2: Local Analysis")
+        
+        task_loader = self.data_loader.load_task_loader()
+        symbol_map = self.data_loader.load_symbol_map()
+        
+        from src.tools.apj.inventory.classifier import FileClassifier
+        classifier = FileClassifier()
+        classifications = classifier.classify_all(symbol_map)
+        
+        from src.tools.apj.inventory.task_file_mapper import TaskFileMapper
+        mapper = TaskFileMapper(task_loader, classifications)
+        mapper.build_mappings()
+        
+        from src.tools.apj.inventory.plan_reporter import PlanReporter
+        reporter = PlanReporter(task_loader, mapper)
+        context = reporter.get_file_implementation_context(file_path)
+        
+        self._print_file_context(context)
+        self.show_cost()
+
+    def show_task_plan(self, task_id: str):
+        """Show detailed implementation plan for a task"""
+        self._record_layer("Layer 1: Data Files")
+        self._record_layer("Layer 2: Local Analysis")
+        
+        task_loader = self.data_loader.load_task_loader()
+        
+        from src.tools.apj.inventory.plan_reporter import PlanReporter
+        # Create minimal mapper just for task
+        from src.tools.apj.inventory.task_file_mapper import TaskFileMapper
+        mapper = TaskFileMapper(task_loader, {})
+        
+        reporter = PlanReporter(task_loader, mapper)
+        plan = reporter.get_task_implementation_plan(task_id)
+        
+        self._print_task_plan(plan)
+        self.show_cost()
+
+    def _print_phase_roadmap(self, roadmap):
+        """Pretty-print phase roadmap"""
+        milestone = roadmap.get("milestone", {})
+        tasks = roadmap.get("tasks", [])
+        
+        print(f"""
+╔══════════════════════════════════════════════════════════════╗
+║                    PHASE {milestone.get('phase', 'N/A')} ROADMAP              ║
+╚══════════════════════════════════════════════════════════════╝
+
+🎯 MILESTONE: {milestone.get('title', 'Unknown')}
+📊 STATUS: {milestone.get('status', 'Unknown')}
+
+📋 TASKS ({len(tasks)} total):""")
+        
+        for task in tasks:
+            print(f"  {task.get('task_id', 'Unknown')}: {task.get('task_title', 'Unknown')}")
+            print(f"    Status: {task.get('status', 'Unknown')}")
+            print(f"    Priority: {task.get('priority', 'Unknown')}")
+            print(f"    Hours: {task.get('estimated_hours', 0)}")
+            if task.get('files'):
+                print(f"    Files: {len(task.get('files', []))}")
+            if task.get('systems'):
+                print(f"    Systems: {', '.join(task.get('systems', []))}")
+            if task.get('demos'):
+                print(f"    Demos: {', '.join(task.get('demos', []))}")
+            print()
+    
+    def _print_goal_status(self, status):
+        """Pretty-print goal status"""
+        goal = status.get("goal", {})
+        milestones = goal.get("milestones", [])
+        
+        print(f"""
+╔══════════════════════════════════════════════════════════════╗
+║                    GOAL IMPLEMENTATION STATUS               ║
+╚══════════════════════════════════════════════════════════════╝
+
+🎯 GOAL: {goal.get('goal_title', 'Unknown')}
+📊 COMPLETION: {status.get('completion_percent', 0):.1f}%
+📋 TASKS: {status.get('complete_tasks', 0)}/{status.get('total_tasks', 0)} complete
+📁 FILES: {status.get('total_files', 0)} files involved
+
+🏗️  MILESTONES:""")
+        
+        for milestone in milestones:
+            tasks = milestone.get("tasks", [])
+            complete = len([t for t in tasks if t.get("status") == "complete"])
+            print(f"  {milestone.get('milestone_title', 'Unknown')}: {complete}/{len(tasks)} tasks")
+            for task in tasks[:3]:  # Show first 3 tasks
+                status_emoji = "✅" if task.get("status") == "complete" else "🔄" if task.get("status") == "in_progress" else "❌"
+                print(f"    {status_emoji} {task.get('task_title', 'Unknown')}")
+            if len(tasks) > 3:
+                print(f"    ... and {len(tasks) - 3} more")
+            print()
+    
+    def _print_file_context(self, context):
+        """Pretty-print file context"""
+        print(f"""
+╔══════════════════════════════════════════════════════════════╗
+║                    FILE IMPLEMENTATION CONTEXT              ║
+╚══════════════════════════════════════════════════════════════╝
+
+📁 FILE: {context.get('file', 'Unknown')}
+🔧 SYSTEM: {context.get('system', 'Unknown') or 'None'}
+🎮 DEMO: {context.get('demo', 'Unknown') or 'None'}
+
+🎯 CONTRIBUTES TO:""")
+        
+        goals = context.get("contributes_to", {}).get("goals", [])
+        tasks = context.get("contributes_to", {}).get("tasks", [])
+        
+        if goals:
+            print("  Goals:")
+            for goal_id in goals:
+                print(f"    {goal_id}")
+        
+        if tasks:
+            print("  Tasks:")
+            for task in tasks:
+                print(f"    {task.get('task_id', 'Unknown')}: {task.get('task_title', 'Unknown')}")
+    
+    def _print_task_plan(self, plan):
+        """Pretty-print task plan"""
+        steps = plan.get("steps", [])
+        files = plan.get("files", [])
+        
+        print(f"""
+╔══════════════════════════════════════════════════════════════╗
+║                    TASK IMPLEMENTATION PLAN                 ║
+╚══════════════════════════════════════════════════════════════╝
+
+📋 TASK: {plan.get('task_title', 'Unknown')}
+📊 STATUS: {plan.get('status', 'Unknown')}
+🎯 PRIORITY: {plan.get('priority', 'Unknown')}
+⏱️  ESTIMATED: {plan.get('estimated_hours', 0)} hours
+
+📝 DESCRIPTION:
+{plan.get('description', 'No description')}
+
+🔧 IMPLEMENTATION STEPS:""")
+        
+        for i, step in enumerate(steps, 1):
+            print(f"  {i}. {step.get('title', 'Unknown')}")
+            print(f"     {step.get('description', 'No description')}")
+            if step.get('files'):
+                print(f"     Files: {', '.join(step.get('files', []))}")
+            if step.get('symbols_to_create'):
+                print(f"     Symbols: {', '.join(step.get('symbols_to_create', []))}")
+            print()
+        
+        if files:
+            print("📁 FILES TO MODIFY:")
+            for file_path in files:
+                print(f"  {file_path}")
+        else:
+            print("📁 FILES: None specified")
     
     def _print_inventory_status(self, status):
         """Pretty-print inventory status"""
@@ -645,7 +828,7 @@ System: {system_name}
 def main():
     """Main CLI interface"""
     parser = argparse.ArgumentParser(description="ADJ System - DGT Engine Governance")
-    parser.add_argument("command", choices=["status", "phase", "priorities", "blockers", "next", "approve", "update", "strategy", "inventory"])
+    parser.add_argument("command", choices=["status", "phase", "priorities", "blockers", "next", "approve", "update", "strategy", "inventory", "plan"])
     parser.add_argument("arg", nargs="?", help="Argument for command")
     parser.add_argument("arg2", nargs="?", help="Second argument for command")
     
@@ -691,6 +874,19 @@ def main():
             adj.show_missing_docstrings()
         else:
             print("Usage: python adj.py inventory [status|report|demo <name>|system <name>|missing]")
+    elif args.command == "plan":
+        if not args.arg:
+            print("Usage: python adj.py plan [goal <id>|task <id>|file <path>|phase <num>]")
+        elif args.arg == "goal" and args.arg2:
+            adj.show_goal_status(args.arg2)
+        elif args.arg == "task" and args.arg2:
+            adj.show_task_plan(args.arg2)
+        elif args.arg == "file" and args.arg2:
+            adj.show_file_context(args.arg2)
+        elif args.arg == "phase" and args.arg2:
+            adj.show_phase_roadmap(int(args.arg2))
+        else:
+            print("Usage: python adj.py plan [goal <id>|task <id>|file <path>|phase <num>]")
     else:
         print("❌ Unknown command")
         parser.print_help()

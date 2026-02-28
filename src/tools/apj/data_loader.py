@@ -4,6 +4,10 @@ from pathlib import Path
 from typing import Dict, List, Optional
 import yaml
 import re
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from .inventory.task_loader import TaskLoader
 
 class DataLoader:
     """Load ADJ data from documentation files"""
@@ -120,3 +124,17 @@ class DataLoader:
             from .inventory.scanner import ASTScanner
             scanner = ASTScanner(self.root_dir)
             return scanner.scan()
+    
+    def load_task_loader(self) -> TaskLoader:
+        """Load task planning data"""
+        from .inventory.task_loader import TaskLoader
+        loader = TaskLoader(self.docs_dir)
+        loader.load_all()
+        return loader
+
+    def load_task_file_mapper(self, task_loader, classifications):
+        """Build task-file mappings"""
+        from .inventory.task_file_mapper import TaskFileMapper
+        mapper = TaskFileMapper(task_loader, classifications)
+        mapper.build_mappings()
+        return mapper
