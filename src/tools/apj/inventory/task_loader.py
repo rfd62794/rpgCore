@@ -192,101 +192,64 @@ class TaskLoader:
         if not tasks_file.exists():
             return {}
         
-        # Parse TASKS.md for T001, T002, etc
-        # For now, return Phase 3 tasks
+        tasks = {}
         
-        self.tasks = {
-            "T_3_0": Task(
-                id="T_3_0",
-                title="ECS Rendering Refactor",
-                description="Add RenderComponent, AnimationComponent, RenderingSystem",
-                priority="P0",
-                estimated_hours=4,
-                linked_milestone="M_PHASE3",
-                linked_steps=["S_3_0_1", "S_3_0_2", "S_3_0_3"],
-                file_references=[
-                    "src/shared/ecs/components/render.py",
-                    "src/shared/ecs/systems/rendering_system.py"
-                ]
-            ),
-            "T_3_1": Task(
-                id="T_3_1",
-                title="Grid System & Components",
-                description="GridPositionComponent, TowerComponent, WaveComponent",
-                priority="P0",
-                estimated_hours=6,
-                linked_milestone="M_PHASE3",
-                file_references=[
-                    "src/shared/ecs/components/grid.py",
-                    "src/shared/ecs/components/tower.py",
-                    "src/shared/ecs/components/wave.py"
-                ]
-            ),
-            "T_3_2": Task(
-                id="T_3_2",
-                title="Tower Defense Systems",
-                description="TowerDefenseBehaviorSystem, WaveSystem, UpgradeSystem, TargetingSystem",
-                priority="P0",
-                estimated_hours=8,
-                linked_milestone="M_PHASE3",
-                file_references=[
-                    "src/shared/ecs/systems/behavior_system.py",
-                    "src/shared/ecs/systems/wave_system.py",
-                    "src/shared/ecs/systems/upgrade_system.py",
-                    "src/shared/ecs/systems/targeting_system.py"
-                ]
-            ),
-            "T_3_3": Task(
-                id="T_3_3",
-                title="TD Session & Persistence",
-                description="TowerDefenseSession, save/load JSON, resource feedback",
-                priority="P0",
-                estimated_hours=6,
-                linked_milestone="M_PHASE3",
-                file_references=[
-                    "src/apps/tower_defense/session.py",
-                    "src/shared/persistence/session.py"
-                ]
-            ),
-            "T_3_4": Task(
-                id="T_3_4",
-                title="TD Scene & Integration",
-                description="TowerDefenseScene, UI, rendering, end-of-game results",
-                priority="P0",
-                estimated_hours=8,
-                linked_milestone="M_PHASE3",
-                file_references=[
-                    "src/apps/tower_defense/ui/scene_td.py",
-                    "src/shared/ui/components/tower_ui.py"
-                ]
-            ),
-            "T_3_5": Task(
-                id="T_3_5",
-                title="Fantasy RPG Tenant",
-                description="Multi-tenant proof-of-concept with free sprites",
-                priority="P1",
-                estimated_hours=6,
-                linked_milestone="M_PHASE3",
-                file_references=[
-                    "src/apps/fantasy_rpg/run_fantasy_rpg.py",
-                    "src/apps/fantasy_rpg/ui/scene_fr.py"
-                ]
-            ),
-            "T_3_6": Task(
-                id="T_3_6",
-                title="Archive & Documentation",
-                description="Move exploratory demos, document multi-tenant architecture",
-                priority="P1",
-                estimated_hours=4,
-                linked_milestone="M_PHASE3",
-                file_references=[
-                    "docs/MULTI_TENANT_GUIDE.md",
-                    "docs/PHASE_3_SUMMARY.md"
-                ]
-            )
-        }
+        # Parse YAML format from TASKS.md
+        try:
+            with open(tasks_file, 'r') as f:
+                content = f.read()
+            
+            # Parse YAML entries
+            current_entry = {}
+            for line in content.split('\n'):
+                line = line.strip()
+                if not line:
+                    continue
+                
+                if line.startswith('- created:'):
+                    if current_entry:
+                        # Save previous entry
+                        task_id = current_entry.get('id')
+                        if task_id:
+                            tasks[task_id] = Task(
+                                id=task_id,
+                                title=current_entry.get('title', ''),
+                                description=current_entry.get('description', ''),
+                                status=current_entry.get('status', 'queued'),
+                                priority=current_entry.get('priority', 'P1'),
+                                estimated_hours=current_entry.get('estimated_hours', 0),
+                                linked_milestone=current_entry.get('milestone'),
+                                linked_steps=current_entry.get('linked_steps', []),
+                                file_references=current_entry.get('file_references', []),
+                                symbols_to_create=current_entry.get('symbols_to_create', [])
+                            )
+                    # Start new entry
+                    current_entry = {'created': line.split(':')[1].strip()}
+                elif ':' in line and current_entry:
+                    key, value = line.split(':', 1)
+                    current_entry[key.strip()] = value.strip()
+            
+            # Save last entry
+            if current_entry:
+                task_id = current_entry.get('id')
+                if task_id:
+                    tasks[task_id] = Task(
+                        id=task_id,
+                        title=current_entry.get('title', ''),
+                        description=current_entry.get('description', ''),
+                        status=current_entry.get('status', 'queued'),
+                        priority=current_entry.get('priority', 'P1'),
+                        estimated_hours=current_entry.get('estimated_hours', 0),
+                        linked_milestone=current_entry.get('milestone'),
+                        linked_steps=current_entry.get('linked_steps', []),
+                        file_references=current_entry.get('file_references', []),
+                        symbols_to_create=current_entry.get('symbols_to_create', [])
+                    )
+                    
+        except Exception as e:
+            print(f"Error parsing TASKS.md: {e}")
         
-        return self.tasks
+        return tasks
     
     def load_steps(self) -> Dict[str, Step]:
         """Load step-level details (can be in TASKS.md or separate)"""
