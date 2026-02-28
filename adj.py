@@ -476,7 +476,7 @@ Budget: Enforced by OpenRouter, fallback to Ollama if over budget
         # Start chat
         chat = ConversationalInterface(self.root_dir, ollama)
         chat.context = context
-        chat.run_chat_loop(context)
+        # The autonomous swarm runs automatically in __init__
         
         return True
     
