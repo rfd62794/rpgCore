@@ -452,12 +452,50 @@ Strategy: Try preferred system first, fallback to other if failed
 Budget: Enforced by OpenRouter, fallback to Ollama if over budget
 """)
 
-    def show_project_status(self):
-        """Show comprehensive project status"""
-        from src.tools.apj.project_status import ProjectStatus
+    def detect_and_confirm_context(self) -> bool:
+        """
+        Boot sequence: Detect project state and get confirmation
         
-        status = ProjectStatus(self.root_dir)
-        status.print_report()
+        Flow:
+          1. Scan all documentation
+          2. Scan all code
+          3. Detect demos and systems
+          4. Analyze current status
+          5. Identify blockers
+          6. Present to user
+          7. Wait for confirmation before proceeding
+        """
+        
+        from src.tools.apj.context_detector import ContextDetector
+        
+        detector = ContextDetector(self.root_dir)
+        context = detector.detect_all()
+        
+        print(f"\n")
+        detector.print_summary()
+        
+        print(f"""
+╔══════════════════════════════════════════════════════════════╗
+║              CONFIRM BEFORE PROCEEDING                        ║
+╚══════════════════════════════════════════════════════════════╝
+
+This is the current state of your project.
+
+Commands available:
+  polish <demo>        - Polish and complete a specific demo
+  execute <action>     - Execute one of the next actions
+  plan <action>        - Create detailed step-by-step plan for action
+  status               - Show detailed project status
+  
+Examples:
+  python adj.py polish dungeon
+  python adj.py execute "Build T_3_0: ECS Rendering System"
+  python adj.py plan "Complete Dungeon Demo"
+
+What would you like to do?
+""")
+        
+        return True
 
     def show_phase_roadmap(self, phase_num: int):
         """Show complete roadmap for a phase"""
