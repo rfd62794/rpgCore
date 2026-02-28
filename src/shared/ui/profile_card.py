@@ -33,8 +33,12 @@ class ProfileCard(UIComponent):
         
         # Background
         card_rect = pygame.Rect(x, y, self.WIDTH, self.HEIGHT)
-        pygame.draw.rect(surface, (30, 30, 40), card_rect, border_radius=8)
-        pygame.draw.rect(surface, (80, 80, 100), card_rect, width=1, border_radius=8)
+        bg_color = (40, 40, 50) if self.slime.is_elder else (30, 30, 40)
+        border_color = (255, 215, 0) if self.slime.is_elder else (80, 80, 100)
+        border_w = 2 if self.slime.is_elder else 1
+        
+        pygame.draw.rect(surface, bg_color, card_rect, border_radius=8)
+        pygame.draw.rect(surface, border_color, card_rect, width=border_w, border_radius=8)
         
         # Slime portrait (left side)
         portrait_rect = pygame.Rect(x + self.PADDING, y + self.PADDING, 60, 60)

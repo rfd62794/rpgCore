@@ -67,7 +67,7 @@ class GardenScene(GardenSceneBase):
         if not self.garden_state.slimes and self.roster.slimes:
             for rs in self.roster.slimes:
                 pos = (random.randint(50, self.garden_rect.width - 50), random.randint(50, self.garden_rect.height - 50))
-                slime = Slime(rs.name, rs.genome, pos)
+                slime = Slime(rs.name, rs.genome, pos, level=rs.level)
                 self.garden_state.add_slime(slime)
         elif not self.garden_state.slimes:
             self._add_new_slime()
@@ -88,7 +88,7 @@ class GardenScene(GardenSceneBase):
         name = random.choice(NAMES) + " " + str(len(self.garden_state.slimes) + 1)
         genome = generate_random()
         pos = (random.randint(50, self.garden_rect.width - 50), random.randint(50, self.garden_rect.height - 50))
-        slime = Slime(name, genome, pos)
+        slime = Slime(name, genome, pos, level=1)
         self.garden_state.add_slime(slime)
         
         # Add to roster
