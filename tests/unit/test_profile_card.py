@@ -3,6 +3,7 @@ import pygame
 from src.shared.ui.profile_card import ProfileCard, get_dominant_trait
 from src.shared.teams.roster import RosterSlime, TeamRole
 from src.shared.genetics.genome import SlimeGenome
+from src.shared.ui.spec import SPEC_720
 
 @pytest.fixture
 def mock_surface():
@@ -19,14 +20,14 @@ def sample_slime():
     return RosterSlime(slime_id="test_slime", name="Test Slime", genome=genome)
 
 def test_profile_card_initialization(sample_slime):
-    card = ProfileCard(sample_slime, (10, 10))
+    card = ProfileCard(sample_slime, (10, 10), SPEC_720)
     assert card.slime == sample_slime
     assert card.position == (10, 10)
     assert card.rect.width == 220
     assert card.rect.height == 140
 
 def test_profile_card_renders_without_crash(mock_surface, sample_slime):
-    card = ProfileCard(sample_slime, (10, 10))
+    card = ProfileCard(sample_slime, (10, 10), SPEC_720)
     # This just ensures no exceptions during render
     card.render(mock_surface)
 
@@ -38,7 +39,7 @@ def test_get_dominant_trait(sample_slime):
     assert get_dominant_trait(sample_slime.genome) == "Energetic"
 
 def test_profile_card_team_badge_logic(sample_slime):
-    card = ProfileCard(sample_slime, (10, 10))
+    card = ProfileCard(sample_slime, (10, 10), SPEC_720)
     # Unassigned state
     assert card.slime.team == TeamRole.UNASSIGNED
     
