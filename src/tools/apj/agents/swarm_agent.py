@@ -496,12 +496,61 @@ Please analyze this request and provide a helpful response.
                 }
             }
     
+    def send_a2a_message(self, recipient: str, message_type: MessageType,
+                        content: Dict[str, Any], priority: MessagePriority = MessagePriority.NORMAL) -> str:
+        """Send message to another agent"""
+        return A2A_MANAGER.send_message(
+            sender=self.config.name,
+            recipient=recipient,
+            message_type=message_type,
+            content=content,
+            priority=priority
+        )
+    
     def broadcast_to_all_agents(self, content: Dict[str, Any]) -> str:
         """Broadcast message to all agents"""
         return A2A_MANAGER.broadcast_message(
             sender=self.config.name,
             content=content
         )
+    
+    def get_swarm_status(self) -> Dict:
+        """Get current status of the enhanced swarm"""
+        
+        # Get basic swarm status
+        swarm_status = {
+            "total_agents": len(self.swarm_agents),
+            "available_agents": list(self.swarm_agents.keys()),
+            "agent_details": {
+                agent_type: {
+                    "name": agent.config.name if hasattr(agent, 'config') else agent_type,
+                    "role": agent.config.role if hasattr(agent, 'config') else "Unknown",
+                    "department": agent.config.department if hasattr(agent, 'config') else "Unknown",
+                }
+                for agent_type, agent in self.swarm_agents.items()
+            }
+        }
+        
+        # Add ecosystem status
+        ecosystem_status = {
+            "existing_agents": len(AGENT_REGISTRY.get_agents_by_type(AgentType.SPECIALIST)),
+            "child_agents": len(CHILD_AGENT_MANAGER.get_all_children()),
+            "a2a_enabled_agents": len([name for name in AGENT_REGISTRY.get_all_agents() 
+                                      if AGENT_REGISTRY.supports_a2a(name)]),
+            "available_tools": list(TOOL_REGISTRY.get_all_tools().keys())
+        }
+        
+        # Add message queue status
+        message_status = {
+            "pending_messages": len(A2A_MANAGER.get_pending_messages(self.config.name)),
+            "message_history_size": len(A2A_MANAGER.get_message_history(self.config.name))
+        }
+        
+        return {
+            **swarm_status,
+            "ecosystem": ecosystem_status,
+            "communication": message_status
+        }
     
     def get_available_agents(self) -> Dict[str, Any]:
         """Get status of swarm agents"""
