@@ -37,7 +37,9 @@ class DungeonPathScene(Scene):
 
         # Core Simulation Components
         self.depth = kwargs.get('depth', 1)
-        self.track = generate_dungeon_track(self.depth)
+        # Use a stable seed for the floor if possible, e.g. from session
+        seed = getattr(self.session, 'seed', random.randint(0, 99999))
+        self.track = generate_dungeon_track(self.depth, seed=seed)
         self.engine = DungeonEngine(self.track, self.team)
         self.camera = RaceCamera()
         
@@ -50,54 +52,6 @@ class DungeonPathScene(Scene):
         # Visual Constants
         self.track_height_ratio = 0.4
         self.track_rect = self._get_track_rect()
-        
-        # Genetic Enemy Management
-        self.zone_enemies = {}
-        
-        class MockEnemy:
-            def __init__(self, data):
-                self.genome = data['genome']
-                self.level = 1
-                class Kinematics:
-                    def __init__(self): self.position = pygame.Vector2(0,0)
-                self.kinematics = Kinematics()
-        self.MockEnemy = MockEnemy
-
-        self._generate_zone_visuals()
-
-    def _generate_zone_visuals(self):
-        depth = self.depth
-        from src.shared.genetics import generate_random
-        
-        for zone in self.track.zones:
-            if zone.zone_type in [DungeonZoneType.COMBAT, DungeonZoneType.BOSS]:
-                # Dynamic squad size: 1-4 for combat, 1 for boss
-                count = 1 if zone.zone_type == DungeonZoneType.BOSS else random.randint(1, 4)
-                enemies = []
-                name_prefix = "Boss" if zone.zone_type == DungeonZoneType.BOSS else "Wild"
-                
-                for i in range(count):
-                    hp = 15 + depth * 5
-                    if zone.zone_type == DungeonZoneType.BOSS:
-                        hp *= 3
-                        
-                    enemies.append({
-                        "id": f"enemy_{id(zone)}_{i}",
-                        "name": f"{name_prefix} Slime {i+1}" if count > 1 else f"{name_prefix} Slime",
-                        "stats": {
-                            "hp": hp,
-                            "max_hp": hp,
-                            "attack": 3 + depth,
-                            "defense": 1 + depth // 2,
-                            "speed": 4 + random.randint(0, 2),
-                            "stance": "Aggressive"
-                        },
-                        "genome": generate_random(),
-                        "offset_x": (i - (count-1)/2) * 35, # Centered squad
-                        "offset_y": random.choice([-20, 0, 20]),
-                        "size": 14 if zone.zone_type == DungeonZoneType.COMBAT else 30
-                    })
-                self.zone_enemies[id(zone)] = enemies
 
     def _setup_ui(self):
         self.ui_components = []
