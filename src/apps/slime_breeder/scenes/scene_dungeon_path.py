@@ -52,21 +52,41 @@ class DungeonPathScene(Scene):
         self.track_rect = self._get_track_rect()
         
         # FIX 2: Pre-generate enemy positions to avoid jitter
-        self._zone_enemy_positions = {}
+        self.zone_enemies = {}
         self._generate_zone_visuals()
 
     def _generate_zone_visuals(self):
+        depth = getattr(self.track, 'depth', 1)
+        from src.shared.genetics import generate_random
+        
         for zone in self.track.zones:
             if zone.zone_type in [DungeonZoneType.COMBAT, DungeonZoneType.BOSS]:
-                count = 3 if zone.zone_type == DungeonZoneType.COMBAT else 1
-                positions = []
+                count = 1 if zone.zone_type == DungeonZoneType.BOSS else random.randint(1, 3)
+                enemies = []
+                name_prefix = "Boss" if zone.zone_type == DungeonZoneType.BOSS else "Wild"
+                
                 for i in range(count):
-                    positions.append({
-                        'offset_x': (i - 1) * 25,
-                        'offset_y': random.choice([-15, 0, 15]),
-                        'size': 14 if zone.zone_type == DungeonZoneType.COMBAT else 30
+                    hp = 15 + depth * 5
+                    if zone.zone_type == DungeonZoneType.BOSS:
+                        hp *= 3
+                        
+                    enemies.append({
+                        "id": f"enemy_{i}",
+                        "name": f"{name_prefix} Slime {i+1}" if count > 1 else f"{name_prefix} Slime",
+                        "stats": {
+                            "hp": hp,
+                            "max_hp": hp,
+                            "attack": 3 + depth,
+                            "defense": 1 + depth // 2,
+                            "speed": 4 + random.randint(0, 2),
+                            "stance": "Aggressive"
+                        },
+                        "genome": generate_random(),
+                        "offset_x": (i - count/2 + 0.5) * 35,
+                        "offset_y": random.choice([-15, 0, 15]),
+                        "size": 14 if zone.zone_type == DungeonZoneType.COMBAT else 30
                     })
-                self._zone_enemy_positions[id(zone)] = positions
+                self.zone_enemies[id(zone)] = enemies
 
     def _setup_ui(self):
         self.ui_components = []
@@ -134,11 +154,9 @@ class DungeonPathScene(Scene):
             self._on_complete()
 
     def _handle_combat(self):
-        # Generate enemies based on zone type and depth
-        enemies = self._generate_enemy_group(
-            self.engine.party.current_zone, 
-            depth=getattr(self.track, 'depth', 1)
-        )
+        # Pull pre-generated enemies for this zone
+        zone = self.engine.party.current_zone
+        enemies = self.zone_enemies.get(id(zone), [])
         
         # Push to combat scene
         self.manager.push("dungeon_combat", 
@@ -147,30 +165,8 @@ class DungeonPathScene(Scene):
                           enemies=enemies)
 
     def _generate_enemy_group(self, zone, depth: int) -> List[dict]:
-        """Creates a list of enemy data dicts for the combat scene."""
-        enemies = []
-        count = 1 if zone.zone_type == DungeonZoneType.BOSS else random.randint(1, 3)
-        name_prefix = "Boss" if zone.zone_type == DungeonZoneType.BOSS else "Wild"
-        
-        for i in range(count):
-            hp = 15 + depth * 5
-            if zone.zone_type == DungeonZoneType.BOSS:
-                hp *= 3
-                
-            enemies.append({
-                "id": f"enemy_{i}",
-                "name": f"{name_prefix} Slime {i+1}" if count > 1 else f"{name_prefix} Slime",
-                "stats": {
-                    "hp": hp,
-                    "max_hp": hp,
-                    "attack": 3 + depth,
-                    "defense": 1 + depth // 2,
-                    "speed": 4 + random.randint(0, 2),
-                    "stance": "Aggressive"
-                },
-                "genome": None # Could generate random genome for visuals
-            })
-        return enemies
+        """No longer used, replaced by pre-generation in _generate_zone_visuals."""
+        return []
 
     def _on_encounter_resolved(self, result=None):
         # No longer used, handled by on_resume
@@ -271,14 +267,18 @@ class DungeonPathScene(Scene):
                 if not zone.resolved:
                     zone_center_x = self.camera.to_screen_x((zone.start_dist + zone.end_dist) / 2, 0)
                     if zone.zone_type in [DungeonZoneType.COMBAT, DungeonZoneType.BOSS]:
-                        # Stored Enemy Silhouettes (FIX 2)
-                        positions = self._zone_enemy_positions.get(id(zone), [])
-                        for pos in positions:
-                            ex = zone_center_x + pos['offset_x']
-                            ey = track_rect.centery + pos['offset_y']
-                            pygame.draw.circle(surface, (30, 10, 10), (int(ex), int(ey)), pos['size'])
-                            pygame.draw.circle(surface, (200, 20, 20), (int(ex-4), int(ey-4)), 3)
-                            pygame.draw.circle(surface, (200, 20, 20), (int(ex+4), int(ey-4)), 3)
+                        # Genetic Enemy Rendering (Phase 7)
+                        enemies = self.zone_enemies.get(id(zone), [])
+                        for enemy in enemies:
+                            ex = zone_center_x + enemy['offset_x']
+                            ey = track_rect.centery + enemy['offset_y']
+                            
+                            # Render small genome-based slime
+                            self.renderer.render_at(surface, enemy, int(ex), int(ey), radius=enemy['size'])
+                            
+                            # Add small red eyes for "aggression" indicator if needed, 
+                            # but the genetics alone might be enough. 
+                            # Let's add a subtle red shadow or glow if it fits.
                 else:
                     # Checkmark for resolved
                     zone_center_x = self.camera.to_screen_x((zone.start_dist + zone.end_dist) / 2, 0)
