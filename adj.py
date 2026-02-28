@@ -989,7 +989,7 @@ Tests: {status['total_test_passing']} passing
 def main():
     """Main CLI interface"""
     parser = argparse.ArgumentParser(description="ADJ System - DGT Engine Governance")
-    parser.add_argument("command", choices=["status", "phase", "priorities", "blockers", "next", "approve", "update", "strategy", "inventory", "plan", "execute"])
+    parser.add_argument("command", choices=["status", "phase", "priorities", "blockers", "next", "approve", "update", "strategy", "inventory", "plan", "execute", "reality", "gaps"])
     parser.add_argument("arg", nargs="?", help="Argument for command")
     parser.add_argument("arg2", nargs="?", help="Second argument for command")
     
@@ -1059,6 +1059,10 @@ def main():
             adj.get_batch_status(args.arg2)
         else:
             print("Usage: python adj.py execute [batch <milestone>|resume <batch_id>|status <batch_id>]")
+    elif args.command == "reality":
+        adj.show_reality_status()
+    elif args.command == "gaps":
+        adj.show_alignment_gaps()
     else:
         print("❌ Unknown command")
         parser.print_help()
