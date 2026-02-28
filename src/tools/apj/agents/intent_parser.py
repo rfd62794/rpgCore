@@ -6,6 +6,19 @@ Just ask Ollama what to do and execute what it says
 import json
 from typing import Dict, Optional
 
+# Import agent ecosystem components
+try:
+    from .agent_boot import AGENT_BOOT_MANAGER
+    from .swarm_agent import SwarmCoordinator
+    from .autonomous_swarm import AUTONOMOUS_SWARM
+    from .a2a_communication import A2A_MANAGER
+except ImportError:
+    # Fallback if imports fail
+    AGENT_BOOT_MANAGER = None
+    SwarmCoordinator = None
+    AUTONOMOUS_SWARM = None
+    A2A_MANAGER = None
+
 
 class IntentParser:
     """
@@ -175,8 +188,11 @@ class ConversationalInterface:
                     print("\n🚀 STARTING CONTINUOUS AUTONOMOUS EXECUTION")
                     print("=" * 60)
                     
-                    # Get the autonomous swarm and start it
+                    # Import the agent ecosystem components
+                    from .agent_boot import AGENT_BOOT_MANAGER
+                    from .swarm_agent import SwarmCoordinator
                     from .autonomous_swarm import AUTONOMOUS_SWARM
+                    from .a2a_communication import A2A_MANAGER
                     
                     # Start with the most critical workflow
                     try:
