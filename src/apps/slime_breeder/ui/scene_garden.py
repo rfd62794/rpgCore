@@ -8,6 +8,8 @@ from src.apps.slime_breeder.garden.garden_state import GardenState
 from src.apps.slime_breeder.entities.slime import Slime
 from src.apps.slime_breeder.ui.slime_renderer import SlimeRenderer
 from src.shared.genetics import generate_random, breed
+from src.shared.teams.roster import Roster, RosterSlime, TeamRole
+from src.shared.teams.roster_save import load_roster, save_roster
 
 NAMES = ["Mochi", "Pip", "Glimmer", "Bloop", "Sage", "Dew", "Ember", "Fizz", "Lumen", "Nook"]
 
@@ -15,6 +17,8 @@ class GardenScene(GardenSceneBase):
     def on_garden_enter(self, **kwargs) -> None:
         self.garden_state = GardenState()
         self.renderer = SlimeRenderer()
+        self.roster = load_roster()
+        self._sync_roster_with_garden()
         
         # 1. Custom Details UI
         self.name_label = Label(pygame.Rect(10, 40, self.panel_width-20, 30), text="Name: ---")
@@ -22,6 +26,18 @@ class GardenScene(GardenSceneBase):
         
         self.mood_label = Label(pygame.Rect(10, 70, self.panel_width-20, 30), text="Mood: ---")
         self.detail_panel.add_child(self.mood_label)
+
+        # Team UI
+        self.team_label = Label(pygame.Rect(10, 100, self.panel_width-20, 30), text="Team: ---")
+        self.detail_panel.add_child(self.team_label)
+
+        self.assign_btn = Button(pygame.Rect(10, 140, self.panel_width-20, 40), text="→ Dungeon Team", on_click=self._assign_to_dungeon)
+        self.assign_btn.set_visible(False)
+        self.detail_panel.add_child(self.assign_btn)
+
+        self.remove_btn = Button(pygame.Rect(10, 140, self.panel_width-20, 40), text="Remove from Team", on_click=self._remove_from_team)
+        self.remove_btn.set_visible(False)
+        self.detail_panel.add_child(self.remove_btn)
         
         # 2. Custom Action Bar Buttons
         btn_y = 15
@@ -38,8 +54,26 @@ class GardenScene(GardenSceneBase):
         self.release_btn.set_enabled(False)
         self.action_bar.add_child(self.release_btn)
 
-        # Start with a slime
-        self._add_new_slime()
+        # Sync initial slimes if garden is empty but roster has slimes
+        if not self.garden_state.slimes and self.roster.slimes:
+            for rs in self.roster.slimes:
+                pos = (random.randint(50, self.garden_rect.width - 50), random.randint(50, self.garden_rect.height - 50))
+                slime = Slime(rs.name, rs.genome, pos)
+                self.garden_state.add_slime(slime)
+        elif not self.garden_state.slimes:
+            self._add_new_slime()
+
+    def _sync_roster_with_garden(self):
+        """Ensure all garden slimes are in the roster."""
+        for slime in self.garden_state.slimes:
+            if not any(rs.name == slime.name for rs in self.roster.slimes):
+                rs = RosterSlime(
+                    slime_id=slime.name.lower().replace(" ", "_"),
+                    name=slime.name,
+                    genome=slime.genome
+                )
+                self.roster.add_slime(rs)
+        save_roster(self.roster)
 
     def _add_new_slime(self):
         name = random.choice(NAMES) + " " + str(len(self.garden_state.slimes) + 1)
@@ -47,6 +81,15 @@ class GardenScene(GardenSceneBase):
         pos = (random.randint(50, self.garden_rect.width - 50), random.randint(50, self.garden_rect.height - 50))
         slime = Slime(name, genome, pos)
         self.garden_state.add_slime(slime)
+        
+        # Add to roster
+        rs = RosterSlime(
+            slime_id=name.lower().replace(" ", "_"),
+            name=name,
+            genome=genome
+        )
+        self.roster.add_slime(rs)
+        save_roster(self.roster)
 
     def _breed_selected(self):
         if len(self.selected_entities) == 2:
@@ -57,15 +100,31 @@ class GardenScene(GardenSceneBase):
             pos = (s1.kinematics.position.x + 20, s1.kinematics.position.y + 20)
             child = Slime(child_name, child_genome, pos)
             self.garden_state.add_slime(child)
+            
+            # Add to roster
+            rs = RosterSlime(
+                slime_id=child_name.lower().replace(" ", "_"),
+                name=child_name,
+                genome=child_genome
+            )
+            self.roster.add_slime(rs)
+            save_roster(self.roster)
+
             # Select the child
             self.selected_entities = [child]
             self.on_selection_changed()
 
     def _release_selected(self):
-        if self.selected_entities:
             for s in self.selected_entities:
                 print(f"DEBUG: Releasing {s.name} into the wild...")
                 self.garden_state.remove_slime(s.name)
+                # Remove from roster
+                self.roster.slimes = [rs for rs in self.roster.slimes if rs.name != s.name]
+                # Also remove from any team
+                for team in self.roster.teams.values():
+                    team.members = [m for m in team.members if m.name != s.name]
+            
+            save_roster(self.roster)
             self.selected_entities = []
             self.on_selection_changed()
 
@@ -83,13 +142,60 @@ class GardenScene(GardenSceneBase):
         self.release_btn.set_enabled(num_selected > 0)
         
         # Update details for the primary selection
-        if num_selected > 0:
+        if num_selected == 1:
             s = self.selected_entities[0]
             self.name_label.text = f"Name: {s.name}"
             self.mood_label.text = f"Mood: {s.get_mood()}"
+            
+            # Find in roster
+            rs = next((r for r in self.roster.slimes if r.name == s.name), None)
+            if rs:
+                self.team_label.text = f"Team: {rs.team.value.upper()}"
+                if rs.locked:
+                    self.team_label.text += " (ON MISSION)"
+                    self.assign_btn.set_visible(False)
+                    self.remove_btn.set_visible(False)
+                elif rs.team == TeamRole.UNASSIGNED:
+                    self.assign_btn.set_visible(not self.roster.get_dungeon_team().is_full())
+                    self.remove_btn.set_visible(False)
+                else:
+                    self.assign_btn.set_visible(False)
+                    self.remove_btn.set_visible(True)
+            else:
+                self.team_label.text = "Team: ERROR"
+                self.assign_btn.set_visible(False)
+                self.remove_btn.set_visible(False)
+
+        elif num_selected > 1:
+            self.name_label.text = f"Group ({num_selected})"
+            self.mood_label.text = "Mood: Mixed"
+            self.team_label.text = "Team: ---"
+            self.assign_btn.set_visible(False)
+            self.remove_btn.set_visible(False)
         else:
             self.name_label.text = "Name: ---"
             self.mood_label.text = "Mood: ---"
+            self.team_label.text = "Team: ---"
+            self.assign_btn.set_visible(False)
+            self.remove_btn.set_visible(False)
+
+    def _assign_to_dungeon(self):
+        if len(self.selected_entities) == 1:
+            s = self.selected_entities[0]
+            rs = next((r for r in self.roster.slimes if r.name == s.name), None)
+            if rs:
+                if self.roster.get_dungeon_team().assign(rs):
+                    save_roster(self.roster)
+                    self.on_selection_changed()
+
+    def _remove_from_team(self):
+        if len(self.selected_entities) == 1:
+            s = self.selected_entities[0]
+            rs = next((r for r in self.roster.slimes if r.name == s.name), None)
+            if rs and rs.team != TeamRole.UNASSIGNED:
+                if self.roster.teams[rs.team].remove(rs.slime_id):
+                    save_roster(self.roster)
+                    self.on_selection_changed()
 
     def update_garden(self, dt_ms: float):
         dt = dt_ms / 1000.0

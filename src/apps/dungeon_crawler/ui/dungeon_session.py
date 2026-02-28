@@ -7,6 +7,9 @@ from src.apps.dungeon_crawler.world.floor import Floor
 from src.apps.dungeon_crawler.world.room_generator import RoomGenerator
 from src.apps.dungeon_crawler.hub.the_room import TheRoom
 from src.shared.combat.turn_order import TurnOrderManager
+from src.shared.teams.roster import Roster, TeamRole
+from src.shared.teams.roster_save import load_roster, save_roster
+from src.shared.teams.stat_calculator import calculate_hp, calculate_attack, calculate_speed
 
 FIRST_NAMES = ["Aldric", "Maren", "Thorn", "Vex", "Sable", "Dusk"]
 LAST_NAMES  = ["the Bold", "the Unlucky", "of the Deep", 
@@ -38,6 +41,18 @@ class DungeonSession:
         self.floor.move_to("entrance")
         
         self.turn_manager = TurnOrderManager()
+        
+        self.roster = load_roster()
+        self.party_slimes = [] # List of RosterSlime
+        self._initialize_party_from_roster()
+
+    def _initialize_party_from_roster(self):
+        team = self.roster.get_dungeon_team()
+        for slime in team.members:
+            if slime.alive:
+                slime.locked = True
+                self.party_slimes.append(slime)
+        save_roster(self.roster)
 
     def descend(self) -> Floor:
         if not self.floor:
@@ -55,7 +70,16 @@ class DungeonSession:
         if not self.hero:
             return
 
-        logger.info(f"🏁 Run ended: {cause}")
+        logger.info(f"Dungeon run ended: {cause}")
+        # Unlock slimes and handle deaths
+        team = self.roster.get_dungeon_team()
+        for rs in self.party_slimes:
+            # Check if slime died (HP in combat unit or similar)
+            # In current demo, if hero dies, entire run fails or specific slimes die.
+            # We'll assume casualties are registered via cause or specific result calls.
+            rs.locked = False
+        
+        save_roster(self.roster)
         
         # Record ancestor
         ancestor_record = {
