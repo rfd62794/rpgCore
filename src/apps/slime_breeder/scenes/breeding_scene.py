@@ -151,20 +151,25 @@ class BreedingScene(Scene):
         self.setup_ui()
 
     def finalize_breeding(self):
-        # 1. Apply Level Drain
-        self.parent_a.breeding_lock_level = self.parent_a.level
-        self.parent_a.level -= 1
+        # 1. Apply Level Drain (Skip for Elders)
+        if not self.parent_a.is_elder:
+            self.parent_a.breeding_lock_level = self.parent_a.level
+            self.parent_a.level -= 1
         
-        self.parent_b.breeding_lock_level = self.parent_b.level
-        self.parent_b.level -= 1
+        if not self.parent_b.is_elder:
+            self.parent_b.breeding_lock_level = self.parent_b.level
+            self.parent_b.level -= 1
         
-        # 2. Add Offspring
+        # 2. Add Offspring (Level 2 if any parent is Elder)
+        start_level = 2 if (self.parent_a.is_elder or self.parent_b.is_elder) else 1
+        
         new_id = f"slime_{random.randint(10000, 99999)}"
         self.offspring_slime = RosterSlime(
             slime_id=new_id,
             name=self.offspring_name,
             genome=self.offspring_genome,
-            team=TeamRole.UNASSIGNED
+            team=TeamRole.UNASSIGNED,
+            level=start_level
         )
         self.roster.add_slime(self.offspring_slime)
         
@@ -207,12 +212,35 @@ class BreedingScene(Scene):
                     
         elif self.state == BreedingState.PREVIEW:
             # Show Parents
-            ProfileCard(self.parent_a, (100, 150)).render(surface)
-            ProfileCard(self.parent_b, (480, 150)).render(surface)
+            ProfileCard(self.parent_a, (50, 150)).render(surface)
+            ProfileCard(self.parent_b, (530, 150)).render(surface)
             
-            # Show Offspring Placeholder
-            pygame.draw.circle(surface, (40, 40, 50), (400, 300), 50)
-            Label("OFFSPRING", (400, 300), size=18, color=(100, 100, 120)).render(surface)
+            # Preview Panel (Middle)
+            preview_rect = pygame.Rect(280, 150, 240, 240)
+            pygame.draw.rect(surface, (40, 45, 60), preview_rect, border_radius=8)
+            pygame.draw.rect(surface, (100, 120, 180), preview_rect, width=1, border_radius=8)
+            
+            Label("EXPECTED STATS", (400, 170), size=18, color=(200, 220, 255)).render(surface)
+            
+            # Show estimated ranges (Simplified: +/- 10% of genome base)
+            y_off = 200
+            for label, base_val in [("HP", self.offspring_genome.base_hp), 
+                                    ("ATK", self.offspring_genome.base_atk), 
+                                    ("SPD", self.offspring_genome.base_spd)]:
+                msg = f"{label}: {int(base_val*0.9)}-{int(base_val*1.1)}"
+                Label(msg, (400, y_off), size=16, color=(160, 180, 200)).render(surface)
+                y_off += 25
+            
+            # Mutation / Culture
+            mut_chance = "HIGH" if (self.parent_a.cultural_base == CulturalBase.VOID or self.parent_b.cultural_base == CulturalBase.VOID) else "LOW"
+            Label(f"Mutation Risk: {mut_chance}", (400, 300), size=14, color=(180, 140, 200)).render(surface)
+            Label(f"Culture: {self.offspring_genome.cultural_base.value.upper()}", (400, 320), size=14, color=(200, 200, 200)).render(surface)
+            
+            # Improvement note
+            Label("Generational Improvement: ~10%", (400, 350), size=14, color=(100, 220, 100)).render(surface)
+
+            if self.parent_a.is_elder or self.parent_b.is_elder:
+                Label("ELDER BONUS: START AT LV.2", (400, 370), size=14, color=(255, 215, 0)).render(surface)
             
         elif self.state == BreedingState.ANIMATION:
             # Cool swirling effects
