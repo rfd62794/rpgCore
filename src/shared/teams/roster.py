@@ -39,7 +39,7 @@ class TeamMembersList(list):
     def __getitem__(self, index):
         """Get item by index - return RosterSlime for legacy compatibility"""
         entry = super().__getitem__(index)
-        print(f"DEBUG: __getitem__ called for index {index}, entry.slime_id={entry.slime_id}")
+        print(f"DEBUG: __getitem__ called for index {index}, entry.slime_id={entry.slime_id}, entry.team={entry.team}")
         # Get the RosterSlime from the roster
         if hasattr(self, '_team_ref') and self._team_ref:
             print(f"DEBUG: Has _team_ref: {hasattr(self._team_ref, '_roster_ref')}")
