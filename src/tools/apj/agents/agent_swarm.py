@@ -3,11 +3,11 @@ Agent Swarm - Coordinated Multi-Agent System
 Multiple specialized agents working together with clear boundaries
 """
 
+import json
 from enum import Enum
 from typing import Dict, List, Optional, Any
 from dataclasses import dataclass
 from pathlib import Path
-import json
 
 
 class AgentRole(Enum):
