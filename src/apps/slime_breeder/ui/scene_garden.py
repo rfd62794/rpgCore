@@ -222,23 +222,48 @@ class GardenScene(GardenSceneBase):
         self._render_team_status_bar(surface)
 
     def _render_team_status_bar(self, surface: pygame.Surface):
-        team = self.roster.get_dungeon_team()
+        dungeon_team = self.roster.get_dungeon_team()
+        racing_team = self.roster.get_racing_team()
+        
         # Respect modernized HubLayout bar rect
         bar_rect = self.bar_rect
         pygame.draw.rect(surface, (20, 20, 30), bar_rect)
         pygame.draw.rect(surface, (50, 50, 70), bar_rect, width=1)
         
-        if not team.members:
-            render_text(surface, 
-                       "DUNGEON TEAM: Empty — visit Teams to assign slimes",
-                       (16, bar_rect.y + 12), # Centered in taller bar
-                       size=18, color=(100, 100, 120))
+        # Calculate positions
+        center_x = bar_rect.centerx
+        text_y = bar_rect.y + 12
+        
+        # Left side: Dungeon Team
+        if not dungeon_team.members:
+            dungeon_text = "⚔ DUNGEON: Empty"
+            dungeon_color = self.spec.color_text_dim
         else:
-            names = ", ".join(s.name for s in team.members)
-            label = f"DUNGEON TEAM: {names} [{len(team.members)}/4]"
-            render_text(surface, label,
-                       (16, bar_rect.y + 12),
-                       size=18, color=(180, 220, 180))
+            names = ", ".join(s.name for s in dungeon_team.members)
+            dungeon_text = f"⚔ DUNGEON: {names} [{len(dungeon_team.members)}/4]"
+            dungeon_color = self.spec.color_success if not any(s.locked for s in dungeon_team.members) else self.spec.color_warning
+        
+        render_text(surface, dungeon_text, (16, text_y), size=16, color=dungeon_color)
+        
+        # Center divider
+        render_text(surface, "│", (center_x - 10, text_y), size=16, color=(100, 100, 120))
+        
+        # Right side: Racing Team
+        racing_x = center_x + 10
+        if not racing_team.members:
+            racing_text = "RACING: Empty"
+            racing_color = self.spec.color_text_dim
+        else:
+            racer = racing_team.members[0]
+            racing_text = f"◎ RACING: {racer.name} [1/1]"
+            racing_color = self.spec.color_success if not racer.locked else self.spec.color_warning
+        
+        # Calculate text width to ensure it fits
+        render_text(surface, racing_text, (racing_x, text_y), size=16, color=racing_color)
+        
+        # Store click areas for interaction
+        self.dungeon_status_area = pygame.Rect(16, bar_rect.y, center_x - 26, bar_rect.height)
+        self.racing_status_area = pygame.Rect(center_x + 10, bar_rect.y, bar_rect.right - center_x - 26, bar_rect.height)
 
     def on_exit(self):
         """Cleanup logic."""

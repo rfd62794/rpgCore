@@ -17,9 +17,13 @@ class ProfileCard(UIComponent):
         # Card dimensions: respect parent panel boundaries
         side_panel_width = spec.screen_width * 0.35  # HubLayout side panel width
         self.WIDTH = min(spec.card_width, int(side_panel_width - spec.padding_md * 2))
-        # In garden, we should probably pass the actual panel width if we can
         self.HEIGHT = spec.card_height
         self.PADDING = spec.padding_sm
+        
+        # Calculate inner dimensions
+        self.CARD_INNER_WIDTH = self.WIDTH - (self.PADDING * 2)
+        self.PORTRAIT_SIZE = 60
+        self.TEXT_AREA_WIDTH = self.CARD_INNER_WIDTH - self.PORTRAIT_SIZE - (self.PADDING * 3)
         
         rect = pygame.Rect(position[0], position[1], self.WIDTH, self.HEIGHT)
         super().__init__(rect)
@@ -27,9 +31,10 @@ class ProfileCard(UIComponent):
         self.position = position
         self.spec = spec
         
-        # Add StatsPanel as a "child" (manually rendered for now)
-        # StatsPanel might also need standardizing, but keeping simple for now
-        self.stats_panel = StatsPanel(slime, (position[0] + 80, position[1] + 60), width=self.WIDTH - 90)
+        # Add StatsPanel with proper width constraint
+        stats_x = position[0] + self.PORTRAIT_SIZE + self.PADDING * 2
+        stats_y = position[1] + self.PORTRAIT_SIZE + self.PADDING
+        self.stats_panel = StatsPanel(slime, (stats_x, stats_y), width=self.TEXT_AREA_WIDTH)
 
     def update(self, dt_ms: int):
         """No periodic updates needed for the card itself."""
@@ -48,19 +53,20 @@ class ProfileCard(UIComponent):
         pygame.draw.rect(surface, border_color, card_rect, width=border_w, border_radius=8)
         
         # Slime portrait (left side)
-        portrait_rect = pygame.Rect(x + self.PADDING, y + self.PADDING, 60, 60)
+        portrait_rect = pygame.Rect(x + self.PADDING, y + self.PADDING, self.PORTRAIT_SIZE, self.PORTRAIT_SIZE)
         render_slime_portrait(surface, self.slime.genome, portrait_rect)
         
-        # Name, Level & Generation
+        # Name, Level & Generation (in text area)
+        text_x = x + self.PORTRAIT_SIZE + self.PADDING * 2
         render_text(surface, self.slime.name, 
-                   (x + 80, y + 12), size=16, bold=True)
+                   (text_x, y + 12), size=16, bold=True)
         render_text(surface, f"Lv.{self.slime.level}",
                    (x + self.WIDTH - 50, y + 12), size=14, color=(200, 200, 100))
         render_text(surface, f"Gen {self.slime.generation}",
-                    (x + 80, y + 26), size=12, color=(160, 160, 180))
+                    (text_x, y + 26), size=12, color=(160, 160, 180))
         
-        # XP Bar
-        xp_rect = pygame.Rect(x + 80, y + 36, self.WIDTH - 90, 4)
+        # XP Bar (constrained to text area)
+        xp_rect = pygame.Rect(text_x, y + 36, self.TEXT_AREA_WIDTH, 4)
         pygame.draw.rect(surface, (40, 40, 50), xp_rect)
         xp_pct = min(1.0, self.slime.experience / self.slime.xp_to_next_level)
         if xp_pct > 0:
