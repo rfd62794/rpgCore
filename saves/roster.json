@@ -166,7 +166,7 @@
       "slime_id": "pip_7",
       "name": "Pip 7",
       "team": "dungeon",
-      "locked": false,
+      "locked": true,
       "alive": true,
       "genome": {
         "shape": "amorphous",
