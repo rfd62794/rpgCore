@@ -81,6 +81,20 @@ class RaceScene(Scene):
         self.shake_mag = magnitude
         self.shake_timer = duration
 
+    def handle_event(self, event: pygame.event.Event) -> None:
+        # Process UI components first
+        for comp in reversed(self.ui_components):
+            if hasattr(comp, 'handle_event') and comp.handle_event(event):
+                return
+        
+        # Handle race-specific events
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_ESCAPE:
+                self.request_scene("garden")
+            elif event.key == pygame.K_SPACE and self.start_countdown <= 0:
+                if self.engine and not self.engine.is_finished():
+                    self.engine.tick(0.1)  # Fast forward slightly
+
     def update(self, dt: float) -> None:
         dt_ms = int(dt * 1000)
         for comp in self.ui_components:
