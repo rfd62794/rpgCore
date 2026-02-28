@@ -14,35 +14,41 @@ import sys
 
 @dataclass
 class ExecutionReport:
-    """Report from executing a single task"""
+    """Report from running a task"""
     task_id: str
-    task_title: str
+    status: str                    # "complete", "blocked", "in_progress"
     start_time: str
-    status: str  # "running", "complete", "blocked", "failed"
-    tests_run: int = 0
-    tests_passing: int = 0
-    tests_failing: int = 0
-    files_modified: List[str] = None
     files_created: List[str] = None
-    blocker_reason: Optional[str] = None
-    output: List[str] = None
+    files_modified: List[str] = None
+    tests_added: int = 0
+    tests_passing: int = 0
     end_time: Optional[str] = None
+    blocker_reason: Optional[str] = None
+    output: str = ""
+    commits: List[str] = None
+    
+    def __post_init__(self):
+        """Initialize list fields"""
+        if self.files_created is None:
+            self.files_created = []
+        if self.files_modified is None:
+            self.files_modified = []
+        if self.commits is None:
+            self.commits = []
     
     def to_dict(self) -> Dict:
         """Convert to dict for JSON serialization"""
         return {
             "task_id": self.task_id,
-            "task_title": self.task_title,
+            "status": self.status,
             "start_time": self.start_time,
             "end_time": self.end_time,
-            "status": self.status,
-            "tests_run": self.tests_run,
+            "files_created": self.files_created,
+            "files_modified": self.files_modified,
             "tests_passing": self.tests_passing,
-            "tests_failing": self.tests_failing,
-            "files_modified": self.files_modified or [],
-            "files_created": self.files_created or [],
             "blocker_reason": self.blocker_reason,
-            "output": self.output or []
+            "output": self.output,
+            "commits": self.commits
         }
 
 
