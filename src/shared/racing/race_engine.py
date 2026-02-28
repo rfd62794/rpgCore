@@ -136,7 +136,7 @@ class RaceParticipant:
                 self.jump_cooldown = self.jump_recovery
                 
                 # Start ground time for scooters
-                if self.movement_type == MovementType.SCOOPER:
+                if self.movement_type == MovementType.scooter:
                     self.ground_time = self.profile["ground_time"]
         
         elif self.jump_cooldown > 0:
@@ -149,7 +149,7 @@ class RaceParticipant:
         
         else:
             # Auto-jump: slimes jump continuously
-            if self.movement_type == MovementType.ROLLER:
+            if self.movement_type == MovementType.roller:
                 # Rollers never jump - continuous movement
                 self.is_jumping = False
                 self.jump_phase = 0.0
