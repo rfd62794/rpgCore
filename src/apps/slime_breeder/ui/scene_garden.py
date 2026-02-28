@@ -186,11 +186,10 @@ class GardenScene(GardenSceneBase):
             return
         
         from src.apps.dungeon_crawler.ui.dungeon_session import DungeonSession
-        session = DungeonSession(party_slimes=team.members)
+        session = DungeonSession(team=team.members)
         self.manager.switch_to(
             "dungeon_path",
             session=session,
-            team=team.members,
             depth=1
         )
 
