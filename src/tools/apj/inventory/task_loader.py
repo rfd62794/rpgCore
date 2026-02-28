@@ -68,10 +68,10 @@ class TaskLoader:
     
     def load_all(self) -> None:
         """Load all planning documents"""
-        self.load_goals()
-        self.load_milestones()
-        self.load_tasks()
-        self.load_steps()
+        self.goals = self.load_goals()
+        self.milestones = self.load_milestones()
+        self.tasks = self.load_tasks()
+        self.steps = self.load_steps()
         self._link_relationships()
     
     def load_goals(self) -> Dict[str, Goal]:
