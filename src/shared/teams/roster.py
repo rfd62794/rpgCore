@@ -316,6 +316,9 @@ class Roster:
         # Add creature reference if not exists
         self.add_creature(slime.slime_id)
         
+        # Store original RosterSlime for state preservation
+        self._roster_slimes[slime.slime_id] = slime
+        
         # Update team assignment and sync locked state
         for entry in self.entries:
             if entry.slime_id == slime.slime_id:
