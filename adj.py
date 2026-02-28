@@ -1340,6 +1340,35 @@ Provide as JSON with detailed steps.
         response = plan_agent.run(plan_prompt)
         print(response.data)
     
+    # Check if agent can handle task
+    elif args.command == "check":
+        if not args.arg:
+            print("Usage: python adj.py check <action>")
+            return
+        
+        print(f"\n🔍 Checking if agent can handle: {args.arg}...\n")
+        
+        from src.tools.apj.agents.local_agent import LocalAgent
+        agent = LocalAgent(adj.root_dir)
+        
+        # Create test task
+        task = {
+            "id": "CHECK_" + args.arg.split(':')[0].replace(' ', '_').upper(),
+            "title": args.arg,
+            "description": f"Check: {args.arg}",
+            "files": [],
+            "hours": 10
+        }
+        
+        context = agent._build_task_context(task)
+        
+        can_proceed, failure = agent.failure_detector.check_before_planning(context)
+        
+        if can_proceed:
+            print(f"✅ Agent can handle this task safely\n")
+        else:
+            print(agent.failure_handler.handle_failure(failure))
+    
     # Existing commands
     elif args.command == "design":
         # Legacy design command still available

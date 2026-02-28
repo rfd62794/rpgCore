@@ -645,16 +645,7 @@ Blockers: {len(self.project_analysis['blockers'])} items identified
         return details
     
     def execute_task(self, task: Dict) -> bool:
-        """
-        Execute a task autonomously with full codebase context
-        
-        Agent has access to:
-          - Existing code (SymbolMap)
-          - Architecture decisions (TECHNICAL_DESIGN)
-          - What already exists (ProjectStatus)
-          - How systems work (SYSTEM_SPECS)
-          - What this task requires (task spec)
-        """
+        """Execute task with failure detection"""
         
         task_id = task.get("id", "unknown")
         task_title = task.get("title", "Untitled")
@@ -663,26 +654,48 @@ Blockers: {len(self.project_analysis['blockers'])} items identified
         print(f"📋 Task: {task_title} ({task_id})")
         print(f"{'='*60}\n")
         
-        # Build full context for this task
+        # BUILD CONTEXT
         context = self._build_task_context(task)
         
-        # Ask Ollama to plan implementation
+        # CRITICAL: Check if agent can even handle this
+        print("🔍 Checking if task is within agent capability...")
+        can_proceed, failure = self.failure_detector.check_before_planning(context)
+        
+        if not can_proceed:
+            # Fail fast and gracefully
+            print(self.failure_handler.handle_failure(failure))
+            return False
+        
+        print("✅ Task is within agent capability\n")
+        
+        # PLAN IMPLEMENTATION
+        print("📋 Planning implementation...")
         implementation_plan = self._plan_implementation(context)
         
         if not implementation_plan:
-            print(f"❌ Failed to plan implementation")
+            failure = self.failure_detector.detector.check_before_planning(context)[1]
+            if not failure:
+                from src.tools.apj.agents.failure_detector import FailureDetection
+                failure = FailureDetection(
+                    failure_mode=FailureMode.BEYOND_LOCAL_CAPABILITY,
+                    severity="high",
+                    reason="Agent couldn't create implementation plan",
+                    can_continue=False,
+                    needs_human=True,
+                    suggestion="This may require human architectural expertise"
+                )
+            print(self.failure_handler.handle_failure(failure))
             return False
         
-        print("Implementation Plan:")
-        print(implementation_plan)
-        print()
+        print("✅ Implementation plan created\n")
         
-        # Execute each step of the plan
+        # EXECUTE STEPS
         steps = implementation_plan.get("steps", [])
         
         for step_num, step in enumerate(steps, 1):
             print(f"\n📝 Step {step_num}/{len(steps)}: {step.get('description', 'Unknown')}")
             
+            # Execute step
             success = self._execute_step(step, context)
             
             if not success:
@@ -691,15 +704,32 @@ Blockers: {len(self.project_analysis['blockers'])} items identified
             
             print(f"✅ Step complete")
         
-        # Verify success
-        success = self._verify_task_complete(task, context)
+        # VERIFY WITH TESTS
+        print(f"\n🧪 Verifying with tests...")
+        test_output = self._run_tests()
         
-        if success:
-            print(f"\n✅ Task {task_id} COMPLETE")
-        else:
-            print(f"\n❌ Task {task_id} verification failed")
+        is_valid, failure = self.failure_detector.check_test_results(test_output, task_id)
         
-        return success
+        if not is_valid:
+            if failure.severity == "high":
+                print(self.failure_handler.handle_failure(failure))
+                return False
+            else:
+                print(f"⚠️  {failure.reason}")
+        
+        # VERIFY NO DESIGN CONFLICTS
+        print(f"\n🎯 Checking design compliance...")
+        no_conflict, failure = self.failure_detector.check_design_conflict(
+            implementation_plan.get('summary', ''),
+            self.design_docs
+        )
+        
+        if not no_conflict:
+            print(self.failure_handler.handle_failure(failure))
+            return False
+        
+        print(f"✅ Task {task_id} COMPLETE")
+        return True
     
     def _build_task_context(self, task: Dict) -> AgentContext:
         """Build complete context for task execution with full documentation"""
