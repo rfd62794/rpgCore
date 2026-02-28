@@ -125,11 +125,14 @@ class A2ACommunicationManager:
                     reply_to: Optional[str] = None, expires_in_minutes: Optional[int] = None) -> str:
         """Send a message from one agent to another"""
         
-        # Check if both agents support A2A
-        if not AGENT_REGISTRY.supports_a2a(sender):
+        # Check if both agents support A2A or are registered
+        sender_supports_a2a = AGENT_REGISTRY.supports_a2a(sender) or sender in self._message_handlers
+        recipient_supports_a2a = AGENT_REGISTRY.supports_a2a(recipient) or recipient in self._message_handlers
+        
+        if not sender_supports_a2a:
             raise ValueError(f"Sender {sender} does not support A2A communication")
         
-        if not AGENT_REGISTRY.supports_a2a(recipient):
+        if not recipient_supports_a2a:
             raise ValueError(f"Recipient {recipient} does not support A2A communication")
         
         # Create message
