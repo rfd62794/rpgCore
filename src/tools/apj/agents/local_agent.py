@@ -721,7 +721,7 @@ Blockers: {len(self.project_analysis['blockers'])} items identified
         print(f"\n🎯 Checking design compliance...")
         no_conflict, failure = self.failure_detector.check_design_conflict(
             implementation_plan.get('summary', ''),
-            self.design_docs
+            self.documentation
         )
         
         if not no_conflict:
@@ -742,21 +742,20 @@ Blockers: {len(self.project_analysis['blockers'])} items identified
             task_mappings=self.task_mapper.task_to_files,
             project_status=self.project_status,
             existing_implementations=self._get_existing_code(task),
-            technical_design=self.design_docs.get("technical_design", ""),
-            feature_spec=self.design_docs.get("feature_spec", ""),
-            system_specs=self.design_docs.get("system_specs", ""),
+            technical_design=self.documentation.get("phase3/TECHNICAL_DESIGN.md", ""),
+            feature_spec=self.documentation.get("phase3/FEATURE_SPEC.md", ""),
+            system_specs=self.documentation.get("phase3/SYSTEM_SPECS.md", ""),
             # NEW: Full project knowledge from all documentation
             project_knowledge=self.project_knowledge,
-            vision=self.design_docs.get("vision", ""),
-            goals=self.design_docs.get("goals", ""),
-            design_pillars=self.design_docs.get("design_pillars", ""),
-            milestones=self.design_docs.get("milestones", ""),
-            tasks_doc=self.design_docs.get("tasks", ""),
+            vision=self.documentation.get("VISION.md", ""),
+            goals=self.documentation.get("GOALS.md", ""),
+            design_pillars=self.documentation.get("DESIGN_PILLARS.md", ""),
+            milestones=self.documentation.get("MILESTONES.md", ""),
+            tasks_doc=self.documentation.get("TASKS.md", ""),
             ecs_details=self.project_knowledge.get("ecs_details", {}),
             genetics_details=self.project_knowledge.get("genetics_details", {}),
             rendering_details=self.project_knowledge.get("rendering_details", {})
         )
-    
     def _get_existing_code(self, task: Dict) -> Dict:
         """Get existing code for files this task touches"""
         
