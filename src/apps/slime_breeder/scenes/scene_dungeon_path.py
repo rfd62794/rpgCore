@@ -246,7 +246,7 @@ class DungeonPathScene(Scene):
                             # Squad name above zone
                             render_text(surface, zone.squad.name,
                                        (zone_center_x, track_rect.top + 8),
-                                       size="sm", color=(255, 200, 200), centered=True)
+                                       size=12, color=(255, 200, 200), center=True)
                 else:
                     # Checkmark for resolved
                     zone_center_x = self.camera.to_screen_x((zone.start_dist + zone.end_dist) / 2, 0)
