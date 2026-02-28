@@ -80,38 +80,29 @@ def breed(parent_a: SlimeGenome, parent_b: SlimeGenome, mutation_chance: float =
         if r < 0.1: new_culture = parent_a.cultural_base
         elif r < 0.2: new_culture = parent_b.cultural_base
 
+    # Mutation logic
+    # Use the passed mutation_chance as base, but Void parents increase it
+    final_mut_chance = mutation_chance
+    if parent_a.cultural_base == CulturalBase.VOID or parent_b.cultural_base == CulturalBase.VOID:
+        final_mut_chance = max(final_mut_chance, 0.15) if final_mut_chance > 0 else 0
+    
+    def apply_mutation_and_cap(val, cap):
+        if final_mut_chance > 0 and random.random() < final_mut_chance:
+            if random.random() < 0.7: # 70% chance positive
+                val *= 1.25
+            else:
+                val *= 0.85
+        return min(val, cap)
+
     # Base Stat Inheritance Rules
     params = CULTURAL_PARAMETERS[new_culture]
     hp_cap = 20.0 * params.hp_modifier * 2.0
     atk_cap = 5.0 * params.attack_modifier * 2.0
     spd_cap = 5.0 * params.speed_modifier * 2.0
 
-    # HP: Takes from higher parent + 10% bonus
-    new_hp = max(parent_a.base_hp, parent_b.base_hp) * 1.10
-    new_hp = min(new_hp, hp_cap)
-
-    # ATK: Average of both parents + 10% bonus
-    new_atk = ((parent_a.base_atk + parent_b.base_atk) / 2.0) * 1.10
-    new_atk = min(new_atk, atk_cap)
-
-    # SPD: Takes from faster parent - 5% penalty + 10% bonus
-    new_spd = max(parent_a.base_spd, parent_b.base_spd) * 0.95 * 1.10
-    new_spd = min(new_spd, spd_cap)
-
-    # Mutation (5% per stat, 15% if Void parent)
-    mut_chance = 0.15 if (parent_a.cultural_base == CulturalBase.VOID or parent_b.cultural_base == CulturalBase.VOID) else 0.05
-    
-    def apply_mutation(val):
-        if random.random() < mut_chance:
-            if random.random() < 0.7: # 70% chance positive
-                return val * 1.25
-            else:
-                return val * 0.85
-        return val
-
-    new_hp = apply_mutation(new_hp)
-    new_atk = apply_mutation(new_atk)
-    new_spd = apply_mutation(new_spd)
+    new_hp = apply_mutation_and_cap(max(parent_a.base_hp, parent_b.base_hp) * 1.10, hp_cap)
+    new_atk = apply_mutation_and_cap(((parent_a.base_atk + parent_b.base_atk) / 2.0) * 1.10, atk_cap)
+    new_spd = apply_mutation_and_cap(max(parent_a.base_spd, parent_b.base_spd) * 0.95 * 1.10, spd_cap)
 
     return SlimeGenome(
         shape=inherit(parent_a.shape, parent_b.shape),
