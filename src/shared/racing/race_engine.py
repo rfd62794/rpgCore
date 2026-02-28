@@ -68,8 +68,10 @@ class RaceParticipant:
         terrain_mod = get_terrain_speed_modifier(terrain, self.slime.genome.cultural_base.value)
         
         # Apply movement profile terrain modifiers
-        if terrain in self.profile["terrain_mods"]:
-            terrain_mod *= self.profile["terrain_mods"][terrain]
+        from .race_track import TerrainType
+        t_type = TerrainType(terrain)
+        if t_type in self.profile["terrain_mods"]:
+            terrain_mod *= self.profile["terrain_mods"][t_type]
         
         # Additional terrain modifiers based on mass
         if terrain == "water":

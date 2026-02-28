@@ -21,7 +21,10 @@ def test_race_participant_acceleration():
     assert abs(p.velocity - v1) < 1.0  # Should be close to steady state
 
 def test_terrain_impact_on_velocity():
-    slime = RosterSlime(slime_id="test", name="Racer", genome=generate_random(), level=1)
+    from src.shared.genetics.genome import CulturalBase
+    genome = generate_random()
+    genome.cultural_base = CulturalBase.CRYSTAL  # Neutral terrain advantage
+    slime = RosterSlime(slime_id="test", name="Racer", genome=genome, level=1)
     
     # Grass vs Water
     p_grass = RaceParticipant(slime)

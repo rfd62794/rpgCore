@@ -17,7 +17,7 @@ from src.shared.ui.panel import Panel
 NAMES = ["Mochi", "Pip", "Glimmer", "Bloop", "Sage", "Dew", "Ember", "Fizz", "Lumen", "Nook"]
 
 class GardenScene(GardenSceneBase):
-    def on_enter(self, **kwargs) -> None:
+    def on_garden_enter(self, **kwargs) -> None:
         self.garden_state = GardenState()
         self.renderer = SlimeRenderer()
         
@@ -26,9 +26,9 @@ class GardenScene(GardenSceneBase):
         self._banner_timer = 0.0
         self._banner_color = (255, 255, 255)
         
-        # Context from return
-        run_result = kwargs.get('run_result')
-        race_result = kwargs.get('race_result')
+        # Context from return (using self._kwargs from Scene init)
+        run_result = self._kwargs.get('run_result')
+        race_result = self._kwargs.get('race_result')
         
         if run_result:
             self._show_banner(f"Run complete — Floor {run_result.floors_cleared}", self.spec.color_success)
