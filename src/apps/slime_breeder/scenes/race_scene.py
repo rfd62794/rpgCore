@@ -261,15 +261,22 @@ class RaceScene(Scene):
         if self.engine:
             for i, p in enumerate(self.engine.participants):
                 # Center in lane
-                ly = track_y + (i * lane_h) + (lane_h // 2) - 20
+                ly = track_y + (i * lane_h) + (lane_h // 2)
                 screen_x = p.distance - self.camera_x
                 
+                # Create dummy slime with fixed render size
                 from src.apps.slime_breeder.entities.slime import Slime
                 dummy_slime = Slime(p.slime.name, p.slime.genome, (screen_x, ly))
+                
+                # Override render size to be fixed regardless of zoom
+                original_radius = getattr(self.renderer, 'render_radius', None)
+                self.renderer.render_radius = self.SLIME_RENDER_RADIUS
                 self.renderer.render(surface, dummy_slime)
+                if original_radius is not None:
+                    self.renderer.render_radius = original_radius
                 
                 if p.finished:
-                    Label(f"FINISH #{p.rank}", (int(screen_x), ly - 20), self.spec, color=self.spec.color_accent, bold=True, centered=True).render(surface)
+                    Label(f"FINISH #{p.rank}", (int(screen_x), ly - 30), self.spec, color=self.spec.color_accent, bold=True, centered=True).render(surface)
 
         # 6. Speed Lines
         for line in self.speed_lines:
