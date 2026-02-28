@@ -239,7 +239,9 @@ Type 'quit' or 'exit' to leave.
             # Check for specific task execution
             user_lower = user_input.lower()
             
-            if "autonomous" in user_lower or "round robin" in user_lower:
+            if "build workflow" in user_lower or "create workflow" in user_lower or "design workflow" in user_lower:
+                return self._build_custom_workflow(user_input)
+            elif "autonomous" in user_lower or "round robin" in user_lower:
                 return self._execute_autonomous_swarm(user_input)
             elif "workflow" in user_lower:
                 return self._execute_workflow(user_input)
@@ -286,6 +288,86 @@ Type 'quit' or 'exit' to leave.
             
         except Exception as e:
             return f"❌ Swarm processing failed: {e}"
+    
+    def _build_custom_workflow(self, user_input: str) -> str:
+        """Build custom workflow using Workflow Builder"""
+        
+        try:
+            # Extract the workflow request from user input
+            workflow_request = user_input.replace("build workflow", "").replace("create workflow", "").replace("design workflow", "").strip()
+            
+            if not workflow_request:
+                return "❌ Please specify what workflow to build. Example: 'build workflow for ECS rendering system'"
+            
+            # Get context from project status
+            context = self.context.get('project_status', {})
+            
+            # Build the workflow
+            workflow = self.workflow_builder.build_workflow(
+                request=workflow_request,
+                context=context
+            )
+            
+            # Format workflow for display
+            result = f"""
+🔧 **CUSTOM WORKFLOW BUILT**
+
+📋 **Workflow**: {workflow.name}
+📝 **Description**: {workflow.description}
+🎯 **Type**: {workflow.workflow_type.value}
+📊 **Tasks**: {workflow.total_tasks}
+⏱️ **Estimated Hours**: {workflow.total_estimated_hours:.1f}
+🔥 **Critical Path**: {workflow.critical_path_hours:.1f} hours
+
+🤖 **Agent Distribution**:
+{chr(10).join(f"• {agent}: {count} tasks" for agent, count in workflow.agent_distribution.items())}
+
+📋 **Workflow Steps**:
+"""
+            
+            for i, step in enumerate(workflow.steps, 1):
+                step_info = f"""
+{i}. **{step.title}**
+   • Agent: {step.agent_type}
+   • Priority: {step.priority}
+   • Estimated: {step.estimated_hours:.1f} hours
+   • Dependencies: {', '.join(step.dependencies) if step.dependencies else 'None'}
+   • Description: {step.description}
+"""
+                result += step_info
+            
+            if workflow.risk_factors:
+                result += f"""
+⚠️ **Risk Factors**:
+{chr(10).join(f"• {risk}" for risk in workflow.risk_factors)}
+"""
+            
+            if workflow.optimization_suggestions:
+                result += f"""
+💡 **Optimization Suggestions**:
+{chr(10).join(f"• {suggestion}" for suggestion in workflow.optimization_suggestions)}
+"""
+            
+            result += f"""
+
+🚀 **To execute this workflow autonomously, say:**
+"start autonomous custom workflow"
+"execute workflow {workflow.name.lower().replace(' ', '_')}"
+
+💾 **To export this workflow, say:**
+"export workflow as json"
+"save workflow as markdown"
+"""
+            
+            # Store the workflow for potential execution
+            if not hasattr(self, 'custom_workflows'):
+                self.custom_workflows = {}
+            self.custom_workflows[workflow.name] = workflow
+            
+            return result
+            
+        except Exception as e:
+            return f"❌ Failed to build custom workflow: {e}"
     
     def _execute_autonomous_swarm(self, user_input: str) -> str:
         """Execute autonomous swarm with round-robin task execution"""
