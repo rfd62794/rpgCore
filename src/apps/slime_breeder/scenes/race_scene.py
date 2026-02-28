@@ -121,18 +121,8 @@ class RaceScene(Scene):
         if self.engine and not self.engine.is_finished():
             self.engine.tick(dt)
             
-            # 1. Momentum Camera Follow
-            leading_dist = max(p.distance for p in self.engine.participants)
-            target_cam = leading_dist - (self.spec.screen_width * 0.35)  # Leader at 35% from left
-            
-            dist_diff = target_cam - self.camera_x
-            accel = dist_diff * 5.0
-            self.camera_vel += accel * dt
-            self.camera_vel *= 0.9 
-            self.camera_x += self.camera_vel * dt
-            
-            # 2. Dynamic Zoom Logic
-            self._update_zoom()
+            # Update rubber band camera
+            self.camera.update(self.engine.participants, self.layout.arena.width, self.layout.arena.x)
             
             # 3. Speed Lines
             self._update_speed_lines(dt)
@@ -141,30 +131,6 @@ class RaceScene(Scene):
             self.shake_timer -= dt
         else:
             self.shake_mag = 0
-
-    def _update_zoom(self):
-        if not self.engine or not self.engine.participants:
-            return
-            
-        dists = [p.distance for p in self.engine.participants]
-        gap = max(dists) - min(dists)
-        lead_p = max(self.engine.participants, key=lambda x: x.distance)
-        dist_to_finish = 3000 - lead_p.distance
-        
-        # Determine target zoom based on race conditions
-        new_target = self.ZOOM_NORMAL
-        
-        # Zoom out if pack is spread out
-        if gap > 400: 
-            new_target = self.ZOOM_OUT_MAX
-        
-        # Zoom in on final stretch
-        if dist_to_finish < 600: 
-            new_target = self.ZOOM_FINISH
-        
-        # Smooth zoom transition (lerp)
-        zoom_speed = 0.03  # Slower = more cinematic
-        self.camera_zoom += (new_target - self.camera_zoom) * zoom_speed
 
     def _update_speed_lines(self, dt: float):
         lead_p = max(self.engine.participants, key=lambda x: x.distance)
