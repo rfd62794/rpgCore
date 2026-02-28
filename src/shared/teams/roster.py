@@ -382,20 +382,14 @@ class Roster:
     
     def _set_back_references(self):
         """Set back-references after loading (called from from_dict)"""
-        print(f"DEBUG: _set_back_references called with {len(self.entries)} entries")
-        print(f"DEBUG: Entries: {[e.slime_id for e in self.entries]}")
         # Set roster reference for teams
         for team in self.teams.values():
             team._roster_ref = self
         
         # Set team reference for entries (always set to ensure consistency)
         for entry in self.entries:
-            print(f"DEBUG: Processing entry {entry.slime_id}, team={entry.team}")
             if entry.team != TeamRole.UNASSIGNED:
                 entry._team_ref = self.teams[entry.team]
-                print(f"DEBUG: Set _team_ref for entry {entry.slime_id}")
-            elif hasattr(entry, '_team_ref'):
-                print(f"DEBUG: Entry {entry.slime_id} already has _team_ref")
 
     # === Legacy compatibility methods (deprecated) ===
     @property
