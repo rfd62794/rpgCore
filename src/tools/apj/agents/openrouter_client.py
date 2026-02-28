@@ -140,8 +140,7 @@ def request_approval(
 # ---------------------------------------------------------------------------
 
 def get_openrouter_model(model: str | None = None):
-    """
-    Return a pydantic_ai OpenAIChatModel pointed at OpenRouter.
+    """Return a pydantic_ai OpenAIChatModel pointed at OpenRouter.
 
     ALWAYS call is_director_enabled() and request_approval() before this.
     This function does NOT enforce the gate — callers are responsible.
@@ -162,9 +161,87 @@ def get_openrouter_model(model: str | None = None):
     return OpenAIChatModel(model_name, provider="openrouter")
 
 
+def switch_model(model_name: str) -> None:
+    """Switch to different model"""
+    if model_name not in FREE_MODELS:
+        raise ValueError(f"Unknown model: {model_name}. Available: {', '.join(FREE_MODELS)}")
+    
+    os.environ["OPENROUTER_MODEL"] = model_name
+    print(f"✅ Switched to: {model_name}")
+
+
+# Add to FREE_MODELS if not already present
+if "claude-sonnet" not in FREE_MODELS:
+    FREE_MODELS.append("claude-sonnet")
+
+
 # ---------------------------------------------------------------------------
 # Usage logging
 # ---------------------------------------------------------------------------
+
+def get_metrics() -> Dict:
+    """Get current session metrics"""
+    # Simple metrics tracking (would need to be enhanced for real tracking)
+    try:
+        with open(_USAGE_LOG, 'r') as f:
+            lines = f.readlines()
+        
+        total_requests = len(lines)
+        total_cost = 0.0
+        tokens_used = 0
+        models_used = set()
+        successful = 0
+        
+        for line in lines:
+            parts = line.strip().split('|')
+            if len(parts) >= 4:
+                try:
+                    tokens_in = int(parts[2].strip().split('=')[1])
+                    tokens_out = int(parts[3].strip().split('=')[1])
+                    model = parts[1].strip().split('=')[1]
+                    
+                    tokens_used += tokens_in + tokens_out
+                    models_used.add(model)
+                    successful += 1
+                    
+                    # Rough cost estimation
+                    if "deepseek" in model.lower():
+                        total_cost += (tokens_in * 0.00055 + tokens_out * 0.00219) / 1000
+                    elif "claude" in model.lower():
+                        total_cost += (tokens_in * 3.0 + tokens_out * 15.0) / 1000
+                except:
+                    pass
+        
+        return {
+            "total_requests": total_requests,
+            "total_cost": total_cost,
+            "tokens_used": tokens_used,
+            "models_used": list(models_used),
+            "success_rate": (successful / total_requests * 100) if total_requests > 0 else 0,
+            "budget_remaining": 10.0 - total_cost,  # Default budget
+            "wallet_status": "OK" if total_cost < 10.0 else "EXCEEDED"
+        }
+    except FileNotFoundError:
+        return {
+            "total_requests": 0,
+            "total_cost": 0.0,
+            "tokens_used": 0,
+            "models_used": [],
+            "success_rate": 0.0,
+            "budget_remaining": 10.0,
+            "wallet_status": "OK"
+        }
+
+def print_metrics() -> None:
+    """Print metrics summary"""
+    metrics = get_metrics()
+    print(f"""
+💼 WALLET: ${metrics['budget_remaining']:.2f} / $10.00
+📊 REQUESTS: {metrics['total_requests']} total
+💰 COST: ${metrics['total_cost']:.2f}
+📈 TOKENS: {metrics['tokens_used']:,}
+🤖 MODELS: {', '.join(metrics['models_used'])}
+✅ SUCCESS: {metrics['success_rate']:.1f}%""")
 
 def log_usage(
     task: str,
@@ -177,7 +254,7 @@ def log_usage(
 
     Args:
         task:       Short task description (truncated to 80 chars).
-        tokens_in:  Input token count from API response.
+        tokens_in: Input token count from API response.
         tokens_out: Output token count from API response.
         model:      Model used (defaults to OPENROUTER_MODEL env var).
     """

@@ -18,6 +18,7 @@ Model resolution (Fix 2 + 3):
 
 import os
 import subprocess
+import requests
 
 import httpx
 from loguru import logger
@@ -179,6 +180,58 @@ def warm_model_sync(
     # All candidates failed — fall back cold to last in chain
     logger.warning("OllamaClient: all warm attempts failed — proceeding cold")
     return chain[-1]
+
+
+def verify_models() -> Dict[str, bool]:
+    """Verify all models in preference chain are installed"""
+    results = {}
+    
+    # Check if Ollama is running
+    try:
+        response = requests.get(f"{OLLAMA_BASE_URL}/api/tags", timeout=5)
+        if response.status_code != 200:
+            print("❌ Ollama not running")
+            return results
+    except Exception as e:
+        print(f"❌ Cannot reach Ollama: {e}")
+        return results
+    
+    # Parse available models
+    try:
+        data = response.json()
+        installed = set()
+        for m in data.get("models", []):
+            installed.add(m["name"])
+    except Exception as e:
+        print(f"❌ Error parsing Ollama models: {e}")
+        return results
+    
+    # Check each model in preference chain
+    for model in MODEL_PREFERENCE_CHAIN:
+        present = model in installed
+        results[model] = present
+        if not present:
+            print(f"⚠️  {model} not installed. Installing...")
+            _pull_model(model)
+    
+    return results
+
+
+def _pull_model(model: str) -> None:
+    """Pull a model from registry"""
+    try:
+        print(f"  Pulling {model}...")
+        response = requests.post(
+            f"{OLLAMA_BASE_URL}/api/pull",
+            json={"name": model},
+            timeout=300  # 5 min timeout
+        )
+        if response.status_code == 200:
+            print(f"  ✅ {model} ready")
+        else:
+            print(f"  ❌ Failed to pull {model}")
+    except Exception as e:
+        print(f"  ❌ Error: {e}")
 
 
 def resolve_model(base_url: str = OLLAMA_BASE_URL) -> str:

@@ -1052,7 +1052,7 @@ Budget: Enforced by OpenRouter, fallback to Ollama if over budget
 def main():
     """Main CLI interface"""
     parser = argparse.ArgumentParser(description="ADJ System - DGT Engine Governance")
-    parser.add_argument("command", choices=["status", "phase", "priorities", "blockers", "next", "approve", "update", "strategy", "inventory", "plan", "execute", "reality", "gaps", "models"])
+    parser.add_argument("command", choices=["status", "phase", "priorities", "blockers", "next", "approve", "update", "strategy", "inventory", "plan", "execute", "reality", "gaps", "models", "test"])
     parser.add_argument("arg", nargs="?", help="Argument for command")
     parser.add_argument("arg2", nargs="?", help="Second argument for command")
     
@@ -1135,8 +1135,25 @@ def main():
             adj.show_model_usage()
         elif args.arg == "policy":
             adj.show_routing_policy()
+        elif args.arg == "test":
+            from src.tools.apj.agents.test_models import test_all
+            test_all()
+        elif args.arg == "ollama":
+            from src.tools.apj.agents.ollama_client import verify_models
+            results = verify_models()
+            
+            print("\nOllama Model Status:")
+            for model, present in results.items():
+                status = "✅" if present else "❌"
+                print(f"  {status} {model}")
         else:
-            print("Usage: python adj.py models [status|usage|policy]")
+            print("Usage: python adj.py models [status|usage|policy|test|ollama]")
+    elif args.command == "test":
+        if args.arg == "models":
+            from src.tools.apj.agents.test_models import test_all
+            test_all()
+        else:
+            print("Usage: python adj.py test models")
     else:
         print("❌ Unknown command")
         parser.print_help()
