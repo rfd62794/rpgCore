@@ -151,7 +151,11 @@ class TeamScene(Scene):
         logger.info("⚔️ Launching Dungeon Crawler...")
         from src.apps.dungeon_crawler.ui.dungeon_session import DungeonSession
         session = DungeonSession()
-        self.request_scene("dungeon", session=session)
+        logger.info(f"Created dungeon session: {session}")
+        logger.info(f"Session floor before start_run: {session.floor}")
+        session.start_run("fighter")
+        logger.info(f"Session floor after start_run: {session.floor}")
+        self.request_scene("dungeon_room", session=session)
 
     def _assign_to_dungeon(self, slime: RosterSlime):
         if self.dungeon_team.assign(slime):
