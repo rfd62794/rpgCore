@@ -55,7 +55,11 @@ def test_wave_can_spawn_enemy(wave_component):
     """Test enemy spawning conditions"""
     wave_component.start_wave()
     
-    # Can spawn initially
+    # Can't spawn initially (need to wait for spawn interval)
+    assert wave_component.can_spawn_enemy() is False
+    
+    # Wait for spawn interval
+    wave_component.update_spawn_timer(2.1)  # > spawn_interval
     assert wave_component.can_spawn_enemy() is True
     
     # Spawn an enemy
