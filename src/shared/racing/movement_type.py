@@ -5,7 +5,7 @@ from src.shared.genetics.genome import SlimeGenome
 
 class MovementType(Enum):
     JUMPER = "jumper"
-    SCOOPER = "scooter"
+    SCOOTER = "scooter"
     ROLLER = "roller"
 
 def classify_movement(genome: SlimeGenome) -> MovementType:

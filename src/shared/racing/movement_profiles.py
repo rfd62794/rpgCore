@@ -16,7 +16,7 @@ MOVEMENT_PROFILES = {
         }
     },
 
-    MovementType.SCOOTER: {
+    MovementType.SCOOPER: {
         "jump_height_max": 3,       # barely leaves ground
         "jump_cooldown": 0.1,     # rapid tiny pulses
         "ground_time": 0.05,    # hugs ground
