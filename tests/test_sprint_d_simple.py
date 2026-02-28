@@ -101,8 +101,11 @@ def test_registry_centralization():
     
     print("✅ Registry centralization imports successful")
     
-    # Create registry
+    # Create fresh registry
     registry = DGTRegistry()
+    # Clear any existing state to ensure test isolation
+    registry.clear_registry(RegistryType.ENTITY)
+    registry.clear_registry(RegistryType.SYSTEM)
     
     # Create multiple entities
     entities = [
