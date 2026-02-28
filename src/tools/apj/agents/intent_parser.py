@@ -320,9 +320,16 @@ class ConversationalInterface:
             
             progress_thread = threading.Thread(target=show_progress, daemon=True)
             progress_thread.start()
-        
-        # Enter interactive mode only if swarm failed
-        if not self.swarm or not boot_results.get("success", False):
+            
+            # Keep the program running to show autonomous work
+            try:
+                while True:
+                    time.sleep(1)
+            except KeyboardInterrupt:
+                print("\n🛑 Stopping autonomous swarm...")
+                return
+        else:
+            # Only show interactive mode if swarm failed
             print("\n" + "=" * 60)
             print("              ADJ INTERACTIVE CHAT (WITH SWARM)                ")
             print("=" * 60)
