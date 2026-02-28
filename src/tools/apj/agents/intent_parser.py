@@ -195,76 +195,15 @@ class ConversationalInterface:
                     print("\n🎮 Autonomous Execution Started - No User Input Required!")
                     print("🔄 Swarm is now working round-robin until completion")
                     
-                    # Start continuous autonomous execution
-                    print("\n🚀 STARTING CONTINUOUS AUTONOMOUS EXECUTION")
-                    print("=" * 60)
-                    
-                    # Start with the most critical workflow
                     try:
-                        print("🎯 Starting with ECS Rendering System workflow...")
-                        success = AUTONOMOUS_SWARM.start_autonomous_execution()
-                        
+                        success = asyncio.run(self.autonomous_swarm.start_autonomous_execution())
                         if success:
-                            print("✅ ECS Rendering System workflow completed!")
-                            
-                            # Continue with other workflows
-                            print("\n🎯 Starting Dungeon Demo workflow...")
-                            dungeon_tasks = [
-                                {
-                                    "title": "Complete Dungeon Demo Features",
-                                    "description": "Add missing features and polish to dungeon demo",
-                                    "agent_type": "coder",
-                                    "priority": 1,
-                                    "estimated_hours": 10.0
-                                },
-                                {
-                                    "title": "Test Dungeon Demo",
-                                    "description": "Create comprehensive tests for dungeon demo",
-                                    "agent_type": "tester",
-                                    "priority": 2,
-                                    "estimated_hours": 5.0
-                                }
-                            ]
-                            AUTONOMOUS_SWARM.define_task_workflow("dungeon_demo", dungeon_tasks)
-                            AUTONOMOUS_SWARM.start_autonomous_execution()
-                            
-                            print("✅ Dungeon Demo workflow completed!")
-                            
-                            # Start Tower Defense
-                            print("\n🎯 Starting Tower Defense Phase 3 workflow...")
-                            tower_tasks = [
-                                {
-                                    "title": "Implement Tower Defense Core Systems",
-                                    "description": "Implement core tower defense mechanics",
-                                    "agent_type": "coder",
-                                    "priority": 1,
-                                    "estimated_hours": 20.0
-                                },
-                                {
-                                    "title": "Integrate Genetics with Tower Defense",
-                                    "description": "Integrate creature genetics with tower mechanics",
-                                    "agent_type": "coder",
-                                    "priority": 2,
-                                    "estimated_hours": 15.0
-                                },
-                                {
-                                    "title": "Create Tower Defense Tests",
-                                    "description": "Create comprehensive tests for tower defense",
-                                    "agent_type": "tester",
-                                    "priority": 3,
-                                    "estimated_hours": 10.0
-                                }
-                            ]
-                            AUTONOMOUS_SWARM.define_task_workflow("tower_defense", tower_tasks)
-                            AUTONOMOUS_SWARM.start_autonomous_execution()
-                            
-                            print("✅ Tower Defense workflow completed!")
-                            
+                            print("✅ Autonomous swarm execution completed successfully")
                         else:
-                            print("❌ ECS Rendering System workflow failed")
-                            
+                            print("❌ Autonomous swarm execution failed")
                     except Exception as e:
-                        print(f"❌ Autonomous execution failed: {e}")
+                        print(f"❌ Error in autonomous execution: {e}")
+                        logger.error(f"Autonomous execution error: {e}")
                     
                     print("\n🎉 ALL WORKFLOWS COMPLETED AUTONOMOUSLY!")
                     print("🚀 The swarm has completed all detected work without human intervention")
