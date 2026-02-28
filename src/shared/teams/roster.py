@@ -1,10 +1,21 @@
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Optional, Dict, TYPE_CHECKING
+from typing import Optional, Dict, TYPE_CHECKING, List
 from src.shared.genetics.genome import SlimeGenome
 
 if TYPE_CHECKING:
     pass
+
+class TeamMembersList(list):
+    """Custom list that handles legacy RosterSlime containment checks"""
+    def __contains__(self, slime_or_id):
+        """Check if slime is in team (legacy compatibility)"""
+        if hasattr(slime_or_id, 'slime_id'):
+            slime_id = slime_or_id.slime_id
+        else:
+            slime_id = slime_or_id
+        
+        return any(member.slime_id == slime_id for member in self)
 
 class TeamRole(Enum):
     DUNGEON  = "dungeon"
