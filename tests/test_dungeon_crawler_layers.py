@@ -64,7 +64,7 @@ def test_combat_victory_clears_enemy_tile(mock_session, manager):
     scene = DungeonRoomScene(manager, SPEC_720, mock_session)
     scene.enemy_defeated = False
     # Simulate return from combat with victory
-    scene.on_enter(combat_result="victory")
+    scene.on_enter(combat_result="victory", session=mock_session)
     assert scene.enemy_defeated
     pygame.quit()
 

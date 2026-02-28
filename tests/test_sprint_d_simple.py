@@ -142,7 +142,13 @@ def test_registry_centralization():
     }
     
     for system_id, state in system_states.items():
-        registry.register_system(system_id, type("MockSystem", (), {"get_state": lambda s=state: s})(), state)
+        class MockSystem:
+            def __init__(self, state_data):
+                self.state_data = state_data
+            def get_state(self):
+                return self.state_data
+        
+        registry.register_system(system_id, MockSystem(state), state)
     
     print("✅ Multiple systems registered")
     
