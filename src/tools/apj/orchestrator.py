@@ -448,46 +448,35 @@ Return as JSON:
         return tasks
     
     def _spawn_agent_subprocess(self, tasks: list) -> bool:
-        """
-        Spawn Coding Agent as subprocess
-        Agent runs tasks autonomously in background
-        Parent process monitors progress
-        """
+        """Spawn local agent (Ollama-based, fully autonomous)"""
         
-        print("\n🤖 Spawning Coding Agent...\n")
-        
-        # Create agent command
-        agent_script = self.project_root / "src" / "tools" / "apj" / "agents" / "agent_executor.py"
-        
-        # Pass tasks as JSON to agent
-        tasks_json = json.dumps({"tasks": tasks})
+        print("\n🤖 Spawning Local Agent (Ollama)...\n")
         
         try:
-            # Spawn Agent as subprocess
-            self.agent_process = subprocess.Popen(
-                [sys.executable, str(agent_script)],
-                stdin=subprocess.PIPE,
-                stdout=subprocess.PIPE,
-                stderr=subprocess.PIPE,
-                text=True,
-                cwd=self.project_root
-            )
+            from src.tools.apj.agents.local_agent import LocalAgent
             
-            # Send tasks to agent
-            stdout, stderr = self.agent_process.communicate(input=tasks_json, timeout=3600)  # 1 hour timeout
+            agent = LocalAgent(self.project_root)
             
-            print(stdout)
+            # Execute each task
+            completed = 0
+            failed = 0
             
-            if self.agent_process.returncode != 0:
-                print(f"❌ Agent failed: {stderr}")
-                return False
+            for task in tasks:
+                success = agent.execute_task(task)
+                
+                if success:
+                    completed += 1
+                else:
+                    failed += 1
+                    # Continue to next task even if one fails
             
-            return True
-        
-        except subprocess.TimeoutExpired:
-            self.agent_process.kill()
-            print("❌ Agent timeout (exceeded 1 hour)")
-            return False
+            print(f"\n{'='*60}")
+            print(f"✅ Agent completed: {completed}/{len(tasks)} tasks")
+            if failed > 0:
+                print(f"❌ Failed: {failed} tasks")
+            print(f"{'='*60}\n")
+            
+            return failed == 0
         
         except Exception as e:
             print(f"❌ Agent error: {e}")
