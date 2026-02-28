@@ -326,9 +326,25 @@ class GardenScene(GardenSceneBase):
         render_badge(surface, team_label, (text_x + 75, y), team_color)
         y += 24
         
-        # DNA line (simple genetic hint)
-        dna_text = rs.genome.dna[:16] + "..."
-        render_text(surface, dna_text, (text_x, y), size=12, color=(100, 100, 120))
+        # Trait badges (using get_dominant_trait logic)
+        from src.shared.ui.profile_card import get_dominant_trait
+        trait = get_dominant_trait(rs.genome)
+        trait_color = (120, 100, 180)
+        render_badge(surface, trait, (text_x, y), trait_color)
+        
+        if not rs.can_breed:
+            render_badge(surface, "YOUNG", (text_x + 80, y), (200, 140, 60))
+        y += 24
+        
+        # DNA line (visual representation of genome)
+        dna_parts = [
+            rs.genome.shape[0].upper(),
+            rs.genome.size[0].upper(),
+            rs.genome.pattern[0].upper(),
+            rs.genome.accessory[0].upper() if rs.genome.accessory != "none" else "N"
+        ]
+        dna_text = "-".join(dna_parts) + f"-{rs.generation:02d}"
+        render_text(surface, f"DNA: {dna_text}", (text_x, y), size=12, color=(100, 100, 120))
 
         # 3. Stats Sub-panel Content
         from src.shared.teams.stat_calculator import calculate_hp, calculate_attack, calculate_speed
