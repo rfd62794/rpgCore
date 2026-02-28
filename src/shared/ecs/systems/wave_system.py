@@ -70,11 +70,11 @@ class WaveSystem:
         )
         
         # Set enemy stats based on wave difficulty
-        enemy.stats.hp = int(base_hp * wave.enemy_hp_multiplier)
-        enemy.stats.max_hp = enemy.stats.hp
-        enemy.stats.damage = int(base_damage * wave.enemy_speed_multiplier)
-        enemy.stats.speed = base_speed * wave.enemy_speed_multiplier
-        enemy.stats.reward = int(10 * wave.enemy_reward_multiplier)
+        enemy.current_hp = int(base_hp * wave.enemy_hp_multiplier)
+        enemy.max_hp = enemy.current_hp
+        enemy.base_damage = int(base_damage * wave.enemy_speed_multiplier)
+        enemy.kinematics.velocity = Vector2(base_speed * wave.enemy_speed_multiplier, 0)
+        enemy.reward = int(10 * wave.enemy_reward_multiplier)
         
         # Set position at random spawn point
         spawn_point = random.choice(self.enemy_spawn_points)
