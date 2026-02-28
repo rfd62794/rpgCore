@@ -5,9 +5,10 @@ from src.shared.genetics import SlimeGenome
 from src.shared.physics import Kinematics, Vector2
 
 class Slime:
-    def __init__(self, name: str, genome: SlimeGenome, position: Tuple[float, float]):
+    def __init__(self, name: str, genome: SlimeGenome, position: Tuple[float, float], level: int = 1):
         self.name = name
         self.genome = genome
+        self.level = level
         self.age = 0  # ticks lived
         
         # Physics

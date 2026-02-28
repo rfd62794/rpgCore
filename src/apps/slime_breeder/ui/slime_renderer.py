@@ -122,6 +122,14 @@ class SlimeRenderer:
             # single dark line across face
             pygame.draw.line(surface, (50, 0, 0), (pos[0]-radius//2, pos[1]), (pos[0]+radius//2, pos[1]+radius//2), 2)
 
+        # 3.5 Elder Crown (Level 10+)
+        if slime.level >= 10:
+            # Persistent golden crown for Elders
+            c_y = pos[1] - radius - 5
+            pts = [(pos[0]-12, c_y), (pos[0]-6, c_y-12), (pos[0], c_y-4), (pos[0]+6, c_y-12), (pos[0]+12, c_y)]
+            pygame.draw.polygon(surface, (255, 215, 0), pts)
+            pygame.draw.lines(surface, (200, 160, 0), False, pts, 2)
+
         # 4. Simple eyes/face
         eye_color = (0, 0, 0)
         eye_off = radius // 3
