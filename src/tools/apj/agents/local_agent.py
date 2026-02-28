@@ -195,6 +195,9 @@ class LocalAgent:
     def _determine_next_focus(self) -> Dict:
         """Determine what should be focused on next"""
         
+        # Get goal progress first
+        goal_progress = self._analyze_goals()
+        
         # Find critical blockers
         critical_blockers = [
             blocker for blocker in self.project_status.get("blockers", [])
@@ -204,13 +207,14 @@ class LocalAgent:
         
         # Find incomplete goals
         incomplete_goals = [
-            goal_id for goal_id, goal_data in self.project_analysis["goal_progress"].items()
+            goal_id for goal_id, goal_data in goal_progress.items()
             if goal_data.get("status") in ["🔄 IN PROGRESS", "❌ BLOCKED"]
         ]
         
         # Find minimal demos
+        demo_status = self._analyze_demos()
         minimal_demos = [
-            demo for demo, demo_data in self.project_analysis["demo_status"].items()
+            demo for demo, demo_data in demo_status.items()
             if demo_data.get("status") in ["minimal", "in_progress"]
         ]
         
