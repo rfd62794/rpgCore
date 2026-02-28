@@ -232,10 +232,14 @@ Return as JSON with task assignments.
                 # Extract the JSON content
                 json_content = json_match.group(1) if json_match.lastindex == 1 else json_match.group()
                 
-                # Clean up the JSON content
+                # Clean up the JSON content - remove leading/trailing whitespace and newlines
                 json_content = json_content.strip()
                 
-                print(f"🔍 Debug: Extracted JSON content: {json_content[:200]}...")
+                # Additional cleaning: remove any leading newlines or special characters
+                while json_content and not json_content.startswith('{'):
+                    json_content = json_content[1:].strip()
+                
+                print(f"🔍 Debug: Cleaned JSON content: {json_content[:200]}...")
                 
                 # Parse the JSON
                 task_assignments = json.loads(json_content)
