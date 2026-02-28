@@ -34,9 +34,26 @@
 - Do not refactor existing agents mid-session
 - Do not recommend non-vision-aligned work when VISION.md exists
 
-## Planned: ThreadAgent Suite
-- **ThreadAuditor** — Audits VISION -> Goal -> Milestone -> Task -> Step chain.
-- **ThreadBuilder** — Generates missing chain links with real file paths.
-- **ThreadValidator** — Verifies steps against chain after completion.
-- Build after **M_BROWSER** ships.
-- **Priority**: HIGH — fixes Strategist drift permanently.
+## Simulation Engine — Future Architecture
+
+The racing headless engine is the prototype for a unified Simulation Engine. All autonomous activities share:
+- **Tick-based progression**: Fixed-step simulation logic.
+- **Participant stats**: Derived from genome, influencing velocity/acceleration.
+- **Environment zones**: Segments with modifiers (Water/Fire/Mud).
+- **Checkpoint/progress tracking**: Measuring journey through a space.
+- **Result generation**: Deterministic success/fail reports.
+
+### Applications:
+- **Racing**: First to finish wins.
+- **Dungeon Dispatch**: Survive N floors/checkpoints.
+- **Missions**: Complete specific objectives via path progress.
+- **Battle**: Reduce enemy HP to 0 using similar physics-based impact math.
+
+### Shared Systems to Extract:
+- `src/shared/simulation/base_engine.py` (Headless tick logic)
+- `src/shared/simulation/participant.py` (Velocity/Stat mapping)
+- `src/shared/simulation/environment.py` (Zone/Segment mapping)
+- `src/shared/camera/` (Momentum-based follow and dynamic zoom)
+
+> [!NOTE]
+> The racing system is not a minigame; it is the **proof of concept** for the entire autonomous world simulation.
