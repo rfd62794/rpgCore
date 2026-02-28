@@ -335,15 +335,6 @@ class Roster:
                         self.teams[slime.team].members.append(entry)
                 break
     
-    def add_slime(self, slime: RosterSlime):
-        self.slimes.append(slime)
-    
-    def get_dungeon_team(self) -> Team:
-        return self.teams[TeamRole.DUNGEON]
-    
-    def get_racing_team(self) -> Team:
-        return self.teams[TeamRole.RACING]
-    
     def unassigned(self) -> list[RosterSlime]:
         return [s for s in self.slimes 
                 if s.team == TeamRole.UNASSIGNED
