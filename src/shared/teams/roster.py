@@ -7,7 +7,7 @@ if TYPE_CHECKING:
     pass
 
 class TeamMembersList(list):
-    """Custom list that handles legacy RosterSlime containment checks"""
+    """Custom list that handles legacy RosterSlime containment checks and removal"""
     def __contains__(self, slime_or_id):
         """Check if slime is in team (legacy compatibility)"""
         if hasattr(slime_or_id, 'slime_id'):
@@ -16,6 +16,25 @@ class TeamMembersList(list):
             slime_id = slime_or_id
         
         return any(member.slime_id == slime_id for member in self)
+    
+    def remove(self, slime_or_id):
+        """Remove slime from team (legacy compatibility)"""
+        if hasattr(slime_or_id, 'slime_id'):
+            slime_id = slime_or_id.slime_id
+        else:
+            slime_id = slime_or_id
+        
+        # Find and remove the entry
+        for i, member in enumerate(self):
+            if member.slime_id == slime_id:
+                super().remove(member)
+                return
+        
+        # If not found as entry, try to remove as-is for compatibility
+        try:
+            super().remove(slime_or_id)
+        except ValueError:
+            pass  # Silently fail for compatibility
 
 class TeamRole(Enum):
     DUNGEON  = "dungeon"
