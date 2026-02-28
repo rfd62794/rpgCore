@@ -91,6 +91,208 @@ LOCAL_FALLBACK_CHAIN: list[str] = [
 class ModelRouter:
     _account_state: AccountRateLimitState = AccountRateLimitState()
     _budget: BudgetState = BudgetState()
+    _monitor: ModelMonitor = ModelMonitor(PROJECT_ROOT)
+    
+    @classmethod
+    def route_request(cls, request: ModelRequest) -> ModelResponse:
+        """
+        Route request using standardized contract
+        Replaces the existing routing logic
+        """
+        
+        # Get policy for task type
+        preferred_system = ROUTING_POLICY.get(request.task_type, "ollama")
+        
+        # Try preferred system
+        response = cls._call_system(preferred_system, request)
+        
+        if not response.success:
+            # Try fallback
+            fallback = "openrouter" if preferred_system == "ollama" else "ollama"
+            response = cls._call_system(fallback, request)
+        
+        # Log the request
+        cls._monitor.log_request(response)
+        
+        return response
+    
+    @classmethod
+    def _call_system(cls, system: str, request: ModelRequest) -> ModelResponse:
+        """Call a specific system"""
+        
+        if system == "ollama":
+            return cls._call_ollama(request)
+        else:
+            return cls._call_openrouter(request)
+    
+    @classmethod
+    def _call_ollama(cls, request: ModelRequest) -> ModelResponse:
+        """Call OllamaClient with contract"""
+        import time
+        start_time = time.time()
+        
+        try:
+            # Use existing _try_local logic but with timing
+            for model_name in LOCAL_FALLBACK_CHAIN:
+                try:
+                    client = get_ollama_model(model_name=model_name)
+                    agent = Agent(model=client)
+                    result = agent.run_sync(request.prompt)
+                    
+                    latency = time.time() - start_time
+                    
+                    return ModelResponse(
+                        success=True,
+                        response=result.output,
+                        model_used=model_name,
+                        system="ollama",
+                        cost_dollars=0.0,  # Local is free
+                        tokens_input=len(request.prompt.split()),
+                        tokens_output=len(result.output.split()),
+                        latency_seconds=latency
+                    )
+                except Exception as e:
+                    logger.debug(f"Local {model_name} failed: {e}")
+                    continue
+            
+            # All models failed
+            return ModelResponse(
+                success=False,
+                response="",
+                model_used="ollama",
+                system="ollama",
+                cost_dollars=0.0,
+                tokens_input=0,
+                tokens_output=0,
+                latency_seconds=time.time() - start_time,
+                error="All local models failed"
+            )
+            
+        except Exception as e:
+            return ModelResponse(
+                success=False,
+                response="",
+                model_used="ollama",
+                system="ollama",
+                cost_dollars=0.0,
+                tokens_input=0,
+                tokens_output=0,
+                latency_seconds=0.0,
+                error=str(e)
+            )
+    
+    @classmethod
+    def _call_openrouter(cls, request: ModelRequest) -> ModelResponse:
+        """Call OpenRouterClient with contract"""
+        import time
+        start_time = time.time()
+        
+        try:
+            # Use existing _try_remote logic but with timing
+            chain = REMOTE_FALLBACK_CHAIN
+            
+            # Simple token estimation: chars / 4
+            estimated_tokens = len(request.prompt) // 4
+            budget_status = cls._budget.check(estimated_tokens)
+            
+            if budget_status == "hard_stop":
+                return ModelResponse(
+                    success=False,
+                    response="",
+                    model_used="openrouter",
+                    system="openrouter",
+                    cost_dollars=0.0,
+                    tokens_input=0,
+                    tokens_output=0,
+                    latency_seconds=0.0,
+                    error="Budget hard stop"
+                )
+            
+            can_request, reason = cls._account_state.can_request()
+            if not can_request:
+                return ModelResponse(
+                    success=False,
+                    response="",
+                    model_used="openrouter",
+                    system="openrouter",
+                    cost_dollars=0.0,
+                    tokens_input=0,
+                    tokens_output=0,
+                    latency_seconds=0.0,
+                    error=f"Account limit: {reason}"
+                )
+            
+            for model_name in chain:
+                try:
+                    client = get_openrouter_model(model=model_name)
+                    agent = Agent(model=client)
+                    result = agent.run_sync(request.prompt)
+                    
+                    latency = time.time() - start_time
+                    
+                    # Success - record usage
+                    cls._account_state.record_request()
+                    cls._budget.record_usage(estimated_tokens)
+                    
+                    # Estimate cost (would need actual token counts)
+                    cost = estimated_tokens * 0.001  # Rough estimate
+                    
+                    return ModelResponse(
+                        success=True,
+                        response=result.output,
+                        model_used=model_name,
+                        system="openrouter",
+                        cost_dollars=cost,
+                        tokens_input=estimated_tokens,
+                        tokens_output=len(result.output.split()),
+                        latency_seconds=latency
+                    )
+                    
+                except Exception as e:
+                    error_type = cls._handle_429(e, model_name)
+                    if error_type == "account_rate_limited":
+                        return ModelResponse(
+                            success=False,
+                            response="",
+                            model_used="openrouter",
+                            system="openrouter",
+                            cost_dollars=0.0,
+                            tokens_input=0,
+                            tokens_output=0,
+                            latency_seconds=0.0,
+                            error="Account rate limited"
+                        )
+                    elif error_type == "provider_saturated":
+                        continue     # Try next model
+                    
+                    logger.warning(f"Remote {model_name} failed: {e}")
+                    continue
+            
+            # All models failed
+            return ModelResponse(
+                success=False,
+                response="",
+                model_used="openrouter",
+                system="openrouter",
+                cost_dollars=0.0,
+                tokens_input=0,
+                tokens_output=0,
+                latency_seconds=time.time() - start_time,
+                error="All remote models failed"
+            )
+            
+        except Exception as e:
+            return ModelResponse(
+                success=False,
+                response="",
+                model_used="openrouter",
+                system="openrouter",
+                cost_dollars=0.0,
+                tokens_input=0,
+                tokens_output=0,
+                latency_seconds=0.0,
+                error=str(e)
+            )
     
     @classmethod
     def route(cls, config: Any, prompt: str) -> str:

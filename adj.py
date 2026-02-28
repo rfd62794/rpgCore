@@ -25,7 +25,7 @@ from typing import Dict, List, Optional
 # Layer imports
 from src.tools.apj.data_loader import DataLoader
 from src.tools.apj.analysis import StatusAnalyzer
-from src.tools.apj.model_router import ModelRouter
+from src.tools.apj.agents.model_router import ModelRouter
 
 
 class ADJSystem:
@@ -388,6 +388,69 @@ Tests: {status['total_test_passing']} passing
             print(f"  {name}")
             print(f"    Done: {done}")
             print(f"    Missing: {missing}")
+
+    def show_model_status(self):
+        """Show current model system status"""
+        from src.tools.apj.agents.ollama_client import resolve_model, _get_available_models
+        from src.tools.apj.agents.openrouter_client import is_director_enabled
+        
+        print(f"""
+╔══════════════════════════════════════════════════════════════╗
+║                    MODEL SYSTEM STATUS                        ║
+╚══════════════════════════════════════════════════════════════╝
+
+🏠 LOCAL (Ollama):""")
+        
+        try:
+            available = _get_available_models()
+            if available:
+                print(f"  Status: ✅ Running")
+                print(f"  Available models: {', '.join(available[:3])}")
+                if len(available) > 3:
+                    print(f"                    ... and {len(available) - 3} more")
+                print(f"  Current model: {resolve_model()}")
+            else:
+                print(f"  Status: ⚠️  Running but no models loaded")
+        except Exception as e:
+            print(f"  Status: ❌ {str(e)}")
+        
+        print(f"""
+☁️  REMOTE (OpenRouter):""")
+        
+        if is_director_enabled():
+            print(f"  Status: ✅ Configured")
+            print(f"  Approval mode: STRICT (human approval required)")
+            print(f"  Cost tracking: Enabled")
+        else:
+            print(f"  Status: ❌ Not configured or disabled")
+
+    def show_model_usage(self):
+        """Show model usage summary"""
+        from src.tools.apj.agents.model_monitor import ModelMonitor
+        
+        monitor = ModelMonitor(self.root_dir)
+        monitor.print_summary()
+
+    def show_routing_policy(self):
+        """Show how requests are routed"""
+        from src.tools.apj.agents.model_contracts import ROUTING_POLICY, TaskType
+        
+        print(f"""
+╔══════════════════════════════════════════════════════════════╗
+║                    ROUTING POLICY                             ║
+╚══════════════════════════════════════════════════════════════╝
+
+Task Type              → System
+─────────────────────────────────
+""")
+        
+        for task_type, system in ROUTING_POLICY.items():
+            print(f"{task_type.value:20s} → {system}")
+        
+        print(f"""
+Strategy: Try preferred system first, fallback to other if failed
+Budget: Enforced by OpenRouter, fallback to Ollama if over budget
+""")
 
     def show_phase_roadmap(self, phase_num: int):
         """Show complete roadmap for a phase"""
@@ -989,7 +1052,7 @@ Tests: {status['total_test_passing']} passing
 def main():
     """Main CLI interface"""
     parser = argparse.ArgumentParser(description="ADJ System - DGT Engine Governance")
-    parser.add_argument("command", choices=["status", "phase", "priorities", "blockers", "next", "approve", "update", "strategy", "inventory", "plan", "execute", "reality", "gaps"])
+    parser.add_argument("command", choices=["status", "phase", "priorities", "blockers", "next", "approve", "update", "strategy", "inventory", "plan", "execute", "reality", "gaps", "models"])
     parser.add_argument("arg", nargs="?", help="Argument for command")
     parser.add_argument("arg2", nargs="?", help="Second argument for command")
     
@@ -1063,6 +1126,17 @@ def main():
         adj.show_reality_status()
     elif args.command == "gaps":
         adj.show_alignment_gaps()
+    elif args.command == "models":
+        if not args.arg:
+            adj.show_model_status()
+        elif args.arg == "status":
+            adj.show_model_status()
+        elif args.arg == "usage":
+            adj.show_model_usage()
+        elif args.arg == "policy":
+            adj.show_routing_policy()
+        else:
+            print("Usage: python adj.py models [status|usage|policy]")
     else:
         print("❌ Unknown command")
         parser.print_help()
