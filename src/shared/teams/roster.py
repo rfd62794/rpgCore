@@ -24,6 +24,10 @@ class RosterSlime:
     breeding_lock_level: int = 0 # Cannot breed if level <= breeding_lock_level
     
     @property
+    def is_elder(self) -> bool:
+        return self.level >= 10
+    
+    @property
     def can_breed(self) -> bool:
         """Min level 3 required, and must be above last bred level (drain mechanic)."""
         return self.level >= 3 and self.level > self.breeding_lock_level
@@ -109,11 +113,12 @@ class Roster:
                         "pattern": s.genome.pattern,
                         "pattern_color": s.genome.pattern_color,
                         "accessory": s.genome.accessory,
-                        "curiosity": s.genome.curiosity,
-                        "energy": s.genome.energy,
                         "affection": s.genome.affection,
                         "shyness": s.genome.shyness,
-                        "cultural_base": s.genome.cultural_base.value
+                        "cultural_base": s.genome.cultural_base.value,
+                        "base_hp": s.genome.base_hp,
+                        "base_atk": s.genome.base_atk,
+                        "base_spd": s.genome.base_spd
                     },
                     "level": s.level,
                     "experience": s.experience,
