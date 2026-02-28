@@ -54,7 +54,8 @@ class RaceScene(Scene):
         self.speed_lines = [] 
         
         # Track Layout Constants
-        self.track_height_ratio = 0.6  # Road takes 60% of arena height
+        self.track_height_ratio = 0.45  # Track takes 45% of arena height
+        self.min_track_height = 240     # Minimum track height for comfortable lanes
         self.track_border_width = 8
         self.lane_count = 4
         
@@ -128,7 +129,7 @@ class RaceScene(Scene):
             
             # 1. Momentum Camera Follow
             leading_dist = max(p.distance for p in self.engine.participants)
-            target_cam = leading_dist - (self.spec.screen_width * 0.3)
+            target_cam = leading_dist - (self.spec.screen_width * 0.35)  # Leader at 35% from left
             
             dist_diff = target_cam - self.camera_x
             accel = dist_diff * 5.0
