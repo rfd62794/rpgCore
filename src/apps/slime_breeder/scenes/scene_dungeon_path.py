@@ -36,8 +36,8 @@ class DungeonPathScene(Scene):
             self.team = d_team.members if d_team else []
 
         # Core Simulation Components
-        depth = kwargs.get('depth', 1)
-        self.track = generate_dungeon_track(depth)
+        self.depth = kwargs.get('depth', 1)
+        self.track = generate_dungeon_track(self.depth)
         self.engine = DungeonEngine(self.track, self.team)
         self.camera = RaceCamera()
         
@@ -51,11 +51,8 @@ class DungeonPathScene(Scene):
         self.track_height_ratio = 0.4
         self.track_rect = self._get_track_rect()
         
-                self.zone_enemies[id(zone)] = enemies
-
-    def _generate_zone_visuals(self):
-        depth = getattr(self.track, 'depth', 1)
-        from src.shared.genetics import generate_random
+        # Pre-generate enemies to show genetic slimes on path
+        self.zone_enemies = {}
         
         # Helper for rendering pre-generated enemies
         class MockEnemy:
@@ -67,6 +64,12 @@ class DungeonPathScene(Scene):
                 self.kinematics = Kinematics(0, 0)
         self.MockEnemy = MockEnemy
 
+        self._generate_zone_visuals()
+
+    def _generate_zone_visuals(self):
+        depth = self.depth
+        from src.shared.genetics import generate_random
+        
         for zone in self.track.zones:
             if zone.zone_type in [DungeonZoneType.COMBAT, DungeonZoneType.BOSS]:
                 count = 1 if zone.zone_type == DungeonZoneType.BOSS else random.randint(1, 3)
@@ -90,8 +93,8 @@ class DungeonPathScene(Scene):
                             "stance": "Aggressive"
                         },
                         "genome": generate_random(),
-                        "offset_x": (i - count/2 + 0.5) * 35,
-                        "offset_y": random.choice([-15, 0, 15]),
+                        "offset_x": (i - count/2 + 0.5) * 45, # Adjusted spacing
+                        "offset_y": random.choice([-20, 0, 20]),
                         "size": 14 if zone.zone_type == DungeonZoneType.COMBAT else 30
                     })
                 self.zone_enemies[id(zone)] = enemies
