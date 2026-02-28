@@ -46,13 +46,15 @@ class DungeonRoomScene(Scene):
         self.ui_components = []
         self._setup_ui()
 
-    def on_enter(self) -> None:
+    def on_enter(self, combat_result=None, **kwargs):
+        self.kwargs = kwargs
+        self.session = kwargs.get("session")
+        
         if not self.session.floor:
             self.session.descend()
         
         # Check for combat result
-        res = self.kwargs.get("combat_result")
-        if res == "victory":
+        if combat_result == "victory":
             self.enemy_defeated = True
             logger.info("🏆 Victory confirmed in Exploration Mode")
             
