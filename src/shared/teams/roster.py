@@ -356,11 +356,14 @@ class Roster:
                     roster.teams[entry.team].members.append(entry)
         
         # Set all back-references after loading (for both legacy and new formats)
+        print(f"DEBUG: About to call _set_back_references with {len(roster.entries)} entries")
         roster._set_back_references()
+        print("DEBUG: _set_back_references completed")
         return roster
     
     def _set_back_references(self):
         """Set back-references after loading (called from from_dict)"""
+        print(f"DEBUG: _set_back_references called with {len(self.entries)} entries")
         # Set roster reference for teams
         for team in self.teams.values():
             team._roster_ref = self
@@ -369,6 +372,9 @@ class Roster:
         for entry in self.entries:
             if entry.team != TeamRole.UNASSIGNED and not hasattr(entry, '_team_ref'):
                 entry._team_ref = self.teams[entry.team]
+                print(f"DEBUG: Set _team_ref for entry {entry.slime_id}")
+            elif hasattr(entry, '_team_ref'):
+                print(f"DEBUG: Entry {entry.slime_id} already has _team_ref")
 
     # === Legacy compatibility methods (deprecated) ===
     @property
