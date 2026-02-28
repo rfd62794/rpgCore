@@ -219,31 +219,38 @@ class BreedingScene(Scene):
             ProfileCard(self.parent_b, (530, 150)).render(surface)
             
             # Preview Panel (Middle)
-            preview_rect = pygame.Rect(280, 150, 240, 240)
+            preview_rect = pygame.Rect(280, 150, 240, 250)
             pygame.draw.rect(surface, (40, 45, 60), preview_rect, border_radius=8)
             pygame.draw.rect(surface, (100, 120, 180), preview_rect, width=1, border_radius=8)
             
-            Label("EXPECTED STATS", (400, 170), size=18, color=(200, 220, 255)).render(surface)
+            Label("POTENTIAL LEGACY", (400, 170), size=18, color=(200, 220, 255)).render(surface)
             
-            # Show estimated ranges (Simplified: +/- 10% of genome base)
+            # Show estimated ranges (+/- 5% of genome base)
             y_off = 200
-            for label, base_val in [("HP", self.offspring_genome.base_hp), 
-                                    ("ATK", self.offspring_genome.base_atk), 
-                                    ("SPD", self.offspring_genome.base_spd)]:
-                msg = f"{label}: {int(base_val*0.9)}-{int(base_val*1.1)}"
-                Label(msg, (400, y_off), size=16, color=(160, 180, 200)).render(surface)
+            for label, base_val, p_pref in [("HP", self.offspring_genome.base_hp, max(self.parent_a.genome.base_hp, self.parent_b.genome.base_hp)), 
+                                           ("ATK", self.offspring_genome.base_atk, (self.parent_a.genome.base_atk + self.parent_b.genome.base_atk)/2), 
+                                           ("SPD", self.offspring_genome.base_spd, max(self.parent_a.genome.base_spd, self.parent_b.genome.base_spd)*0.95)]:
+                msg = f"{label}: {int(base_val*0.95)}-{int(base_val*1.05)}"
+                Label(msg, (400, y_off), size=16, color=(200, 200, 220)).render(surface)
+                
+                # Improvement indicator (Simplified comparison)
+                if base_val > p_pref:
+                     Label("(Up)", (480, y_off), size=12, color=(100, 255, 100)).render(surface)
+                
                 y_off += 25
             
             # Mutation / Culture
-            mut_chance = "HIGH" if (self.parent_a.cultural_base == CulturalBase.VOID or self.parent_b.cultural_base == CulturalBase.VOID) else "LOW"
-            Label(f"Mutation Risk: {mut_chance}", (400, 300), size=14, color=(180, 140, 200)).render(surface)
-            Label(f"Culture: {self.offspring_genome.cultural_base.value.upper()}", (400, 320), size=14, color=(200, 200, 200)).render(surface)
+            mut_chance_val = 0.15 if (self.parent_a.cultural_base == CulturalBase.VOID or self.parent_b.cultural_base == CulturalBase.VOID) else 0.05
+            mut_label = "HIGH" if mut_chance_val > 0.1 else "LOW"
+            Label(f"Mutation Risk: {mut_label}", (400, 290), size=14, color=(180, 140, 200)).render(surface)
+            Label(f"Culture: {self.offspring_genome.cultural_base.value.upper()}", (400, 310), size=14, color=(200, 200, 200)).render(surface)
             
             # Improvement note
-            Label("Generational Improvement: ~10%", (400, 350), size=14, color=(100, 220, 100)).render(surface)
+            Label("Generational Gain: Diminishing", (400, 340), size=14, color=(100, 220, 100)).render(surface)
+            Label(f"Target Gen: {self.offspring_genome.generation}", (400, 360), size=14, color=(150, 150, 255)).render(surface)
 
             if self.parent_a.is_elder or self.parent_b.is_elder:
-                Label("ELDER BONUS: START AT LV.2", (400, 370), size=14, color=(255, 215, 0)).render(surface)
+                Label("ELDER BONUS: LEVEL 2 START", (400, 380), size=14, color=(255, 215, 0)).render(surface)
             
         elif self.state == BreedingState.ANIMATION:
             # Cool swirling effects

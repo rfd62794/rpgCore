@@ -91,14 +91,14 @@ class ProfileCard(UIComponent):
                     (x + 150, y + 42), culture_color)
         
         # Stats via reusable panel
-        self.stats_panel.position = (x + 80, y + 66) # Nudge down for new labels
+        self.stats_panel.position = (x + 80, y + 66)
         self.stats_panel.render(surface)
         
         # Genetic trait hint (bottom)
         trait_hint = get_dominant_trait(self.slime.genome)
-        breeding_status = "" if self.slime.can_breed else "(Too Young)"
+        breeding_status = "" if self.slime.can_breed else "(Young)"
         render_text(surface, f"Trait: {trait_hint} {breeding_status}",
-                   (x + self.PADDING, y + self.HEIGHT - 22),
+                   (x + self.PADDING, y + self.HEIGHT - 18),
                    size=12, color=(140, 140, 160))
 
 # --- Local Rendering Helpers ---
