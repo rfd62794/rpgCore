@@ -359,7 +359,6 @@ class AgentBootManager:
     
     def _create_specialized_children(self, project_status: Dict[str, Any]) -> Dict[str, Any]:
         """Create specialized child agents based on project needs"""
-        logger.info("👶 Creating Specialized Child Agents")
         
         results = {
             "success": True,
@@ -368,58 +367,116 @@ class AgentBootManager:
         }
         
         try:
-            # Extract blockers and demos from project status
-            blockers = project_status.get("blockers", [])
+            # Analyze project status to determine needed agents
+            critical_issues = project_status.get("critical_issues", 0)
             demos = project_status.get("demos", {})
             
-            # Child agent 1: ECS Rendering Specialist
-            if any("ECS RenderingSystem missing" in str(blocker) for blocker in blockers):
+            print(f"👶 Creating specialized child agents for {critical_issues} critical issues...")
+            
+            # Child Agent 1: ECS Rendering Specialist
+            if critical_issues > 0:
                 child_id = self.swarm_coordinator.create_child_agent(
-                    purpose="Implement ECS Rendering System",
-                    capabilities=["coding", "testing", "analysis"],
+                    purpose="ECS Rendering System implementation",
+                    capabilities=["ecs_design", "rendering", "component_architecture"],
+                    tools=["file_ops", "code_ops", "test_ops", "ecs_ops"],
+                    lifespan=150
+                )
+                if child_id:
+                    results["children"].append({
+                        "id": child_id,
+                        "purpose": "ECS Rendering System",
+                        "capabilities": ["ecs_design", "rendering", "component_architecture"],
+                        "priority": 1
+                    })
+                    print(f"🎯 Created ECS Rendering Specialist: {child_id[:8]}...")
+            
+            # Child Agent 2: Dungeon Demo Specialist
+            if demos.get("dungeon", "INCOMPLETE") == "INCOMPLETE":
+                child_id = self.swarm_coordinator.create_child_agent(
+                    purpose="Complete and polish Dungeon demo",
+                    capabilities=["gameplay", "level_design", "narrative"],
+                    tools=["file_ops", "code_ops", "test_ops", "game_ops"],
+                    lifespan=120
+                )
+                if child_id:
+                    results["children"].append({
+                        "id": child_id,
+                        "purpose": "Dungeon Demo Specialist",
+                        "capabilities": ["gameplay", "level_design", "narrative"],
+                        "priority": 2
+                    })
+                    print(f"🎯 Created Dungeon Demo Specialist: {child_id[:8]}...")
+            
+            # Child Agent 3: Tower Defense Architect
+            if demos.get("tower_defense", "INCOMPLETE") == "INCOMPLETE":
+                child_id = self.swarm_coordinator.create_child_agent(
+                    purpose="Design and implement Tower Defense systems",
+                    capabilities=["tower_defense", "genetics_integration", "ai_design"],
                     tools=["file_ops", "code_ops", "test_ops", "system_ops"],
+                    lifespan=180
+                )
+                if child_id:
+                    results["children"].append({
+                        "id": child_id,
+                        "purpose": "Tower Defense Architect",
+                        "capabilities": ["tower_defense", "genetics_integration", "ai_design"],
+                        "priority": 3
+                    })
+                    print(f"🎯 Created Tower Defense Architect: {child_id[:8]}...")
+            
+            # Child Agent 4: Code Quality Specialist
+            if critical_issues > 10:
+                child_id = self.swarm_coordinator.create_child_agent(
+                    purpose="Improve code quality and fix critical issues",
+                    capabilities=["refactoring", "testing", "documentation"],
+                    tools=["file_ops", "code_ops", "test_ops", "lint_ops"],
                     lifespan=100
                 )
                 if child_id:
                     results["children"].append({
                         "id": child_id,
-                        "purpose": "ECS Rendering System implementation",
-                        "capabilities": ["coding", "testing", "analysis"]
+                        "purpose": "Code Quality Specialist",
+                        "capabilities": ["refactoring", "testing", "documentation"],
+                        "priority": 4
                     })
+                    print(f"🎯 Created Code Quality Specialist: {child_id[:8]}...")
             
-            # Child agent 2: Dungeon Demo Polisher
-            if "dungeon" in demos:
-                if demos.get("dungeon") == "INCOMPLETE":
-                    child_id = self.swarm_coordinator.create_child_agent(
-                        purpose="Complete and polish dungeon demo",
-                        capabilities=["coding", "testing", "review"],
-                        tools=["file_ops", "code_ops", "test_ops"],
-                        lifespan=150
-                    )
-                    if child_id:
-                        results["children"].append({
-                            "id": child_id,
-                            "purpose": "Dungeon demo completion",
-                            "capabilities": ["coding", "testing", "review"]
-                        })
+            # Child Agent 5: Performance Optimization Specialist
+            if critical_issues > 20:
+                child_id = self.swarm_coordinator.create_child_agent(
+                    purpose="Optimize performance and fix bottlenecks",
+                    capabilities=["performance", "profiling", "optimization"],
+                    tools=["file_ops", "code_ops", "test_ops", "perf_ops"],
+                    lifespan=80
+                )
+                if child_id:
+                    results["children"].append({
+                        "id": child_id,
+                        "purpose": "Performance Specialist",
+                        "capabilities": ["performance", "profiling", "optimization"],
+                        "priority": 5
+                    })
+                    print(f"🎯 Created Performance Specialist: {child_id[:8]}...")
             
-            # Child agent 3: Tower Defense Architect
-            if "tower_defense" in demos:
-                if demos.get("tower_defense") == "INCOMPLETE":
-                    child_id = self.swarm_coordinator.create_child_agent(
-                        purpose="Design and implement Tower Defense demo",
-                        capabilities=["planning", "coding", "testing"],
-                        tools=["file_ops", "code_ops", "test_ops", "system_ops"],
-                        lifespan=200
-                    )
-                    if child_id:
-                        results["children"].append({
-                            "id": child_id,
-                            "purpose": "Tower Defense implementation",
-                            "capabilities": ["planning", "coding", "testing"]
-                        })
+            # Child Agent 6: Testing Specialist
+            if critical_issues > 5:
+                child_id = self.swarm_coordinator.create_child_agent(
+                    purpose="Create comprehensive test suites",
+                    capabilities=["unit_testing", "integration_testing", "test_automation"],
+                    tools=["file_ops", "code_ops", "test_ops", "coverage_ops"],
+                    lifespan=90
+                )
+                if child_id:
+                    results["children"].append({
+                        "id": child_id,
+                        "purpose": "Testing Specialist",
+                        "capabilities": ["unit_testing", "integration_testing", "test_automation"],
+                        "priority": 6
+                    })
+                    print(f"🎯 Created Testing Specialist: {child_id[:8]}...")
             
             logger.info(f"👶 Created {len(results['children'])} specialized child agents")
+            print(f"🎯 Total specialized agents created: {len(results['children'])}")
             
         except Exception as e:
             results["success"] = False
