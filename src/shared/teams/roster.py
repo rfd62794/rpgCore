@@ -294,7 +294,7 @@ class Roster:
         # Add creature reference if not exists
         self.add_creature(slime.slime_id)
         
-        # Update team assignment
+        # Update team assignment and sync locked state
         for entry in self.entries:
             if entry.slime_id == slime.slime_id:
                 entry.team = slime.team
