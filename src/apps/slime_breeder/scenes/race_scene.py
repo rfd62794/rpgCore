@@ -71,6 +71,16 @@ class RaceScene(Scene):
         self.current_lap = 1
         self.total_laps = 3
         self.terrain_ahead = None
+    
+    def world_to_screen_x(self, world_x: float) -> float:
+        """Convert world X coordinate to screen X with zoom."""
+        screen_center_x = self.layout.arena.width // 2
+        return (world_x - self.camera_x) * self.camera_zoom + screen_center_x
+    
+    def world_to_screen_y(self, lane: int, track_top: int, track_height: int) -> int:
+        """Convert lane to screen Y coordinate (never affected by zoom)."""
+        lane_h = track_height // self.lane_count
+        return int(track_top + (lane + 0.5) * lane_h)
 
     def _setup_ui(self):
         self.ui_components = []
@@ -254,11 +264,10 @@ class RaceScene(Scene):
             TerrainType.MUD:   (90, 70, 50),    # dark brown
         }
         
-        # Render zones as wide blocks
-        screen_center_x = arena_w // 2
+        # Render zones as wide blocks with horizontal-only zoom
         for zone in self.terrain_zones:
-            screen_start = (zone.start_dist - self.camera_x + screen_center_x)
-            screen_end   = (zone.end_dist - self.camera_x + screen_center_x)
+            screen_start = self.world_to_screen_x(zone.start_dist)
+            screen_end   = self.world_to_screen_x(zone.end_dist)
             
             # Clip to screen
             visible_start = max(screen_start, 0)
@@ -299,26 +308,38 @@ class RaceScene(Scene):
             for dx in range(0, arena_w, 40):
                 pygame.draw.line(surface, (100, 100, 100), (dx, ly), (dx + 20, ly), 1)
 
-        # 4. Finish Line
-        fx = 3000 - self.camera_x
+        # 4. Finish Line (checkered pattern, not blocking)
+        fx = self.world_to_screen_x(3000)
         if -20 < fx < arena_w + 20:
-            pygame.draw.line(surface, (255, 255, 255), (fx, track_y), (fx, track_y + track_h), 12)
-            # Finish line pattern
-            for fy in range(track_y, track_y + track_h, 20):
-                color = (0,0,0) if (fy // 20) % 2 == 0 else (255, 255, 255)
-                pygame.draw.rect(surface, color, (fx - 4, fy, 8, 20))
+            # Checkered pattern — alternating black/white squares
+            square_h = 16
+            squares = track_h // square_h
+            
+            for i in range(squares):
+                color = (255, 255, 255) if i % 2 == 0 else (0, 0, 0)
+                pygame.draw.rect(surface, color, (fx - 3, track_y + i * square_h, 6, square_h))
+            
+            # No collision. No blocking. Visual only.
 
         # 5. Participants
         if self.engine:
             for i, p in enumerate(self.engine.participants):
-                # Center in lane with proper track height
-                lane_h = track_h // self.lane_count
-                ly = track_y + (i * lane_h) + (lane_h // 2)
-                screen_x = p.distance - self.camera_x
+                # Use world_to_screen coordinate conversion
+                ly = self.world_to_screen_y(i, track_y, track_h)
+                screen_x = self.world_to_screen_x(p.distance)
                 
-                # Create dummy slime with fixed render size
+                # Render shadow when jumping
+                if p.jump_height > 2:
+                    shadow_alpha = int(120 * (1 - p.jump_height/20))
+                    shadow_surface = pygame.Surface((24, 8), pygame.SRCALPHA)
+                    shadow_surface.fill((0, 0, 0, shadow_alpha))
+                    pygame.draw.ellipse(shadow_surface, (0, 0, 24, 8))
+                    surface.blit(shadow_surface, (screen_x - 12, ly - 4))
+                
+                # Create dummy slime with jump height offset
                 from src.apps.slime_breeder.entities.slime import Slime
-                dummy_slime = Slime(p.slime.name, p.slime.genome, (screen_x, ly))
+                jump_y = ly - int(p.jump_height)
+                dummy_slime = Slime(p.slime.name, p.slime.genome, (screen_x, jump_y))
                 
                 # Override render size to be fixed regardless of zoom
                 original_radius = getattr(self.renderer, 'render_radius', None)

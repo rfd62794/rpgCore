@@ -3,6 +3,7 @@ Adapted from TurboShells.
 """
 
 import time
+import math
 from typing import List, Optional
 from src.shared.genetics.genome import SlimeGenome
 from src.shared.teams.roster import RosterSlime
@@ -18,6 +19,17 @@ class RaceParticipant:
         self.rank = 0
         self.base_speed = calculate_speed(slime.genome, slime.level)
         
+        # Jump state
+        self.jump_phase = 0.0      # 0.0 = grounded, 0-1 = in jump arc
+        self.jump_height = 0.0     # current visual height
+        self.is_jumping = False
+        self.jump_cooldown = 0.0   # recovery time after landing
+        
+        # Jump stats derived from genome
+        self.jump_speed = 0.8 + slime.genome.wobble_frequency * 0.4
+        self.jump_distance = slime.genome.body_size * 0.5 + self.base_speed * 0.3
+        self.jump_recovery = max(0.1, 0.5 - self.base_speed * 0.1)
+        
         # Physics constants
         self.acceleration_base = self.base_speed * 15.0  # Scales with stats
         self.drag_coefficient = 0.95                    # Simple air/ground resistance
@@ -27,21 +39,47 @@ class RaceParticipant:
             self.velocity *= 0.9 # Slow down after finish
             return
             
-        # 1. Calculate Acceleration with terrain and cultural advantage
-        cultural_base = self.slime.genome.cultural_base.value
-        terrain_mod = get_terrain_speed_modifier(terrain, cultural_base)
+        # Jump physics update
+        self._update_jump(dt)
         
-        accel = self.acceleration_base * terrain_mod
+        # Terrain affects jump performance
+        terrain_mod = get_terrain_speed_modifier(terrain, self.slime.genome.cultural_base.value)
         
-        # 2. Update Velocity
-        self.velocity += accel * dt
+        # Distance gained during jump (affected by terrain)
+        if self.is_jumping:
+            # Jumping OVER terrain: reduced penalty
+            jump_terrain_mod = min(1.0, terrain_mod + 0.3)  # 30% less penalty when jumping
+            self.distance += self.jump_distance * jump_terrain_mod * dt
+        elif self.jump_cooldown > 0:
+            # Recovery: slower movement
+            self.distance += self.jump_distance * 0.1 * terrain_mod * dt
+        else:
+            # Auto-jump: normal movement
+            self.distance += self.jump_distance * terrain_mod * dt
+    
+    def _update_jump(self, dt: float):
+        """Update jump physics."""
+        if self.is_jumping:
+            self.jump_phase += self.jump_speed * dt
+            
+            # Arc: sin curve for smooth up/down
+            self.jump_height = math.sin(self.jump_phase * math.pi) * 20  # max 20px visual height
+            
+            # Land when arc complete
+            if self.jump_phase >= 1.0:
+                self.is_jumping = False
+                self.jump_phase = 0.0
+                self.jump_height = 0.0
+                self.jump_cooldown = self.jump_recovery
         
-        # 3. Apply Drag (Dynamic friction)
-        # Faster slimes hit a higher terminal velocity where drag matches accel
-        self.velocity *= (self.drag_coefficient ** (dt * 60)) 
+        elif self.jump_cooldown > 0:
+            # Recovery — brief pause on ground
+            self.jump_cooldown -= dt
         
-        # 4. Update Position
-        self.distance += self.velocity * dt
+        else:
+            # Auto-jump: slimes jump continuously
+            self.is_jumping = True
+            self.jump_phase = 0.0
 
 class RaceEngine:
     def __init__(self, participants: List[RosterSlime], track: List[str], length: int = 1500):
