@@ -335,8 +335,7 @@ class RaceScene(Scene):
                 if p.jump_height > 2:
                     shadow_alpha = int(120 * (1 - p.jump_height/20))
                     shadow_surface = pygame.Surface((24, 8), pygame.SRCALPHA)
-                    shadow_surface.fill((0, 0, 0, shadow_alpha))
-                    pygame.draw.ellipse(shadow_surface, (0, 0, 24, 8))
+                    pygame.draw.ellipse(shadow_surface, (0, 0, 0, shadow_alpha), pygame.Rect(0, 0, 24, 8))
                     surface.blit(shadow_surface, (screen_x - 12, ly - 4))
                 
                 # Create dummy slime with jump height offset
