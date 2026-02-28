@@ -16,7 +16,7 @@ def setup_pygame():
 def test_scene_the_room_initializes():
     session = DungeonSession()
     manager = SceneManager(width=800, height=600)
-    scene = TheRoomScene(manager, SPEC_720, session)
+    scene = TheRoomScene(manager, session)
     assert scene.session == session
     assert len(scene.buttons) >= 2 # Chest, Ladder
 
@@ -33,6 +33,6 @@ def test_scene_inventory_initializes():
     session = DungeonSession()
     session.start_run()
     manager = SceneManager(width=800, height=600)
-    scene = InventoryOverlay(manager, SPEC_720, session)
+    scene = InventoryOverlay(manager, session)
     assert scene.session == session
     assert len(scene.panels) >= 1
