@@ -51,7 +51,7 @@ def test_label_set_text(dummy_surface):
     assert len(label._rendered_lines) > 1  # Verify wrap logic split it
 
 def test_text_window_reveal_completes():
-    win = TextWindow(pygame.Rect(0, 0, 200, 100), chars_per_second=100)
+    win = TextWindow(pygame.Rect(0, 0, 200, 100), SPEC_720, chars_per_second=100)
     win.set_text("Hello World")
     
     assert not win.is_finished
@@ -67,7 +67,7 @@ def test_text_window_reveal_completes():
     assert win.current_text == "Hello World"
 
 def test_text_window_skip_reveal():
-    win = TextWindow(pygame.Rect(0, 0, 200, 100))
+    win = TextWindow(pygame.Rect(0, 0, 200, 100), SPEC_720)
     win.set_text("A very long string that we do not want to wait for.")
     
     assert not win.is_finished
@@ -154,7 +154,7 @@ def test_scene_base_component_lifecycle():
         pass
         
     scene = DummyScene(pygame.Surface((1, 1)))
-    btn = Button(pygame.Rect(0, 0, 10, 10))
+    btn = Button("Test", pygame.Rect(0, 0, 10, 10), None, SPEC_720)
     
     scene.add_component(btn)
     assert len(scene.components) == 1
