@@ -191,8 +191,17 @@ class DungeonRoomScene(Scene):
         )
 
     def render(self, surface: pygame.Surface) -> None:
+        # Diagnostic prints
+        print(f"DEBUG: DungeonRoomScene.render called on surface {surface.get_size()}")
+        print(f"DEBUG: grid_offset_x={self.grid_offset_x}, grid_offset_y={self.grid_offset_y}")
+        print(f"DEBUG: main_area={self.layout.main_area}")
+        
         surface.fill(self.spec.color_bg)
         
+        if not self.session or not self.session.floor:
+            print("DEBUG: No session or floor in render")
+            return
+
         # 1. Grid Background
         grid_w = self.grid_cols * self.tile_size
         grid_h = self.grid_rows * self.tile_size
