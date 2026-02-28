@@ -70,15 +70,41 @@ def breed(parent_a: SlimeGenome, parent_b: SlimeGenome, mutation_chance: float =
                     result = (random.randint(50, 255), random.randint(50, 255), random.randint(50, 255))
         return result
 
-    # Cultural inheritance
-    new_culture = CulturalBase.MIXED
-    if parent_a.cultural_base == parent_b.cultural_base:
-        new_culture = parent_a.cultural_base
-    else:
-        # 20% chance to inherit from either parent instead of mixed
-        r = random.random()
-        if r < 0.1: new_culture = parent_a.cultural_base
-        elif r < 0.2: new_culture = parent_b.cultural_base
+    if r < 0.1: new_culture = parent_a.cultural_base
+    elif r < 0.2: new_culture = parent_b.cultural_base
+
+    # Base Stat Inheritance Rules
+    params = CULTURAL_PARAMETERS[new_culture]
+    hp_cap = 20.0 * params.hp_modifier * 2.0
+    atk_cap = 5.0 * params.attack_modifier * 2.0
+    spd_cap = 5.0 * params.speed_modifier * 2.0
+
+    # HP: Takes from higher parent + 10% bonus
+    new_hp = max(parent_a.base_hp, parent_b.base_hp) * 1.10
+    new_hp = min(new_hp, hp_cap)
+
+    # ATK: Average of both parents + 10% bonus
+    new_atk = ((parent_a.base_atk + parent_b.base_atk) / 2.0) * 1.10
+    new_atk = min(new_atk, atk_cap)
+
+    # SPD: Takes from faster parent - 5% penalty + 10% bonus
+    new_spd = max(parent_a.base_spd, parent_b.base_spd) * 0.95 * 1.10
+    new_spd = min(new_spd, spd_cap)
+
+    # Mutation (5% per stat, 15% if Void parent)
+    mut_chance = 0.15 if (parent_a.cultural_base == CulturalBase.VOID or parent_b.cultural_base == CulturalBase.VOID) else 0.05
+    
+    def apply_mutation(val):
+        if random.random() < mut_chance:
+            if random.random() < 0.7: # 70% chance positive
+                return val * 1.25
+            else:
+                return val * 0.85
+        return val
+
+    new_hp = apply_mutation(new_hp)
+    new_atk = apply_mutation(new_atk)
+    new_spd = apply_mutation(new_spd)
 
     return SlimeGenome(
         shape=inherit(parent_a.shape, parent_b.shape),
@@ -91,5 +117,8 @@ def breed(parent_a: SlimeGenome, parent_b: SlimeGenome, mutation_chance: float =
         energy=inherit(parent_a.energy, parent_b.energy, True),
         affection=inherit(parent_a.affection, parent_b.affection, True),
         shyness=inherit(parent_a.shyness, parent_b.shyness, True),
-        cultural_base=new_culture
+        cultural_base=new_culture,
+        base_hp=new_hp,
+        base_atk=new_atk,
+        base_spd=new_spd
     )
