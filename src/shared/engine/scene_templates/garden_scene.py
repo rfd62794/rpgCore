@@ -4,75 +4,71 @@ from src.shared.engine.scene_manager import Scene
 from src.shared.ui.panel import Panel
 from src.shared.ui.button import Button
 from src.shared.ui.base import UIComponent
-from src.shared.physics import Vector2
+from src.shared.ui.spec import UISpec
+from src.shared.ui.layouts import HubLayout
 
 class GardenSceneBase(Scene):
     """
     Standard template for entity creation and ambient interaction.
-    Layout: 70% Garden (Left), 30% Details (Right), Bottom Action Bar.
+    Follows HubLayout: Top Bar, Main (Garden), Side (Details), Bottom (Status).
     """
-    def on_enter(self, **kwargs) -> None:
-        self.width, self.height = self.manager.width, self.manager.height
-        self.panel_width = int(self.width * 0.3)
-        self.bar_height = 80
+    def __init__(self, manager, spec: UISpec, **kwargs):
+        super().__init__(manager, spec, **kwargs)
+        self.layout = HubLayout(spec)
         
-        self.garden_rect = pygame.Rect(0, 0, self.width - self.panel_width, self.height - self.bar_height)
-        self.detail_rect = pygame.Rect(self.width - self.panel_width, 0, self.panel_width, self.height - self.bar_height)
-        self.bar_rect = pygame.Rect(0, self.height - self.bar_height, self.width, self.bar_height)
+        # Backward compatibility aliases/convenience
+        self.garden_rect = self.layout.main_area
+        self.detail_rect = self.layout.side_panel
+        self.bar_rect = self.layout.status_bar
         
         self.ui_components: List[UIComponent] = []
         self.selected_entities: List[Any] = []
-        
+
+    def on_enter(self) -> None:
         self._base_setup_ui()
-        self.on_garden_enter(**kwargs)
+        self.on_garden_enter()
 
     def _base_setup_ui(self):
-        self.detail_panel = Panel(self.detail_rect, title="Entity Details", bg_color=(40, 40, 50))
+        # Details Panel
+        self.detail_panel = Panel(self.detail_rect, self.spec, variant="surface")
         self.ui_components.append(self.detail_panel)
         
-        self.action_bar = Panel(self.bar_rect, bg_color=(30, 30, 40))
+        # Status Bar / Action Bar area
+        self.action_bar = Panel(self.bar_rect, self.spec, variant="surface")
         self.ui_components.append(self.action_bar)
 
-    def on_exit(self) -> None:
-        """Cleanup logic."""
-        pass
-
-    def on_garden_enter(self, **kwargs):
+    def on_garden_enter(self):
         """Hook for subclasses to add extra UI components."""
         pass
 
-    def handle_events(self, events: List[pygame.event.Event]) -> None:
-        for event in events:
-            if event.type == pygame.QUIT:
-                self.request_quit()
-            
-            # 1. UI Interaction
-            consumed = False
-            for comp in reversed(self.ui_components):
-                if hasattr(comp, "handle_event") and comp.handle_event(event):
-                    consumed = True
-                    break
-            if consumed: continue
-            
-            # 2. Entity Selection
-            if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
-                if self.garden_rect.collidepoint(event.pos):
-                    entity = self.pick_entity(event.pos)
-                    mods = pygame.key.get_mods()
-                    is_shift = mods & pygame.KMOD_SHIFT
-                    
-                    if entity:
-                        if is_shift:
-                            if entity in self.selected_entities:
-                                self.selected_entities.remove(entity)
-                            else:
-                                self.selected_entities.append(entity)
+    def handle_event(self, event: pygame.event.Event) -> None:
+        # 1. UI Interaction
+        consumed = False
+        for comp in reversed(self.ui_components):
+            if hasattr(comp, "handle_event") and comp.handle_event(event):
+                consumed = True
+                break
+        if consumed: return
+        
+        # 2. Entity Selection
+        if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
+            if self.garden_rect.collidepoint(event.pos):
+                entity = self.pick_entity(event.pos)
+                mods = pygame.key.get_mods()
+                is_shift = mods & pygame.KMOD_SHIFT
+                
+                if entity:
+                    if is_shift:
+                        if entity in self.selected_entities:
+                            self.selected_entities.remove(entity)
                         else:
-                            self.selected_entities = [entity]
+                            self.selected_entities.append(entity)
                     else:
-                        if not is_shift:
-                            self.selected_entities = []
-                    self.on_selection_changed()
+                        self.selected_entities = [entity]
+                else:
+                    if not is_shift:
+                        self.selected_entities = []
+                self.on_selection_changed()
 
     def pick_entity(self, pos: Tuple[int, int]) -> Optional[Any]:
         """Subclasses implement collision check."""
@@ -82,17 +78,17 @@ class GardenSceneBase(Scene):
         """Hook for subclasses when selection updates."""
         pass
 
-    def update(self, dt_ms: float) -> None:
+    def update(self, dt: float) -> None:
         for comp in self.ui_components:
-            comp.update(int(dt_ms))
-        self.update_garden(dt_ms)
+            comp.update(int(dt * 1000))
+        self.update_garden(dt)
 
-    def update_garden(self, dt_ms: float):
+    def update_garden(self, dt: float):
         """Subclasses implement entity updates."""
         pass
 
     def render(self, surface: pygame.Surface) -> None:
-        surface.fill((20, 20, 20))
+        surface.fill(self.spec.color_bg)
         self.render_garden(surface)
         for comp in self.ui_components:
             comp.render(surface)
