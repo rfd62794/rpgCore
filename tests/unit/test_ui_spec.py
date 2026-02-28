@@ -9,9 +9,9 @@ def test_spec_dimensions():
 def test_spec_colors():
     spec = SPEC_720
     assert len(spec.color_bg) == 3
-    assert len(spec.color_primary) == 3
+    assert len(spec.color_accent) == 3
 
 def test_font_size_mapping():
     spec = SPEC_720
     assert spec.font_size_xl > spec.font_size_lg
-    assert spec.font_size_md == 20
+    assert spec.font_size_md == 14
