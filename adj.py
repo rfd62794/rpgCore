@@ -452,6 +452,13 @@ Strategy: Try preferred system first, fallback to other if failed
 Budget: Enforced by OpenRouter, fallback to Ollama if over budget
 """)
 
+    def show_project_status(self):
+        """Show comprehensive project status"""
+        from src.tools.apj.project_status import ProjectStatus
+        
+        status = ProjectStatus(self.root_dir)
+        status.print_report()
+
     def show_phase_roadmap(self, phase_num: int):
         """Show complete roadmap for a phase"""
         self._record_layer("Layer 1: Data Files")
@@ -1061,7 +1068,10 @@ def main():
     adj = ADJSystem()
     
     if args.command == "status":
-        adj.show_status()
+        if args.arg == "project":
+            adj.show_project_status()
+        else:
+            adj.show_status()
     elif args.command == "phase":
         if not args.arg:
             print("❌ Phase number required. Use: 1, 2, or 3")
