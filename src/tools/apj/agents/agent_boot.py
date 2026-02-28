@@ -250,59 +250,72 @@ class AgentBootManager:
         }
         
         try:
+            # Wait a moment for A2A registration to complete
+            import time
+            time.sleep(0.1)
+            
             # Conversation 1: Coordinator asks strategist about current blockers
             if "strategist" in self.initialized_agents:
-                message_id = self.swarm_coordinator.send_a2a_message(
-                    recipient="strategist",
-                    message_type=MessageType.REQUEST,
-                    content={
-                        "task": "Analyze current project blockers and recommend strategy",
-                        "context": {
-                            "blockers": project_status.get("blockers", []),
-                            "goals": project_status.get("goals", {}),
-                            "next_actions": project_status.get("next_actions", [])
-                        }
-                    },
-                    priority=MessagePriority.HIGH
-                )
-                results["conversations"].append({
-                    "type": "coordinator_to_strategist",
-                    "message_id": message_id,
-                    "topic": "Blocker analysis and strategy"
-                })
+                try:
+                    message_id = self.swarm_coordinator.send_a2a_message(
+                        recipient="strategist",
+                        message_type=MessageType.REQUEST,
+                        content={
+                            "task": "Analyze current project blockers and recommend strategy",
+                            "context": {
+                                "blockers": project_status.get("blockers", []),
+                                "goals": project_status.get("goals", {}),
+                                "next_actions": project_status.get("next_actions", [])
+                            }
+                        },
+                        priority=MessagePriority.HIGH
+                    )
+                    results["conversations"].append({
+                        "type": "coordinator_to_strategist",
+                        "message_id": message_id,
+                        "topic": "Blocker analysis and strategy"
+                    })
+                except Exception as e:
+                    results["failed"].append(f"coordinator_to_strategist: {e}")
             
             # Conversation 2: Coordinator asks archivist to document current state
             if "archivist" in self.initialized_agents:
-                message_id = self.swarm_coordinator.send_a2a_message(
-                    recipient="archivist",
-                    message_type=MessageType.REQUEST,
-                    content={
-                        "task": "Document current project state and progress",
-                        "context": {
-                            "project_status": project_status,
-                            "timestamp": datetime.now().isoformat()
-                        }
-                    },
-                    priority=MessagePriority.NORMAL
-                )
-                results["conversations"].append({
-                    "type": "coordinator_to_archivist",
-                    "message_id": message_id,
-                    "topic": "Project state documentation"
-                })
+                try:
+                    message_id = self.swarm_coordinator.send_a2a_message(
+                        recipient="archivist",
+                        message_type=MessageType.REQUEST,
+                        content={
+                            "task": "Document current project state and progress",
+                            "context": {
+                                "project_status": project_status,
+                                "timestamp": datetime.now().isoformat()
+                            }
+                        },
+                        priority=MessagePriority.NORMAL
+                    )
+                    results["conversations"].append({
+                        "type": "coordinator_to_archivist",
+                        "message_id": message_id,
+                        "topic": "Project state documentation"
+                    })
+                except Exception as e:
+                    results["failed"].append(f"coordinator_to_archivist: {e}")
             
             # Conversation 3: Coordinator broadcasts project status to all agents
-            broadcast_id = self.swarm_coordinator.broadcast_to_all_agents({
-                "type": "project_status_update",
-                "status": project_status,
-                "timestamp": datetime.now().isoformat(),
-                "action_required": True
-            })
-            results["conversations"].append({
-                "type": "broadcast",
-                "message_id": broadcast_id,
-                "topic": "Project status broadcast"
-            })
+            try:
+                broadcast_id = self.swarm_coordinator.broadcast_to_all_agents({
+                    "type": "project_status_update",
+                    "status": project_status,
+                    "timestamp": datetime.now().isoformat(),
+                    "action_required": True
+                })
+                results["conversations"].append({
+                    "type": "broadcast",
+                    "message_id": broadcast_id,
+                    "topic": "Project status broadcast"
+                })
+            except Exception as e:
+                results["failed"].append(f"broadcast: {e}")
             
             logger.info(f"🗣️ Started {len(results['conversations'])} initial conversations")
             
