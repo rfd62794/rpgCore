@@ -120,6 +120,9 @@ class SceneManager:
             self._active_scene.status = SystemStatus.STOPPED
 
         scene_class = self._scenes[name]
+        logger.info(f"Switching to scene: {name}")
+        logger.info(f"Scene class: {scene_class}")
+        logger.info(f"Kwargs: {kwargs}")
         self._active_scene = scene_class(self, self.spec, **kwargs)
         
         if not self._active_scene.initialize():
