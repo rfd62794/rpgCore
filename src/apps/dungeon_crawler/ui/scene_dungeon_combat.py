@@ -66,6 +66,9 @@ class DungeonCombatScene(CombatSceneBase):
             
             mock_slime = MockSlime(slime.genome, slime.level)
             self.party[slot_idx] = DungeonUnit(f"party_{slot_idx}", slime.name, stats, "party", mock_slime)
+            # Sync start HP
+            self.party[slot_idx].stats["hp"] = slime.current_hp
+            self.party[slot_idx].stats["max_hp"] = slime.max_hp
         
         # 3. Setup Turn Order
         self.session.turn_manager.reset()
@@ -189,7 +192,8 @@ class DungeonCombatScene(CombatSceneBase):
 
     def _handle_victory(self):
         self.add_log("Victory!")
-        self.manager.switch_to("dungeon_path", session=self.session, combat_result="victory")
+        self._sync_back_hp()
+        self.manager.pop(combat_result="victory")
 
     def _handle_defeat(self):
         self.add_log("Hero has fallen...")
@@ -198,4 +202,16 @@ class DungeonCombatScene(CombatSceneBase):
 
     def _handle_flee(self):
         self.add_log("Fleeing...")
-        self.manager.switch_to("dungeon_path", session=self.session, combat_result="flee")
+        self._sync_back_hp()
+        self.manager.pop(combat_result="flee")
+
+    def _sync_back_hp(self):
+        """Copies combat HP back to roster slimes."""
+        for unit in self.party:
+            if unit and unit.id.startswith("party_"):
+                # Find matching roster slime by name
+                rs = next((s for s in self.session.party_slimes if s.name == unit.name), None)
+                if rs:
+                    rs.current_hp = float(unit.stats["hp"])
+                    if rs.current_hp <= 0:
+                        rs.alive = False
