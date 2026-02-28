@@ -123,21 +123,21 @@ class TowerDefenseScene(Scene):
         self.score_label = Label("Score: 0", (450, 10), self.spec, "md", self.spec.color_text)
         
         # Buttons
-        self.start_button = Button("Start Game", self.spec)
-        self.pause_button = Button("Pause", self.spec)
-        self.menu_button = Button("Menu", self.spec)
+        self.start_button = Button("Start Game", pygame.Rect(10, 30, 100, 30), None, self.spec)
+        self.pause_button = Button("Pause", pygame.Rect(10, 30, 80, 30), None, self.spec)
+        self.menu_button = Button("Menu", pygame.Rect(100, 30, 80, 30), None, self.spec)
         
         # Tower selection buttons
         self.tower_buttons = []
         for i in range(8):
-            button = Button(f"Slot {i+1}", self.spec)
+            button = Button(f"Slot {i+1}", pygame.Rect(0, 0, 100, 30), None, self.spec)
             self.tower_buttons.append(button)
         
         # Upgrade buttons
         self.upgrade_buttons = {
-            "damage": Button("Damage", self.spec),
-            "range": Button("Range", self.spec),
-            "fire_rate": Button("Fire Rate", self.spec),
+            "damage": Button("Damage", pygame.Rect(0, 0, 100, 30), None, self.spec),
+            "range": Button("Range", pygame.Rect(0, 0, 100, 30), None, self.spec),
+            "fire_rate": Button("Fire Rate", pygame.Rect(0, 0, 100, 30), None, self.spec),
         }
     
     def handle_events(self, events) -> None:
