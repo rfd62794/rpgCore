@@ -62,7 +62,15 @@ class ConversationalInterface:
         self.ollama = ollama_client
         self.context = {}
         self.conversation_history = []
-        self.swarm = None  # Initialize on first use
+        
+        # Initialize swarm immediately
+        if self.ollama:
+            from .agent_swarm import AgentSwarm
+            self.swarm = AgentSwarm(self.ollama, self.project_root)
+            print("🐝 Agent Swarm initialized")
+        else:
+            print("⚠️  No Ollama model available - Swarm disabled")
+            self.swarm = None
     
     def run_chat_loop(self, initial_context: Dict = None) -> None:
         """
@@ -138,10 +146,9 @@ Type 'quit' or 'exit' to leave.
     def _process_with_swarm(self, user_input: str) -> str:
         """Process request using Agent Swarm"""
         
-        # Initialize swarm if needed
+        # Swarm should already be initialized
         if not self.swarm:
-            from .agent_swarm import AgentSwarm
-            self.swarm = AgentSwarm(self.ollama, self.project_root)
+            return "❌ Agent Swarm not available"
         
         # Process through swarm
         result = self.swarm.process_request(user_input, self.context)
