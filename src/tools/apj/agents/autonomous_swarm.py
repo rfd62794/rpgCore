@@ -148,33 +148,65 @@ class AutonomousSwarm:
             logger.error(f"❌ Failed to define workflow {workflow_name}: {e}")
             return False
     
+    def _calculate_dependency_levels(self, steps: List[SwarmTask]) -> Dict[int, List[str]]:
+        """Calculate dependency levels for parallel execution"""
+        
+        levels = {}
+        remaining_steps = steps.copy()
+        current_level = 0
+        max_iterations = len(steps) * 2  # Prevent infinite loops
+        iterations = 0
+        
+        while remaining_steps and iterations < max_iterations:
+            iterations += 1
+            tasks_at_level = []
+            
+            for step in remaining_steps:
+                # Check if all dependencies are resolved
+                deps_resolved = True
+                for dep_id in step.dependencies:
+                    # Check if dependency exists in our steps
+                    dep_exists = any(s.id == dep_id for s in steps)
+                    if dep_exists and dep_id in [s.id for s in remaining_steps]:
+                        deps_resolved = False
+                        break
+                
+                if deps_resolved:
+                    tasks_at_level.append(step.id)
+            
+            if not tasks_at_level:
+                # Break remaining circular dependencies
+                for step in remaining_steps:
+                    if step.dependencies:
+                        # Clear problematic dependencies
+                        step.dependencies = []
+                        tasks_at_level.append(step.id)
+                        logger.warning(f"⚠️ Circular dependency detected or missing dependencies - cleared dependencies for {step.id}")
+                        break
+            
+            levels[current_level] = tasks_at_level
+            
+            # Remove processed tasks
+            remaining_steps = [s for s in remaining_steps if s.id not in tasks_at_level]
+            current_level += 1
+        
+        if iterations >= max_iterations:
+            logger.warning("⚠️ Max iterations reached in dependency calculation")
+        
+        return levels
+    
     def _build_task_queue(self):
         """Build ordered task queue based on dependencies and priority"""
         
         # Simple topological sort with priority ordering
         remaining_tasks = list(self.tasks.values())
+        levels = self._calculate_dependency_levels(remaining_tasks)
+        
         self.task_queue = []
         
-        while remaining_tasks:
-            # Find tasks with no unmet dependencies
-            ready_tasks = []
-            for task in remaining_tasks:
-                deps_met = all(dep_id in self.completed_tasks for dep_id in task.dependencies)
-                if deps_met:
-                    ready_tasks.append(task)
-            
-            if not ready_tasks:
-                # Circular dependency or missing dependency
-                logger.warning("⚠️ Circular dependency detected or missing dependencies")
-                break
-            
-            # Sort by priority (lower number = higher priority)
-            ready_tasks.sort(key=lambda t: t.priority)
-            
-            # Add highest priority task to queue
-            next_task = ready_tasks[0]
-            self.task_queue.append(next_task.id)
-            remaining_tasks.remove(next_task)
+        for level in levels.values():
+            for task_id in level:
+                self.task_queue.append(task_id)
     
     def start_autonomous_execution(self) -> bool:
         """Start autonomous round-robin execution"""
