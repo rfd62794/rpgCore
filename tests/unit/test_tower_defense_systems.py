@@ -219,7 +219,7 @@ def test_upgrade_system_upgrade_tower():
     # Cannot upgrade with insufficient gold
     success, remaining_gold = system.upgrade_tower(tower, "range", 30)
     assert success is False
-    assert remaining_gold == 50
+    assert remaining_gold == 50  # Gold should remain unchanged
 
 
 def test_upgrade_system_get_upgrade_cost():
@@ -282,11 +282,19 @@ def test_collision_system_fire_projectile():
     system = CollisionSystem()
     
     # Create tower and enemy
-    tower = Creature(name="Tower", genome=SlimeGenome())
+    tower = Creature(name="Tower", genome=SlimeGenome(
+        shape="round", size="medium", base_color=(255, 0, 0),
+        pattern="solid", pattern_color=(0, 0, 0), accessory="none",
+        curiosity=0.5, energy=0.5, affection=0.5, shyness=0.5
+    ))
     tower.kinematics.position = Vector2(100, 100)
     tower.tower_component = TowerComponent()
     
-    enemy = Creature(name="Enemy", genome=SlimeGenome())
+    enemy = Creature(name="Enemy", genome=SlimeGenome(
+        shape="round", size="medium", base_color=(255, 0, 0),
+        pattern="solid", pattern_color=(0, 0, 0), accessory="none",
+        curiosity=0.5, energy=0.5, affection=0.5, shyness=0.5
+    ))
     enemy.kinematics.position = Vector2(200, 100)
     enemy.current_hp = 50
     
