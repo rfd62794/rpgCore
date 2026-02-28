@@ -37,7 +37,7 @@ def test_team_scene_initialization(mock_manager, sample_roster, monkeypatch):
     
     assert scene.roster == sample_roster
     assert len(scene.team.members) == 0
-    assert len(scene.buttons) > 0 # Back button + Assign buttons
+    assert len(scene.ui_components) > 0 # Back button + panels + labels
 
 def test_team_scene_assign_slime(mock_manager, sample_roster, monkeypatch):
     monkeypatch.setattr("src.apps.slime_breeder.scenes.team_scene.load_roster", lambda: sample_roster)
