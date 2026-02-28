@@ -27,49 +27,73 @@ class AgentBootManager:
         self.initialized_agents = {}
         self.communication_links = []
     
-    def boot_ecosystem(self, project_status: Dict[str, Any]) -> Dict[str, Any]:
-        """Complete boot sequence for all agents"""
+    def boot_ecosystem(self, context: Dict[str, Any]) -> Dict[str, Any]:
+        """Boot complete agent ecosystem with auto-detection"""
         
-        logger.info("🚀 Starting Agent Ecosystem Boot Sequence")
+        logger.info("🚀 Booting Complete Agent Ecosystem")
         
-        boot_results = {
-            "start_time": self.boot_time.isoformat(),
+        results = {
+            "success": True,
             "phases": {},
-            "agents": {},
-            "communication": {},
-            "errors": []
+            "errors": [],
+            "boot_time": datetime.now()
         }
         
         try:
-            # Phase 1: Initialize Swarm Coordinator
-            boot_results["phases"]["swarm_init"] = self._boot_swarm_coordinator()
+            # Phase 1: Initialize Swarm
+            logger.info("📝 Phase 1: Initializing Swarm")
+            swarm_results = self._initialize_swarm()
+            results["phases"]["swarm"] = swarm_results
             
             # Phase 2: Initialize Existing Agents
-            boot_results["phases"]["existing_agents"] = self._boot_existing_agents()
+            logger.info("🤖 Phase 2: Initializing Existing Agents")
+            agent_results = self._initialize_existing_agents()
+            results["phases"]["existing_agents"] = agent_results
             
-            # Phase 3: Establish Communication Links
-            boot_results["phases"]["communication"] = self._establish_communication_links()
+            # Phase 3: Setup Communication
+            logger.info("🔗 Phase 3: Setting Up Communication")
+            comm_results = self._setup_communication()
+            results["phases"]["communication"] = comm_results
             
-            # Phase 4: Initial Agent Conversations
-            boot_results["phases"]["conversations"] = self._start_initial_conversations(project_status)
+            # Phase 4: Auto-Detect Work (NEW)
+            logger.info("🔍 Phase 4: Auto-Detecting Work from Documentation")
+            analysis_results = self._auto_detect_work()
+            results["phases"]["auto_detection"] = analysis_results
             
-            # Phase 5: Create Specialized Child Agents
-            boot_results["phases"]["child_agents"] = self._create_specialized_children(project_status)
+            # Phase 5: Start Initial Conversations
+            logger.info("💬 Phase 5: Starting Initial Conversations")
+            conversation_results = self._start_initial_conversations(context.get('project_status', {}))
+            results["phases"]["conversations"] = conversation_results
             
-            # Phase 6: Final Status Report
-            boot_results["phases"]["status"] = self._generate_boot_status()
+            # Phase 6: Create Child Agents
+            logger.info("👶 Phase 6: Creating Child Agents")
+            child_results = self._create_child_agents(context.get('project_status', {}))
+            results["phases"]["child_agents"] = child_results
             
-            boot_results["success"] = True
-            logger.info("✅ Agent Ecosystem Boot Complete")
+            # Phase 7: Auto-Execute Critical Tasks (NEW)
+            logger.info("🚀 Phase 7: Auto-Executing Critical Tasks")
+            auto_results = self._auto_execute_critical_tasks()
+            results["phases"]["auto_execution"] = auto_results
+            
+            # Update context with analysis results
+            context.update({
+                "project_analysis": analysis_results.get("analysis", {}),
+                "auto_executed_tasks": auto_results.get("executed_tasks", [])
+            })
+            
+            logger.info("✅ Agent ecosystem boot completed successfully")
             
         except Exception as e:
-            boot_results["success"] = False
-            boot_results["errors"].append(str(e))
-            logger.error(f"❌ Agent Ecosystem Boot Failed: {e}")
+            logger.error(f"❌ Ecosystem boot failed: {e}")
+            results["success"] = False
+            results["errors"].append(str(e))
         
-        return boot_results
+        results["boot_time"] = datetime.now()
+        self.boot_time = results["boot_time"]
+        
+        return results
     
-    def _boot_swarm_coordinator(self) -> Dict[str, Any]:
+    def _initialize_swarm(self) -> Dict[str, Any]:
         """Initialize the swarm coordinator"""
         logger.info("🐝 Initializing Swarm Coordinator")
         
