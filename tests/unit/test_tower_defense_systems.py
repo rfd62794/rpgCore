@@ -85,6 +85,7 @@ def test_rapid_fire_tower_behavior(sample_creature, tower_component, behavior_co
     
     # Set creature genome for rapid fire tower
     sample_creature.genome.energy = 0.8
+    sample_creature.genome.curiosity = 0.2  # Lower than energy
     
     # Update behavior
     force = system.update(sample_creature, behavior_component, tower_component, 0.016)
@@ -102,6 +103,8 @@ def test_support_tower_behavior(sample_creature, tower_component, behavior_compo
     
     # Set creature genome for support tower
     sample_creature.genome.affection = 0.8
+    sample_creature.genome.curiosity = 0.2  # Lower than affection
+    sample_creature.genome.energy = 0.2  # Lower than affection
     
     # Update behavior
     force = system.update(sample_creature, behavior_component, tower_component, 0.016)
@@ -119,6 +122,9 @@ def test_bunker_tower_behavior(sample_creature, tower_component, behavior_compon
     
     # Set creature genome for bunker tower
     sample_creature.genome.shyness = 0.8
+    sample_creature.genome.curiosity = 0.2  # Lower than shyness
+    sample_creature.genome.energy = 0.2  # Lower than shyness
+    sample_creature.genome.affection = 0.2  # Lower than shyness
     
     # Update behavior
     force = system.update(sample_creature, behavior_component, tower_component, 0.016)
@@ -219,7 +225,7 @@ def test_upgrade_system_upgrade_tower():
     # Cannot upgrade with insufficient gold
     success, remaining_gold = system.upgrade_tower(tower, "range", 30)
     assert success is False
-    assert remaining_gold == 50  # Gold should remain unchanged when upgrade fails
+    assert remaining_gold == 50  # Should return original gold when upgrade fails
 
 
 def test_upgrade_system_get_upgrade_cost():
