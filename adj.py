@@ -11,6 +11,7 @@ Usage:
     python adj.py next            - Show next actions
     python adj.py approve <phase> - Director approval for phase
     python adj.py update          - Update dashboard with current state
+    python adj.py strategy <num>  - Phase strategy analysis
 """
 
 import argparse
@@ -21,9 +22,14 @@ from datetime import datetime
 from pathlib import Path
 from typing import Dict, List, Optional
 
+# Layer imports
+from src.tools.apj.data_loader import DataLoader
+from src.tools.apj.analysis import StatusAnalyzer
+from src.tools.apj.model_router import ModelRouter
+
 
 class ADJSystem:
-    """Top-level ADJ System CLI for DGT Engine governance"""
+    """Top-level ADJ System CLI - Layer-aware"""
     
     def __init__(self):
         self.root_dir = Path(__file__).parent
@@ -31,6 +37,18 @@ class ADJSystem:
         self.dashboard_file = self.docs_dir / "ADJ_DASHBOARD.md"
         self.milestones_file = self.docs_dir / "MILESTONES.md"
         self.tasks_file = self.docs_dir / "TASKS.md"
+        
+        # Layer 1: Data loader
+        self.data_loader = DataLoader(self.root_dir)
+        
+        # Layer 2: Local analysis
+        self.analyzer = StatusAnalyzer(self.data_loader)
+        
+        # Layer 3+: Model router
+        self.router = ModelRouter()
+        
+        # Track layers used
+        self.layers_used = []
         
     def run_command(self, cmd: List[str]) -> str:
         """Run command and return output"""
