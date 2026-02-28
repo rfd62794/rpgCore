@@ -57,6 +57,7 @@ class DungeonCombatScene(CombatSceneBase):
             class MockEnemy:
                 def __init__(self, g):
                     self.genome = g
+                    self.level = 1
                     class Kinematics:
                         def __init__(self): self.position = pygame.Vector2(0,0)
                     self.kinematics = Kinematics()
