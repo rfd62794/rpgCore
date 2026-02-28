@@ -93,6 +93,9 @@ class Roster:
     def get_dungeon_team(self) -> Team:
         return self.teams[TeamRole.DUNGEON]
     
+    def get_racing_team(self) -> Team:
+        return self.teams[TeamRole.RACING]
+    
     def unassigned(self) -> list[RosterSlime]:
         return [s for s in self.slimes 
                 if s.team == TeamRole.UNASSIGNED

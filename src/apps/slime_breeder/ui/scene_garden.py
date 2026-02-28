@@ -157,39 +157,47 @@ class GardenScene(GardenSceneBase):
         return None
 
     def on_selection_changed(self):
-        num_selected = len(self.selected_entities)
-        self.release_btn.set_enabled(num_selected > 0)
-        
-        # Clear previous card
+        """Update profile card and button visibility based on selection."""
+        # Clear existing profile card
         if self.profile_card:
             self.detail_panel.remove_child(self.profile_card)
             self.profile_card = None
-
-        # Update details for the primary selection
-        if num_selected == 1:
-            s = self.selected_entities[0]
             
-            # Find in roster
+        # Update button visibility
+        self.dungeon_btn.set_visible(False)
+        self.racing_btn.set_visible(False)
+        self.remove_btn.set_visible(False)
+        
+        if len(self.selected_entities) == 1:
+            s = self.selected_entities[0]
             rs = next((r for r in self.roster.slimes if r.name == s.name), None)
             if rs:
                 self.profile_card = ProfileCard(rs, (self.detail_rect.x + 10, self.detail_rect.y + 10), self.spec)
                 self.detail_panel.add_child(self.profile_card)
                 
                 if rs.locked:
-                    self.assign_btn.set_visible(False)
+                    # Locked slime - show mission status
+                    self.dungeon_btn.set_visible(False)
+                    self.racing_btn.set_visible(False)
                     self.remove_btn.set_visible(False)
                 elif rs.team == TeamRole.UNASSIGNED:
-                    self.assign_btn.set_visible(not self.roster.get_dungeon_team().is_full())
+                    # Unassigned slime - show available team options
+                    self.dungeon_btn.set_visible(not self.roster.get_dungeon_team().is_full())
+                    self.racing_btn.set_visible(not self.roster.get_racing_team().is_full())
                     self.remove_btn.set_visible(False)
                 else:
-                    self.assign_btn.set_visible(False)
+                    # Assigned slime - show remove option
+                    self.dungeon_btn.set_visible(False)
+                    self.racing_btn.set_visible(False)
                     self.remove_btn.set_visible(True)
             else:
-                self.assign_btn.set_visible(False)
+                self.dungeon_btn.set_visible(False)
+                self.racing_btn.set_visible(False)
                 self.remove_btn.set_visible(False)
 
         else:
-            self.assign_btn.set_visible(False)
+            self.dungeon_btn.set_visible(False)
+            self.racing_btn.set_visible(False)
             self.remove_btn.set_visible(False)
 
     def _assign_to_dungeon(self):
@@ -198,6 +206,15 @@ class GardenScene(GardenSceneBase):
             rs = next((r for r in self.roster.slimes if r.name == s.name), None)
             if rs:
                 if self.roster.get_dungeon_team().assign(rs):
+                    save_roster(self.roster)
+                    self.on_selection_changed()
+
+    def _assign_to_racing(self):
+        if len(self.selected_entities) == 1:
+            s = self.selected_entities[0]
+            rs = next((r for r in self.roster.slimes if r.name == s.name), None)
+            if rs:
+                if self.roster.get_racing_team().assign(rs):
                     save_roster(self.roster)
                     self.on_selection_changed()
 
