@@ -10,6 +10,7 @@ from src.apps.slime_breeder.ui.slime_renderer import SlimeRenderer
 from src.shared.genetics import generate_random, breed
 from src.shared.teams.roster import Roster, RosterSlime, TeamRole
 from src.shared.teams.roster_save import load_roster, save_roster
+from src.shared.ui.profile_card import ProfileCard
 
 NAMES = ["Mochi", "Pip", "Glimmer", "Bloop", "Sage", "Dew", "Ember", "Fizz", "Lumen", "Nook"]
 
@@ -20,22 +21,16 @@ class GardenScene(GardenSceneBase):
         self.roster = load_roster()
         self._sync_roster_with_garden()
         
-        # 1. Custom Details UI
-        self.name_label = Label(pygame.Rect(10, 40, self.panel_width-20, 30), text="Name: ---")
-        self.detail_panel.add_child(self.name_label)
+        # 1. Custom Details UI (Profile Card)
+        self.profile_card: Optional[ProfileCard] = None
         
-        self.mood_label = Label(pygame.Rect(10, 70, self.panel_width-20, 30), text="Mood: ---")
-        self.detail_panel.add_child(self.mood_label)
-
-        # Team UI
-        self.team_label = Label(pygame.Rect(10, 100, self.panel_width-20, 30), text="Team: ---")
-        self.detail_panel.add_child(self.team_label)
-
-        self.assign_btn = Button(pygame.Rect(10, 140, self.panel_width-20, 40), text="→ Dungeon Team", on_click=self._assign_to_dungeon)
+        # Position buttons below the card area (Card is ~140h + margin)
+        btn_y = 200
+        self.assign_btn = Button(pygame.Rect(self.detail_rect.x + 10, btn_y, self.panel_width-20, 40), text="→ Dungeon Team", on_click=self._assign_to_dungeon)
         self.assign_btn.set_visible(False)
         self.detail_panel.add_child(self.assign_btn)
 
-        self.remove_btn = Button(pygame.Rect(10, 140, self.panel_width-20, 40), text="Remove from Team", on_click=self._remove_from_team)
+        self.remove_btn = Button(pygame.Rect(self.detail_rect.x + 10, btn_y, self.panel_width-20, 40), text="Remove from Team", on_click=self._remove_from_team)
         self.remove_btn.set_visible(False)
         self.detail_panel.add_child(self.remove_btn)
         
@@ -141,18 +136,22 @@ class GardenScene(GardenSceneBase):
         self.breed_btn.set_enabled(num_selected == 2)
         self.release_btn.set_enabled(num_selected > 0)
         
+        # Clear previous card
+        if self.profile_card:
+            self.detail_panel.remove_child(self.profile_card)
+            self.profile_card = None
+
         # Update details for the primary selection
         if num_selected == 1:
             s = self.selected_entities[0]
-            self.name_label.text = f"Name: {s.name}"
-            self.mood_label.text = f"Mood: {s.get_mood()}"
             
             # Find in roster
             rs = next((r for r in self.roster.slimes if r.name == s.name), None)
             if rs:
-                self.team_label.text = f"Team: {rs.team.value.upper()}"
+                self.profile_card = ProfileCard(rs, (self.detail_rect.x + 10, 50))
+                self.detail_panel.add_child(self.profile_card)
+                
                 if rs.locked:
-                    self.team_label.text += " (ON MISSION)"
                     self.assign_btn.set_visible(False)
                     self.remove_btn.set_visible(False)
                 elif rs.team == TeamRole.UNASSIGNED:
@@ -162,20 +161,10 @@ class GardenScene(GardenSceneBase):
                     self.assign_btn.set_visible(False)
                     self.remove_btn.set_visible(True)
             else:
-                self.team_label.text = "Team: ERROR"
                 self.assign_btn.set_visible(False)
                 self.remove_btn.set_visible(False)
 
-        elif num_selected > 1:
-            self.name_label.text = f"Group ({num_selected})"
-            self.mood_label.text = "Mood: Mixed"
-            self.team_label.text = "Team: ---"
-            self.assign_btn.set_visible(False)
-            self.remove_btn.set_visible(False)
         else:
-            self.name_label.text = "Name: ---"
-            self.mood_label.text = "Mood: ---"
-            self.team_label.text = "Team: ---"
             self.assign_btn.set_visible(False)
             self.remove_btn.set_visible(False)
 
