@@ -213,9 +213,9 @@ class FailureDetector:
         
         return False
     
-    def _requires_architecture_decision(self, context: Dict) -> bool:
+    def _requires_architecture_decision(self, context) -> bool:
         """Does this require architectural decisions?"""
-        task = context.get("current_task", {})
+        task = context.current_task
         task_title = task.get("title", "").lower()
         
         # Keywords that suggest architectural decisions
@@ -231,9 +231,9 @@ class FailureDetector:
         
         return any(keyword in task_title for keyword in arch_keywords)
     
-    def _requirements_ambiguous(self, context: Dict) -> bool:
+    def _requirements_ambiguous(self, context) -> bool:
         """Are requirements unclear?"""
-        task = context.get("current_task", {})
+        task = context.current_task
         
         # Check if success criteria are clear
         success = task.get("success_criteria", [])
@@ -247,20 +247,20 @@ class FailureDetector:
         
         return False
     
-    def _check_missing_references(self, context: Dict) -> List[str]:
+    def _check_missing_references(self, context) -> List[str]:
         """What key references are missing?"""
         missing = []
         
         # Check for architecture documentation
-        if not context.get("technical_design"):
+        if not context.technical_design:
             missing.append("TECHNICAL_DESIGN.md")
         
         # Check for feature specification
-        if not context.get("feature_spec"):
+        if not context.feature_spec:
             missing.append("FEATURE_SPEC.md")
         
         # Check for system specifications
-        if not context.get("system_specs"):
+        if not context.system_specs:
             missing.append("SYSTEM_SPECS.md")
         
         return missing
