@@ -219,20 +219,21 @@ class GardenScene(GardenSceneBase):
 
     def _render_team_status_bar(self, surface: pygame.Surface):
         team = self.roster.get_dungeon_team()
-        bar_rect = pygame.Rect(0, self.spec.screen_height - 36, self.spec.screen_width, 36)
+        # Respect modernized HubLayout bar rect
+        bar_rect = self.bar_rect
         pygame.draw.rect(surface, (20, 20, 30), bar_rect)
         pygame.draw.rect(surface, (50, 50, 70), bar_rect, width=1)
         
         if not team.members:
             render_text(surface, 
                        "DUNGEON TEAM: Empty — visit Teams to assign slimes",
-                       (16, self.spec.screen_height - 24),
+                       (16, bar_rect.y + 12), # Centered in taller bar
                        size=18, color=(100, 100, 120))
         else:
             names = ", ".join(s.name for s in team.members)
             label = f"DUNGEON TEAM: {names} [{len(team.members)}/4]"
             render_text(surface, label,
-                       (16, self.spec.screen_height - 24),
+                       (16, bar_rect.y + 12),
                        size=18, color=(180, 220, 180))
 
     def on_exit(self):

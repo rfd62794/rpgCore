@@ -31,7 +31,7 @@ class SlimeRenderer:
         
         # Selection highlight
         if selected:
-            pygame.draw.circle(surface, (255, 255, 255), pos, radius + 4, 2)
+            pygame.draw.circle(surface, (255, 255, 255), pos, radius + 2, 2)
 
         color = slime.genome.base_color
         p_color = slime.genome.pattern_color
