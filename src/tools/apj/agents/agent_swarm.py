@@ -239,6 +239,12 @@ Return as JSON with task assignments.
                 while json_content and not json_content.startswith('{'):
                     json_content = json_content[1:].strip()
                 
+                # Fix escaped newlines and other escape sequences
+                json_content = json_content.replace('\\n', ' ').replace('\\t', ' ').replace('\\"', '"')
+                
+                # Remove any remaining problematic characters
+                json_content = ''.join(char for char in json_content if ord(char) >= 32 or char in '\n\t')
+                
                 print(f"🔍 Debug: Cleaned JSON content: {json_content[:200]}...")
                 
                 # Parse the JSON
@@ -247,6 +253,8 @@ Return as JSON with task assignments.
                 # Handle both "tasks" array and direct task object
                 if "tasks" in task_assignments:
                     return self._execute_task_assignments(task_assignments["tasks"], context)
+                elif "task_assignments" in task_assignments:
+                    return self._execute_task_assignments(task_assignments["task_assignments"], context)
                 else:
                     return self._execute_task_assignments([task_assignments], context)
             else:
