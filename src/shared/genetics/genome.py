@@ -19,5 +19,10 @@ class SlimeGenome:
     affection: float  # moves toward player cursor
     shyness: float    # retreats from sudden input
     
+    # Base Stats (Inherited Genetics)
+    base_hp: float = 20.0
+    base_atk: float = 5.0
+    base_spd: float = 5.0
+
     # Cultural identity
     cultural_base: CulturalBase = CulturalBase.MIXED

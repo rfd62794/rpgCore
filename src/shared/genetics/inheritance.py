@@ -41,7 +41,10 @@ def generate_random(culture: Optional[CulturalBase] = None) -> SlimeGenome:
         energy=random.random(),
         affection=random.random(),
         shyness=random.random(),
-        cultural_base=culture
+        cultural_base=culture,
+        base_hp=20.0 * params.hp_modifier,
+        base_atk=5.0 * params.attack_modifier,
+        base_spd=5.0 * params.speed_modifier
     )
 
 def breed(parent_a: SlimeGenome, parent_b: SlimeGenome, mutation_chance: float = 0.05) -> SlimeGenome:
