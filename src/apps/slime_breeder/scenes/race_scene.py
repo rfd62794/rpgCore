@@ -58,10 +58,8 @@ class RaceScene(Scene):
         # Fixed slime render size - zoom affects world coordinates, not render size
         self.SLIME_RENDER_RADIUS = 24  # Fixed pixels always
         
-        # Race state
-        self.current_lap = 1
+        # Race constants
         self.total_laps = 3
-        self.terrain_ahead = None
         
         # Results state
         self._show_results = False
@@ -93,7 +91,7 @@ class RaceScene(Scene):
             ai_slime = RosterSlime(slime_id=f"ai_{i}", name=f"Racer_{i+1}", genome=generate_random(), level=random.randint(1, 5))
             participants.append(ai_slime)
             
-        self.engine = RaceEngine(participants, self.track, length=3000)
+        self.engine = RaceEngine(participants, self.track, length=9000)
         self.start_countdown = 3.0
         self.camera.x = 0.0
         self.camera.zoom_x = 1.0
