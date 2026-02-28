@@ -10,11 +10,24 @@ from dataclasses import dataclass, field
 from enum import Enum
 from datetime import datetime, timedelta
 import uuid
+import json
 
 from .a2a_communication import A2A_MANAGER, MessageType, MessagePriority
 from .agent_registry import AGENT_REGISTRY
 from .child_agent import CHILD_AGENT_MANAGER
 from .agent_boot import AGENT_BOOT_MANAGER
+
+# Import extended components
+try:
+    from ..swarm.resilience.self_healing import SelfHealer, SwarmLearning
+    from ..swarm.monitoring.swarm_monitor import SwarmMonitor
+    from ..swarm.tools.extended_tools import EXTENDED_TOOLS
+except ImportError:
+    # Fallback for when components aren't available
+    SelfHealer = None
+    SwarmLearning = None
+    SwarmMonitor = None
+    EXTENDED_TOOLS = {}
 
 logger = logging.getLogger(__name__)
 
@@ -93,6 +106,15 @@ class AutonomousSwarm:
         self.round_robin_interval_seconds = 5
         self.auto_retry_enabled = True
         self.progress_reporting_enabled = True
+        
+        # Initialize extended components
+        self.self_healer = SelfHealer() if SelfHealer else None
+        self.learning_system = SwarmLearning() if SwarmLearning else None
+        self.monitor = SwarmMonitor() if SwarmMonitor else None
+        
+        # Performance tracking
+        self.task_durations: Dict[str, float] = {}
+        self.agent_success_rates: Dict[str, float] = {}
         
         # Initialize agent workloads
         self._initialize_agent_workloads()
