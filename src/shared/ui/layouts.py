@@ -12,8 +12,8 @@ class HubLayout:
                                       48 * spec.scale_factor,
                                       spec.screen_width * 0.35,
                                       spec.screen_height - 84 * spec.scale_factor)
-        self.status_bar = pygame.Rect(0, spec.screen_height - 36 * spec.scale_factor,
-                                      spec.screen_width, 36 * spec.scale_factor)
+        self.status_bar = pygame.Rect(0, spec.screen_height - 64 * spec.scale_factor,
+                                      spec.screen_width, 64 * spec.scale_factor)
 
 class SelectionLayout:
     """Breeding/Team-style layout with header, three panels, action bar."""

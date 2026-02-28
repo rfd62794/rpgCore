@@ -52,8 +52,22 @@ class StatsPanel(UIComponent):
         bar_w = self.WIDTH - 80
         pygame.draw.rect(surface, (30, 30, 40), (bar_x, pos[1] + 4, bar_w, 8))
         
-        # Fill (normalized to 100 max for visual scaling)
-        fill_w = int(bar_w * (min(100, value) / 100.0))
+        # Calculate cultural max (at Lv.10 reference)
+        # HP: ~200-300, ATK: ~40-60, SPD: ~15-20
+        # We'll use a safer relative mapping
+        cultural_max = 100 # Default
+        culture = self.slime.genome.cultural_base
+        from src.shared.genetics.cultural_base import CULTURAL_PARAMETERS
+        params = CULTURAL_PARAMETERS[culture]
+        
+        if label == "HEALTH":
+            cultural_max = 200 * params.hp_modifier
+        elif label == "ATTACK":
+            cultural_max = 40 * params.attack_modifier
+        elif label == "SPEED":
+            cultural_max = 15 * params.speed_modifier
+            
+        fill_w = int(bar_w * (min(1.0, value / cultural_max)))
         if fill_w > 0:
             pygame.draw.rect(surface, color, (bar_x, pos[1] + 4, fill_w, 8))
             
