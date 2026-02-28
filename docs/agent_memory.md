@@ -1,5 +1,178 @@
 # Agent Memory
 
+## Minigame Systems — Derived from Core Stats
+
+All minigames emerge from existing stat systems.
+No new core mechanics needed — just new arenas.
+
+### Core Stat Systems Already Built
+- **Mass System**: `mass = body_size ** 1.5` (non-linear scaling)
+- **Heft Power**: `heft_power = mass * (1.0 + strength * 0.5)`
+- **Jump Physics**: Force/mass calculations with body size multipliers
+- **Cultural Advantages**: Terrain bonuses based on cultural base
+- **Speed & Recovery**: Derived from energy and mass
+
+### Minigame Tree - What Systems Already Support
+
+#### HEFT/MASS SYSTEM
+**Slime Sumo** (Priority 1 - 1 session)
+- Circular arena, push to edge
+- Heavy + strong = natural advantage  
+- Small fast slime = dodge-based strategy
+- **Physics**: Same as push block collision logic from racing
+- **Arena**: 300px diameter circle, edge = fall zone
+- **Win**: Push opponent off edge
+
+**Slime Bowling**
+- One heavy slime rolled at formation
+- Distance = jump_distance, Force = heft_power
+- Pins = lighter slimes or objects
+
+**King of the Hill**
+- Contested center zone
+- Heavier slime holds ground
+- Lighter slime gets pushed off
+- Tug of war with physics
+
+#### JUMP SYSTEM
+**Hurdle Racing**
+- Pure jump timing minigame
+- Rhythm-based
+- Jump height and recovery matter
+- Different from full derby
+
+**Slime Volleyball**
+- Jump arc = ball trajectory
+- Two slimes, net, bounce logic
+- Already have jump physics
+
+**Tower Climb**
+- Vertical jumping challenge
+- Jump height stat is the core mechanic
+- First to top wins
+
+#### GENETICS/BREEDING SYSTEM
+**Slime Beauty Contest**
+- Judges score on cultural traits
+- Roundness, color, wobble
+- Pure genetics showcase
+- No combat — appreciation mode
+
+**Trait Auction**
+- Rare trait slimes go to auction
+- Other players (or AI factions) bid
+- Economy layer
+
+**Exhibition Match**
+- Show off your best gen-20 slime
+- Versus known champion
+- Leaderboard
+
+#### DUNGEON SYSTEM
+**Dungeon Relay**
+- Team of 4 takes turns
+- Each slime handles one floor type
+- Swap on weakness
+- Coordination puzzle
+
+**Boss Rush**
+- Single slime
+- Escalating bosses
+- How deep can they go
+
+#### RACING SYSTEM
+**Time Trial**
+- Single slime
+- Ghost of best run
+- Pure speed optimization
+
+**Cultural Cup**
+- Ember-only race on rock track
+- Coastal-only race on water track
+- Cultural specialists compete
+
+**Gauntlet**
+- Racing + obstacles combined
+- Hurdles, ponds, push blocks
+- All mechanics at once
+
+### Meta-Game Pattern
+Every minigame uses 1-2 stats as primary and exposes others as secondary:
+
+- **Sumo**: mass + strength primary, speed = dodge ability secondary
+- **Racing**: speed + jump primary, mass = terrain interaction secondary  
+- **Dungeon**: HP + attack primary, speed = turn order secondary
+- **Beauty**: roundness + hue primary, wobble = personality secondary
+
+Player breeds a slime → looks at its stats → decides which minigame to enter it in
+
+**That IS the meta-game**: "What is this slime good at?" not "is this slime good?"
+Every slime has a home.
+
+### Slime Sumo Implementation Details
+
+**Arena Setup**
+- Circle, 300px diameter
+- Edge = fall zone
+- Center start positions
+
+**Physics Tick**
+```python
+# Each slime has position (x, y)
+# Collision check: distance < combined_radius
+
+def handle_collision(slime_a, slime_b):
+    force_vector = normalize(pos_a - pos_b)
+    push_a = force_vector * (slime_b.heft_power / slime_a.mass)
+    push_b = -force_vector * (slime_a.heft_power / slime_b.mass)
+    
+    pos_a += push_a
+    pos_b += push_b
+```
+
+**Win Condition**
+```python
+# distance(slime_pos, arena_center) > arena_radius
+# → that slime fell off → opponent wins
+```
+
+**Game Structure**
+- Rounds: best of 3
+- Result feeds back to roster
+- Winner gains exp, Loser gains exp (less)
+- No permanent loss — garden activity
+
+### Future: ARENA Hub Scene
+From Garden navigation:
+```
+Top nav: TEAMS | DUNGEON | RACING | ARENA
+
+ARENA scene:
+  SUMO RING    → pick 1 slime, fight AI
+  DERBY TRACK  → pick racing team  
+  TRIAL TOWER  → pick 1 slime, climb floors
+
+Future expansions:
+  TOURNAMENT   → bracket, multiple slimes
+  EXHIBITION   → show off your best
+  CHALLENGE    → daily rotating minigame
+```
+
+### Implementation Priority Order
+1. **Sumo** - mass + heft_power, circular arena (1 session)
+2. **Time Trial** - speed + jump, ghost system
+3. **Cultural Cup** - terrain advantage showcase
+4. **Tower Climb** - jump_height focused
+
+### Key Insight
+Sumo physics = push block physics from racing. Different arena, same force calculation.
+
+Build after jump system is solid in racing. Future: ARENA hub scene alongside DUNGEON.
+
+Sumo makes sense because your physics are real. The minigames aren't features bolted on — they're natural expressions of the genetic system you already built.
+
+---
+
 ## Racing Stat System - Mass, Strength, and Heft Mechanics
 
 ### Core Concept
