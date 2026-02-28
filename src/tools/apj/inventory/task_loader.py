@@ -125,6 +125,7 @@ class TaskLoader:
         except Exception as e:
             print(f"Error parsing GOALS.md: {e}")
         
+        self.goals = goals
         return goals
     
     def load_milestones(self) -> Dict[str, Milestone]:
@@ -184,6 +185,7 @@ class TaskLoader:
         except Exception as e:
             print(f"Error parsing MILESTONES.md: {e}")
         
+        self.milestones = milestones
         return milestones
     
     def load_tasks(self) -> Dict[str, Task]:
@@ -249,6 +251,7 @@ class TaskLoader:
         except Exception as e:
             print(f"Error parsing TASKS.md: {e}")
         
+        self.tasks = tasks
         return tasks
     
     def load_steps(self) -> Dict[str, Step]:
