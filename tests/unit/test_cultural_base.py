@@ -83,3 +83,43 @@ def test_breeding_lock_mechanic():
     
     rs.level = 5
     assert rs.can_breed is True
+
+def test_base_stat_inheritance():
+    # Setup parents with known base stats
+    g1 = generate_random(CulturalBase.MOSS)
+    g1.base_hp = 100.0
+    g1.base_atk = 50.0
+    g1.base_spd = 50.0
+    
+    g2 = generate_random(CulturalBase.MOSS)
+    g2.base_hp = 50.0
+    g2.base_atk = 10.0
+    g2.base_spd = 10.0
+    
+    offspring = breed(g1, g2, mutation_chance=0) # Disable mutation for predictable test
+    
+    # HP: higher parent (100) * 1.10 = 110
+    assert offspring.base_hp == pytest.approx(110.0)
+    
+    # ATK: avg(50, 10) = 30 * 1.10 = 33
+    assert offspring.base_atk == pytest.approx(33.0)
+    
+    # SPD: faster parent (50) * 0.95 * 1.10 = 52.25
+    assert offspring.base_spd == pytest.approx(52.25)
+
+def test_mutation_logic():
+    # Test mutation chance
+    g1 = generate_random(CulturalBase.MOSS)
+    g2 = generate_random(CulturalBase.MOSS)
+    
+    mutated = False
+    for i in range(200):
+        # void has higher mutation chance (15%)
+        g_void = generate_random(CulturalBase.VOID)
+        offspring = breed(g1, g_void)
+        # Check if any stat deviated from normal inheritance
+        exp_hp = max(g1.base_hp, g_void.base_hp) * 1.10
+        if not pytest.approx(exp_hp) == offspring.base_hp:
+            mutated = True
+            break
+    assert mutated
