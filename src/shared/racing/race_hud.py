@@ -40,7 +40,7 @@ class RaceHUD:
         self._render_text(surface, lap_text, (bar.centerx, bar.y + 16), size="lg", bold=True, centered=True)
         
         # Right: Speed indicator and terrain warning
-        speed_percent = min(1.0, player.velocity / 200.0)  # Normalize to 0-1
+        speed_percent = min(1.0, player.velocity / 300.0)  # Normalize to 0-1 (higher max for better visibility)
         speed_bar_width = 80
         speed_bar_height = 12
         speed_bar_x = bar.right - 200
@@ -49,7 +49,7 @@ class RaceHUD:
         # Speed bar background
         pygame.draw.rect(surface, (40, 40, 40), (speed_bar_x, speed_bar_y, speed_bar_width, speed_bar_height))
         # Speed bar fill
-        fill_width = int(speed_bar_width * speed_percent)
+        fill_width = max(2, int(speed_bar_width * speed_percent))  # Minimum 2px for visibility
         pygame.draw.rect(surface, (100, 200, 100), (speed_bar_x, speed_bar_y, fill_width, speed_bar_height))
         
         # Speed text

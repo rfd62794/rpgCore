@@ -238,7 +238,7 @@ class RaceScene(Scene):
         arena_h = surface.get_height()
         
         # Path Dimensions
-        track_h = int(arena_h * self.track_height_ratio)
+        track_h = max(self.min_track_height, int(arena_h * self.track_height_ratio))
         track_y = (arena_h - track_h) // 2
         
         # 1. Draw Road Base (Continuous band)
@@ -311,7 +311,8 @@ class RaceScene(Scene):
         # 5. Participants
         if self.engine:
             for i, p in enumerate(self.engine.participants):
-                # Center in lane
+                # Center in lane with proper track height
+                lane_h = track_h // self.lane_count
                 ly = track_y + (i * lane_h) + (lane_h // 2)
                 screen_x = p.distance - self.camera_x
                 
