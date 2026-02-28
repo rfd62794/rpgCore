@@ -453,7 +453,7 @@ Budget: Enforced by OpenRouter, fallback to Ollama if over budget
 """)
 
     def detect_and_confirm_context(self) -> bool:
-        """Boot with conversational interface"""
+        """Boot and start conversational chat"""
         
         from src.tools.apj.context_detector import ContextDetector
         from src.tools.apj.agents.intent_parser import ConversationalInterface
@@ -463,30 +463,19 @@ Budget: Enforced by OpenRouter, fallback to Ollama if over budget
         
         detector.print_summary()
         
-        print(f"""
-╔══════════════════════════════════════════════════════════════╗
-║              CONFIRM BEFORE PROCEEDING                        ║
-╚══════════════════════════════════════════════════════════════╝
-
-This is the current state of your project.
-
-Starting conversational mode - ask me anything naturally.
-""")
+        # Get Ollama
+        try:
+            from src.tools.apj.agents.ollama_client import get_ollama_model
+            ollama = get_ollama_model()
+        except:
+            ollama = None
         
-        # Start conversational interface
-        chat = ConversationalInterface(self.root_dir, ollama_client=self._get_ollama())
+        # Start chat
+        chat = ConversationalInterface(self.root_dir, ollama)
         chat.context = context
         chat.run_chat_loop(context)
         
         return True
-    
-    def _get_ollama(self):
-        """Get Ollama client"""
-        try:
-            from src.tools.apj.agents.ollama_client import get_ollama_model
-            return get_ollama_model()
-        except:
-            return None
     
     def _run_game(self, demo_name: str) -> None:
         """Run a specific demo game"""

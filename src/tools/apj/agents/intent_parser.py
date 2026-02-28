@@ -162,7 +162,17 @@ Be conversational and helpful. Use project context to inform your response.
 """
         
         try:
-            response = self.ollama.analyze_blockers(prompt)
-            return response
+            # Use pydantic_ai Agent with the model
+            from pydantic_ai import Agent
+            agent = Agent(self.ollama)
+            
+            # Run the agent synchronously
+            import asyncio
+            response = asyncio.run(agent.run(prompt))
+            
+            # Extract the actual data from the response
+            response_text = response.data if hasattr(response, 'data') else str(response)
+            return response_text
+            
         except Exception as e:
             return f"Sorry, I couldn't process that: {e}"
