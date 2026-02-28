@@ -81,43 +81,51 @@ class TaskLoader:
             return {}
         
         goals = {}
-        # Parse GOALS.md for G1, G2, G3, etc
-        # For now, return defaults
         
-        self.goals = {
-            "G1": Goal(
-                id="G1",
-                title="Prove Unified Creature System",
-                description="Single entity type scales across all game genres",
-                linked_milestones=["M1"]
-            ),
-            "G2": Goal(
-                id="G2",
-                title="Demonstrate ECS Architecture",
-                description="Component-based system works in production",
-                linked_milestones=["M2"]
-            ),
-            "G3": Goal(
-                id="G3",
-                title="Establish Multi-Genre Support",
-                description="Prove any creature type works in any genre",
-                linked_milestones=["M_PHASE3"]
-            ),
-            "G4": Goal(
-                id="G4",
-                title="Create Monetizable Platform",
-                description="Engine supports commercial applications",
-                linked_milestones=["M_PHASE3"]
-            ),
-            "G5": Goal(
-                id="G5",
-                title="Build Production Infrastructure",
-                description="Scalable, maintainable codebase",
-                linked_milestones=["M_PHASE3"]
-            )
-        }
+        # Parse YAML format from GOALS.md
+        try:
+            with open(goals_file, 'r') as f:
+                content = f.read()
+            
+            # Parse YAML entries
+            current_entry = {}
+            for line in content.split('\n'):
+                line = line.strip()
+                if not line:
+                    continue
+                
+                if line.startswith('- id:'):
+                    if current_entry:
+                        # Save previous entry
+                        goal_id = current_entry.get('id')
+                        if goal_id:
+                            goals[goal_id] = Goal(
+                                id=goal_id,
+                                title=current_entry.get('title', ''),
+                                description=current_entry.get('description', ''),
+                                linked_milestones=[current_entry.get('milestone')]
+                            )
+                    # Start new entry
+                    current_entry = {'id': line.split(':')[1].strip()}
+                elif ':' in line and current_entry:
+                    key, value = line.split(':', 1)
+                    current_entry[key.strip()] = value.strip()
+            
+            # Save last entry
+            if current_entry:
+                goal_id = current_entry.get('id')
+                if goal_id:
+                    goals[goal_id] = Goal(
+                        id=goal_id,
+                        title=current_entry.get('title', ''),
+                        description=current_entry.get('description', ''),
+                        linked_milestones=[current_entry.get('milestone')] if current_entry.get('milestone') else []
+                    )
+                    
+        except Exception as e:
+            print(f"Error parsing GOALS.md: {e}")
         
-        return self.goals
+        return goals
     
     def load_milestones(self) -> Dict[str, Milestone]:
         """Load MILESTONES.md"""
@@ -125,37 +133,58 @@ class TaskLoader:
         if not milestones_file.exists():
             return {}
         
-        # Parse MILESTONES.md for M1, M2, M_PHASE3, etc
-        # For now, return defaults
+        milestones = {}
         
-        self.milestones = {
-            "M1": Milestone(
-                id="M1",
-                title="Entity Unification",
-                phase="phase_1",
-                status="complete",
-                linked_goals=["G1"],
-                linked_tasks=[]
-            ),
-            "M2": Milestone(
-                id="M2",
-                title="ECS Foundation",
-                phase="phase_2",
-                status="complete",
-                linked_goals=["G2"],
-                linked_tasks=[]
-            ),
-            "M_PHASE3": Milestone(
-                id="M_PHASE3",
-                title="Tower Defense Integration",
-                phase="phase_3",
-                status="planning",
-                linked_goals=["G3", "G4", "G5"],
-                linked_tasks=["T_3_0", "T_3_1", "T_3_2", "T_3_3", "T_3_4", "T_3_5", "T_3_6"]
-            )
-        }
+        # Parse YAML format from MILESTONES.md
+        try:
+            with open(milestones_file, 'r') as f:
+                content = f.read()
+            
+            # Parse YAML entries
+            current_entry = {}
+            for line in content.split('\n'):
+                line = line.strip()
+                if not line:
+                    continue
+                
+                if line.startswith('- id:'):
+                    if current_entry:
+                        # Save previous entry
+                        milestone_id = current_entry.get('id')
+                        if milestone_id:
+                            milestones[milestone_id] = Milestone(
+                                id=milestone_id,
+                                title=current_entry.get('title', ''),
+                                description=current_entry.get('description', ''),
+                                phase=current_entry.get('phase'),
+                                status=current_entry.get('status', 'planning'),
+                                linked_goals=current_entry.get('goals', []),
+                                linked_tasks=current_entry.get('tasks', [])
+                            )
+                    # Start new entry
+                    current_entry = {'id': line.split(':')[1].strip()}
+                elif ':' in line and current_entry:
+                    key, value = line.split(':', 1)
+                    current_entry[key.strip()] = value.strip()
+            
+            # Save last entry
+            if current_entry:
+                milestone_id = current_entry.get('id')
+                if milestone_id:
+                    milestones[milestone_id] = Milestone(
+                        id=milestone_id,
+                        title=current_entry.get('title', ''),
+                        description=current_entry.get('description', ''),
+                        phase=current_entry.get('phase'),
+                        status=current_entry.get('status', 'planning'),
+                        linked_goals=current_entry.get('goals', []),
+                        linked_tasks=current_entry.get('tasks', [])
+                    )
+                    
+        except Exception as e:
+            print(f"Error parsing MILESTONES.md: {e}")
         
-        return self.milestones
+        return milestones
     
     def load_tasks(self) -> Dict[str, Task]:
         """Load TASKS.md"""
