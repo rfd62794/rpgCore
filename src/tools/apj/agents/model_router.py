@@ -8,6 +8,8 @@ from pydantic import BaseModel, Field
 
 from src.tools.apj.agents.ollama_client import get_ollama_model
 from src.tools.apj.agents.openrouter_client import get_openrouter_model
+from src.tools.apj.agents.model_contracts import ModelRequest, ModelResponse, TaskType, ROUTING_POLICY
+from src.tools.apj.agents.model_monitor import ModelMonitor
 from pydantic_ai import Agent
 
 # Resolution: src/tools/apj/agents/model_router.py -> parents[4] is rpgCore
