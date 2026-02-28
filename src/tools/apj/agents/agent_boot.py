@@ -544,26 +544,6 @@ class AgentBootManager:
             health["overall"] = "excellent"
         
         return health
-        health["metrics"]["a2a_coverage"] = f"{a2a_agents}/{total_expected} ({a2a_ratio:.1%})"
-        
-        # Tool availability
-        tool_count = len(TOOL_REGISTRY.get_all_tools())
-        health["metrics"]["available_tools"] = tool_count
-        
-        # Message processing
-        pending = len(A2A_MANAGER._message_queue)
-        health["metrics"]["pending_messages"] = pending
-        
-        if pending > 10:
-            if health["overall"] == "healthy":
-                health["overall"] = "good"
-            health["issues"].append("High message queue")
-        
-        # Overall assessment
-        if not health["issues"]:
-            health["overall"] = "excellent"
-        
-        return health
 
 # Global boot manager
 AGENT_BOOT_MANAGER = AgentBootManager()
