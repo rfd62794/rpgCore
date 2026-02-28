@@ -35,6 +35,14 @@ class TeamMembersList(list):
             super().remove(slime_or_id)
         except ValueError:
             pass  # Silently fail for compatibility
+    
+    def __getitem__(self, index):
+        """Get item by index - return RosterSlime for legacy compatibility"""
+        entry = super().__getitem__(index)
+        # Get the RosterSlime from the roster
+        if hasattr(self, '_team_ref') and self._team_ref and hasattr(self._team_ref, '_roster_ref') and self._team_ref._roster_ref:
+            return self._team_ref._roster_ref._roster_slimes.get(entry.slime_id)
+        return entry
 
 class TeamRole(Enum):
     DUNGEON  = "dungeon"
