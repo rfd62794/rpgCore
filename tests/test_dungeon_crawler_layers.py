@@ -77,7 +77,7 @@ def test_combat_defeat_records_ancestor(mock_session, manager):
     
     with patch.object(mock_session, 'end_run') as mock_end_run:
         scene._handle_defeat()
-        mock_end_run.assert_called_once_with(cause="Killed by Slime")
+        mock_end_run.assert_called_once_with(cause="Killed in combat")
     pygame.quit()
 
 def test_flag_appears_after_last_enemy_defeated(mock_session, manager):
