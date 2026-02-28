@@ -31,17 +31,26 @@ class RaceParticipant:
         self.heft_power = race_stats["heft_power"]
         self.strength = race_stats["strength"]
         
+        # Movement type classification
+        self.movement_type = classify_movement(slime.genome)
+        self.profile = MOVEMENT_PROFILES[self.movement_type]
+        
         # Jump state
         self.jump_phase = 0.0      # 0.0 = grounded, 0-1 = in jump arc
         self.jump_height = 0.0     # current visual height
         self.is_jumping = False
         self.jump_cooldown = 0.0   # recovery time after landing
         
-        # Jump stats from race calculation
+        # Jump stats from race stats, overridden by movement profile
+        self.max_jump_height = self.profile["jump_height_max"]
         self.jump_distance = race_stats["jump_distance"]
         self.jump_speed = 0.8 + slime.genome.energy * 0.4  # Still use energy for rhythm
-        self.jump_recovery = race_stats["jump_cooldown"]
-        self.max_jump_height = race_stats["jump_height"]  # Store max height separately
+        self.jump_recovery = self.profile["jump_cooldown"]
+        
+        # Movement-specific state
+        self.ground_time = 0.0
+        self.momentum = 0.0  # For rollers
+        self.rotation_angle = 0.0  # For rollers
         
         # Physics constants
         self.acceleration_base = self.base_speed * 15.0  # Scales with stats
