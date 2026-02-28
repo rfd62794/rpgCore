@@ -421,7 +421,11 @@ class AgentBootManager:
         
         return results
     
-    def _generate_boot_status(self) -> Dict[str, Any]:
+    def _create_child_agents(self, project_status: Dict[str, Any]) -> Dict[str, Any]:
+        """Create child agents - wrapper for specialized children"""
+        return self._create_specialized_children(project_status)
+    
+    def get_swarm_status(self) -> Dict[str, Any]:
         """Generate final boot status report"""
         
         # Process any pending messages
