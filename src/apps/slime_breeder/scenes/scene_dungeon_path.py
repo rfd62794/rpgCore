@@ -121,6 +121,12 @@ class DungeonPathScene(Scene):
         zone = self.engine.party.current_zone
         squad = zone.squad if zone else None
         
+        # Debug: Print squad info
+        if squad:
+            print(f"[DEBUG] Path scene - Squad: {squad.name}")
+            for i, member in enumerate(squad.members):
+                print(f"[DEBUG]   Member {i}: {member.name}, genome colors: {member.genome.base_color}")
+        
         # Push to combat scene
         self.manager.push("dungeon_combat", 
                           session=self.session, 

@@ -45,6 +45,11 @@ class DungeonCombatScene(CombatSceneBase):
             self.enemies[i] = None
         
         if enemy_squad and hasattr(enemy_squad, 'members'):
+            # Debug: Print received squad info
+            print(f"[DEBUG] Combat scene - Received squad: {enemy_squad.name}")
+            for i, member in enumerate(enemy_squad.members):
+                print(f"[DEBUG]   Member {i}: {member.name}, genome colors: {member.genome.base_color}")
+            
             # Use pre-generated squad
             for i, enemy in enumerate(enemy_squad.members):
                 if i >= 4: break
