@@ -1252,7 +1252,7 @@ Provide as JSON with detailed steps.
         if args.arg == "status":
             print(f"\n🐝 Swarm Status:")
             from src.tools.apj.agents.intent_parser import ConversationalInterface
-            chat = ConversationalInterface(adj.root_dir, adj._get_ollama())
+            chat = ConversationalInterface(adj.root_dir, adj._get_ollama_model())
             
             if chat.swarm:
                 status = chat.swarm.get_swarm_status()
@@ -1269,7 +1269,7 @@ Provide as JSON with detailed steps.
             from src.tools.apj.agents.swarm_manager import SwarmManager
             from src.tools.apj.agents.intent_parser import ConversationalInterface
             
-            chat = ConversationalInterface(adj.root_dir, adj._get_ollama())
+            chat = ConversationalInterface(adj.root_dir, adj._get_ollama_model())
             if chat.swarm:
                 manager = SwarmManager(chat.swarm, adj.root_dir)
                 capabilities = manager.get_swarm_capabilities()
@@ -1296,7 +1296,7 @@ Provide as JSON with detailed steps.
             from src.tools.apj.agents.swarm_manager import SwarmManager
             from src.tools.apj.agents.intent_parser import ConversationalInterface
             
-            chat = ConversationalInterface(adj.root_dir, adj._get_ollama())
+            chat = ConversationalInterface(adj.root_dir, adj._get_ollama_model())
             if chat.swarm:
                 manager = SwarmManager(chat.swarm, adj.root_dir)
                 manager.list_templates()
@@ -1312,7 +1312,7 @@ Provide as JSON with detailed steps.
             from src.tools.apj.agents.swarm_manager import SwarmManager
             from src.tools.apj.agents.intent_parser import ConversationalInterface
             
-            chat = ConversationalInterface(adj.root_dir, adj._get_ollama())
+            chat = ConversationalInterface(adj.root_dir, adj._get_ollama_model())
             if chat.swarm:
                 manager = SwarmManager(chat.swarm, adj.root_dir)
                 
@@ -1334,7 +1334,7 @@ Provide as JSON with detailed steps.
             from src.tools.apj.agents.swarm_manager import SwarmManager
             from src.tools.apj.agents.intent_parser import ConversationalInterface
             
-            chat = ConversationalInterface(adj.root_dir, adj._get_ollama())
+            chat = ConversationalInterface(adj.root_dir, adj._get_ollama_model())
             if chat.swarm:
                 manager = SwarmManager(chat.swarm, adj.root_dir)
                 suggestions = manager.suggest_extensions()
