@@ -62,11 +62,6 @@ class GardenScene(GardenSceneBase):
         self.detail_panel.bg_color = None
         self.detail_panel.border_width = 0
 
-        # For UI Review: force selection of the first slime if nothing is selected
-        if not self.selected_entities and self.garden_state.slimes:
-            self.selected_entities = [self.garden_state.slimes[0]]
-            self.on_selection_changed()
-
         # 2. Team Buttons (Stacked in actions_rect)
         btn_y = self.actions_rect.y + 10
         btn_w = self.actions_rect.width - 20
