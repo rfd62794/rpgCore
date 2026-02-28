@@ -1095,89 +1095,156 @@ What would you like to do?
 
 
 def main():
-    """Main CLI interface"""
-    parser = argparse.ArgumentParser(description="ADJ System - DGT Engine Governance")
-    parser.add_argument("command", choices=["status", "phase", "priorities", "blockers", "next", "approve", "update", "strategy", "inventory", "plan", "execute", "reality", "gaps", "models", "test", "design"])
-    parser.add_argument("arg", nargs="?", help="Argument for command")
-    parser.add_argument("arg2", nargs="?", help="Second argument for command")
+    parser = argparse.ArgumentParser(description='ADJ - Autonomous Development Governance')
+    parser.add_argument('command', nargs='?', default='boot')
+    parser.add_argument('arg', nargs='?')
+    parser.add_argument('arg2', nargs='?')
     
     args = parser.parse_args()
     
     adj = ADJSystem()
     
-    # NEW: Design command
-    if args.command == "design":
+    # Boot sequence - detect and confirm context
+    if args.command == "boot" or args.command == "status":
+        adj.detect_and_confirm_context()
+    
+    # Polish a demo
+    elif args.command == "polish":
         if not args.arg:
-            print("Usage: python adj.py design \"<your game vision>\"")
+            print("Usage: python adj.py polish <demo_name>")
+            return
+        
+        adj.detect_and_confirm_context()
+        
+        print(f"\n🎨 Creating polish plan for {args.arg}...")
+        
+        from src.tools.apj.agents.local_agent import LocalAgent
+        agent = LocalAgent(adj.root_dir)
+        
+        # Create polish task
+        task = {
+            "id": f"POLISH_{args.arg.upper()}",
+            "title": f"Polish {args.arg} Demo",
+            "description": f"Complete and polish {args.arg} demo based on project status",
+            "files": [],  # Auto-detect from agent
+            "hours": 10
+        }
+        
+        success = agent.execute_task(task)
+        
+        if success:
+            print(f"\n✅ Polish complete. Ready to test.")
+            # Offer to run game
+            should_test = input("Run game? (y/n): ").strip().lower() == 'y'
+            if should_test:
+                adj._run_game(args.arg)
+    
+    # Execute a planned action
+    elif args.command == "execute":
+        if not args.arg:
+            print("Usage: python adj.py execute <action>")
+            return
+        
+        adj.detect_and_confirm_context()
+        
+        print(f"\n🚀 Executing: {args.arg}...")
+        
+        from src.tools.apj.agents.local_agent import LocalAgent
+        agent = LocalAgent(adj.root_dir)
+        
+        # Create task from action
+        task = {
+            "id": "ACTION_" + args.arg.split(':')[0].replace(' ', '_').upper(),
+            "title": args.arg,
+            "description": f"Execute: {args.arg}",
+            "files": [],
+            "hours": 10
+        }
+        
+        success = agent.execute_task(task)
+        
+        if success:
+            print(f"\n✅ Action complete.")
+    
+    # Create detailed plan
+    elif args.command == "plan":
+        if not args.arg:
+            print("Usage: python adj.py plan <action>")
+            return
+        
+        print(f"\n📋 Creating detailed plan for: {args.arg}...\n")
+        
+        from src.tools.apj.agents.local_agent import LocalAgent
+        agent = LocalAgent(adj.root_dir)
+        
+        # Use agent to create plan
+        plan_prompt = f"""
+Create a detailed step-by-step implementation plan for:
+{args.arg}
+
+Consider:
+- Current project state and blockers
+- Existing code and patterns
+- Design pillars and technical decisions
+- Estimated effort per step
+- Success criteria for completion
+
+Provide as JSON with detailed steps.
+"""
+        
+        from pydantic_ai import Agent
+        plan_agent = Agent(agent.ollama_model)
+        response = plan_agent.run(plan_prompt)
+        print(response.data)
+    
+    # Existing commands
+    elif args.command == "design":
+        # Legacy design command still available
+        if not args.arg:
+            print("Usage: python adj.py design \"<vision>\"")
             return
         
         from src.tools.apj.orchestrator import AdjOrchestrator
         orchestrator = AdjOrchestrator(Path("."))
         orchestrator.design_game(args.arg)
     
-    # Existing commands...
     elif args.command == "status":
         if args.arg == "project":
-            adj.show_project_status()
+            from src.tools.apj.project_status import ProjectStatus
+            status = ProjectStatus(adj.root_dir)
+            status.print_report()
         else:
-            adj.show_status()
+            adj.detect_and_confirm_context()
+    
     elif args.command == "phase":
         if not args.arg:
             print("❌ Phase number required. Use: 1, 2, or 3")
             return
         adj.show_phase(args.arg)
+    
     elif args.command == "priorities":
         adj.show_priorities()
+    
     elif args.command == "blockers":
         adj.show_blockers()
+    
     elif args.command == "next":
         adj.show_next()
+    
     elif args.command == "approve":
-        if not args.arg:
-            print("❌ Approval target required. Use: phase3")
-            return
-        adj.approve_phase(args.arg)
+        adj.show_approve()
+    
     elif args.command == "update":
-        adj.update_dashboard()
+        adj.show_update()
+    
     elif args.command == "strategy":
-        if not args.arg:
-            print("❌ Phase number required. Use: 1, 2, or 3")
-            return
-        adj.show_strategy(args.arg)
+        adj.show_strategy()
+    
     elif args.command == "inventory":
         if not args.arg:
             adj.show_inventory_status()
-        elif args.arg == "report":
-            adj.save_inventory_report()
-        elif args.arg == "demo" and args.arg2:
-            adj.show_inventory_demo(args.arg2)
-        elif args.arg == "system" and args.arg2:
-            adj.show_inventory_system(args.arg2)
-        elif args.arg == "missing":
-            adj.show_missing_docstrings()
-        else:
-            print("Usage: python adj.py inventory [status|report|demo <name>|system <name>|missing]")
-    elif args.command == "plan":
-        if not args.arg:
-            print("Usage: python adj.py plan [goal <id>|task <id>|file <path>|phase <num>]")
-        elif args.arg == "goal" and args.arg2:
-            adj.show_goal_status(args.arg2)
-        elif args.arg == "task" and args.arg2:
-            adj.show_task_plan(args.arg2)
-        elif args.arg == "file" and args.arg2:
-            adj.show_file_context(args.arg2)
-        elif args.arg == "phase" and args.arg2:
-            adj.show_phase_roadmap(int(args.arg2))
-        else:
-            print("Usage: python adj.py plan [goal <id>|task <id>|file <path>|phase <num>]")
-    elif args.command == "execute":
-        if not args.arg:
-            print("Usage: python adj.py execute [batch <milestone>|resume <batch_id>|status <batch_id>]")
-        elif args.arg == "batch":
-            adj.execute_batch(args.arg2)
-        elif args.arg == "resume":
-            adj.resume_batch(args.arg2)
         elif args.arg == "status":
+            adj.show_inventory_status()
             adj.get_batch_status(args.arg2)
         else:
             print("Usage: python adj.py execute [batch <milestone>|resume <batch_id>|status <batch_id>]")
