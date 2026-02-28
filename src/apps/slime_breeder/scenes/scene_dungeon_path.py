@@ -85,14 +85,24 @@ class DungeonPathScene(Scene):
 
     def on_resume(self, **kwargs) -> None:
         """Called when returning from combat or other pushed scenes."""
-        result = kwargs.get('combat_result')
-        if not result and self.session:
-            result = getattr(self.session, 'last_combat_result', None)
-            
-        if result == "victory" or result == "flee":
+        result = kwargs.get('combat_result', 'victory')
+        
+        if result == 'victory':
+            # Mark zone resolved
+            if self.session.active_zone:
+                self.session.active_zone.resolved = True
+                self.session.combat_results.append({
+                    'zone': self.session.active_zone,
+                    'result': 'victory'
+                })
+            self.session.active_zone = None
             self.engine.resume()
-        elif result == "defeat":
+            
+        elif result == 'defeat':
             self._retreat()
+        elif result == 'flee':
+            self.session.active_zone = None
+            self.engine.resume()
 
     def handle_event(self, event: pygame.event.Event) -> None:
         for comp in reversed(self.ui_components):
@@ -167,7 +177,9 @@ class DungeonPathScene(Scene):
         self.manager.switch_to("garden", run_result={"floors_cleared": getattr(self.track, 'depth', 1)})
 
     def _retreat(self):
-        self.manager.switch_to("garden", message="Team retreated from the dungeon")
+        floors = len([r for r in self.session.combat_results
+                     if r['result'] == 'victory'])
+        self.manager.switch_to("garden", message=f"Team retreated — {floors} encounters cleared")
 
     def render(self, surface: pygame.Surface):
         surface.fill((20, 15, 25)) # Background: Dark Abyss
