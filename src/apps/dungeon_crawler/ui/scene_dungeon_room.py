@@ -100,7 +100,7 @@ class DungeonRoomScene(Scene):
 
     def _handle_flee(self):
         logger.info("🏃 Flee to previous room")
-        self.request_scene("the_room", session=self.session)
+        self.request_scene("dungeon", session=self.session)
 
     def _handle_move(self, target_id: str):
         if self.session.floor.move_to(target_id):
