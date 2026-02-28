@@ -44,6 +44,14 @@ class RosterSlime:
             from src.shared.teams.stat_calculator import calculate_hp
             self.current_hp = float(calculate_hp(self.genome, self.level))
     
+    def _sync_to_roster_entry(self, roster):
+        """Sync this RosterSlime's state to the corresponding RosterEntry"""
+        for entry in roster.entries:
+            if entry.slime_id == self.slime_id:
+                entry.locked = self.locked
+                entry.team = self.team
+                break
+    
     @property
     def max_hp(self) -> int:
         from src.shared.teams.stat_calculator import calculate_hp
