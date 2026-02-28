@@ -39,9 +39,13 @@ class TeamMembersList(list):
     def __getitem__(self, index):
         """Get item by index - return RosterSlime for legacy compatibility"""
         entry = super().__getitem__(index)
-        # Get the RosterSlime from the roster
+        # Try to get the RosterSlime from the roster through multiple paths
         if hasattr(self, '_team_ref') and self._team_ref:
+            # Try through team -> roster
             if hasattr(self._team_ref, '_roster_ref') and self._team_ref._roster_ref:
+                return self._team_ref._roster_ref._roster_slimes.get(entry.slime_id)
+            # Try through direct roster access if team has roster reference
+            if hasattr(self._team_ref, '_roster_ref') and hasattr(self._team_ref._roster_ref, '_roster_slimes'):
                 return self._team_ref._roster_ref._roster_slimes.get(entry.slime_id)
         return entry
 
