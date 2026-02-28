@@ -143,6 +143,172 @@ class ADJSystem:
         
         self.show_cost()
     
+    def show_inventory_status(self):
+        """Show comprehensive inventory status"""
+        self._record_layer("Layer 1: Data Files")
+        
+        # Load symbol map
+        symbol_map = self.data_loader.load_symbol_map()
+        
+        self._record_layer("Layer 2: Local Analysis")
+        
+        # Classify files
+        from src.tools.apj.inventory.classifier import FileClassifier
+        classifier = FileClassifier()
+        classifications = classifier.classify_all(symbol_map)
+        
+        # Generate status
+        from src.tools.apj.inventory.status_reporter import StatusReporter
+        reporter = StatusReporter(symbol_map, classifications)
+        status = reporter.get_status()
+        
+        # Display
+        self._print_inventory_status(status)
+        self.show_cost()
+    
+    def show_inventory_demo(self, demo_name: str):
+        """Show status of specific demo"""
+        symbol_map = self.data_loader.load_symbol_map()
+        
+        from src.tools.apj.inventory.classifier import FileClassifier
+        classifier = FileClassifier()
+        classifications = classifier.classify_all(symbol_map)
+        
+        from src.tools.apj.inventory.status_reporter import StatusReporter
+        reporter = StatusReporter(symbol_map, classifications)
+        status = reporter.get_status()
+        
+        if demo_name in status.demos:
+            demo_status = status.demos[demo_name]
+            print(f"""
+Demo: {demo_name}
+  Files: {demo_status['files']}
+  Docstring Coverage: {demo_status['docstring_coverage']:.1f}%
+  Status: {demo_status['status']}
+""")
+        else:
+            print(f"Demo '{demo_name}' not found")
+    
+    def show_inventory_system(self, system_name: str):
+        """Show status of specific system"""
+        symbol_map = self.data_loader.load_symbol_map()
+        
+        from src.tools.apj.inventory.classifier import FileClassifier
+        classifier = FileClassifier()
+        classifications = classifier.classify_all(symbol_map)
+        
+        from src.tools.apj.inventory.status_reporter import StatusReporter
+        reporter = StatusReporter(symbol_map, classifications)
+        status = reporter.get_status()
+        
+        if system_name in status.systems:
+            system_status = status.systems[system_name]
+            print(f"""
+System: {system_name}
+  Files: {system_status['files']}
+  Docstring Coverage: {system_status['docstring_coverage']:.1f}%
+  Status: {system_status['status']}
+""")
+        else:
+            print(f"System '{system_name}' not found")
+    
+    def show_missing_docstrings(self, limit: int = 20):
+        """Show symbols missing docstrings"""
+        symbol_map = self.data_loader.load_symbol_map()
+        
+        from src.tools.apj.inventory.classifier import FileClassifier
+        classifier = FileClassifier()
+        classifications = classifier.classify_all(symbol_map)
+        
+        from src.tools.apj.inventory.status_reporter import StatusReporter
+        reporter = StatusReporter(symbol_map, classifications)
+        missing = reporter.get_missing_docstrings(limit)
+        
+        print(f"Missing Docstrings (top {limit}):\n")
+        for item in missing:
+            print(f"  {item['symbol']} ({item['type']}) - {item['file']}:{item['line']}")
+    
+    def save_inventory_report(self):
+        """Save inventory status to markdown file"""
+        symbol_map = self.data_loader.load_symbol_map()
+        
+        from src.tools.apj.inventory.classifier import FileClassifier
+        classifier = FileClassifier()
+        classifications = classifier.classify_all(symbol_map)
+        
+        from src.tools.apj.inventory.status_reporter import StatusReporter
+        reporter = StatusReporter(symbol_map, classifications)
+        status = reporter.get_status()
+        
+        # Generate markdown
+        report = self._generate_markdown_report(status, reporter)
+        
+        # Save to docs/INVENTORY_REPORT.md
+        report_file = self.docs_dir / "INVENTORY_REPORT.md"
+        with open(report_file, 'w') as f:
+            f.write(report)
+        
+        print(f"✅ Report saved: {report_file}")
+    
+    def _print_inventory_status(self, status):
+        """Pretty-print inventory status"""
+        print(f"""
+╔══════════════════════════════════════════════════════════════╗
+║              REPOSITORY INVENTORY STATUS                      ║
+║            Last Updated: {status.timestamp}
+╚══════════════════════════════════════════════════════════════╝
+
+📦 FILES: {status.total_files} total, {status.files['unique_demos']} demos, {status.files['unique_systems']} systems
+
+📚 DEMOS:""")
+        
+        for demo_name, demo_status in sorted(status.demos.items()):
+            print(f"  {demo_name:20s} {demo_status['files']:3d} files  {demo_status['docstring_coverage']:5.1f}%  {demo_status['status']}")
+        
+        print(f"""
+🔧 SYSTEMS:""")
+        
+        for system_name, system_status in sorted(status.systems.items()):
+            print(f"  {system_name:20s} {system_status['files']:3d} files  {system_status['docstring_coverage']:5.1f}%  {system_status['status']}")
+        
+        print(f"""
+📖 DOCSTRINGS: {status.docstrings['coverage_percent']:.1f}% coverage
+  Total symbols: {status.docstrings['total_symbols']}
+  With docstrings: {status.docstrings['with_docstrings']}
+  Missing: {status.docstrings['missing_docstrings']}
+""")
+    
+    def _generate_markdown_report(self, status, reporter):
+        """Generate markdown report for printing"""
+        lines = [
+            "# Repository Inventory Status",
+            f"Generated: {status.timestamp}",
+            "",
+            "## Summary",
+            f"- Total Files: {status.total_files}",
+            f"- Demos: {status.files['unique_demos']}",
+            f"- Systems: {status.files['unique_systems']}",
+            f"- Docstring Coverage: {status.docstrings['coverage_percent']:.1f}%",
+            "",
+            "## By Demo",
+        ]
+        
+        for demo_name, demo_status in sorted(status.demos.items()):
+            lines.append(f"- **{demo_name}**: {demo_status['files']} files, {demo_status['docstring_coverage']:.1f}% coverage {demo_status['status']}")
+        
+        lines.extend(["", "## By System"])
+        
+        for system_name, system_status in sorted(status.systems.items()):
+            lines.append(f"- **{system_name}**: {system_status['files']} files, {system_status['docstring_coverage']:.1f}% coverage {system_status['status']}")
+        
+        lines.extend(["", "## Missing Docstrings (Top 20)"])
+        
+        missing = reporter.get_missing_docstrings(20)
+        for i, item in enumerate(missing, 1):
+            lines.append(f"{i}. `{item['symbol']}` ({item['type']}) - {item['file']}:{item['line']}")
+        
+        return "\n".join(lines)
+    
     def show_status(self):
         """Show current DGT Engine status"""
         status = self.get_current_status()
