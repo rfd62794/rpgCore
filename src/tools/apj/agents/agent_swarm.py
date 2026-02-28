@@ -332,6 +332,7 @@ Be thorough and follow best practices.
         
         return {
             "total_agents": len(self.agents),
+            "available_roles": [role.value for role in self.agents.keys()],
             "agent_details": {
                 role.value: {
                     "name": agent.name,

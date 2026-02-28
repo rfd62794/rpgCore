@@ -1267,8 +1267,8 @@ Provide as JSON with detailed steps.
                 print(f"Total Agents: {status['total_agents']}")
                 print(f"Available Roles: {', '.join(status['available_roles'])}")
                 print(f"\nAgent Details:")
-                for role, details in status['agents'].items():
-                    print(f"  {role}: {details['name']} ({details['capabilities_count']} capabilities)")
+                for role, details in status['agent_details'].items():
+                    print(f"  {role}: {details['name']} ({details['capabilities']} capabilities)")
             else:
                 print("❌ Swarm not initialized")
         
