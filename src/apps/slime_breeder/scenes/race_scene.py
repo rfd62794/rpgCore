@@ -52,6 +52,14 @@ class RaceScene(Scene):
         self.track_height_ratio = 0.6  # Road takes 60% of arena height
         self.track_border_width = 8
         self.lane_count = 4
+        
+        # Fixed slime render size - zoom affects world coordinates, not render size
+        self.SLIME_RENDER_RADIUS = 24  # Fixed pixels always
+        
+        # Zoom levels
+        self.ZOOM_NORMAL = 1.0   # standard follow
+        self.ZOOM_OUT_MAX = 0.55  # show full pack
+        self.ZOOM_FINISH = 1.3   # tighten on final stretch
 
     def _setup_ui(self):
         self.ui_components = []
