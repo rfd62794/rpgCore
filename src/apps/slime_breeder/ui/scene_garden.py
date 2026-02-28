@@ -51,8 +51,9 @@ class GardenScene(GardenSceneBase):
         
         profile_w = int(self.right_panel_rect.width * 0.55)
         stats_w = self.right_panel_rect.width - profile_w - padding * 3
-        bottom_h = 110
-        top_h = self.right_panel_rect.height - bottom_h - padding * 3
+        # Shrink top panels to move buttons up
+        top_h = 340
+        bottom_h = self.right_panel_rect.height - top_h - padding * 3
         
         self.profile_rect = pygame.Rect(self.right_panel_rect.x + padding, self.right_panel_rect.y + padding, profile_w, top_h)
         self.stats_rect = pygame.Rect(self.profile_rect.right + padding, self.right_panel_rect.y + padding, stats_w, top_h)
