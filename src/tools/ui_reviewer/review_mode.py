@@ -35,6 +35,7 @@ def run_review(scene_name: str):
 
     # Initialize scene
     scene = scene_classes[scene_name](manager, spec, roster=roster)
+    scene.on_enter()
     
     # Force selection of one slime for the profile card review
     if scene_name == "garden" and roster.slimes:
