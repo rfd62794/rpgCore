@@ -3,6 +3,7 @@ Adapted from TurboShells.
 """
 
 import random
+from dataclasses import dataclass
 from enum import Enum
 
 TRACK_LENGTH_LOGIC = 1500
@@ -16,6 +17,16 @@ class TerrainType(Enum):
     HURDLE = "hurdle"      # jump required (future)
     PUSHBLOCK = "push_block"  # interactive (future)
     VOID = "void"          # shortcut/hazard (future)
+
+@dataclass
+class TerrainZone:
+    terrain_type: TerrainType
+    start_dist: float   # world distance where zone starts
+    end_dist: float     # world distance where zone ends
+    
+    @property
+    def width(self) -> float:
+        return self.end_dist - self.start_dist
 
 # Speed modifiers per terrain
 TERRAIN_SPEED_MOD = {
@@ -37,6 +48,33 @@ CULTURAL_TERRAIN_BONUS = {
     "void": None,  # random advantage each race
     "mixed": None,  # no terrain advantage
 }
+
+def generate_zones(track_length: float) -> list[TerrainZone]:
+    """Generate wide terrain zones instead of thin segments."""
+    zones = []
+    current = 0.0
+    
+    while current < track_length:
+        # Grass stretches: 200-400 units
+        grass_width = random.uniform(200, 400)
+        zones.append(TerrainZone(
+            TerrainType.GRASS, current, 
+            current + grass_width))
+        current += grass_width
+        
+        # Obstacle zone: 150-300 units
+        terrain = random.choice([
+            TerrainType.WATER,
+            TerrainType.ROCK, 
+            TerrainType.MUD
+        ])
+        obstacle_width = random.uniform(150, 300)
+        zones.append(TerrainZone(
+            terrain, current,
+            current + obstacle_width))
+        current += obstacle_width
+    
+    return zones
 
 def generate_track(length: int = TRACK_LENGTH_LOGIC):
     """Generate a simple terrain track as a list of terrain types.
