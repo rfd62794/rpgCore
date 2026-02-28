@@ -223,7 +223,8 @@ def test_upgrade_system_upgrade_tower():
     assert tower.damage_upgrades == 1
     
     # Cannot upgrade with insufficient gold
-    success, remaining_gold = system.upgrade_tower(tower, "range", 30)
+    tower2 = TowerComponent()
+    success, remaining_gold = system.upgrade_tower(tower2, "range", 30)
     assert success is False
     assert remaining_gold == 50  # Should return original gold when upgrade fails
 
