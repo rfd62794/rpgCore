@@ -22,9 +22,13 @@ class BreedingState(Enum):
     COMPLETE = auto()
 
 class BreedingScene(Scene):
-    def __init__(self, roster: Roster):
-        super().__init__()
-        self.roster = roster
+    def __init__(self, manager, **kwargs):
+        super().__init__(manager, **kwargs)
+        self.roster = kwargs.get("roster")
+        if not self.roster:
+            from src.shared.teams.roster_save import load_roster
+            self.roster = load_roster()
+            
         self.state = BreedingState.SELECT_A
         
         # Selection state
@@ -89,6 +93,14 @@ class BreedingScene(Scene):
         elif self.state == BreedingState.COMPLETE:
             return "Breeding complete."
         return ""
+
+    def on_enter(self, **kwargs):
+        """Hook for BaseSystem initialization."""
+        pass
+
+    def on_exit(self):
+        """Cleanup logic."""
+        pass
 
     def handle_events(self, events):
         for event in events:

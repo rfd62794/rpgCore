@@ -10,6 +10,12 @@ from src.shared.teams.roster import Roster, TeamRole, RosterSlime
 from src.shared.teams.roster_save import load_roster, save_roster
 
 class TeamScene(Scene):
+    def __init__(self, manager, **kwargs):
+        super().__init__(manager, **kwargs)
+        self.roster = None
+        self.team = None
+        self.ui_components = []
+        self.buttons = []
     """
     Dedicated team management screen.
     Accessed from garden via "TEAMS" button.

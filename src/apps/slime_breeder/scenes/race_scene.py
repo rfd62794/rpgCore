@@ -12,9 +12,13 @@ from src.apps.slime_breeder.ui.slime_renderer import SlimeRenderer
 from src.shared.genetics.inheritance import generate_random
 
 class RaceScene(Scene):
-    def __init__(self, roster: Roster):
-        super().__init__()
-        self.roster = roster
+    def __init__(self, manager, **kwargs):
+        super().__init__(manager, **kwargs)
+        self.roster = kwargs.get("roster")
+        if not self.roster:
+            from src.shared.teams.roster_save import load_roster
+            self.roster = load_roster()
+            
         self.engine: Optional[RaceEngine] = None
         self.track = generate_track(1500)
         self.renderer = SlimeRenderer()
@@ -133,3 +137,7 @@ class RaceScene(Scene):
         finish_x = 1500 - self.camera_x
         if 0 <= finish_x <= 800:
             pygame.draw.line(surface, (255, 255, 255), (finish_x, 100), (finish_x, 600), 5)
+
+    def on_exit(self):
+        """Cleanup logic."""
+        pass

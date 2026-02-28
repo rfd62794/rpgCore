@@ -100,3 +100,7 @@ class GardenSceneBase(Scene):
     def render_garden(self, surface: pygame.Surface):
         """Subclasses implement entity rendering."""
         pass
+
+    def on_exit(self) -> None:
+        """Cleanup logic."""
+        pass
