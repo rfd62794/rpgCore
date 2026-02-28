@@ -2,6 +2,7 @@ import os
 import pytest
 from src.apps.last_appointment.scenes.appointment_scene import AppointmentScene
 from src.shared.engine.scene_manager import SceneManager
+from src.shared.ui.spec import SPEC_720
 
 class DummyManager:
     width = 800
@@ -13,7 +14,7 @@ def scene():
     os.environ["PYTEST_CURRENT_TEST"] = "1"
     os.environ["SDL_VIDEODRIVER"] = "dummy"
     manager = DummyManager()
-    return AppointmentScene(manager)
+    return AppointmentScene(manager, SPEC_720)
 
 def test_graph_loading(scene):
     scene.on_enter()

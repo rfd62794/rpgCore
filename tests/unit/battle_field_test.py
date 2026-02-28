@@ -1,6 +1,7 @@
 import pytest
 from src.apps.slime_clan.scenes.battle_field_scene import BattleFieldScene as BattleField, SquadToken
 from src.apps.slime_clan.territorial_grid import TileState
+from src.shared.ui.spec import SPEC_720
 import pygame
 
 @pytest.fixture
@@ -8,7 +9,7 @@ def mock_bf():
     pygame.init()
     from unittest.mock import MagicMock
     mock_manager = MagicMock()
-    bf = BattleField(manager=mock_manager)
+    bf = BattleField(manager=mock_manager, spec=SPEC_720)
     bf.on_enter(region="TestRegion", difficulty="NORMAL")
     return bf
 
