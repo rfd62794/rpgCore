@@ -427,6 +427,67 @@ class AutonomousSwarm:
             print(f"  📊 {work_type.title()} progress: {progress:.1f}%")
             time.sleep(0.05)  # Short simulation time
     
+    def _execute_documentation_task(self, task):
+        """Execute documentation task"""
+        print(f"📝 Documentation Specialist working on: {task.title}")
+        self._simulate_work("documentation", task.estimated_hours * 0.1)
+    
+    def _execute_architecture_task(self, task):
+        """Execute architecture task"""
+        print(f"🏗️ Architecture Specialist working on: {task.title}")
+        self._simulate_work("architecture", task.estimated_hours * 0.1)
+    
+    def _execute_genetics_task(self, task):
+        """Execute genetics task"""
+        print(f"🧬 Genetics Specialist working on: {task.title}")
+        self._simulate_work("genetics", task.estimated_hours * 0.1)
+    
+    def _execute_ui_task(self, task):
+        """Execute UI task"""
+        print(f"🎨 UI Specialist working on: {task.title}")
+        self._simulate_work("ui", task.estimated_hours * 0.1)
+    
+    def _execute_integration_task(self, task):
+        """Execute integration task"""
+        print(f"🔗 Integration Specialist working on: {task.title}")
+        self._simulate_work("integration", task.estimated_hours * 0.1)
+    
+    def _execute_debugging_task(self, task):
+        """Execute debugging task"""
+        print(f"🐛 Debugging Specialist working on: {task.title}")
+        self._simulate_work("debugging", task.estimated_hours * 0.1)
+    
+    def _get_swarm_state(self) -> Dict[str, Any]:
+        """Get current swarm state for monitoring"""
+        
+        total_tasks = len(self.tasks)
+        completed_tasks = len(self.completed_tasks)
+        failed_tasks = len(self.failed_tasks)
+        in_progress_tasks = len(self.active_tasks)
+        
+        # Calculate average task duration
+        avg_duration = 0.0
+        if self.task_durations:
+            avg_duration = sum(self.task_durations.values()) / len(self.task_durations)
+        
+        # Count circuit breakers
+        circuit_breakers_open = 0
+        if self.self_healer:
+            circuit_breakers_open = sum(1 for open in self.self_healer.circuit_breakers.values() if open)
+        
+        return {
+            "total_agents": len(self.agent_workloads),
+            "active_agents": sum(1 for w in self.agent_workloads.values() if w.current_task),
+            "idle_agents": sum(1 for w in self.agent_workloads.values() if not w.current_task),
+            "failed_agents": 0,  # TODO: Track failed agents
+            "total_tasks": total_tasks,
+            "completed_tasks": completed_tasks,
+            "failed_tasks": failed_tasks,
+            "in_progress_tasks": in_progress_tasks,
+            "avg_task_duration": avg_duration,
+            "circuit_breakers_open": circuit_breakers_open,
+        }
+    
     def get_swarm_status(self) -> Dict[str, Any]:
         """Get next available task from queue"""
         
