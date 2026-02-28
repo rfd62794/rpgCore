@@ -6,7 +6,7 @@ from src.shared.genetics.genome import SlimeGenome
 class MovementType(Enum):
     JUMPER = "jumper"
     scooter = "scooter"
-    ROLLER = "roller"
+    roller = "roller"
 
 def classify_movement(genome: SlimeGenome) -> MovementType:
     """Classify slime movement type based on genome traits."""
@@ -24,7 +24,7 @@ def classify_movement(genome: SlimeGenome) -> MovementType:
     
     # Roller: very round + large
     if roundness > 0.7 and size > 0.6:
-        return MovementType.ROLLER
+        return MovementType.roller
     
     # Scooter: low wobble + small
     if wobble < 0.8 and size < 0.6:
