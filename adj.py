@@ -1252,7 +1252,7 @@ Provide as JSON with detailed steps.
         if args.arg == "status":
             print(f"\n🐝 Swarm Status:")
             from src.tools.apj.agents.intent_parser import ConversationalInterface
-            chat = ConversationalInterface(self.root_dir, self._get_ollama())
+            chat = ConversationalInterface(adj.root_dir, adj._get_ollama())
             
             if chat.swarm:
                 status = chat.swarm.get_swarm_status()
@@ -1269,9 +1269,9 @@ Provide as JSON with detailed steps.
             from src.tools.apj.agents.swarm_manager import SwarmManager
             from src.tools.apj.agents.intent_parser import ConversationalInterface
             
-            chat = ConversationalInterface(self.root_dir, self._get_ollama())
+            chat = ConversationalInterface(adj.root_dir, adj._get_ollama())
             if chat.swarm:
-                manager = SwarmManager(chat.swarm, self.root_dir)
+                manager = SwarmManager(chat.swarm, adj.root_dir)
                 capabilities = manager.get_swarm_capabilities()
                 
                 print(f"Total Agents: {capabilities['total_agents']}")
@@ -1296,9 +1296,9 @@ Provide as JSON with detailed steps.
             from src.tools.apj.agents.swarm_manager import SwarmManager
             from src.tools.apj.agents.intent_parser import ConversationalInterface
             
-            chat = ConversationalInterface(self.root_dir, self._get_ollama())
+            chat = ConversationalInterface(adj.root_dir, adj._get_ollama())
             if chat.swarm:
-                manager = SwarmManager(chat.swarm, self.root_dir)
+                manager = SwarmManager(chat.swarm, adj.root_dir)
                 manager.list_templates()
             else:
                 print("❌ Swarm not initialized")
@@ -1312,9 +1312,9 @@ Provide as JSON with detailed steps.
             from src.tools.apj.agents.swarm_manager import SwarmManager
             from src.tools.apj.agents.intent_parser import ConversationalInterface
             
-            chat = ConversationalInterface(self.root_dir, self._get_ollama())
+            chat = ConversationalInterface(adj.root_dir, adj._get_ollama())
             if chat.swarm:
-                manager = SwarmManager(chat.swarm, self.root_dir)
+                manager = SwarmManager(chat.swarm, adj.root_dir)
                 
                 # Try to get extension template
                 from src.tools.apj.agents.swarm_manager import get_extension_template
@@ -1334,9 +1334,9 @@ Provide as JSON with detailed steps.
             from src.tools.apj.agents.swarm_manager import SwarmManager
             from src.tools.apj.agents.intent_parser import ConversationalInterface
             
-            chat = ConversationalInterface(self.root_dir, self._get_ollama())
+            chat = ConversationalInterface(adj.root_dir, adj._get_ollama())
             if chat.swarm:
-                manager = SwarmManager(chat.swarm, self.root_dir)
+                manager = SwarmManager(chat.swarm, adj.root_dir)
                 suggestions = manager.suggest_extensions()
                 
                 if suggestions:
