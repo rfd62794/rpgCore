@@ -9,6 +9,8 @@ from src.shared.genetics.genome import SlimeGenome, calculate_race_stats
 from src.shared.teams.roster import RosterSlime
 from src.shared.teams.stat_calculator import calculate_speed
 from .race_track import get_terrain_at, get_terrain_speed_modifier
+from .movement_type import classify_movement, MovementType
+from .movement_profiles import MOVEMENT_PROFILES
 
 class RaceParticipant:
     def __init__(self, slime: RosterSlime):
