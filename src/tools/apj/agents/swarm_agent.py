@@ -14,6 +14,7 @@ from .agent_registry import AGENT_REGISTRY, AgentCapability, AgentType
 from .tools import TOOL_REGISTRY, ToolResult
 from .child_agent import CHILD_AGENT_MANAGER, ChildAgentManager
 from .a2a_communication import A2A_MANAGER, MessageHandler, MessageType, MessagePriority, A2AMessage
+from .model_router import ModelRouter
 
 logger = logging.getLogger(__name__)
 
