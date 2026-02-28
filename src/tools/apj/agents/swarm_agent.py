@@ -144,7 +144,7 @@ class SwarmCoordinator(BaseAgent):
                 "department": "analysis",
                 "model_preference": "local",
                 "prompts": {
-                    "system": "docs/agents/prompts/generic_system.md",
+                    "system": "docs/agents/prompts/reviewer_system.md",
                     "fewshot": "docs/agents/prompts/generic_system.md"
                 },
                 "schema_name": "ReviewReport",
@@ -167,7 +167,7 @@ class SwarmCoordinator(BaseAgent):
                 "department": "execution",
                 "model_preference": "local",
                 "prompts": {
-                    "system": "docs/agents/prompts/generic_system.md",
+                    "system": "docs/agents/prompts/executor_system.md",
                     "fewshot": "docs/agents/prompts/generic_system.md"
                 },
                 "schema_name": "ExecutionReport",
