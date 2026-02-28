@@ -286,7 +286,7 @@ class RaceScene(Scene):
                 
                 # Render shadow when jumping
                 if p.jump_height > 2:
-                    shadow_alpha = int(120 * (1 - p.jump_height/20))
+                    shadow_alpha = max(1, int(120 * (1 - p.jump_height/20)))  # Ensure minimum alpha of 1
                     shadow_surface = pygame.Surface((24, 8), pygame.SRCALPHA)
                     pygame.draw.ellipse(shadow_surface, (0, 0, 0, shadow_alpha), pygame.Rect(0, 0, 24, 8))
                     surface.blit(shadow_surface, (screen_x - 12, ly - 4))
