@@ -30,6 +30,7 @@ class UISpec:
     color_text: tuple        # (220, 220, 240)
     color_text_dim: tuple    # (140, 140, 160)
     color_accent: tuple      # (100, 180, 255)
+    color_accent_alt: tuple   # (150, 200, 255)
     color_danger: tuple      # (200, 60, 60)
     color_success: tuple     # (60, 200, 100)
     color_warning: tuple     # (200, 160, 40)
@@ -76,6 +77,7 @@ SPEC_720 = UISpec(
     color_text=(220, 220, 240),
     color_text_dim=(140, 140, 160),
     color_accent=(100, 180, 255),
+    color_accent_alt=(150, 200, 255),
     color_danger=(200, 60, 60),
     color_success=(60, 200, 100),
     color_warning=(200, 160, 40),
@@ -121,6 +123,7 @@ SPEC_1080 = UISpec(
     color_text=SPEC_720.color_text,
     color_text_dim=SPEC_720.color_text_dim,
     color_accent=SPEC_720.color_accent,
+    color_accent_alt=SPEC_720.color_accent_alt,
     color_danger=SPEC_720.color_danger,
     color_success=SPEC_720.color_success,
     color_warning=SPEC_720.color_warning,
