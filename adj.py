@@ -1265,10 +1265,10 @@ Provide as JSON with detailed steps.
             if chat.swarm:
                 status = chat.swarm.get_swarm_status()
                 print(f"Total Agents: {status['total_agents']}")
-                print(f"Available Roles: {', '.join(status['available_roles'])}")
+                print(f"Available Agents: {', '.join(status['available_agents'])}")
                 print(f"\nAgent Details:")
-                for role, details in status['agent_details'].items():
-                    print(f"  {role}: {details['name']} ({details['capabilities']} capabilities)")
+                for agent_type, details in status['agent_details'].items():
+                    print(f"  {agent_type}: {details['name']} ({details['department']})")
             else:
                 print("❌ Swarm not initialized")
         

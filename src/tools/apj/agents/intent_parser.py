@@ -171,29 +171,43 @@ Type 'quit' or 'exit' to leave.
         return any(keyword in user_lower for keyword in swarm_keywords)
     
     def _process_with_swarm(self, user_input: str) -> str:
-        """Process request using Agent Swarm"""
+        """Process request using SwarmAgent with BaseAgent framework"""
         
         # Swarm should already be initialized
         if not self.swarm:
             return "❌ Agent Swarm not available"
         
-        # Process through swarm
-        result = self.swarm.process_request(user_input, self.context)
-        
-        # Format result for display
-        if "error" in result:
-            return f"❌ Error: {result['error']}"
-        
-        formatted_result = "🐝 Swarm Processing Results:\n\n"
-        
-        for task_id, task_result in result.items():
-            if "error" in task_result:
-                formatted_result += f"❌ {task_id}: {task_result['error']}\n\n"
-            else:
-                formatted_result += f"✅ {task_id} ({task_result.get('agent', 'unknown')}):\n"
-                formatted_result += f"   {task_result.get('result', 'No result')[:200]}...\n\n"
-        
-        return formatted_result
+        # Process through swarm using existing framework
+        try:
+            result = self.swarm.process_request(user_input, self.context)
+            
+            # Format result for display
+            if "error" in result:
+                return f"❌ Error: {result['error']}"
+            
+            formatted_result = "🐝 Swarm Processing Results:\n\n"
+            
+            for task_id, task_result in result.items():
+                if "error" in task_result:
+                    formatted_result += f"❌ {task_id}: {task_result['error']}\n\n"
+                else:
+                    formatted_result += f"✅ {task_id} ({task_result.get('agent', 'unknown')}):\n"
+                    
+                    # Extract meaningful content from the result
+                    result_content = task_result.get('result', 'No result')
+                    if hasattr(result_content, 'summary'):
+                        formatted_result += f"   {result_content.summary}\n"
+                    elif hasattr(result_content, 'response'):
+                        formatted_result += f"   {result_content.response}\n"
+                    elif isinstance(result_content, str):
+                        formatted_result += f"   {result_content[:200]}...\n"
+                    else:
+                        formatted_result += f"   {str(result_content)[:200]}...\n"
+            
+            return formatted_result
+            
+        except Exception as e:
+            return f"❌ Swarm processing failed: {e}"
     
     def _get_llm_response(self, user_input: str) -> str:
         """
