@@ -3,6 +3,7 @@ import pygame
 from src.shared.ui.base import UIComponent
 from src.shared.ui.panel import Panel
 from src.shared.ui.label import Label
+from src.shared.ui.spec import UISpec
 
 class TextWindow(Panel):
     """Animated text display panel with character reveal."""
@@ -10,15 +11,11 @@ class TextWindow(Panel):
     def __init__(
         self,
         rect: pygame.Rect,
+        spec: UISpec,
         chars_per_second: float = 30.0,
-        bg_color: Tuple[int, int, int] = (20, 20, 30),
-        border_color: Tuple[int, int, int] = (100, 100, 120),
-        border_width: int = 2,
-        font_size: int = 24,
-        text_color: Tuple[int, int, int] = (220, 220, 220),
         z_order: int = 0
     ):
-        super().__init__(rect, bg_color, border_color, border_width, z_order=z_order)
+        super().__init__(rect, spec, variant="overlay", border=True, z_order=z_order)
         
         self.chars_per_second = chars_per_second
         self.full_text = ""
@@ -34,10 +31,10 @@ class TextWindow(Panel):
             rect.height - 40
         )
         self.label = Label(
-            rect=label_rect,
             text="",
-            font_size=font_size,
-            color=text_color,
+            position=(label_rect.x, label_rect.y),
+            spec=spec,
+            size="lg",
             wrap_width=label_rect.width
         )
         self.add_child(self.label)
