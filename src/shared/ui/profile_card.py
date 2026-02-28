@@ -8,6 +8,7 @@ from src.shared.teams.roster import RosterSlime, TeamRole
 from src.shared.teams.stat_calculator import (
     calculate_hp, calculate_attack, calculate_speed
 )
+from src.shared.ui.stats_panel import StatsPanel
 
 class ProfileCard(UIComponent):
     def __init__(self, slime: RosterSlime, position: Tuple[int, int]):
@@ -20,6 +21,9 @@ class ProfileCard(UIComponent):
         super().__init__(rect)
         self.slime = slime
         self.position = position
+        
+        # Add StatsPanel as a "child" (manually rendered for now)
+        self.stats_panel = StatsPanel(slime, (position[0] + 80, position[1] + 60), width=self.WIDTH - 90)
 
     def update(self, dt_ms: int) -> None:
         pass
@@ -36,11 +40,21 @@ class ProfileCard(UIComponent):
         portrait_rect = pygame.Rect(x + self.PADDING, y + self.PADDING, 60, 60)
         render_slime_portrait(surface, self.slime.genome, portrait_rect)
         
-        # Name
+        # Name & Level
         render_text(surface, self.slime.name, 
                    (x + 80, y + 12), size=16, bold=True)
+        render_text(surface, f"Lv.{self.slime.level}",
+                   (x + self.WIDTH - 50, y + 12), size=14, color=(200, 200, 100))
         
-        # Team badge
+        # XP Bar
+        xp_rect = pygame.Rect(x + 80, y + 30, self.WIDTH - 90, 4)
+        pygame.draw.rect(surface, (40, 40, 50), xp_rect)
+        xp_pct = min(1.0, self.slime.experience / self.slime.xp_to_next_level)
+        if xp_pct > 0:
+            fill_rect = pygame.Rect(xp_rect.x, xp_rect.y, int(xp_rect.width * xp_pct), xp_rect.height)
+            pygame.draw.rect(surface, (100, 200, 100), fill_rect)
+
+        # Team & Culture badges
         team_color = {
             TeamRole.DUNGEON:    (180, 60,  60),
             TeamRole.UNASSIGNED: (80,  80,  80),
@@ -55,20 +69,28 @@ class ProfileCard(UIComponent):
             team_color = (60, 60, 60)
             
         render_badge(surface, team_label, 
-                    (x + 80, y + 36), team_color)
+                    (x + 80, y + 42), team_color)
         
-        # Stats from genome
-        hp  = calculate_hp(self.slime.genome)
-        atk = calculate_attack(self.slime.genome)
-        spd = calculate_speed(self.slime.genome)
+        # Culture badge
+        culture_color = {
+            "ember":   (200, 80, 40),
+            "crystal": (140, 200, 255),
+            "moss":    (80, 180, 80),
+            "coastal": (80, 140, 180),
+            "void":    (100, 40, 140),
+            "mixed":   (140, 140, 140)
+        }.get(self.slime.genome.cultural_base.value, (140, 140, 140))
         
-        render_stat(surface, "HP",  hp,  (x + 80, y + 66))
-        render_stat(surface, "ATK", atk, (x + 80, y + 84))
-        render_stat(surface, "SPD", spd, (x + 80, y + 102))
+        render_badge(surface, self.slime.genome.cultural_base.value.upper(),
+                    (x + 150, y + 42), culture_color)
+        
+        # Stats via reusable panel
+        self.stats_panel.render(surface)
         
         # Genetic trait hint (bottom)
         trait_hint = get_dominant_trait(self.slime.genome)
-        render_text(surface, f"Trait: {trait_hint}",
+        breeding_status = "" if self.slime.can_breed else "(Too Young)"
+        render_text(surface, f"Trait: {trait_hint} {breeding_status}",
                    (x + self.PADDING, y + self.HEIGHT - 22),
                    size=12, color=(140, 140, 160))
 

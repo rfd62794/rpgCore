@@ -43,8 +43,7 @@ class GardenScene(GardenSceneBase):
         self.new_btn = Button(pygame.Rect(20, btn_y, btn_w, btn_h), text="New Slime", on_click=self._add_new_slime)
         self.action_bar.add_child(self.new_btn)
         
-        self.breed_btn = Button(pygame.Rect(150, btn_y, btn_w, btn_h), text="Breed", on_click=self._breed_selected)
-        self.breed_btn.set_enabled(False)
+        self.breed_btn = Button(pygame.Rect(150, btn_y, btn_w, btn_h), text="Breed", on_click=self._go_to_breeding)
         self.action_bar.add_child(self.breed_btn)
 
         self.release_btn = Button(pygame.Rect(280, btn_y, btn_w, btn_h), text="Release", on_click=self._release_selected)
@@ -60,6 +59,9 @@ class GardenScene(GardenSceneBase):
         
         self.dungeon_nav_btn = Button(pygame.Rect(130, 10, 120, 40), text="DUNGEON", on_click=self._go_to_dungeon)
         self.top_bar.add_child(self.dungeon_nav_btn)
+
+        self.racing_nav_btn = Button(pygame.Rect(260, 10, 100, 40), text="RACING", on_click=self._go_to_racing)
+        self.top_bar.add_child(self.racing_nav_btn)
 
         # Sync initial slimes if garden is empty but roster has slimes
         if not self.garden_state.slimes and self.roster.slimes:
@@ -98,28 +100,8 @@ class GardenScene(GardenSceneBase):
         self.roster.add_slime(rs)
         save_roster(self.roster)
 
-    def _breed_selected(self):
-        if len(self.selected_entities) == 2:
-            s1, s2 = self.selected_entities
-            child_name = f"{s1.name[:3]}{s2.name[3:]} Jr"
-            child_genome = breed(s1.genome, s2.genome)
-            # Spawn near parents
-            pos = (s1.kinematics.position.x + 20, s1.kinematics.position.y + 20)
-            child = Slime(child_name, child_genome, pos)
-            self.garden_state.add_slime(child)
-            
-            # Add to roster
-            rs = RosterSlime(
-                slime_id=child_name.lower().replace(" ", "_"),
-                name=child_name,
-                genome=child_genome
-            )
-            self.roster.add_slime(rs)
-            save_roster(self.roster)
-
-            # Select the child
-            self.selected_entities = [child]
-            self.on_selection_changed()
+    def _go_to_breeding(self):
+        self.request_scene("breeding")
 
     def _release_selected(self):
             for s in self.selected_entities:
@@ -137,6 +119,9 @@ class GardenScene(GardenSceneBase):
 
     def _go_to_teams(self):
         self.request_scene("teams")
+
+    def _go_to_racing(self):
+        self.request_scene("racing")
 
     def _go_to_dungeon(self):
         team = self.roster.get_dungeon_team()
@@ -160,7 +145,6 @@ class GardenScene(GardenSceneBase):
 
     def on_selection_changed(self):
         num_selected = len(self.selected_entities)
-        self.breed_btn.set_enabled(num_selected == 2)
         self.release_btn.set_enabled(num_selected > 0)
         
         # Clear previous card

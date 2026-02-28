@@ -2,6 +2,8 @@ import pygame
 from loguru import logger
 from src.apps.slime_breeder.ui.scene_garden import GardenScene
 from src.apps.slime_breeder.scenes.team_scene import TeamScene
+from src.apps.slime_breeder.scenes.breeding_scene import BreedingScene
+from src.apps.slime_breeder.scenes.race_scene import RaceScene
 from src.shared.engine.scene_manager import SceneManager
 
 def create_app() -> SceneManager:
@@ -14,6 +16,8 @@ def create_app() -> SceneManager:
     )
     manager.register("garden", GardenScene)
     manager.register("teams", TeamScene)
+    manager.register("breeding", BreedingScene)
+    manager.register("racing", RaceScene)
     return manager
 
 def main():

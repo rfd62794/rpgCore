@@ -4,6 +4,8 @@ import time
 from typing import Tuple, List
 from src.apps.slime_breeder.entities.slime import Slime
 
+from src.shared.genetics.cultural_base import CULTURAL_PARAMETERS
+
 class SlimeRenderer:
     def __init__(self):
         self.size_map = {
@@ -18,8 +20,13 @@ class SlimeRenderer:
         pos = (int(slime.kinematics.position.x), int(slime.kinematics.position.y))
         base_radius = self.size_map.get(slime.genome.size, 24)
         
-        # Breathing animation
-        pulse = math.sin(time.time() * 3.0) * 0.05
+        # Cultural tendencies
+        culture = slime.genome.cultural_base
+        params = CULTURAL_PARAMETERS[culture]
+        
+        # Breathing animation (slightly influenced by culture speed)
+        pulse_speed = 3.0 * (params.wobble_frequency_range[0] + params.wobble_frequency_range[1]) / 2.0
+        pulse = math.sin(time.time() * pulse_speed) * 0.05
         radius = int(base_radius * (1.0 + pulse))
         
         # Selection highlight
@@ -51,12 +58,13 @@ class SlimeRenderer:
                 points.append((px, py))
             pygame.draw.polygon(surface, color, points)
         elif shape == "amorphous":
-            # Circle with 4-6 random wobble points
+            # Circle with wobble points influenced by culture
             points = []
             num_points = 12
+            wobble_freq = (params.wobble_frequency_range[0] + params.wobble_frequency_range[1])
             for i in range(num_points):
                 angle = math.radians(i * (360 / num_points))
-                wobble = math.sin(time.time() * 2.0 + i + seed) * (radius * 0.2)
+                wobble = math.sin(time.time() * wobble_freq + i + seed) * (radius * 0.2)
                 px = pos[0] + (radius + wobble) * math.cos(angle)
                 py = pos[1] + (radius + wobble) * math.sin(angle)
                 points.append((px, py))
