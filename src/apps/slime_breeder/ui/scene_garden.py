@@ -1,5 +1,6 @@
 import pygame
 import random
+from loguru import logger
 from typing import Optional, List, Tuple
 from src.shared.engine.scene_templates.garden_scene import GardenSceneBase
 from src.shared.ui.label import Label

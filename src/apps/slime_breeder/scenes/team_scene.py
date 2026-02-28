@@ -1,4 +1,5 @@
 import pygame
+from loguru import logger
 from typing import List, Optional, Tuple
 from src.shared.engine.scene_manager import Scene
 from src.shared.ui.panel import Panel
