@@ -278,6 +278,16 @@ class AgentBootManager:
             import time
             time.sleep(0.1)
             
+            # Extract project information safely
+            blockers = []
+            goals = {}
+            next_actions = []
+            
+            if isinstance(project_status, dict):
+                blockers = project_status.get("blockers", [])
+                goals = project_status.get("goals", {})
+                next_actions = project_status.get("next_actions", [])
+            
             # Conversation 1: Coordinator asks strategist about current blockers
             if "strategist" in self.initialized_agents:
                 try:
@@ -287,9 +297,9 @@ class AgentBootManager:
                         content={
                             "task": "Analyze current project blockers and recommend strategy",
                             "context": {
-                                "blockers": project_status.get("blockers", []),
-                                "goals": project_status.get("goals", {}),
-                                "next_actions": project_status.get("next_actions", [])
+                                "blockers": blockers,
+                                "goals": goals,
+                                "next_actions": next_actions
                             }
                         },
                         priority=MessagePriority.HIGH
