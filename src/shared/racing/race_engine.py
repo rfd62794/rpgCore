@@ -5,7 +5,7 @@ Adapted from TurboShells.
 import time
 import math
 from typing import List, Optional
-from src.shared.genetics.genome import SlimeGenome
+from src.shared.genetics.genome import SlimeGenome, calculate_race_stats
 from src.shared.teams.roster import RosterSlime
 from src.shared.teams.stat_calculator import calculate_speed
 from .race_track import get_terrain_at, get_terrain_speed_modifier
@@ -23,24 +23,23 @@ class RaceParticipant:
         self.laps_complete = 0
         self.finish_position = 0
         
+        # Calculate race stats from genome
+        race_stats = calculate_race_stats(slime.genome)
+        self.mass = race_stats["mass"]
+        self.heft_power = race_stats["heft_power"]
+        self.strength = race_stats["strength"]
+        
         # Jump state
         self.jump_phase = 0.0      # 0.0 = grounded, 0-1 = in jump arc
         self.jump_height = 0.0     # current visual height
         self.is_jumping = False
         self.jump_cooldown = 0.0   # recovery time after landing
         
-        # Jump stats derived from genome
-        self.jump_speed = 0.8 + slime.genome.energy * 0.4  # Use energy instead of wobble_frequency
-        
-        # Size multiplier for jump distance
-        size_multipliers = {
-            "tiny": 0.7, "small": 0.85, "medium": 1.0, 
-            "large": 1.2, "massive": 1.5
-        }
-        size_mult = size_multipliers.get(slime.genome.size, 1.0)
-        
-        self.jump_distance = size_mult * self.base_speed * 0.3 + self.base_speed * 0.3
-        self.jump_recovery = max(0.1, 0.5 - self.base_speed * 0.1)
+        # Jump stats from race calculation
+        self.jump_distance = race_stats["jump_distance"]
+        self.jump_speed = 0.8 + slime.genome.energy * 0.4  # Still use energy for rhythm
+        self.jump_recovery = race_stats["jump_cooldown"]
+        self.max_jump_height = race_stats["jump_height"]  # Store max height separately
         
         # Physics constants
         self.acceleration_base = self.base_speed * 15.0  # Scales with stats
@@ -54,8 +53,24 @@ class RaceParticipant:
         # Jump physics update
         self._update_jump(dt)
         
-        # Terrain affects jump performance
+        # Terrain affects jump performance based on mass and strength
         terrain_mod = get_terrain_speed_modifier(terrain, self.slime.genome.cultural_base.value)
+        
+        # Additional terrain modifiers based on mass
+        if terrain == "water":
+            # Heavy slimes sink more in water
+            water_penalty = self.mass * 0.3  # Heavy slimes get extra penalty
+            terrain_mod = max(0.3, terrain_mod - water_penalty)
+        elif terrain == "rock":
+            # Heavy slimes carry momentum through rock
+            if self.mass > 0.7:  # Heavy slimes
+                terrain_mod = min(1.2, terrain_mod + 0.2)  # Bonus for heavy mass
+            else:  # Light slimes bounce off
+                terrain_mod = max(0.4, terrain_mod - 0.3)
+        elif terrain == "mud":
+            # Heavy slimes get stuck in mud
+            mud_penalty = self.mass * 0.4
+            terrain_mod = max(0.2, terrain_mod - mud_penalty)
         
         # Distance gained during jump (affected by terrain)
         distance_gained = 0.0
@@ -81,7 +96,8 @@ class RaceParticipant:
             self.jump_phase += self.jump_speed * dt
             
             # Arc: sin curve for smooth up/down
-            self.jump_height = math.sin(self.jump_phase * math.pi) * 20  # max 20px visual height
+            # Use calculated jump height from race stats
+            self.jump_height = math.sin(self.jump_phase * math.pi) * self.max_jump_height
             
             # Land when arc complete
             if self.jump_phase >= 1.0:

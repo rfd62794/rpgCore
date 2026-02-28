@@ -15,14 +15,14 @@ def test_race_track_terrain():
 
 def test_race_engine_simulation():
     # Setup test slimes
-    s1 = RosterSlime("s1", "Speedy", SlimeGenome(
+    s1 = RosterSlime("s1", "Light", SlimeGenome(
         shape="round", size="small", base_color=(100, 100, 100),
         pattern="solid", pattern_color=(0,0,0), accessory="none",
         curiosity=0.5, energy=1.0, affection=0.5, shyness=0.1,
         cultural_base=CulturalBase.MOSS # Moss has speed modifier 1.3
     ), level=1)
     
-    s2 = RosterSlime("s2", "Slowy", SlimeGenome(
+    s2 = RosterSlime("s2", "Heavy", SlimeGenome(
         shape="cubic", size="massive", base_color=(100, 100, 100),
         pattern="solid", pattern_color=(0,0,0), accessory="none",
         curiosity=0.5, energy=0.1, affection=0.5, shyness=0.1,
@@ -35,9 +35,10 @@ def test_race_engine_simulation():
     # Tick simulation
     for _ in range(100):
         engine.tick(0.1)
-        
-    # Speedy slime should be ahead or at least not behind
-    assert engine.participants[0].distance >= engine.participants[1].distance
+    
+    # With new mass mechanics, heavy slime should be faster due to momentum
+    # Light slime has less mass, so less force/distance per jump
+    assert engine.participants[1].distance >= engine.participants[0].distance
     
     # Run until finish
     for _ in range(1000):
@@ -45,8 +46,8 @@ def test_race_engine_simulation():
         if engine.is_finished(): break
         
     assert engine.is_finished()
-    assert engine.participants[0].finished
-    assert engine.participants[0].rank == 1
+    assert engine.participants[1].finished  # Heavy slime wins
+    assert engine.participants[1].rank == 1
 
 def test_terrain_influence():
     s = RosterSlime("s", "Racer", SlimeGenome(
