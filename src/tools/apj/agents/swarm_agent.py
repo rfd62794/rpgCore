@@ -40,6 +40,9 @@ class SwarmCoordinator(BaseAgent):
         """Setup A2A communication handler"""
         self.message_handler = MessageHandler(self.config.name)
         
+        # Set A2A support flag
+        self.message_handler.supports_a2a = True
+        
         # Register message handlers
         self.message_handler.register_handler(MessageType.REQUEST, self._handle_request)
         self.message_handler.register_handler(MessageType.TASK, self._handle_task)
@@ -51,7 +54,7 @@ class SwarmCoordinator(BaseAgent):
             logger.info(f"🔗 Swarm coordinator registered for A2A communication")
         except Exception as e:
             logger.error(f"❌ Failed to register swarm coordinator: {e}")
-            # Create a simple handler that supports basic operations
+            # Ensure the handler supports A2A even if registration failed
             self.message_handler.supports_a2a = True
     
     def _handle_request(self, message: A2AMessage) -> Optional[A2AMessage]:

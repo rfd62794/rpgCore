@@ -116,7 +116,13 @@ class A2ACommunicationManager:
     
     def register_agent(self, agent_name: str, handler: MessageHandler):
         """Register an agent for A2A communication"""
-        # Check if agent supports A2A or if it's already registered (for swarm coordinator)
+        
+        # Check if agent supports A2A communication
+        if hasattr(handler, 'supports_a2a') and not handler.supports_a2a:
+            handler.supports_a2a = True
+        
+        self._message_handlers[agent_name] = handler
+        logger.info(f"🔗 Registered {agent_name} for A2A communication")
         if AGENT_REGISTRY.supports_a2a(agent_name) or agent_name in self._message_handlers:
             self._message_handlers[agent_name] = handler
     

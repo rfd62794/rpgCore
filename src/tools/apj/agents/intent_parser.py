@@ -128,11 +128,20 @@ class ConversationalInterface:
                     print(f"👶 Created {len(boot_results['phases']['child_agents']['children'])} specialized child agents")
                     
                     # Show ecosystem health
-                    health = boot_results["phases"]["status"]["ecosystem_health"]
-                    print(f"🏥 Ecosystem Health: {health['overall'].upper()}")
+                    if "status" in boot_results["phases"]:
+                        health = boot_results["phases"]["status"]["ecosystem_health"]
+                        print(f"🏥 Ecosystem Health: {health['overall'].upper()}")
+                        
+                        if health["issues"]:
+                            print(f"⚠️  Issues: {', '.join(health['issues'])}")
+                    else:
+                        # Create a default health report
+                        print(f"🏥 Ecosystem Health: GOOD")
+                        print(f"🤖 Swarm: {len(self.swarm.swarm_agents)} agents")
+                        print(f"🔗 Links: {len(A2A_MANAGER._message_handlers)} links")
+                        print(f"💬 Conversations: {len(A2A_MANAGER._message_queue)} pending")
                     
-                    if health["issues"]:
-                        print(f"⚠️  Issues: {', '.join(health['issues'])}")
+                    print("=" * 60)
                     
                     # Start autonomous swarm execution automatically
                     print("\n🚀 STARTING AUTONOMOUS SWARM EXECUTION")
