@@ -257,7 +257,7 @@ class TaskLoader:
     def load_steps(self) -> Dict[str, Step]:
         """Load step-level details (can be in TASKS.md or separate)"""
         # For now, create steps from tasks
-        self.steps = {
+        steps = {
             "S_3_0_1": Step(
                 id="S_3_0_1",
                 task_id="T_3_0",
@@ -308,7 +308,8 @@ class TaskLoader:
             )
         }
         
-        return self.steps
+        self.steps = steps
+        return steps
     
     def _link_relationships(self) -> None:
         """Link goals to milestones to tasks to steps"""
