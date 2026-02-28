@@ -126,7 +126,7 @@ class ContextDetector:
             "total_python_files": len(py_files),
             "implementation_files": len(impl_files),
             "test_files": len(test_files),
-            "total_lines": sum(len(f.read_text().split('\n')) for f in impl_files[:50]),  # Sample
+            "total_lines": sum(len(f.read_text(encoding='utf-8').split('\n')) for f in impl_files[:50]),  # Sample
             "structure": {
                 "src/shared": len(list((self.src_dir / "shared").rglob("*.py"))) if (self.src_dir / "shared").exists() else 0,
                 "src/apps": len(list((self.src_dir / "apps").rglob("*.py"))) if (self.src_dir / "apps").exists() else 0,
