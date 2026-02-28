@@ -117,13 +117,30 @@ def test_tower_defense_scene_ecs_integration(scene_manager, sample_creature):
         # Start game
         scene.session.start_game()
         
+        # Place tower in session first
+        scene.session.place_tower(sample_creature, 2, 3)
+        
         # Add tower to ECS
         scene._add_tower_to_ecs(sample_creature)
         
         # Check components were added
+        from src.shared.ecs.components.tower_component import TowerComponent
+        from src.shared.ecs.components.behavior_component import BehaviorComponent
+        from src.shared.ecs.components.grid_position_component import GridPositionComponent
+        
         assert scene.component_registry.get_component(
             sample_creature.slime_id, 
-            scene.component_registry.TowerComponent
+            TowerComponent
+        ) is not None
+        
+        assert scene.component_registry.get_component(
+            sample_creature.slime_id, 
+            BehaviorComponent
+        ) is not None
+        
+        assert scene.component_registry.get_component(
+            sample_creature.slime_id, 
+            GridPositionComponent
         ) is not None
         
         # Test grid position
@@ -291,6 +308,7 @@ def test_tower_defense_scene_upgrade_system(scene_manager, sample_creature):
         
         # Test upgrade system
         from src.shared.ecs.components.tower_component import TowerComponent
+        from src.shared.ecs.components.behavior_component import BehaviorComponent
         
         tower_component = TowerComponent()
         
