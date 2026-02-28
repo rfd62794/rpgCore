@@ -12,7 +12,7 @@ from src.shared.ui.spec import UISpec
 from src.apps.dungeon_crawler.ui.dungeon_session import DungeonSession
 from src.shared.combat.d20_resolver import D20Resolver
 from src.shared.combat.turn_order import TurnOrderManager
-from src.shared.rendering.slime_renderer import render_slime_from_genome
+from src.shared.rendering.slime_renderer import render_slime_from_genome, SlimeRenderer
 from src.shared.teams.stat_calculator import calculate_hp, calculate_attack, calculate_speed
 
 class DungeonUnit:
