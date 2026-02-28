@@ -56,7 +56,7 @@ def test_team_scene_remove_slime(mock_manager, sample_roster, monkeypatch):
     monkeypatch.setattr("src.apps.slime_breeder.scenes.team_scene.load_roster", lambda: sample_roster)
     monkeypatch.setattr("src.apps.slime_breeder.scenes.team_scene.save_roster", MagicMock())
     
-    scene = TeamScene(mock_manager)
+    scene = TeamScene(mock_manager, SPEC_720)
     scene.on_enter()
     
     slime = sample_roster.slimes[0]
@@ -69,7 +69,7 @@ def test_team_scene_remove_slime(mock_manager, sample_roster, monkeypatch):
 def test_team_scene_back_to_garden(mock_manager, monkeypatch):
     monkeypatch.setattr("src.apps.slime_breeder.scenes.team_scene.load_roster", MagicMock())
     
-    scene = TeamScene(mock_manager)
+    scene = TeamScene(mock_manager, SPEC_720)
     scene._back_to_garden()
     mock_manager.switch_to.assert_not_called() # It uses request_scene which sets next_scene
     assert scene.next_scene == "garden"
