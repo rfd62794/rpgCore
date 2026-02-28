@@ -97,14 +97,24 @@ class Team:
     def is_full(self) -> bool:
         return len(self.members) >= self.slots
     
-    def assign(self, slime_id: str) -> bool:
-        """Assign creature by slime_id reference"""
+    def assign(self, slime_or_id) -> bool:
+        """Assign creature by slime_id reference or RosterSlime object (legacy)"""
         if self.is_full():
             return False
         
-        # Check if creature already assigned to a team
-        # This would require access to Roster to check other teams
-        # For now, we'll assume caller handles this check
+        # Handle both RosterSlime objects and slime_id strings
+        if hasattr(slime_or_id, 'slime_id'):
+            slime_id = slime_or_id.slime_id
+            # Update the RosterSlime object's team for legacy compatibility
+            slime_or_id.team = self.role
+        else:
+            slime_id = slime_or_id
+        
+        # Check if already in team
+        for member in self.members:
+            if member.slime_id == slime_id:
+                return False  # Already assigned
+        
         entry = RosterEntry(slime_id=slime_id, team=self.role)
         self.members.append(entry)
         return True
