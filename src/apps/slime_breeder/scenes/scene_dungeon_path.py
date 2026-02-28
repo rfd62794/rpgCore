@@ -299,7 +299,7 @@ class DungeonPathScene(Scene):
         py = track_rect.centery
         
         # FIX 3: Vertical Squad Formation
-        SLIME_SPACING = 28
+        SLIME_SPACING = 38 # Increased from 28
         total_h = len(self.team[:5]) * SLIME_SPACING
         start_y = py - total_h // 2 + SLIME_SPACING // 2
         
