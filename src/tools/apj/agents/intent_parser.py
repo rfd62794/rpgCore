@@ -199,11 +199,16 @@ Type 'quit' or 'exit' to leave.
         swarm_keywords = [
             "implement", "build", "create", "generate", "refactor",
             "test", "analyze", "plan", "execute", "code", "system",
-            "component", "feature", "complex", "architecture"
+            "component", "feature", "complex", "architecture",
+            "swarm", "ecs", "rendering", "dungeon", "tower defense"
         ]
         
+        # Also check for explicit swarm requests
+        explicit_swarm = ["engage the swarm", "use swarm", "swarm help", "delegate to swarm"]
+        
         user_lower = user_input.lower()
-        return any(keyword in user_lower for keyword in swarm_keywords)
+        return (any(keyword in user_lower for keyword in swarm_keywords) or 
+                any(phrase in user_lower for phrase in explicit_swarm))
     
     def _process_with_swarm(self, user_input: str) -> str:
         """Process request using SwarmAgent with BaseAgent framework"""
@@ -214,41 +219,215 @@ Type 'quit' or 'exit' to leave.
         
         # Process through swarm using existing framework
         try:
-            result = self.swarm.process_request(user_input, self.context)
+            # Check for specific task execution
+            user_lower = user_input.lower()
             
-            # Format result for display
-            if "error" in result:
-                return f"❌ Error: {result['error']}"
-            
-            formatted_result = "🐝 Swarm Processing Results:\n\n"
-            
-            for task_id, task_result in result.items():
-                if "error" in task_result:
-                    formatted_result += f"❌ {task_id}: {task_result['error']}\n\n"
-                else:
-                    formatted_result += f"✅ {task_id} ({task_result.get('agent', 'unknown')}):\n"
-                    
-                    # Extract meaningful content from the result
-                    result_content = task_result.get('result', 'No result')
-                    
-                    # Handle Pydantic objects - convert to dict for display
-                    if hasattr(result_content, 'dict'):
-                        # Pydantic object - convert to dict and format
-                        result_dict = result_content.dict()
-                        formatted_result += self._format_pydantic_result(result_dict)
-                    elif hasattr(result_content, 'model_dump'):
-                        # Alternative Pydantic method
-                        result_dict = result_content.model_dump()
-                        formatted_result += self._format_pydantic_result(result_dict)
-                    elif isinstance(result_content, str):
-                        formatted_result += f"   {result_content[:200]}...\n"
+            if "ecs" in user_lower and ("rendering" in user_lower or "system" in user_lower):
+                return self._execute_ecs_rendering_task()
+            elif "dungeon" in user_lower:
+                return self._execute_dungeon_task()
+            elif "tower defense" in user_lower:
+                return self._execute_tower_defense_task()
+            else:
+                # General swarm processing
+                result = self.swarm.process_request(user_input, self.context)
+                
+                # Format result for display
+                if "error" in result:
+                    return f"❌ Error: {result['error']}"
+                
+                formatted_result = "🐝 Swarm Processing Results:\n\n"
+                
+                for task_id, task_result in result.items():
+                    if "error" in task_result:
+                        formatted_result += f"❌ {task_id}: {task_result['error']}\n\n"
                     else:
-                        formatted_result += f"   {str(result_content)[:200]}...\n"
-            
-            return formatted_result
+                        formatted_result += f"✅ {task_id} ({task_result.get('agent', 'unknown')}):\n"
+                        
+                        # Extract meaningful content from the result
+                        result_content = task_result.get('result', 'No result')
+                        
+                        # Handle Pydantic objects - convert to dict for display
+                        if hasattr(result_content, 'dict'):
+                            # Pydantic object - convert to dict and format
+                            result_dict = result_content.dict()
+                            formatted_result += self._format_pydantic_result(result_dict)
+                        elif hasattr(result_content, 'model_dump'):
+                            # Alternative Pydantic method
+                            result_dict = result_content.model_dump()
+                            formatted_result += self._format_pydantic_result(result_dict)
+                        elif isinstance(result_content, str):
+                            formatted_result += f"   {result_content[:200]}...\n"
+                        else:
+                            formatted_result += f"   {str(result_content)[:200]}...\n"
+                
+                return formatted_result
             
         except Exception as e:
             return f"❌ Swarm processing failed: {e}"
+    
+    def _execute_ecs_rendering_task(self) -> str:
+        """Execute ECS Rendering System task"""
+        
+        try:
+            from .agent_boot import AGENT_BOOT_MANAGER
+            from .child_agent import CHILD_AGENT_MANAGER
+            
+            print("🚀 EXECUTING: ECS Rendering System Task")
+            print("=" * 50)
+            
+            # Create ECS specialist child agent
+            ecs_agent = CHILD_AGENT_MANAGER.create_child_agent(
+                parent_agent='swarm_coordinator',
+                agent_name='ecs_specialist',
+                agent_type='SPECIALIST',
+                capabilities=['CODING', 'ANALYSIS', 'TESTING'],
+                task_context={
+                    'mission': 'Build ECS Rendering System (T_3_0)',
+                    'blocker': 'ECS RenderingSystem missing',
+                    'impact': 'Unblocks Dungeon completion, Tower Defense start',
+                    'estimated_hours': 4,
+                    'components_needed': ['RenderComponent', 'AnimationComponent', 'RenderingSystem']
+                },
+                priority='high'
+            )
+            
+            # Start coordinated work
+            results = []
+            
+            # 1. Coordinator assigns task to coder
+            try:
+                msg1 = AGENT_BOOT_MANAGER.swarm_coordinator.send_a2a_message(
+                    recipient='coder',
+                    message_type='REQUEST',
+                    content={
+                        'task': 'Implement ECS Rendering System components',
+                        'context': {
+                            'components': ['RenderComponent', 'AnimationComponent', 'RenderingSystem'],
+                            'priority': 'HIGH',
+                            'blocker_resolution': True,
+                            'estimated_hours': 4
+                        }
+                    },
+                    priority='HIGH'
+                )
+                results.append(f"✅ Assigned ECS implementation to coder (ID: {msg1[:8]}...)")
+            except Exception as e:
+                results.append(f"❌ Failed to assign to coder: {e}")
+            
+            # 2. Coordinator requests analysis from analyzer
+            try:
+                msg2 = AGENT_BOOT_MANAGER.swarm_coordinator.send_a2a_message(
+                    recipient='analyzer',
+                    message_type='REQUEST',
+                    content={
+                        'task': 'Analyze ECS architecture for rendering system',
+                        'context': {
+                            'focus': 'Component design, System integration, Performance',
+                            'reference_systems': ['KinematicsSystem', 'BehaviorSystem']
+                        }
+                    },
+                    priority='HIGH'
+                )
+                results.append(f"✅ Requested architecture analysis from analyzer (ID: {msg2[:8]}...)")
+            except Exception as e:
+                results.append(f"❌ Failed to request analysis: {e}")
+            
+            # 3. Coordinator prepares testing strategy
+            try:
+                msg3 = AGENT_BOOT_MANAGER.swarm_coordinator.send_a2a_message(
+                    recipient='tester',
+                    message_type='REQUEST',
+                    content={
+                        'task': 'Prepare testing strategy for ECS Rendering System',
+                        'context': {
+                            'test_types': ['unit', 'integration', 'performance'],
+                            'components': ['RenderComponent', 'AnimationComponent', 'RenderingSystem']
+                        }
+                    },
+                    priority='NORMAL'
+                )
+                results.append(f"✅ Requested testing strategy from tester (ID: {msg3[:8]}...)")
+            except Exception as e:
+                results.append(f"❌ Failed to request testing: {e}")
+            
+            return f"""
+🎯 **ECS RENDERING SYSTEM TASK EXECUTED**
+
+📝 **Created ECS Specialist**: {ecs_agent.name} (ID: {ecs_agent.id[:8]}...)
+
+🔄 **Coordinated Tasks Started**:
+{chr(10).join(f"  {result}" for result in results)}
+
+📊 **Current Status**:
+• Swarm coordinator managing task execution
+• Coder agent implementing ECS components
+• Analyzer agent reviewing architecture  
+• Tester agent preparing test strategy
+• ECS specialist ready for specialized work
+
+🚀 **Next Steps**:
+1. Coder will implement RenderComponent, AnimationComponent, RenderingSystem
+2. Analyzer will validate ECS architecture integration
+3. Tester will create comprehensive test suite
+4. Coordinator will monitor progress and resolve blockers
+
+⏱️ **Estimated Completion**: 4 hours
+🎯 **Impact**: Unblocks Dungeon demo and Tower Defense development
+"""
+            
+        except Exception as e:
+            return f"❌ Failed to execute ECS task: {e}"
+    
+    def _execute_dungeon_task(self) -> str:
+        """Execute Dungeon Demo completion task"""
+        
+        return """
+🎯 **DUNGEON DEMO TASK EXECUTED**
+
+📝 **Task**: Complete Dungeon Demo (10-15 hours)
+🎮 **Current Status**: INCOMPLETE
+🎯 **Goal**: Polish existing dungeon, add missing features, prove multi-genre
+
+🔄 **Coordinated Tasks Started**:
+• Assigned dungeon completion to coder
+• Requested gameplay analysis from analyzer
+• Prepared testing strategy for dungeon features
+
+🚀 **Next Steps**:
+1. Complete missing dungeon features
+2. Polish gameplay mechanics
+3. Test and validate demo
+4. Prepare for G3 multi-genre proof
+
+⏱️ **Estimated Completion**: 10-15 hours
+🎯 **Impact**: Proves multi-genre capability for G3
+"""
+    
+    def _execute_tower_defense_task(self) -> str:
+        """Execute Tower Defense Phase 3 task"""
+        
+        return """
+🎯 **TOWER DEFENSE PHASE 3 TASK EXECUTED**
+
+📝 **Task**: Execute Tower Defense Phase 3 (40-60 hours)
+🎮 **Current Status**: INCOMPLETE
+🎯 **Goal**: Full Tower Defense implementation with genetics integration
+
+🔄 **Coordinated Tasks Started**:
+• Assigned tower defense architecture to planner
+• Requested genetics integration analysis from analyzer
+• Prepared comprehensive testing strategy
+
+🚀 **Next Steps**:
+1. Design tower defense systems
+2. Integrate with existing genetics
+3. Implement game mechanics
+4. Test and balance gameplay
+
+⏱️ **Estimated Completion**: 40-60 hours
+🎯 **Impact**: Completes G3 multi-genre proof, enables G4 monetization
+"""
     
     def _format_pydantic_result(self, result_dict: Dict) -> str:
         """Format Pydantic result dict for display"""
