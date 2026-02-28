@@ -21,6 +21,7 @@ class DungeonSession:
     Mirrors the SpaceTraderSession pattern.
     """
     def __init__(self):
+        logger.info("Creating DungeonSession...")
         self.hub = TheRoom()
         self.hero: Optional[Hero] = None
         self.floor: Optional[Floor] = None
@@ -28,8 +29,10 @@ class DungeonSession:
         self.ancestors: List[dict] = [] # List of {name, class, floor, kills}
         
         # Team Roster Integration
+        logger.info("Loading roster...")
         self.roster = load_roster()
         self.party_slimes = [] # List of RosterSlime
+        logger.info(f"DungeonSession created: {self}")
 
     def generate_hero_name(self) -> str:
         return f"{random.choice(FIRST_NAMES)} {random.choice(LAST_NAMES)}"
