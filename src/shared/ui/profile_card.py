@@ -113,8 +113,8 @@ class ProfileCard(UIComponent):
         render_badge(surface, self.slime.genome.cultural_base.value.upper(),
                     (text_x + 70, y + 60), culture_color)
         
-        # Stats panel on the far right side
-        stats_x = x + self.WIDTH - 100  # Position stats at far right edge
+        # Stats panel positioned just past the text content area
+        stats_x = x + self.PADDING + self.PORTRAIT_SIZE + self.PADDING + self.TEXT_AREA_WIDTH + self.PADDING
         stats_y = y + 12  # Align with name
         self.stats_panel.position = (stats_x, stats_y)
         self.stats_panel.render(surface)
