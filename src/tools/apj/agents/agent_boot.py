@@ -293,6 +293,7 @@ class AgentBootManager:
             # Conversation 1: Coordinator asks strategist about current blockers
             if "strategist" in self.initialized_agents:
                 try:
+                    print(f"🤖 swarm_coordinator → strategist: Analyzing {len(blockers)} blockers...")
                     message_id = self.swarm_coordinator.send_a2a_message(
                         recipient="strategist",
                         message_type=MessageType.REQUEST,
@@ -311,12 +312,15 @@ class AgentBootManager:
                         "message_id": message_id,
                         "topic": "Blocker analysis and strategy"
                     })
+                    print(f"✅ Message sent: {message_id[:8]}...")
                 except Exception as e:
                     results["failed"].append(f"coordinator_to_strategist: {e}")
+                    print(f"❌ Failed: {e}")
             
             # Conversation 2: Coordinator asks archivist to document current state
             if "archivist" in self.initialized_agents:
                 try:
+                    print(f"🤖 swarm_coordinator → archivist: Documenting project state...")
                     message_id = self.swarm_coordinator.send_a2a_message(
                         recipient="archivist",
                         message_type=MessageType.REQUEST,
@@ -334,11 +338,14 @@ class AgentBootManager:
                         "message_id": message_id,
                         "topic": "Project state documentation"
                     })
+                    print(f"✅ Message sent: {message_id[:8]}...")
                 except Exception as e:
                     results["failed"].append(f"coordinator_to_archivist: {e}")
+                    print(f"❌ Failed: {e}")
             
             # Conversation 3: Coordinator broadcasts project status to all agents
             try:
+                print(f"📢 swarm_coordinator → ALL: Broadcasting project status update...")
                 broadcast_id = self.swarm_coordinator.broadcast_to_all_agents({
                     "type": "project_status_update",
                     "status": project_status,
@@ -350,15 +357,19 @@ class AgentBootManager:
                     "message_id": broadcast_id,
                     "topic": "Project status broadcast"
                 })
+                print(f"✅ Broadcast sent: {broadcast_id[:8]}...")
             except Exception as e:
                 results["failed"].append(f"broadcast: {e}")
+                print(f"❌ Failed: {e}")
             
             logger.info(f"🗣️ Started {len(results['conversations'])} initial conversations")
+            print(f"💬 Conversations started: {len(results['conversations'])} successful, {len(results['failed'])} failed")
             
         except Exception as e:
             results["success"] = False
             results["failed"].append(str(e))
             logger.error(f"❌ Failed to start conversations: {e}")
+            print(f"❌ Conversation error: {e}")
         
         return results
     
@@ -466,8 +477,28 @@ class AgentBootManager:
         try:
             from .project_analyzer import PROJECT_ANALYZER
             
+            print(f"🔍 Auto-Detecting Work from Documentation...")
+            print(f"📚 Scanning project files...")
+            
             # Analyze project
             analysis = PROJECT_ANALYZER.analyze_project()
+            
+            print(f"📊 Analysis Results:")
+            print(f"  • Issues Detected: {analysis['issues_detected']}")
+            print(f"  • Recommendations: {analysis['recommendations']}")
+            print(f"  • Critical Issues: {analysis['critical_issues']}")
+            print(f"  • High Priority: {analysis['high_priority_issues']}")
+            print(f"  • Auto-Executable: {analysis['auto_executable_tasks']}")
+            print(f"  • Project Health: {analysis['project_health']}")
+            
+            # Show critical issues found
+            critical_issues = [issue for issue in analysis['issues'] if issue['priority'] == 'CRITICAL']
+            if critical_issues:
+                print(f"\n🚨 Critical Issues Found:")
+                for issue in critical_issues[:3]:  # Show first 3
+                    print(f"  • {issue['title']}")
+                    print(f"    Location: {issue['location']}")
+                    print(f"    Impact: {', '.join(issue['impact'])}")
             
             return {
                 "success": True,
@@ -480,6 +511,7 @@ class AgentBootManager:
             
         except Exception as e:
             logger.error(f"❌ Auto-detection failed: {e}")
+            print(f"❌ Auto-detection failed: {e}")
             return {
                 "success": False,
                 "error": str(e),
@@ -493,7 +525,15 @@ class AgentBootManager:
             from .project_analyzer import PROJECT_ANALYZER
             
             # Get critical tasks
+            print(f"🚀 Auto-Executing Critical Tasks...")
             executed_tasks = PROJECT_ANALYZER.auto_execute_critical_tasks()
+            
+            if executed_tasks:
+                print(f"✅ Auto-Executed {len(executed_tasks)} Critical Tasks:")
+                for task in executed_tasks:
+                    print(f"  🎯 {task}")
+            else:
+                print(f"ℹ️ No critical tasks ready for auto-execution")
             
             return {
                 "success": True,
@@ -503,6 +543,7 @@ class AgentBootManager:
             
         except Exception as e:
             logger.error(f"❌ Auto-execution failed: {e}")
+            print(f"❌ Auto-execution failed: {e}")
             return {
                 "success": False,
                 "error": str(e),
