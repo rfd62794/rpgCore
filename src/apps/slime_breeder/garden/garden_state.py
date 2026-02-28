@@ -1,60 +1,90 @@
 from typing import List, Optional, Tuple, Dict
-from src.apps.slime_breeder.entities.slime import Slime
+from src.shared.entities.creature import Creature
 from src.shared.genetics import SlimeGenome
 
 class GardenState:
+    """Garden state using unified Creature entities"""
     def __init__(self):
-        self.slimes: List[Slime] = []
-        self.selected: Optional[Slime] = None
+        self.creatures: List[Creature] = []
+        self.selected: Optional[Creature] = None
+        # Index for fast lookup by slime_id
+        self._creature_index: Dict[str, Creature] = {}
 
-    def add_slime(self, slime: Slime) -> None:
-        self.slimes.append(slime)
+    def add_creature(self, creature: Creature) -> None:
+        """Add a creature to the garden"""
+        self.creatures.append(creature)
+        self._creature_index[creature.slime_id] = creature
 
-    def remove_slime(self, name: str) -> None:
-        self.slimes = [s for s in self.slimes if s.name != name]
-        if self.selected and self.selected.name == name:
-            self.selected = None
+    def remove_creature(self, slime_id: str) -> None:
+        """Remove creature by slime_id"""
+        creature = self._creature_index.get(slime_id)
+        if creature:
+            self.creatures.remove(creature)
+            del self._creature_index[slime_id]
+            if self.selected == creature:
+                self.selected = None
 
-    def get_slime(self, name: str) -> Optional[Slime]:
-        for s in self.slimes:
-            if s.name == name:
-                return s
+    def get_creature(self, slime_id: str) -> Optional[Creature]:
+        """Get creature by slime_id (fast lookup)"""
+        return self._creature_index.get(slime_id)
+
+    def get_creature_by_name(self, name: str) -> Optional[Creature]:
+        """Legacy method - get creature by name (slower)"""
+        for creature in self.creatures:
+            if creature.name == name:
+                return creature
         return None
 
     def update(self, dt: float, cursor_pos: Optional[Tuple[float, float]] = None) -> None:
-        for slime in self.slimes:
-            slime.update(dt, cursor_pos)
+        """Update all creatures"""
+        for creature in self.creatures:
+            creature.update(dt, cursor_pos)
 
     def save(self) -> dict:
-        """Serialize for persistence."""
+        """Serialize for persistence using Creature.to_dict()"""
         data = {
-            "slimes": []
+            "creatures": [creature.to_dict() for creature in self.creatures],
+            "selected_id": self.selected.slime_id if self.selected else None
         }
-        for slime in self.slimes:
-            g = slime.genome
-            data["slimes"].append({
-                "name": slime.name,
-                "position": (slime.kinematics.position.x, slime.kinematics.position.y),
-                "genome": {
-                    "shape": g.shape,
-                    "size": g.size,
-                    "base_color": g.base_color,
-                    "pattern": g.pattern,
-                    "pattern_color": g.pattern_color,
-                    "accessory": g.accessory,
-                    "curiosity": g.curiosity,
-                    "energy": g.energy,
-                    "affection": g.affection,
-                    "shyness": g.shyness
-                }
-            })
         return data
 
     def load(self, data: dict) -> None:
-        """Restore from save."""
-        self.slimes = []
-        for s_data in data.get("slimes", []):
-            g_data = s_data["genome"]
-            genome = SlimeGenome(**g_data)
-            slime = Slime(s_data["name"], genome, s_data["position"])
-            self.add_slime(slime)
+        """Restore from save using Creature.from_dict()"""
+        self.creatures = []
+        self._creature_index = {}
+        self.selected = None
+        
+        for c_data in data.get("creatures", []):
+            creature = Creature.from_dict(c_data)
+            self.add_creature(creature)
+        
+        # Restore selected creature
+        selected_id = data.get("selected_id")
+        if selected_id:
+            self.selected = self.get_creature(selected_id)
+
+    # === Legacy compatibility methods (deprecated) ===
+    def add_slime(self, slime) -> None:
+        """Legacy compatibility - convert Slime to Creature"""
+        # Convert old Slime to Creature
+        creature = Creature(
+            name=slime.name,
+            genome=slime.genome,
+            kinematics=slime.kinematics
+        )
+        self.add_creature(creature)
+
+    def remove_slime(self, name: str) -> None:
+        """Legacy compatibility - remove by name"""
+        creature = self.get_creature_by_name(name)
+        if creature:
+            self.remove_creature(creature.slime_id)
+
+    def get_slime(self, name: str) -> Optional[Creature]:
+        """Legacy compatibility - get by name"""
+        return self.get_creature_by_name(name)
+
+    @property
+    def slimes(self) -> List[Creature]:
+        """Legacy compatibility - expose creatures as slimes"""
+        return self.creatures
