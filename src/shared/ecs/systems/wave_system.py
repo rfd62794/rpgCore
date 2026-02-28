@@ -70,8 +70,9 @@ class WaveSystem:
         )
         
         # Set enemy stats based on wave difficulty
-        enemy.current_hp = int(base_hp * wave.enemy_hp_multiplier)
-        enemy.max_hp = enemy.current_hp
+        hp = int(base_hp * wave.enemy_hp_multiplier)
+        enemy.current_hp = hp
+        enemy.max_hp = hp
         enemy.base_damage = int(base_damage * wave.enemy_speed_multiplier)
         enemy.kinematics.velocity = Vector2(base_speed * wave.enemy_speed_multiplier, 0)
         enemy.reward = int(10 * wave.enemy_reward_multiplier)
@@ -81,7 +82,9 @@ class WaveSystem:
         world_pos = Vector2(spawn_point[0] * 48, spawn_point[1] * 48)
         enemy.kinematics.position = world_pos
         
-        # Set behavior for enemy movement
+        # Add behavior component for enemy movement
+        from src.shared.ecs.components.behavior_component import BehaviorComponent
+        enemy.behavior = BehaviorComponent()
         enemy.behavior.behavior_type = "tower_defense_enemy"
         
         return enemy
