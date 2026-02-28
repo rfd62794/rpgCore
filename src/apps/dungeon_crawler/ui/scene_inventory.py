@@ -106,4 +106,4 @@ class InventoryOverlay(Scene):
 
     def _handle_close(self):
         # Return to previous scene
-        self.request_scene("the_room", session=self.session) # Simple fallback, could be smarter if tracked history
+        self.request_scene("dungeon", session=self.session) # Simple fallback, could be smarter if tracked history
