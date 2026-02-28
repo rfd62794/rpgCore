@@ -2,6 +2,7 @@
 Task executor - runs a single task autonomously with validation
 """
 
+from dataclasses import dataclass
 from pathlib import Path
 from typing import Dict, Optional, List
 from datetime import datetime
@@ -17,7 +18,6 @@ class ExecutionReport:
     task_id: str
     task_title: str
     start_time: str
-    end_time: Optional[str] = None
     status: str  # "running", "complete", "blocked", "failed"
     tests_run: int = 0
     tests_passing: int = 0
@@ -26,6 +26,7 @@ class ExecutionReport:
     files_created: List[str] = None
     blocker_reason: Optional[str] = None
     output: List[str] = None
+    end_time: Optional[str] = None
     
     def to_dict(self) -> Dict:
         """Convert to dict for JSON serialization"""
@@ -57,6 +58,7 @@ class TaskExecutor:
             task_id=task_id,
             task_title=task_spec.get('title', 'Unknown Task'),
             start_time=datetime.now().isoformat(),
+            status="running",
             output=[]
         )
     

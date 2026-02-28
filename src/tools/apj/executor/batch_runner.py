@@ -4,6 +4,7 @@ Batch runner - executes multiple tasks in sequence
          Ask for approval before continuing
 """
 
+from dataclasses import dataclass
 from typing import List, Dict, Optional, Callable
 from datetime import datetime
 from pathlib import Path
@@ -17,7 +18,7 @@ class BatchReport:
     batch_id: str
     milestone_id: str
     start_time: str
-    end_time: Optional[str] = None
+    status: str = "in_progress"  # "in_progress", "complete", "blocked"
     tasks_attempted: int = 0
     tasks_completed: int = 0
     tasks_blocked: int = 0
@@ -25,7 +26,7 @@ class BatchReport:
     current_task_index: int = 0
     task_reports: List[ExecutionReport] = None
     blocker_info: Optional[Dict] = None
-    status: str = "in_progress"  # "in_progress", "complete", "blocked"
+    end_time: Optional[str] = None
     
     def to_dict(self) -> Dict:
         """Convert to dict for JSON serialization"""
