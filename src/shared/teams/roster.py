@@ -135,6 +135,7 @@ class RosterEntry:
     slime_id: str  # Reference to Creature in Garden
     team: TeamRole = TeamRole.UNASSIGNED
     locked: bool = False  # True when on active mission
+    alive: bool = True  # Combat/mission status
     
     # Note: All other data (name, genome, level, HP, etc.) comes from Creature
     # This eliminates duplication and ensures single source of truth
