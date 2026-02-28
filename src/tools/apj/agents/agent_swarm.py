@@ -278,16 +278,24 @@ Return as JSON with task assignments.
         # Handle both list of tasks and dict of tasks
         if isinstance(assignments, list):
             # It's a list of task objects
-            for task in assignments:
-                task_id = task.get("task_id", f"task_{len(results)}")
-                print(f" Executing task: {task_id}")
+            for i, task in enumerate(assignments):
+                task_id = task.get("task_id", f"task_{i}")
+                print(f"🔄 Executing task: {task_id}")
                 
                 # Determine which agent to use
-                agents = task.get("agents", [])
-                if agents:
-                    # Use the first agent in the list
-                    agent_name = agents[0].lower()
-                    agent_role = self._map_task_to_agent(agent_name)
+                agent_name = task.get("agent", "")
+                if agent_name:
+                    # Extract the agent role from the agent name
+                    # Handle formats like "Analyzer (analyzer)" or just "analyzer"
+                    if "(" in agent_name:
+                        # Extract the role from parentheses
+                        role_match = re.search(r'\(([^)]+)\)', agent_name)
+                        if role_match:
+                            agent_role = self._map_task_to_agent(role_match.group(1))
+                        else:
+                            agent_role = self._map_task_to_agent(agent_name)
+                    else:
+                        agent_role = self._map_task_to_agent(agent_name)
                     
                     if not agent_role:
                         results[task_id] = {"error": f"No agent available for: {agent_name}"}
@@ -304,7 +312,7 @@ Context:
 
 Execute this task and provide detailed results.
 """,
-                        task.get("output_format", "text")
+                        "text"  # Use text format for now
                     )
                     
                     results[task_id] = {
@@ -318,7 +326,7 @@ Execute this task and provide detailed results.
         else:
             # It's a dict of tasks (original format)
             for task_id, task_info in assignments.items():
-                print(f" Executing task: {task_id}")
+                print(f"🔄 Executing task: {task_id}")
                 
                 # Determine which agent to use
                 agent_role = self._map_task_to_agent(task_info.get("task_type", ""))
@@ -395,6 +403,26 @@ Be thorough and follow best practices.
     def _map_task_to_agent(self, task_type: str) -> Optional[AgentRole]:
         """Map task type to appropriate agent"""
         
+        # Normalize the task type
+        task_type = task_type.lower().strip()
+        
+        # Handle various agent name formats
+        if "analyzer" in task_type or "analyze" in task_type:
+            return AgentRole.ANALYZER
+        elif "planner" in task_type or "plan" in task_type:
+            return AgentRole.PLANNER
+        elif "coder" in task_type or "code" in task_type or "implement" in task_type:
+            return AgentRole.CODER
+        elif "tester" in task_type or "test" in task_type:
+            return AgentRole.TESTER
+        elif "executor" in task_type or "execute" in task_type:
+            return AgentRole.EXECUTOR
+        elif "reviewer" in task_type or "review" in task_type:
+            return AgentRole.REVIEWER
+        elif "coordinator" in task_type or "coordinate" in task_type:
+            return AgentRole.COORDINATOR
+        
+        # Fallback to original mapping
         task_mapping = {
             "analyze": AgentRole.ANALYZER,
             "plan": AgentRole.PLANNER,
@@ -405,7 +433,7 @@ Be thorough and follow best practices.
             "coordinate": AgentRole.COORDINATOR
         }
         
-        return task_mapping.get(task_type.lower())
+        return task_mapping.get(task_type)
     
     def add_agent(self, role: AgentRole, capability: AgentCapability) -> None:
         """Add a new agent to the swarm"""
