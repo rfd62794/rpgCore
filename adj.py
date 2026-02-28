@@ -453,25 +453,14 @@ Budget: Enforced by OpenRouter, fallback to Ollama if over budget
 """)
 
     def detect_and_confirm_context(self) -> bool:
-        """
-        Boot sequence: Detect project state and get confirmation
-        
-        Flow:
-          1. Scan all documentation
-          2. Scan all code
-          3. Detect demos and systems
-          4. Analyze current status
-          5. Identify blockers
-          6. Present to user
-          7. Wait for confirmation before proceeding
-        """
+        """Boot with conversational interface"""
         
         from src.tools.apj.context_detector import ContextDetector
+        from src.tools.apj.agents.intent_parser import ConversationalInterface
         
         detector = ContextDetector(self.root_dir)
         context = detector.detect_all()
         
-        print(f"\n")
         detector.print_summary()
         
         print(f"""
@@ -481,127 +470,23 @@ Budget: Enforced by OpenRouter, fallback to Ollama if over budget
 
 This is the current state of your project.
 
-Commands available:
-  polish <demo>        - Polish and complete a specific demo
-  execute <action>     - Execute one of the next actions
-  plan <action>        - Create detailed step-by-step plan for action
-  status               - Show detailed project status
-  
-Examples:
-  python adj.py polish dungeon
-  python adj.py execute "Build T_3_0: ECS Rendering System"
-  python adj.py plan "Complete Dungeon Demo"
-
-What would you like to do?
+Starting conversational mode - ask me anything naturally.
 """)
         
-        # Interactive loop - wait for user input
-        while True:
-            try:
-                user_input = input("adj> ").strip()
-                
-                if user_input.lower() in ['exit', 'quit', 'q']:
-                    print("\n✅ Exiting ADJ")
-                    break
-                
-                if user_input.lower().startswith('polish '):
-                    demo = user_input.replace('polish ', '').strip()
-                    print(f"\n🎨 Creating polish plan for {demo}...")
-                    
-                    # Execute polish command
-                    from src.tools.apj.agents.local_agent import LocalAgent
-                    agent = LocalAgent(self.root_dir)
-                    
-                    # Create polish task
-                    task = {
-                        "id": f"POLISH_{demo.upper()}",
-                        "title": f"Polish {demo} Demo",
-                        "description": f"Complete and polish {demo} demo based on project status",
-                        "files": [],  # Auto-detect from agent
-                        "hours": 10
-                    }
-                    
-                    success = agent.execute_task(task)
-                    
-                    if success:
-                        print(f"\n✅ Polish complete. Ready to test.")
-                        # Offer to run game
-                        should_test = input("Run game? (y/n): ").strip().lower() == 'y'
-                        if should_test:
-                            self._run_game(demo)
-                    
-                    # Continue interactive loop
-                    continue
-                
-                elif user_input.lower().startswith('execute '):
-                    action = user_input.replace('execute ', '').strip()
-                    print(f"\n🚀 Executing: {action}...")
-                    
-                    from src.tools.apj.agents.local_agent import LocalAgent
-                    agent = LocalAgent(self.root_dir)
-                    
-                    # Create task from action
-                    task = {
-                        "id": "ACTION_" + action.split(':')[0].replace(' ', '_').upper(),
-                        "title": action,
-                        "description": f"Execute: {action}",
-                        "files": [],
-                        "hours": 10
-                    }
-                    
-                    success = agent.execute_task(task)
-                    
-                    if success:
-                        print(f"\n✅ Action complete.")
-                    
-                    # Continue interactive loop
-                    continue
-                
-                elif user_input.lower().startswith('plan '):
-                    action = user_input.replace('plan ', '').strip()
-                    print(f"\n📋 Creating detailed plan for: {action}...\n")
-                    
-                    from src.tools.apj.agents.local_agent import LocalAgent
-                    agent = LocalAgent(self.root_dir)
-                    
-                    # Use agent to create plan
-                    plan_prompt = f"""
-Create a detailed step-by-step implementation plan for:
-{action}
-
-Consider:
-- Current project state and blockers
-- Existing code and patterns
-- Design pillars and technical decisions
-- Estimated effort per step
-- Success criteria for completion
-
-Provide as JSON with detailed steps.
-"""
-                    
-                    from pydantic_ai import Agent
-                    plan_agent = Agent(agent.ollama_model)
-                    response = plan_agent.run(plan_prompt)
-                    print(response.data)
-                    
-                    # Continue interactive loop
-                    continue
-                
-                elif user_input.lower() == 'status':
-                    print(f"\n")
-                    detector.print_summary()
-                    continue
-                
-                else:
-                    print("Unknown command. Try: polish, execute, plan, status, or quit")
-            
-            except KeyboardInterrupt:
-                print("\n✅ Exiting ADJ")
-                break
-            except EOFError:
-                break
+        # Start conversational interface
+        chat = ConversationalInterface(self.root_dir, ollama_client=self._get_ollama())
+        chat.context = context
+        chat.run_chat_loop(context)
         
         return True
+    
+    def _get_ollama(self):
+        """Get Ollama client"""
+        try:
+            from src.tools.apj.agents.ollama_client import get_ollama_model
+            return get_ollama_model()
+        except:
+            return None
     
     def _run_game(self, demo_name: str) -> None:
         """Run a specific demo game"""
