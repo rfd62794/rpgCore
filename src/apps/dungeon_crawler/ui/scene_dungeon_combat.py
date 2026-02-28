@@ -57,13 +57,14 @@ class DungeonCombatScene(CombatSceneBase):
             }
             # Mocking slime entity for renderer
             class MockSlime:
-                def __init__(self, genome):
+                def __init__(self, genome, level):
                     self.genome = genome
+                    self.level = level
                     class Kinematics:
                         def __init__(self): self.position = pygame.Vector2(0,0)
                     self.kinematics = Kinematics()
             
-            mock_slime = MockSlime(slime.genome)
+            mock_slime = MockSlime(slime.genome, slime.level)
             self.party[slot_idx] = DungeonUnit(f"party_{slot_idx}", slime.name, stats, "party", mock_slime)
         
         # 3. Setup Turn Order
