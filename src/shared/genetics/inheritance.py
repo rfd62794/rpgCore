@@ -47,14 +47,14 @@ def generate_random(culture: Optional[CulturalBase] = None) -> SlimeGenome:
         base_spd=5.0 * params.speed_modifier
     )
 
-def breed(parent_a: SlimeGenome, parent_b: SlimeGenome, mutation_chance: float = 0.05) -> SlimeGenome:
-    """Breed two SlimeGenomes with a chance of mutation."""
+def breed(parent_a: SlimeGenome, parent_b: SlimeGenome, mutation_chance: float = 0.05, elder_bonus: bool = False) -> SlimeGenome:
+    """Breed two SlimeGenomes with a chance of mutation and generational improvement."""
     
     def inherit(trait_a, trait_b, is_float=False):
         # 50/50 inheritance
         result = random.choice([trait_a, trait_b])
         
-        # Mutation
+        # Standard Mutation
         if random.random() < mutation_chance:
             if is_float:
                 # Slight nudge for floats
@@ -81,18 +81,23 @@ def breed(parent_a: SlimeGenome, parent_b: SlimeGenome, mutation_chance: float =
         elif r < 0.2: new_culture = parent_b.cultural_base
 
     # Mutation logic
-    # Use the passed mutation_chance as base, but Void parents increase it
+    # Use the passed mutation_chance as base, but Void parents or Elder bonus increase it
     final_mut_chance = mutation_chance
     if parent_a.cultural_base == CulturalBase.VOID or parent_b.cultural_base == CulturalBase.VOID:
         final_mut_chance = max(final_mut_chance, 0.15) if final_mut_chance > 0 else 0
     
-    def apply_mutation_and_cap(val, cap):
+    def apply_improvement_and_cap(current_val, cap):
+        # improvement = (ceiling - current_base) * 0.10
+        improvement = (cap - current_val) * 0.10
+        new_val = current_val + improvement
+        
+        # Stat Mutation
         if final_mut_chance > 0 and random.random() < final_mut_chance:
             if random.random() < 0.7: # 70% chance positive
-                val *= 1.25
+                new_val *= 1.25
             else:
-                val *= 0.85
-        return min(val, cap)
+                new_val *= 0.85
+        return min(new_val, cap)
 
     # Base Stat Inheritance Rules
     params = CULTURAL_PARAMETERS[new_culture]
@@ -100,9 +105,21 @@ def breed(parent_a: SlimeGenome, parent_b: SlimeGenome, mutation_chance: float =
     atk_cap = 5.0 * params.attack_modifier * 2.0
     spd_cap = 5.0 * params.speed_modifier * 2.0
 
-    new_hp = apply_mutation_and_cap(max(parent_a.base_hp, parent_b.base_hp) * 1.10, hp_cap)
-    new_atk = apply_mutation_and_cap(((parent_a.base_atk + parent_b.base_atk) / 2.0) * 1.10, atk_cap)
-    new_spd = apply_mutation_and_cap(max(parent_a.base_spd, parent_b.base_spd) * 0.95 * 1.10, spd_cap)
+    # HP: Takes from higher parent
+    new_hp = apply_improvement_and_cap(max(parent_a.base_hp, parent_b.base_hp), hp_cap)
+
+    # ATK: Average of both parents
+    new_atk = apply_improvement_and_cap((parent_a.base_atk + parent_b.base_atk) / 2.0, atk_cap)
+
+    # SPD: Takes from faster parent - 5% penalty
+    new_spd = apply_improvement_and_cap(max(parent_a.base_spd, parent_b.base_spd) * 0.95, spd_cap)
+
+    # Elder Rare Trait Inheritance
+    accessory = inherit(parent_a.accessory, parent_b.accessory)
+    if elder_bonus and accessory == "none":
+        # Elder bonus: Higher chance if we would have gotten 'none'
+        if random.random() < 0.20:
+             accessory = random.choice([a for a in ACCESSORIES if a != "none"])
 
     return SlimeGenome(
         shape=inherit(parent_a.shape, parent_b.shape),
@@ -110,7 +127,7 @@ def breed(parent_a: SlimeGenome, parent_b: SlimeGenome, mutation_chance: float =
         base_color=inherit(parent_a.base_color, parent_b.base_color),
         pattern=inherit(parent_a.pattern, parent_b.pattern),
         pattern_color=inherit(parent_a.pattern_color, parent_b.pattern_color),
-        accessory=inherit(parent_a.accessory, parent_b.accessory),
+        accessory=accessory,
         curiosity=inherit(parent_a.curiosity, parent_b.curiosity, True),
         energy=inherit(parent_a.energy, parent_b.energy, True),
         affection=inherit(parent_a.affection, parent_b.affection, True),
@@ -118,5 +135,6 @@ def breed(parent_a: SlimeGenome, parent_b: SlimeGenome, mutation_chance: float =
         cultural_base=new_culture,
         base_hp=new_hp,
         base_atk=new_atk,
-        base_spd=new_spd
+        base_spd=new_spd,
+        generation=max(parent_a.generation, parent_b.generation) + 1
     )

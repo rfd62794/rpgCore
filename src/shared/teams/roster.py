@@ -143,6 +143,7 @@ class Roster:
             if "base_hp" not in g_data: g_data["base_hp"] = 20.0
             if "base_atk" not in g_data: g_data["base_atk"] = 5.0
             if "base_spd" not in g_data: g_data["base_spd"] = 5.0
+            if "generation" not in g_data: g_data["generation"] = 1
             
             genome = SlimeGenome(**g_data)
             rs = RosterSlime(
