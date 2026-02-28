@@ -51,14 +51,22 @@ class DungeonPathScene(Scene):
         self.track_height_ratio = 0.4
         self.track_rect = self._get_track_rect()
         
-        # FIX 2: Pre-generate enemy positions to avoid jitter
-        self.zone_enemies = {}
-        self._generate_zone_visuals()
+                self.zone_enemies[id(zone)] = enemies
 
     def _generate_zone_visuals(self):
         depth = getattr(self.track, 'depth', 1)
         from src.shared.genetics import generate_random
         
+        # Helper for rendering pre-generated enemies
+        class MockEnemy:
+            def __init__(self, data):
+                self.genome = data['genome']
+                self.level = 1
+                class Kinematics:
+                    def __init__(self, x, y): self.position = pygame.Vector2(x, y)
+                self.kinematics = Kinematics(0, 0)
+        self.MockEnemy = MockEnemy
+
         for zone in self.track.zones:
             if zone.zone_type in [DungeonZoneType.COMBAT, DungeonZoneType.BOSS]:
                 count = 1 if zone.zone_type == DungeonZoneType.BOSS else random.randint(1, 3)
@@ -269,12 +277,13 @@ class DungeonPathScene(Scene):
                     if zone.zone_type in [DungeonZoneType.COMBAT, DungeonZoneType.BOSS]:
                         # Genetic Enemy Rendering (Phase 7)
                         enemies = self.zone_enemies.get(id(zone), [])
-                        for enemy in enemies:
-                            ex = zone_center_x + enemy['offset_x']
-                            ey = track_rect.centery + enemy['offset_y']
+                        for enemy_data in enemies:
+                            ex = zone_center_x + enemy_data['offset_x']
+                            ey = track_rect.centery + enemy_data['offset_y']
                             
-                            # Render small genome-based slime
-                            self.renderer.render_at(surface, enemy, int(ex), int(ey), radius=enemy['size'])
+                            # Render small genome-based slime using a proxy object
+                            enemy_proxy = self.MockEnemy(enemy_data)
+                            self.renderer.render_at(surface, enemy_proxy, int(ex), int(ey), radius=enemy_data['size'])
                             
                             # Add small red eyes for "aggression" indicator if needed, 
                             # but the genetics alone might be enough. 
