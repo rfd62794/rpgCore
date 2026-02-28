@@ -10,9 +10,9 @@ MOVEMENT_PROFILES = {
         "ground_time": 0.0,     # no ground pause
         "speed_modifier": 1.0,
         "terrain_mods": {
-            TerrainType.rock: 1.1,  # bounces off rock
-            TerrainType.mud: 0.7, # heavy landing
-            TerrainType.water: 0.8, # splashes down
+            TerrainType.ROCK: 1.1,  # bounces off rock
+            TerrainType.MUD: 0.7, # heavy landing
+            TerrainType.WATER: 0.8, # splashes down
         }
     },
 
@@ -22,9 +22,9 @@ MOVEMENT_PROFILES = {
         "ground_time": 0.05,    # hugs ground
         "speed_modifier": 0.95,    # slightly slower base
         "terrain_mods": {
-            TerrainType.water: 1.1,  # skims surface
-            TerrainType.mud: 0.95, # barely affected
-            TerrainType.rock: 0.75, # scrapes badly
+            TerrainType.WATER: 1.1,  # skims surface
+            TerrainType.MUD: 0.95, # barely affected
+            TerrainType.ROCK: 0.75, # scrapes badly
         }
     },
 
