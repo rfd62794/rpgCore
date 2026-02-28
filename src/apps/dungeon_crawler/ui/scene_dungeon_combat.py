@@ -193,7 +193,7 @@ class DungeonCombatScene(CombatSceneBase):
     def _handle_defeat(self):
         self.add_log("Hero has fallen...")
         self.session.end_run(cause="Killed in combat")
-        self.request_scene("the_room", session=self.session)
+        self.request_scene("dungeon", session=self.session)
 
     def _handle_flee(self):
         self.add_log("Fleeing...")
