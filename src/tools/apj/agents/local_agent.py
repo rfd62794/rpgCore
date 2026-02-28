@@ -477,58 +477,95 @@ class LocalAgent:
     
     def _plan_implementation(self, context: AgentContext) -> Dict:
         """
-        Use Ollama to plan implementation
-        Agent has full codebase context, can make informed decisions
+        Use Ollama to plan implementation with full documentation context
+        Agent has complete project understanding: vision, goals, pillars, systems, etc.
         """
         
         task = context.current_task
         
         prompt = f"""
-You are an autonomous software agent with full understanding of this codebase.
+You are an autonomous software agent with COMPLETE understanding of this DGT Engine project.
 
 CURRENT TASK:
 {json.dumps(task, indent=2)}
 
-CODEBASE CONTEXT:
+=== PROJECT VISION & NORTH STAR ===
+{context.vision[:1000] if context.vision else "No vision document"}
+
+=== PROJECT GOALS ===
+{context.goals[:1000] if context.goals else "No goals document"}
+
+=== DESIGN PILLARS (Non-Negotiable Principles) ===
+{context.design_pillars[:1000] if context.design_pillars else "No design pillars"}
+
+=== PROJECT MILESTONES ===
+{context.milestones[:800] if context.milestones else "No milestones"}
+
+=== TASK BREAKDOWN ===
+{context.tasks_doc[:800] if context.tasks_doc else "No task documentation"}
+
+=== TECHNICAL DESIGN DECISIONS ===
+{context.technical_design[:1000] if context.technical_design else "No technical design"}
+
+=== FEATURE SPECIFICATIONS ===
+{context.feature_spec[:1000] if context.feature_spec else "No feature spec"}
+
+=== SYSTEM SPECIFICATIONS ===
+{context.system_specs[:1000] if context.system_specs else "No system specs"}
+
+=== ECS SYSTEM DETAILS ===
+{json.dumps(context.ecs_details, indent=2) if context.ecs_details else "No ECS details"}
+
+=== GENETICS SYSTEM DETAILS ===
+{json.dumps(context.genetics_details, indent=2) if context.genetics_details else "No genetics details"}
+
+=== RENDERING SYSTEM DETAILS ===
+{json.dumps(context.rendering_details, indent=2) if context.rendering_details else "No rendering details"}
+
+=== CODEBASE CONTEXT ===
 - Total files: {len(context.codebase_symbols)}
 - Relevant systems: {list(set(f.get('system') for f in context.file_classifications.values() if f))}
 - Relevant demos: {list(set(f.get('demo') for f in context.file_classifications.values() if f))}
 
-EXISTING IMPLEMENTATIONS (files you'll modify/extend):
+=== EXISTING IMPLEMENTATIONS ===
 {json.dumps(list(context.existing_implementations.keys()), indent=2)}
 
-TECHNICAL DESIGN DECISIONS:
-{context.technical_design[:1000]}
+=== PROJECT STATUS ===
+- Overall: {context.project_status.get('project_health', {}).get('overall_status', 'Unknown')}
+- Blockers: {len(context.project_status.get('blockers', []))} identified
+- Goals status: {json.dumps({k: v.get('status', 'unknown') for k, v in context.project_status.get('by_goal', {}).items()}, indent=2)}
 
-WHAT THIS TASK ACHIEVES:
-{context.feature_spec[:1000]}
+=== YOUR ROLE ===
+You are implementing this task within the DGT Engine ecosystem. You MUST:
+1. Follow the design pillars (they are non-negotiable)
+2. Align with the project vision and goals
+3. Use existing ECS, genetics, and rendering patterns
+4. Respect technical design decisions
+5. Build toward the milestone this task supports
+6. Consider how this affects other goals and systems
 
-SYSTEM ARCHITECTURE:
-{context.system_specs[:1000]}
-
-Your job: Create a detailed step-by-step implementation plan.
-
-For each step, provide:
-1. What to do
-2. Which files to create/modify
-3. What code to write (pseudocode is fine)
-4. How to test it
-5. Expected success criteria
-
-Be specific. Reference existing code where applicable.
-Make decisions based on the architecture and existing patterns.
+Create a detailed step-by-step implementation plan that:
+- Respects all design pillars
+- Uses existing system patterns
+- Builds incrementally
+- Includes testing
+- Verifies success criteria
 
 Return as JSON:
 {{
-  "summary": "Overall plan summary",
+  "summary": "Overall plan summary considering project context",
+  "design_considerations": ["pillar1", "pillar2", "goal_alignment", etc.],
   "steps": [
     {{
       "number": 1,
       "description": "string",
+      "rationale": "Why this step, considering project context",
       "files": ["path/to/file.py"],
       "actions": ["action1", "action2"],
       "test_command": "pytest ...",
-      "success_criteria": ["criterion1"]
+      "success_criteria": ["criterion1"],
+      "risks": ["potential issues"],
+      "dependencies": ["existing_systems", "design_decisions"]
     }}
   ]
 }}
@@ -604,8 +641,8 @@ Return as JSON:
     
     def _generate_code(self, file_path: str, step: Dict, context: AgentContext) -> Optional[str]:
         """
-        Generate code for a file using Ollama
-        Agent has context of existing code, architecture, requirements
+        Generate code for a file using Ollama with full documentation context
+        Agent has complete project understanding for intelligent code generation
         """
         
         existing_code = context.existing_implementations.get(file_path, "")
@@ -613,29 +650,96 @@ Return as JSON:
         prompt = f"""
 Generate Python code for: {file_path}
 
-STEP DESCRIPTION:
-{step.get('description')}
+=== STEP CONTEXT ===
+Description: {step.get('description')}
+Success Criteria: {json.dumps(step.get('success_criteria', []), indent=2)}
+Rationale: {step.get('rationale', 'No rationale provided')}
 
-SUCCESS CRITERIA:
-{json.dumps(step.get('success_criteria', []), indent=2)}
+=== PROJECT VISION & NORTH STAR ===
+{context.vision[:800] if context.vision else "No vision document"}
 
-EXISTING CODE (if any):
-{existing_code[:2000] if existing_code else "None - new file"}
+=== DESIGN PILLARS (Must Follow) ===
+{context.design_pillars[:800] if context.design_pillars else "No design pillars"}
 
-CODEBASE PATTERNS:
+=== RELEVANT GOALS ===
+{context.goals[:600] if context.goals else "No goals"}
+
+=== TECHNICAL DESIGN DECISIONS ===
+{context.technical_design[:800] if context.technical_design else "No technical design"}
+
+=== SYSTEM SPECIFICATIONS ===
+{context.system_specs[:600] if context.system_specs else "No system specs"}
+
+=== EXISTING CODE ===
+{existing_code[:1500] if existing_code else "None - new file"}
+
+=== CODEBASE PATTERNS ===
 Look at these similar files for patterns:
 {self._get_similar_files(file_path, context)}
 
-REQUIREMENTS:
-- Follow existing code style
-- Use ECS patterns where applicable
-- Write docstrings for all functions/classes
-- Include type hints
-- Add TODO comments for incomplete sections
-
-Generate complete, working code. Be thorough.
+=== SYSTEM-SPECIFIC GUIDANCE ===
 """
-        
+
+        # Add system-specific guidance based on file path
+        if "ecs" in file_path.lower() or "component" in file_path.lower():
+            prompt += f"""
+ECS SYSTEM DETAILS:
+{json.dumps(context.ecs_details, indent=2) if context.ecs_details else "No ECS details"}
+
+ECS PATTERNS TO FOLLOW:
+- Components are data holders, not logic
+- Systems contain the logic
+- Use dataclasses for components
+- Include type hints
+- Follow ADR-005: Components as Views, Not Owners
+"""
+
+        if "genetics" in file_path.lower() or "breed" in file_path.lower():
+            prompt += f"""
+GENETICS SYSTEM DETAILS:
+{json.dumps(context.genetics_details, indent=2) if context.genetics_details else "No genetics details"}
+
+GENETICS PATTERNS TO FOLLOW:
+- Use existing gene/allele structures
+- Follow inheritance patterns already established
+- Include trait calculations
+- Use existing breeding algorithms
+"""
+
+        if "render" in file_path.lower() or "draw" in file_path.lower():
+            prompt += f"""
+RENDERING SYSTEM DETAILS:
+{json.dumps(context.rendering_details, indent=2) if context.rendering_details else "No rendering details"}
+
+RENDERING PATTERNS TO FOLLOW:
+- Use existing rendering pipeline
+- Follow layer ordering
+- Include z-order considerations
+- Use existing sprite/animation patterns
+"""
+
+        prompt += f"""
+=== REQUIREMENTS ===
+- Follow existing code style and patterns
+- Use ECS patterns where applicable
+- Write comprehensive docstrings for all functions/classes
+- Include type hints everywhere
+- Add TODO comments for incomplete sections
+- Respect design pillars (they are non-negotiable)
+- Align with project vision and goals
+- Use existing system patterns and components
+- Consider how this affects other systems
+
+=== TESTING REQUIREMENTS ===
+- Include pytest-compatible tests
+- Test both success and failure cases
+- Mock external dependencies
+- Include integration tests where relevant
+
+Generate complete, working, production-ready code.
+Be thorough and consider the entire project ecosystem.
+"""
+
         try:
             from pydantic_ai import Agent
             agent = Agent(self.ollama_model)
