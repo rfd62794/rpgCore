@@ -429,19 +429,29 @@ class AgentBootManager:
             "issues": []
         }
         
-        # Agent health
+        # Agent health - count all available agents (swarm + existing)
+        swarm_count = len(self.swarm_coordinator.swarm_agents) if self.swarm_coordinator else 0
+        existing_count = len(AGENT_REGISTRY.get_agents_by_type(AgentType.SPECIALIST))
         total_expected = 11  # 7 swarm + 4 existing
-        initialized_count = len(self.initialized_agents)
-        health["metrics"]["agent_coverage"] = f"{initialized_count}/{total_expected}"
+        total_available = swarm_count + existing_count
+        coverage_ratio = total_available / total_expected
         
-        if initialized_count < total_expected * 0.8:
+        health["metrics"]["agent_coverage"] = f"{total_available}/{total_expected} ({coverage_ratio:.1%})"
+        health["metrics"]["swarm_agents"] = swarm_count
+        health["metrics"]["existing_agents"] = existing_count
+        
+        if coverage_ratio < 0.8:
             health["overall"] = "degraded"
             health["issues"].append("Low agent coverage")
+        elif coverage_ratio < 0.95:
+            health["overall"] = "good"
+            health["issues"].append("Some agents missing")
         
         # Communication health
         a2a_agents = len([name for name in AGENT_REGISTRY.get_all_agents() 
                            if AGENT_REGISTRY.supports_a2a(name)])
-        health["metrics"]["a2a_coverage"] = f"{a2a_agents}/{total_expected}"
+        a2a_ratio = a2a_agents / total_expected
+        health["metrics"]["a2a_coverage"] = f"{a2a_agents}/{total_expected} ({a2a_ratio:.1%})"
         
         # Tool availability
         tool_count = len(TOOL_REGISTRY.get_all_tools())
@@ -452,8 +462,13 @@ class AgentBootManager:
         health["metrics"]["pending_messages"] = pending
         
         if pending > 10:
-            health["overall"] = "stressed"
+            if health["overall"] == "healthy":
+                health["overall"] = "good"
             health["issues"].append("High message queue")
+        
+        # Overall assessment
+        if not health["issues"]:
+            health["overall"] = "excellent"
         
         return health
 
