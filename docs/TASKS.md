@@ -607,3 +607,87 @@
   status: QUEUED
   title: "Create Garden hub scene connecting Breeder and Dungeon"
   type: task
+- created: 2025-02-28
+  id: T3_0
+  milestone: M_PHASE3
+  modified: 2025-02-28
+  owner: human
+  scope: shared
+  status: QUEUED
+  tags:
+  - ecs
+  - rendering
+  title: "Phase 3.0: ECS Rendering Refactor"
+  type: task
+- created: 2025-02-28
+  id: T3_1
+  milestone: M_PHASE3
+  modified: 2025-02-28
+  owner: human
+  scope: shared
+  status: QUEUED
+  tags:
+  - ecs
+  - grid
+  title: "Phase 3.1: Grid System & Components"
+  type: task
+- created: 2025-02-28
+  id: T3_2
+  milestone: M_PHASE3
+  modified: 2025-02-28
+  owner: human
+  scope: shared
+  status: QUEUED
+  tags:
+  - ecs
+  - systems
+  title: "Phase 3.2: Tower Defense Systems"
+  type: task
+- created: 2025-02-28
+  id: T3_3
+  milestone: M_PHASE3
+  modified: 2025-02-28
+  owner: human
+  scope: shared
+  status: QUEUED
+  tags:
+  - session
+  - persistence
+  title: "Phase 3.3: TD Session & Persistence"
+  type: task
+- created: 2025-02-28
+  id: T3_4
+  milestone: M_PHASE3
+  modified: 2025-02-28
+  owner: human
+  scope: demo
+  status: QUEUED
+  tags:
+  - scene
+  - ui
+  title: "Phase 3.4: TD Scene & Integration"
+  type: task
+- created: 2025-02-28
+  id: T3_5
+  milestone: M_PHASE3
+  modified: 2025-02-28
+  owner: human
+  scope: demo
+  status: QUEUED
+  tags:
+  - tenant
+  - proof
+  title: "Phase 3.5: Fantasy RPG Tenant"
+  type: task
+- created: 2025-02-28
+  id: T3_6
+  milestone: M_PHASE3
+  modified: 2025-02-28
+  owner: human
+  scope: shared
+  status: QUEUED
+  tags:
+  - docs
+  - archive
+  title: "Phase 3.6: Archive & Documentation"
+  type: task

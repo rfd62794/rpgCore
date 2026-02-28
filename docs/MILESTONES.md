@@ -88,6 +88,29 @@
   created: 2026-02-26
   modified: 2026-02-26
 
+- id: M_PHASE3
+  type: milestone
+  title: "Phase 3: Tower Defense Integration - Modular Sprite-Driven Engine"
+  status: ACTIVE
+  goals: [G3, G4, G5]
+  tasks:
+    - Phase 3.0: ECS Rendering Refactor (RenderComponent + RenderingSystem)
+    - Phase 3.1: Grid System & Components (TowerComponent, WaveComponent, EnemyComponent)
+    - Phase 3.2: Tower Defense Systems (TowerDefenseBehaviorSystem, WaveSystem, UpgradeSystem)
+    - Phase 3.3: TD Session & Persistence (TowerDefenseSession, save/load JSON)
+    - Phase 3.4: TD Scene & Integration (TowerDefenseScene, UI, rendering)
+    - Phase 3.5: Fantasy RPG Tenant (multi-tenant proof-of-concept)
+    - Phase 3.6: Archive & Documentation (demo inventory, governance)
+  owner: human
+  created: 2025-02-28
+  modified: 2025-02-28
+  success_criteria:
+    - "785+ tests passing"
+    - "Tower Defense playable with pixel-gen towers + sprite enemies"
+    - "Fantasy RPG playable with same code, different assets"
+    - "Multi-tenant configuration proven"
+    - "Zero breaking changes to existing demos"
+
 # PARKED — previous milestones not yet mapped to vision
 - id: M_PARKED
   type: milestone
