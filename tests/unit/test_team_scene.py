@@ -70,7 +70,18 @@ def test_team_scene_remove_slime(mock_manager, sample_roster, monkeypatch):
     assert len(scene.dungeon_team.members) == 0
 
 def test_team_scene_back_to_garden(mock_manager, monkeypatch):
-    monkeypatch.setattr("src.apps.slime_breeder.scenes.team_scene.load_roster", MagicMock())
+    # Create a proper mock roster with racing team
+    mock_roster = MagicMock()
+    mock_dungeon_team = MagicMock()
+    mock_dungeon_team.members = []
+    mock_racing_team = MagicMock()
+    mock_racing_team.members = []
+    
+    mock_roster.get_dungeon_team.return_value = mock_dungeon_team
+    mock_roster.get_racing_team.return_value = mock_racing_team
+    
+    monkeypatch.setattr("src.apps.slime_breeder.scenes.team_scene.load_roster", lambda: mock_roster)
+    monkeypatch.setattr("src.apps.slime_breeder.scenes.team_scene.save_roster", lambda r: None)
     
     scene = TeamScene(mock_manager, SPEC_720)
     scene.on_enter()
