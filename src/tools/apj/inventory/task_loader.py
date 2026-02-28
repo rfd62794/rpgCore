@@ -103,7 +103,7 @@ class TaskLoader:
                                 id=goal_id,
                                 title=current_entry.get('title', ''),
                                 description=current_entry.get('description', ''),
-                                linked_milestones=[current_entry.get('milestone')]
+                                linked_milestones=[current_entry.get('milestone')] if current_entry.get('milestone') else []
                             )
                     # Start new entry
                     current_entry = {'id': line.split(':')[1].strip()}
