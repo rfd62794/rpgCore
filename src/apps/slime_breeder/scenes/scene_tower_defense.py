@@ -510,14 +510,13 @@ class TowerDefenseScene(Scene):
         
         # Draw game over
         if self.session.game_over:
-            game_over_text = Label("GAME OVER", self.spec.color_text, 32)
-            game_over_text.render(surface, 
-                (self.spec.screen_width // 2 - 100, self.spec.screen_height // 2 - 20))
+            game_over_text = Label("GAME OVER", (self.spec.screen_width // 2 - 100, self.spec.screen_height // 2 - 20), self.spec, "md", self.spec.color_text)
+            game_over_text.render(surface)
             
             result_text = "VICTORY" if self.session.victory else "DEFEAT"
-            result_label = Label(result_text, self.spec.color_success if self.session.victory else self.spec.color_danger, 24)
-            result_label.render(surface, 
-                (self.spec.screen_width // 2 - 50, self.spec.screen_height // 2 + 20))
+            result_label = Label(result_text, (self.spec.screen_width // 2 - 100, self.spec.screen_height // 2 + 20), self.spec, "md", 
+                               self.spec.color_success if self.session.victory else self.spec.color_danger)
+            result_label.render(surface)
     
     def _render_tower_selection(self, surface) -> None:
         """Render tower selection panel"""
