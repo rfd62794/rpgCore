@@ -117,27 +117,27 @@ class TowerDefenseScene(Scene):
         )
         
         # Labels
-        self.wave_label = Label("Wave: 1", self.spec.color_text, 16)
-        self.gold_label = Label("Gold: 100", self.spec.color_text, 16)
-        self.lives_label = Label("Lives: 20", self.spec.color_text, 16)
-        self.score_label = Label("Score: 0", self.spec.color_text, 16)
+        self.wave_label = Label("Wave: 1", (10, 10), self.spec, "md", self.spec.color_text)
+        self.gold_label = Label("Gold: 100", (150, 10), self.spec, "md", self.spec.color_text)
+        self.lives_label = Label("Lives: 20", (300, 10), self.spec, "md", self.spec.color_text)
+        self.score_label = Label("Score: 0", (450, 10), self.spec, "md", self.spec.color_text)
         
         # Buttons
-        self.start_button = Button("Start Game", self.spec.color_accent, self.spec.color_text)
-        self.pause_button = Button("Pause", self.spec.color_accent, self.spec.color_text)
-        self.menu_button = Button("Menu", self.spec.color_accent, self.spec.color_text)
+        self.start_button = Button("Start Game", self.spec)
+        self.pause_button = Button("Pause", self.spec)
+        self.menu_button = Button("Menu", self.spec)
         
         # Tower selection buttons
         self.tower_buttons = []
         for i in range(8):
-            button = Button(f"Slot {i+1}", self.spec.color_accent, self.spec.color_text)
+            button = Button(f"Slot {i+1}", self.spec)
             self.tower_buttons.append(button)
         
         # Upgrade buttons
         self.upgrade_buttons = {
-            "damage": Button("Damage", self.spec.color_accent, self.spec.color_text),
-            "range": Button("Range", self.spec.color_accent, self.spec.color_text),
-            "fire_rate": Button("Fire Rate", self.spec.color_accent, self.spec.color_text),
+            "damage": Button("Damage", self.spec),
+            "range": Button("Range", self.spec),
+            "fire_rate": Button("Fire Rate", self.spec),
         }
     
     def handle_events(self, events) -> None:
