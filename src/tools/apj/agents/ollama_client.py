@@ -19,6 +19,7 @@ Model resolution (Fix 2 + 3):
 import os
 import subprocess
 import requests
+from typing import Dict
 
 import httpx
 from loguru import logger
