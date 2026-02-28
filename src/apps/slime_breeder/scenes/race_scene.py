@@ -32,7 +32,7 @@ class RaceScene(Scene):
 
     def setup_ui(self):
         self.ui_components.clear()
-        self.exit_btn = Button(pygame.Rect(20, 20, 100, 40), "GARDEN", color=(100, 60, 60))
+        self.exit_btn = Button(pygame.Rect(20, 20, 100, 40), "GARDEN", bg_color_normal=(100, 60, 60))
         self.ui_components.append(self.exit_btn)
         
     def on_enter(self, **kwargs):

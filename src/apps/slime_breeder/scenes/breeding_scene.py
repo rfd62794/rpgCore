@@ -68,15 +68,15 @@ class BreedingScene(Scene):
         self.ui_components.append(self.status_label)
         
         # Action Buttons
-        self.back_btn = Button(pygame.Rect(20, 15, 100, 30), "BACK", color=(100, 60, 60))
+        self.back_btn = Button(pygame.Rect(20, 15, 100, 30), "BACK", bg_color_normal=(100, 60, 60))
         self.ui_components.append(self.back_btn)
         
         if self.state == BreedingState.PREVIEW:
-            self.breed_btn = Button(pygame.Rect(350, 400, 100, 40), "BREED!", color=(60, 120, 60))
+            self.breed_btn = Button(pygame.Rect(350, 400, 100, 40), "BREED!", bg_color_normal=(60, 120, 60))
             self.ui_components.append(self.breed_btn)
             
         if self.state == BreedingState.COMPLETE:
-            self.finish_btn = Button(pygame.Rect(350, 500, 100, 40), "GARDEN", color=(60, 80, 120))
+            self.finish_btn = Button(pygame.Rect(350, 500, 100, 40), "GARDEN", bg_color_normal=(60, 80, 120))
             self.ui_components.append(self.finish_btn)
 
     def get_status_text(self) -> str:
