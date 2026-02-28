@@ -469,7 +469,7 @@ class ADJSystem:
 def main():
     """Main CLI interface"""
     parser = argparse.ArgumentParser(description="ADJ System - DGT Engine Governance")
-    parser.add_argument("command", choices=["status", "phase", "priorities", "blockers", "next", "approve", "update"])
+    parser.add_argument("command", choices=["status", "phase", "priorities", "blockers", "next", "approve", "update", "strategy"])
     parser.add_argument("arg", nargs="?", help="Argument for command (phase number, approval target)")
     
     args = parser.parse_args()
@@ -496,6 +496,11 @@ def main():
         adj.approve_phase(args.arg)
     elif args.command == "update":
         adj.update_dashboard()
+    elif args.command == "strategy":
+        if not args.arg:
+            print("❌ Phase number required. Use: 1, 2, or 3")
+            return
+        adj.show_strategy(args.arg)
     else:
         print("❌ Unknown command")
         parser.print_help()
