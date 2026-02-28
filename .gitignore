@@ -84,6 +84,9 @@ Cargo.lock
 *.sqlite3
 roster.db
 
+# UI review screenshots
+docs/ui_review/
+
 # Release artifacts
 release/
 
