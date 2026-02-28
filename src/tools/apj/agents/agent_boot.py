@@ -137,7 +137,7 @@ class AgentBootManager:
             logger.error(f"Failed to boot swarm coordinator: {e}")
             return {"success": False, "error": str(e)}
     
-    def _boot_existing_agents(self) -> Dict[str, Any]:
+    def _initialize_existing_agents(self) -> Dict[str, Any]:
         """Initialize existing specialist agents"""
         logger.info("🤖 Initializing Existing Specialist Agents")
         
@@ -171,7 +171,7 @@ class AgentBootManager:
         
         return results
     
-    def _establish_communication_links(self) -> Dict[str, Any]:
+    def _setup_communication(self) -> Dict[str, Any]:
         """Establish communication links between agents"""
         logger.info("🔗 Establishing Agent Communication Links")
         
