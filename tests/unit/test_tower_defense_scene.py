@@ -202,19 +202,23 @@ def test_tower_defense_scene_add_tower_to_ecs(tower_defense_scene, sample_creatu
     tower_defense_scene._add_tower_to_ecs(sample_creature)
     
     # Check components were added
+    from src.shared.ecs.components.tower_component import TowerComponent
+    from src.shared.ecs.components.behavior_component import BehaviorComponent
+    from src.shared.ecs.components.grid_position_component import GridPositionComponent
+    
     assert tower_defense_scene.component_registry.get_component(
         sample_creature.slime_id, 
-        tower_defense_scene.component_registry.TowerComponent
+        TowerComponent
     ) is not None
     
     assert tower_defense_scene.component_registry.get_component(
         sample_creature.slime_id, 
-        tower_defense_scene.component_registry.BehaviorComponent
+        BehaviorComponent
     ) is not None
     
     assert tower_defense_scene.component_registry.get_component(
         sample_creature.slime_id, 
-        tower_defense_scene.component_registry.GridPositionComponent
+        GridPositionComponent
     ) is not None
 
 
