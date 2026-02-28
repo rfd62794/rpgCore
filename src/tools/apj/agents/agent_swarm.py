@@ -210,7 +210,6 @@ Return as JSON with task assignments.
         
         # Step 2: Execute task assignments
         try:
-            import json
             import re
             json_match = re.search(r'\{.*\}', coordinator_result, re.DOTALL)
             
