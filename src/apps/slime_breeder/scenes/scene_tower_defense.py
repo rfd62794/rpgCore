@@ -556,7 +556,8 @@ class TowerDefenseScene(Scene):
                        self.spec.color_surface)
         
         # Draw title
-        title = Label(f"Upgrade {self.selected_tower.name}", (self.spec.screen_width - 180, self.spec.screen_height // 2 - 65), self.spec, "md", self.spec.color_text)
+        tower_name = self.selected_tower.name if hasattr(self.selected_tower, 'name') else str(self.selected_tower)
+        title = Label(f"Upgrade {tower_name}", (self.spec.screen_width - 180, self.spec.screen_height // 2 - 65), self.spec, "md", self.spec.color_text)
         title.render(surface)
         
         # Draw upgrade buttons
@@ -600,7 +601,7 @@ class TowerDefenseScene(Scene):
         self.menu_button.render(surface)
         
         # Draw achievements
-        if stats['achievements']:
+        if stats.get('achievements'):
             achievements_text = "Achievements: " + ", ".join(stats['achievements'][:3])
             achievements_label = Label(achievements_text, (self.spec.screen_width // 2 - 180, self.spec.screen_height // 2 + 20), self.spec, "md", self.spec.color_text)
             achievements_label.render(surface)

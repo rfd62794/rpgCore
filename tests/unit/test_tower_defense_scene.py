@@ -422,21 +422,22 @@ def test_tower_defense_scene_render_overlays(tower_defense_scene):
     with patch('pygame.draw.rect'), \
          patch('pygame.display.set_mode'), \
          patch('pygame.display.update'):
-        
+
         # Test tower selection overlay
         tower_defense_scene.show_tower_selection = True
         tower_defense_scene._render_tower_selection(surface)
-        
+
         # Test upgrade menu overlay
         tower_defense_scene.show_tower_selection = False
         tower_defense_scene.show_upgrade_menu = True
+        tower_defense_scene.selected_tower = "TestTower"  # Set a string instead of None
         tower_defense_scene._render_upgrade_menu(surface)
-        
+
         # Test game over overlay
         tower_defense_scene.show_upgrade_menu = False
         tower_defense_scene.show_game_over = True
         tower_defense_scene._render_game_over(surface)
-        
+
         # Should not crash
         assert True
 
