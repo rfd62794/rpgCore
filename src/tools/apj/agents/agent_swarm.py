@@ -240,10 +240,18 @@ Return as JSON with task assignments.
                     json_content = json_content[1:].strip()
                 
                 # Fix escaped newlines and other escape sequences
-                json_content = json_content.replace('\\n', ' ').replace('\\t', ' ').replace('\\"', '"')
+                # First, handle common escape patterns
+                json_content = json_content.replace('\\n', ' ').replace('\\t', ' ')
                 
-                # Remove any remaining problematic characters
-                json_content = ''.join(char for char in json_content if ord(char) >= 32 or char in '\n\t')
+                # Handle escaped quotes properly
+                json_content = json_content.replace('\\"', '"')
+                
+                # Remove any remaining problematic characters except valid JSON chars
+                valid_json_chars = set(' \t\n\r{}[],:"0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ._-')
+                json_content = ''.join(char for char in json_content if char in valid_json_chars)
+                
+                # Clean up multiple spaces
+                json_content = ' '.join(json_content.split())
                 
                 print(f"🔍 Debug: Cleaned JSON content: {json_content[:200]}...")
                 
