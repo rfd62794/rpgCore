@@ -1267,7 +1267,7 @@ Provide as JSON with detailed steps.
                 print(f"Total Agents: {status['total_agents']}")
                 print(f"Available Roles: {', '.join(status['available_roles'])}")
                 print(f"\nAgent Details:")
-                for role, details in status['agent_details'].items():
+                for role, details in status['agents'].items():
                     print(f"  {role}: {details['name']} ({details['capabilities_count']} capabilities)")
             else:
                 print("❌ Swarm not initialized")
@@ -1277,7 +1277,6 @@ Provide as JSON with detailed steps.
             from src.tools.apj.agents.swarm_manager import SwarmManager
             from src.tools.apj.agents.intent_parser import ConversationalInterface
             
-            chat = ConversationalInterface(adj.root_dir, adj._get_ollama_model())
             if chat.swarm:
                 manager = SwarmManager(chat.swarm, adj.root_dir)
                 capabilities = manager.get_swarm_capabilities()
