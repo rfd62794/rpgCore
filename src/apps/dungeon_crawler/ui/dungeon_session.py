@@ -1,4 +1,6 @@
 import random
+import json
+from pathlib import Path
 from typing import List, Optional
 from dataclasses import dataclass, field
 from loguru import logger
@@ -113,3 +115,77 @@ class DungeonSession:
 
     def get_ancestor_list(self) -> List[str]:
         return [f"{a['name']} ({a['class']}) - Floor {a['floor']} ({a['cause']})" for a in self.ancestors]
+
+    # === Session Persistence Methods ===
+    def save_to_file(self, filepath: Optional[Path] = None) -> None:
+        """Save session state to JSON file"""
+        if filepath is None:
+            filepath = Path(f"saves/dungeon_session_{self.seed}.json")
+        
+        filepath.parent.mkdir(exist_ok=True)
+        
+        # Serialize session state
+        session_data = {
+            "seed": self.seed,
+            "floor": self.floor,
+            "team_slime_ids": [s.slime_id for s in self.team],
+            "combat_results": self.combat_results,
+            "ancestors": self.ancestors
+        }
+        
+        # Save track if exists
+        if self.track:
+            session_data["track"] = {
+                "depth": self.track.depth,
+                "total_length": self.track.total_length,
+                # Note: Would need to serialize track zones here
+                # For now, we'll regenerate track on load using seed
+            }
+        
+        filepath.write_text(json.dumps(session_data, indent=2))
+        logger.info(f"Session saved to {filepath}")
+
+    @classmethod
+    def load_from_file(cls, filepath: Optional[Path] = None, seed: Optional[int] = None) -> "DungeonSession":
+        """Load session state from JSON file"""
+        if filepath is None and seed is not None:
+            filepath = Path(f"saves/dungeon_session_{seed}.json")
+        
+        if not filepath.exists():
+            logger.info(f"No session file found at {filepath}, creating new session")
+            return cls()
+        
+        try:
+            data = json.loads(filepath.read_text())
+            session = cls(
+                team=[],  # Will be populated from slime_ids
+                floor=data.get("floor", 1),
+                seed=data.get("seed"),
+                combat_results=data.get("combat_results", []),
+                ancestors=data.get("ancestors", [])
+            )
+            
+            # Load team from slime_ids
+            roster = load_roster()
+            for slime_id in data.get("team_slime_ids", []):
+                creature = roster.get_creature(slime_id)
+                if creature:
+                    session.team.append(creature)
+            
+            logger.info(f"Session loaded from {filepath}")
+            return session
+            
+        except Exception as e:
+            logger.error(f"Failed to load session from {filepath}: {e}")
+            return cls()
+
+    def auto_save(self) -> None:
+        """Auto-save session state (call on important transitions)"""
+        self.save_to_file()
+
+    def resume_session(self) -> bool:
+        """Resume session from saved state"""
+        # This would be called when returning to dungeon after interruption
+        # For now, just log that session is active
+        logger.info(f"Resuming session on floor {self.floor} with {len(self.team)} team members")
+        return True
