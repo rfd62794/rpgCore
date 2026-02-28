@@ -64,6 +64,11 @@ class RaceScene(Scene):
         self.ZOOM_NORMAL = 1.0   # standard follow
         self.ZOOM_OUT_MAX = 0.55  # show full pack
         self.ZOOM_FINISH = 1.3   # tighten on final stretch
+        
+        # Race state
+        self.current_lap = 1
+        self.total_laps = 3
+        self.terrain_ahead = None
 
     def _setup_ui(self):
         self.ui_components = []
@@ -213,7 +218,14 @@ class RaceScene(Scene):
         
         # Render minimap
         if self.engine:
+            # Update terrain ahead for player
+            player = self.engine.participants[0]
+            from src.shared.racing.race_track import get_terrain_at
+            look_ahead_distance = player.distance + 200
+            self.terrain_ahead = get_terrain_at(self.track, look_ahead_distance)
+            
             self.minimap.render(surface, self.engine.participants, 3000, self.camera_x)
+            self.hud.render(surface, self.engine.participants, self.current_lap, self.total_laps, self.terrain_ahead)
             
         if self.start_countdown > 0:
             msg = "READY" if self.start_countdown > 2 else "SET" if self.start_countdown > 1 else "GO!"
