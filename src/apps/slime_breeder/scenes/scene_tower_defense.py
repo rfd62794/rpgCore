@@ -78,37 +78,42 @@ class TowerDefenseScene(Scene):
         """Initialize UI components"""
         # Main game panel
         self.game_panel = Panel(
-            self.spec.screen_width, 
-            self.spec.screen_height,
-            self.spec.color_bg
+            pygame.Rect(0, 0, self.spec.screen_width, self.spec.screen_height),
+            self.spec,
+            "surface",
+            False
         )
         
         # HUD panel
         self.hud_panel = Panel(
-            self.spec.screen_width,
-            60,
-            self.spec.color_panel
+            pygame.Rect(0, 0, self.spec.screen_width, 60),
+            self.spec,
+            "surface",
+            False
         )
         
         # Tower selection panel
         self.tower_selection_panel = Panel(
-            300,
-            self.spec.screen_height - 60,
-            self.spec.color_panel
+            pygame.Rect(self.spec.screen_width - 300, 0, 300, self.spec.screen_height - 60),
+            self.spec,
+            "surface",
+            False
         )
         
         # Upgrade menu panel
         self.upgrade_menu_panel = Panel(
-            200,
-            150,
-            self.spec.color_panel
+            pygame.Rect(self.spec.screen_width - 200, self.spec.screen_height // 2 - 75, 200, 150),
+            self.spec,
+            "surface",
+            False
         )
         
         # Game over panel
         self.game_over_panel = Panel(
-            400,
-            200,
-            self.spec.color_panel
+            pygame.Rect(self.spec.screen_width // 2 - 200, self.spec.screen_height // 2 - 100, 400, 200),
+            self.spec,
+            "surface",
+            False
         )
         
         # Labels
@@ -138,10 +143,14 @@ class TowerDefenseScene(Scene):
     def handle_events(self, events) -> None:
         """Handle pygame events"""
         for event in events:
-            if event.type == pygame.MOUSEBUTTONDOWN:
-                self._handle_mouse_click(event)
-            elif event.type == pygame.KEYDOWN:
-                self._handle_key_press(event)
+            self.handle_event(event)
+    
+    def handle_event(self, event: pygame.event.Event) -> None:
+        """Process a single pygame event"""
+        if event.type == pygame.MOUSEBUTTONDOWN:
+            self._handle_mouse_click(event)
+        elif event.type == pygame.KEYDOWN:
+            self._handle_key_press(event)
     
     def _handle_mouse_click(self, event) -> None:
         """Handle mouse click events"""
