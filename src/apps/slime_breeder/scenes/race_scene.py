@@ -55,6 +55,9 @@ class RaceScene(Scene):
         self.track_border_width = 8
         self.lane_count = 4
         
+        # Fixed slime render size - zoom affects world coordinates, not render size
+        self.SLIME_RENDER_RADIUS = 24  # Fixed pixels always
+        
         # Race state
         self.current_lap = 1
         self.total_laps = 3
@@ -175,7 +178,7 @@ class RaceScene(Scene):
             # Update current lap from player
             self.current_lap = player.laps_complete + 1 if not player.finished else self.engine.total_laps
             
-            self.minimap.render(surface, self.engine.participants, 3000, self.camera_x)
+            self.minimap.render(surface, self.engine.participants, 3000, self.camera.x)
             self.hud.render(surface, self.engine.participants, self.current_lap, self.total_laps, self.terrain_ahead)
             
         if self.start_countdown > 0:
