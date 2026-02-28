@@ -7,7 +7,7 @@ from typing import List, Optional
 from src.shared.genetics.genome import SlimeGenome
 from src.shared.teams.roster import RosterSlime
 from src.shared.teams.stat_calculator import calculate_speed
-from .race_track import get_terrain_at
+from .race_track import get_terrain_at, get_terrain_speed_modifier
 
 class RaceParticipant:
     def __init__(self, slime: RosterSlime):
