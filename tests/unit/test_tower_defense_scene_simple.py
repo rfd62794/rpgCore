@@ -153,10 +153,11 @@ def test_tower_defense_scene_ecs_integration(scene_manager, sample_creature):
         assert found_tower.slime_id == sample_creature.slime_id
         
         # Test enemy addition
+        from src.shared.ecs.components.behavior_component import BehaviorComponent
         scene._add_enemy_to_ecs(sample_creature)
         assert scene.component_registry.get_component(
             sample_creature.slime_id, 
-            scene.component_registry.BehaviorComponent
+            BehaviorComponent
         ) is not None
 
 
