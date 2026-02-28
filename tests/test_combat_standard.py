@@ -73,9 +73,9 @@ def test_flee_returns_to_exploration(mock_session, manager):
     scene.on_enter()
     scene.on_combat_enter(session=mock_session, enemy_entity=MagicMock())
     
-    with patch.object(scene, 'request_scene') as mock_request:
+    with patch.object(manager, 'switch_to') as mock_switch:
         scene._handle_flee()
-        mock_request.assert_called_with("dungeon_room", session=mock_session)
+        mock_switch.assert_called_with("dungeon_path", session=mock_session, combat_result="flee")
     pygame.quit()
 
 def test_combat_victory_triggers_on_last_enemy_defeat(mock_session, manager):
@@ -87,10 +87,9 @@ def test_combat_victory_triggers_on_last_enemy_defeat(mock_session, manager):
     enemy = scene.enemies[0]
     enemy.stats["hp"] = 0
     
-    with patch.object(scene, 'request_scene') as mock_request_scene:
+    with patch.object(manager, 'switch_to') as mock_switch:
         scene._handle_player_attack() # Hits (or resolves)
-        # Check if victory handler was called via request_scene
-        # Since _handle_player_attack calls _handle_victory if hp <= 0
+        # Check if victory handler was called via switch_to
         scene._handle_victory()
-        mock_request_scene.assert_called_with("dungeon_room", session=mock_session, combat_result="victory")
+        mock_switch.assert_called_with("dungeon_path", session=mock_session, combat_result="victory")
     pygame.quit()
