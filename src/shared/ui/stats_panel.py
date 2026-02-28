@@ -41,7 +41,8 @@ class StatsPanel(UIComponent):
         
         # Genetic dominance hint
         dominance = self._get_dominance_text()
-        self._render_text(surface, f"DNA: {dominance}", (x + self.PADDING, y + self.HEIGHT - 20), size=12, color=(140, 140, 160))
+        max_dna_width = self.WIDTH - (self.PADDING * 2)  # Card width minus padding
+        self._render_truncated_text(surface, f"DNA: {dominance}", (x + self.PADDING, y + self.HEIGHT - 20), max_dna_width, size=12, color=(140, 140, 160))
 
     def _render_stat(self, surface, label, value, pos, color):
         # Stat Label
@@ -68,6 +69,8 @@ class StatsPanel(UIComponent):
             cultural_max = 15 * params.speed_modifier
             
         fill_w = int(bar_w * (min(1.0, value / cultural_max)))
+        # Ensure minimum visible fill of 8px
+        fill_w = max(8, fill_w) if value > 0 else 0
         if fill_w > 0:
             pygame.draw.rect(surface, color, (bar_x, pos[1] + 4, fill_w, 8))
             
@@ -92,3 +95,39 @@ class StatsPanel(UIComponent):
         # Get highest
         top = max(traits, key=traits.get)
         return f"{top} ({int(traits[top]*100)}%)"
+    
+    def _render_truncated_text(self, surface, text, pos, max_width, size=12, color=(255, 255, 255), bold=False):
+        """Render text with ellipsis truncation if it exceeds max_width."""
+        try:
+            font = pygame.font.Font(None, size)
+            if bold: font.set_bold(True)
+            
+            # Check if text fits
+            text_surf = font.render(text, True, color)
+            if text_surf.get_width() <= max_width:
+                surface.blit(text_surf, pos)
+                return
+            
+            # Truncate with ellipsis
+            ellipsis = font.render("...", True, color)
+            ellipsis_width = ellipsis.get_width()
+            
+            # Binary search for truncation point
+            low, high = 0, len(text)
+            best_text = text
+            
+            while low <= high:
+                mid = (low + high) // 2
+                test_text = text[:mid] + "..."
+                test_surf = font.render(test_text, True, color)
+                
+                if test_surf.get_width() <= max_width:
+                    best_text = test_text
+                    low = mid + 1
+                else:
+                    high = mid - 1
+            
+            final_surf = font.render(best_text, True, color)
+            surface.blit(final_surf, pos)
+        except:
+            pass

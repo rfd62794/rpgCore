@@ -15,7 +15,8 @@ from src.shared.ui.spec import UISpec
 class ProfileCard(UIComponent):
     def __init__(self, slime: RosterSlime, position: Tuple[int, int], spec: UISpec):
         # Card dimensions: respect parent panel boundaries
-        self.WIDTH = min(spec.card_width, spec.screen_width // 4) # Fallback limit
+        side_panel_width = spec.screen_width * 0.35  # HubLayout side panel width
+        self.WIDTH = min(spec.card_width, int(side_panel_width - spec.padding_md * 2))
         # In garden, we should probably pass the actual panel width if we can
         self.HEIGHT = spec.card_height
         self.PADDING = spec.padding_sm
