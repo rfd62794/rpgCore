@@ -159,11 +159,112 @@ class Roster:
 
     # === Legacy compatibility methods (deprecated) ===
     @property
-    def slimes(self) -> list:
-        """Legacy compatibility - expose creature references as slimes"""
-        # This would need to return RosterSlime-like objects for compatibility
-        # For now, return empty list to break old code explicitly
-        return []
+    def slimes(self) -> list[RosterSlime]:
+        """Legacy compatibility - convert entries to RosterSlime objects"""
+        roster_slimes = []
+        for entry in self.entries:
+            creature = self.get_creature(entry.slime_id)
+            if creature:
+                roster_slime = RosterSlime.from_creature(
+                    creature, 
+                    team=entry.team, 
+                    locked=entry.locked
+                )
+                roster_slimes.append(roster_slime)
+        return roster_slimes
+    
+    def add_slime(self, slime: RosterSlime):
+        """Legacy compatibility - convert RosterSlime to entry"""
+        # Add creature reference if not exists
+        self.add_creature(slime.slime_id)
+        
+        # Update team assignment
+        for entry in self.entries:
+            if entry.slime_id == slime.slime_id:
+                entry.team = slime.team
+                entry.locked = slime.locked
+                # Add to team if not unassigned
+                if slime.team != TeamRole.UNASSIGNED:
+                    if slime.team not in self.teams:
+                        self.teams[slime.team] = Team(role=slime.team)
+                    if entry not in self.teams[slime.team].members:
+                        self.teams[slime.team].members.append(entry)
+                break
+    
+    def unassigned(self) -> list[RosterSlime]:
+        """Legacy compatibility - return unassigned as RosterSlime objects"""
+        return [s for s in self.slimes 
+                if s.team == TeamRole.UNASSIGNED
+                and s.alive]
+    
+    def to_dict(self) -> dict:
+        """Legacy compatibility - serialize full RosterSlime data"""
+        return {
+            "slimes": [
+                {
+                    "slime_id": s.slime_id,
+                    "name": s.name,
+                    "team": s.team.value,
+                    "locked": s.locked,
+                    "alive": s.alive,
+                    "genome": {
+                        "shape": s.genome.shape,
+                        "size": s.genome.size,
+                        "base_color": s.genome.base_color,
+                        "pattern": s.genome.pattern,
+                        "pattern_color": s.genome.pattern_color,
+                        "accessory": s.genome.accessory,
+                        "curiosity": s.genome.curiosity,
+                        "energy": s.genome.energy,
+                        "affection": s.genome.affection,
+                        "shyness": s.genome.shyness,
+                        "cultural_base": s.genome.cultural_base.value,
+                        "base_hp": s.genome.base_hp,
+                        "base_atk": s.genome.base_atk,
+                        "base_spd": s.genome.base_spd,
+                        "generation": s.genome.generation
+                    },
+                    "level": s.level,
+                    "experience": s.experience,
+                    "breeding_lock_level": s.breeding_lock_level,
+                    "current_hp": s.current_hp
+                }
+                for s in self.slimes
+            ]
+        }
+    
+    @classmethod
+    def from_dict(cls, data: dict) -> "Roster":
+        """Legacy compatibility - restore from full RosterSlime data"""
+        roster = cls()
+        for s in data.get("slimes", []):
+            g_data = s["genome"]
+            # Cast culture string back to Enum
+            from src.shared.genetics.cultural_base import CulturalBase
+            g_data["cultural_base"] = CulturalBase(g_data.get("cultural_base", "mixed"))
+            
+            # Ensure base stats exist (for backward compatibility if needed)
+            if "base_hp" not in g_data: g_data["base_hp"] = 20.0
+            if "base_atk" not in g_data: g_data["base_atk"] = 5.0
+            if "base_spd" not in g_data: g_data["base_spd"] = 5.0
+            if "generation" not in g_data: g_data["generation"] = 1
+            
+            genome = SlimeGenome(**g_data)
+            rs = RosterSlime(
+                slime_id=s["slime_id"],
+                name=s["name"],
+                genome=genome,
+                team=TeamRole(s["team"]),
+                locked=s["locked"],
+                alive=s["alive"],
+                level=s.get("level", 1),
+                experience=s.get("experience", 0),
+                breeding_lock_level=s.get("breeding_lock_level", 0),
+                current_hp=s.get("current_hp", -1.0),
+                generation=s.get("generation", 1)
+            )
+            roster.add_slime(rs)
+        return roster
 
 # Legacy RosterSlime class for backward compatibility
 @dataclass
@@ -180,6 +281,39 @@ class RosterSlime:
     experience: int = 0
     breeding_lock_level: int = 0
     current_hp: float = -1.0
+    
+    def __post_init__(self):
+        if self.current_hp < 0:
+            from src.shared.teams.stat_calculator import calculate_hp
+            self.current_hp = float(calculate_hp(self.genome, self.level))
+    
+    @property
+    def max_hp(self) -> int:
+        from src.shared.teams.stat_calculator import calculate_hp
+        return calculate_hp(self.genome, self.level)
+    
+    @property
+    def is_elder(self) -> bool:
+        return self.level >= 10
+    
+    @property
+    def can_breed(self) -> bool:
+        """Min level 3 required, and must be above last bred level (drain mechanic)."""
+        return self.level >= 3 and self.level > self.breeding_lock_level
+
+    @property
+    def xp_to_next_level(self) -> int:
+        return 5 + (self.level * 2)
+
+    def gain_exp(self, amount: int) -> bool:
+        """Adds exp and returns True if leveled up."""
+        self.experience += amount
+        leveled_up = False
+        while self.experience >= self.xp_to_next_level:
+            self.experience -= self.xp_to_next_level
+            self.level += 1
+            leveled_up = True
+        return leveled_up
     
     @classmethod
     def from_creature(cls, creature, team=TeamRole.UNASSIGNED, locked=False):
