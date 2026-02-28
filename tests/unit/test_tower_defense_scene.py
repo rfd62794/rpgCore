@@ -272,9 +272,10 @@ def test_tower_defense_scene_add_all_towers_to_ecs(tower_defense_scene, sample_c
     tower_defense_scene._add_all_towers_to_ecs()
     
     # Check components were added
+    from src.shared.ecs.components.tower_component import TowerComponent
     assert tower_defense_scene.component_registry.get_component(
         sample_creature.slime_id, 
-        tower_defense_scene.component_registry.TowerComponent
+        TowerComponent
     ) is not None
 
 
