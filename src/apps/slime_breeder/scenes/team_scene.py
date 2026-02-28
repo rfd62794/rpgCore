@@ -5,160 +5,125 @@ from src.shared.engine.scene_manager import Scene
 from src.shared.ui.panel import Panel
 from src.shared.ui.button import Button
 from src.shared.ui.label import Label
-from src.shared.ui.profile_card import ProfileCard, render_text
+from src.shared.ui.spec import UISpec
+from src.shared.ui.layouts import SelectionLayout
+from src.shared.ui.profile_card import ProfileCard
 from src.shared.teams.roster import Roster, TeamRole, RosterSlime
 from src.shared.teams.roster_save import load_roster, save_roster
 
 class TeamScene(Scene):
-    def __init__(self, manager, **kwargs):
-        super().__init__(manager, **kwargs)
+    """
+    Dedicated team management screen using SelectionLayout.
+    """
+    def __init__(self, manager, spec: UISpec, **kwargs):
+        super().__init__(manager, spec, **kwargs)
+        self.layout = SelectionLayout(spec)
         self.roster = None
         self.team = None
         self.ui_components = []
-        self.buttons = []
-    """
-    Dedicated team management screen.
-    Accessed from garden via "TEAMS" button.
-    Shows all roster slots, assign/remove actions.
-    """
-    
-    DUNGEON_SLOTS = 4
-    
-    def on_enter(self, **kwargs) -> None:
-        self.width, self.height = self.manager.width, self.manager.height
+
+    def on_enter(self) -> None:
         self.roster = load_roster()
         self.team = self.roster.get_dungeon_team()
-        
-        self.ui_components: List[pygame.sprite.Sprite] = [] # Using a list for manual update/render
-        self.buttons: List[Button] = []
-        
         self._setup_ui()
 
     def _setup_ui(self):
-        self.buttons = []
+        self.ui_components = []
         
-        # Back button
-        back_btn = Button(
-            pygame.Rect(40, self.height - 70, 150, 40), 
-            text="← Garden", 
-            on_click=self._back_to_garden
-        )
-        self.buttons.append(back_btn)
+        # 1. Panels
+        self.left_panel = Panel(self.layout.left_panel, self.spec, variant="surface")
+        self.ui_components.append(self.left_panel)
         
-        # Enter Dungeon button (bottom right)
+        self.right_panel = Panel(self.layout.right_panel, self.spec, variant="surface")
+        self.ui_components.append(self.right_panel)
+        
+        self.action_panel = Panel(self.layout.action_bar, self.spec, variant="surface")
+        self.ui_components.append(self.action_panel)
+        
+        # 2. Header
+        header_label = Label("DUNGEON TEAM", (20, 15), self.spec, size="xl", bold=True)
+        self.ui_components.append(header_label)
+        
+        # 3. Action Buttons
+        back_btn = Button("← Garden", pygame.Rect(20, self.layout.action_bar.y + 10, 150, 44), 
+                          self._back_to_garden, self.spec, variant="secondary")
+        self.ui_components.append(back_btn)
+        
         if self.team.members:
-            enter_btn = Button(
-                pygame.Rect(self.width - 240, self.height - 70, 200, 40),
-                text="ENTER DUNGEON →",
-                bg_color_normal=(180, 60, 60),
-                on_click=self._enter_dungeon
-            )
-            self.buttons.append(enter_btn)
+            enter_btn = Button("ENTER DUNGEON →", 
+                               pygame.Rect(self.layout.action_bar.width - 220, self.layout.action_bar.y + 10, 200, 44),
+                               self._enter_dungeon, self.spec, variant="primary")
+            self.ui_components.append(enter_btn)
 
-        # Create buttons for each unassigned slime
+        # 4. Team Slots (Left Panel)
+        Label("CURRENT TEAM", (self.layout.left_panel.x + 20, self.layout.left_panel.y + 10), 
+               self.spec, size="md", bold=True).add_to(self.ui_components)
+               
+        for i in range(4):
+            slot_y = self.layout.left_panel.y + 40 + (i * (self.spec.card_height + 40))
+            if i < len(self.team.members):
+                slime = self.team.members[i]
+                card = ProfileCard(slime, (self.layout.left_panel.x + 20, slot_y), self.spec)
+                self.ui_components.append(card)
+                
+                if not slime.locked:
+                    rem_btn = Button("Remove", pygame.Rect(self.layout.left_panel.x + 20, slot_y + self.spec.card_height + 5, 100, 30),
+                                     lambda s=slime: self._remove(s), self.spec, variant="ghost")
+                    self.ui_components.append(rem_btn)
+            else:
+                # Empty Slot Label/Box
+                empty_rect = pygame.Rect(self.layout.left_panel.x + 20, slot_y, self.spec.card_width, self.spec.card_height)
+                Panel(empty_rect, self.spec, variant="surface", border=True).add_to(self.ui_components)
+                Label("EMPTY", (empty_rect.centerx, empty_rect.centery), self.spec, centered=True).add_to(self.ui_components)
+
+        # 5. Available Slimes (Right Panel)
+        Label("AVAILABLE SLIMES", (self.layout.right_panel.x + 20, self.layout.right_panel.y + 10), 
+               self.spec, size="md", bold=True).add_to(self.ui_components)
+               
         unassigned = self.roster.unassigned()
         for i, slime in enumerate(unassigned):
-            if i >= 6: break # Limit display for now
-            card_y = 100 + (i * 90)
+            if i >= 6: break
+            row_y = self.layout.right_panel.y + 40 + (i * 80)
+            row_rect = pygame.Rect(self.layout.right_panel.x + 10, row_y, self.layout.right_panel.width - 20, 70)
+            Panel(row_rect, self.spec, variant="surface", border=True).add_to(self.ui_components)
+            
+            Label(slime.name, (row_rect.x + 10, row_rect.y + 10), self.spec, bold=True).add_to(self.ui_components)
+            
             if not self.team.is_full():
-                btn = Button(
-                    pygame.Rect(600, card_y, 120, 30),
-                    text="→ Dungeon",
-                    on_click=lambda s=slime: self._assign(s)
-                )
-                self.buttons.append(btn)
-                
-        # Remove buttons for team members
-        for i, slime in enumerate(self.team.members):
-            slot_y = 100 + (i * 150)
-            if not slime.locked:
-                btn = Button(
-                    pygame.Rect(320, slot_y + 40, 100, 30),
-                    text="Remove",
-                    on_click=lambda s=slime: self._remove(s)
-                )
-                self.buttons.append(btn)
+                add_btn = Button("Add", pygame.Rect(row_rect.right - 70, row_rect.y + 10, 60, 30),
+                                 lambda s=slime: self._assign(s), self.spec, variant="primary")
+                self.ui_components.append(add_btn)
 
     def _back_to_garden(self):
         self.request_scene("garden")
 
     def _enter_dungeon(self):
-        # In a real integration, this would switch to the dungeon crawler application/scene
-        # For this demo, we'll assume the manager has it registered or we trigger a handoff.
-        self.request_scene("dungeon_ready") # Placeholder or specific scene
+        logger.info("⚔️ Launching Dungeon Crawler...")
+        self.request_scene("dungeon_ready")
 
     def _assign(self, slime: RosterSlime):
         if self.team.assign(slime):
             save_roster(self.roster)
-            self._setup_ui() # Refresh buttons
+            self._setup_ui()
 
     def _remove(self, slime: RosterSlime):
         if self.team.remove(slime.slime_id):
             save_roster(self.roster)
-            self._setup_ui() # Refresh buttons
+            self._setup_ui()
 
-    def on_exit(self) -> None:
-        save_roster(self.roster)
+    def handle_event(self, event: pygame.event.Event) -> None:
+        for comp in reversed(self.ui_components):
+            if hasattr(comp, "handle_event") and comp.handle_event(event):
+                break
 
-    def handle_events(self, events: List[pygame.event.Event]) -> None:
-        for event in events:
-            for btn in self.buttons:
-                if btn.handle_event(event):
-                    break
-
-    def update(self, dt_ms: float) -> None:
-        for btn in self.buttons:
-            btn.update(int(dt_ms))
+    def update(self, dt: float) -> None:
+        for comp in self.ui_components:
+            comp.update(int(dt * 1000))
 
     def render(self, surface: pygame.Surface) -> None:
-        surface.fill((25, 25, 35))
-        
-        # Header
-        render_text(surface, "DUNGEON TEAM", (40, 30), size=32, bold=True)
-        render_text(surface, "Your slimes that enter the ruins.", 
-                   (40, 65), size=18, color=(140, 140, 160))
-        
-        # Four team slots
-        for i in range(self.DUNGEON_SLOTS):
-            slot_y = 100 + (i * 150)
-            slot_rect = pygame.Rect(40, slot_y, 300, 140)
-            
-            if i < len(self.team.members):
-                slime = self.team.members[i]
-                card = ProfileCard(slime, (40, slot_y))
-                card.render(surface)
-            else:
-                # Empty slot
-                pygame.draw.rect(surface, (20, 20, 30), slot_rect, border_radius=8)
-                pygame.draw.rect(surface, (50, 50, 70), slot_rect, width=1, border_radius=8)
-                render_text(surface, "— Empty Slot —",
-                           (slot_rect.centerx - 50, slot_rect.centery - 10),
-                           size=18, color=(70, 70, 90))
-        
-        # Unassigned slimes panel (right side)
-        render_text(surface, "AVAILABLE SLIMES", (450, 30), 
-                   size=24, bold=True)
-        
-        unassigned = self.roster.unassigned()
-        for i, slime in enumerate(unassigned):
-            if i >= 6: break
-            card_y = 100 + (i * 90)
-            row_rect = pygame.Rect(450, card_y - 10, 320, 80)
-            pygame.draw.rect(surface, (30, 30, 40), row_rect, border_radius=8)
-            
-            # Mini info (could be a mini card, for now just text)
-            render_text(surface, slime.name, (460, card_y), size=18, bold=True)
-            render_text(surface, f"HP: {slime.genome.energy*100:.0f}", (460, card_y + 25), size=14, color=(140, 140, 160))
-        
-        # Render buttons
-        for btn in self.buttons:
-            btn.render(surface)
-
-    def update(self, dt_ms: float):
-        """Update buttons."""
-        for btn in self.buttons:
-            btn.update(int(dt_ms))
+        surface.fill(self.spec.color_bg)
+        for comp in self.ui_components:
+            comp.render(surface)
 
     def on_exit(self):
-        """Cleanup logic."""
-        pass
+        save_roster(self.roster)
