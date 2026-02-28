@@ -1059,7 +1059,7 @@ Budget: Enforced by OpenRouter, fallback to Ollama if over budget
 def main():
     """Main CLI interface"""
     parser = argparse.ArgumentParser(description="ADJ System - DGT Engine Governance")
-    parser.add_argument("command", choices=["status", "phase", "priorities", "blockers", "next", "approve", "update", "strategy", "inventory", "plan", "execute", "reality", "gaps", "models", "test"])
+    parser.add_argument("command", choices=["status", "phase", "priorities", "blockers", "next", "approve", "update", "strategy", "inventory", "plan", "execute", "reality", "gaps", "models", "test", "design"])
     parser.add_argument("arg", nargs="?", help="Argument for command")
     parser.add_argument("arg2", nargs="?", help="Second argument for command")
     
@@ -1067,7 +1067,18 @@ def main():
     
     adj = ADJSystem()
     
-    if args.command == "status":
+    # NEW: Design command
+    if args.command == "design":
+        if not args.arg:
+            print("Usage: python adj.py design \"<your game vision>\"")
+            return
+        
+        from src.tools.apj.orchestrator import AdjOrchestrator
+        orchestrator = AdjOrchestrator(Path("."))
+        orchestrator.design_game(args.arg)
+    
+    # Existing commands...
+    elif args.command == "status":
         if args.arg == "project":
             adj.show_project_status()
         else:
