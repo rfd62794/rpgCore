@@ -307,6 +307,9 @@ class OverworldScene(Scene):
                 return True
         return False
 
+    def handle_event(self, event: pygame.event.Event) -> None:
+        pass  # stub — scene not yet active
+
     def update(self, dt_ms: float) -> None:
         if self.current_defection:
             self.defection_timer -= dt_ms

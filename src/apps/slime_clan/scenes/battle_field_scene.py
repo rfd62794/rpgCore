@@ -62,6 +62,9 @@ class BattleFieldScene(Scene):
     def on_exit(self) -> None:
         pass
 
+    def handle_event(self, event: pygame.event.Event) -> None:
+        pass  # stub — scene not yet active
+
     def handle_events(self, events: list[pygame.event.Event]) -> None:
         for event in events:
             if event.type == pygame.QUIT:

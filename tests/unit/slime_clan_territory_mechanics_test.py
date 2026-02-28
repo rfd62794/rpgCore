@@ -5,6 +5,7 @@ from src.apps.slime_clan.constants import NodeType
 from src.apps.slime_clan.scenes.battle_field_scene import BattleFieldScene
 from src.apps.slime_clan.scenes.auto_battle_scene import AutoBattleScene
 from src.shared.world.faction import FactionManager
+from src.shared.ui.spec import SPEC_720
 
 @pytest.fixture
 def mock_overworld():

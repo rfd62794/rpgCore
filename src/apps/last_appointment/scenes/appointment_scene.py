@@ -23,8 +23,8 @@ STANCE_COLORS = {
 NUMBER_COLOR = (102, 102, 128)       # #666680
 
 class AppointmentScene(Scene):
-    def __init__(self, manager: SceneManager, **kwargs):
-        super().__init__(manager, **kwargs)
+    def __init__(self, manager: SceneManager, spec, **kwargs):
+        super().__init__(manager, spec, **kwargs)
         self.state_tracker = StateTracker()
         self.keyword_registry = KeywordRegistry()
         self.graph = ConversationGraph(self.state_tracker, self.keyword_registry)
@@ -158,6 +158,9 @@ class AppointmentScene(Scene):
                     alpha = max(base_wash, alpha)
                     
                 self.vignette_surface.set_at((x, y), (r, g, b, alpha))
+
+    def handle_event(self, event: pygame.event.Event) -> None:
+        pass  # stub — scene not yet active
 
     def handle_events(self, events: list[pygame.event.Event]) -> None:
         try:

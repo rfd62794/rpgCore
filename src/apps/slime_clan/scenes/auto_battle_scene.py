@@ -79,6 +79,9 @@ class AutoBattleScene(Scene):
         self.turn_queue = sorted(alive, key=lambda x: x.speed, reverse=True)
         self.turn_count += 1
 
+    def handle_event(self, event: pygame.event.Event) -> None:
+        pass  # stub — scene not yet active
+
     def handle_events(self, events: list[pygame.event.Event]) -> None:
         for event in events:
             if event.type == pygame.QUIT:
