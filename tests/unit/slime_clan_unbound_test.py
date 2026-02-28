@@ -3,6 +3,7 @@ import pygame
 from src.apps.slime_clan.scenes.overworld_scene import OverworldScene
 from src.apps.slime_clan.constants import NodeType
 from src.shared.world.faction import FactionManager
+from src.shared.ui.spec import SPEC_720
 
 @pytest.fixture
 def mock_overworld():
@@ -10,7 +11,7 @@ def mock_overworld():
     pygame.font.init()
     from unittest.mock import MagicMock
     mock_manager = MagicMock()
-    scene = OverworldScene(manager=mock_manager)
+    scene = OverworldScene(manager=mock_manager, spec=SPEC_720)
     scene.faction_manager = FactionManager()
     
     # Needs factions registered to find coordinates for tribes
