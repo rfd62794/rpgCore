@@ -333,13 +333,18 @@ def test_collision_system_check_collisions():
     system = CollisionSystem()
     
     # Create enemy
-    enemy = Creature(name="Enemy", genome=SlimeGenome())
+    enemy = Creature(name="Enemy", genome=SlimeGenome(
+        shape="round", size="medium", base_color=(255, 0, 0),
+        pattern="solid", pattern_color=(0, 0, 0), accessory="none",
+        curiosity=0.5, energy=0.5, affection=0.5, shyness=0.5
+    ))
     enemy.kinematics.position = Vector2(100, 100)
     enemy.current_hp = 50
     enemy.reward = 20
     
     # Create projectile at same position
-    projectile = system.projectiles.__class__(
+    from src.shared.ecs.systems.collision_system import Projectile
+    projectile = Projectile(
         position=Vector2(100, 100),
         velocity=Vector2(0, 0),
         damage=10,
@@ -361,7 +366,11 @@ def test_collision_system_enemy_escaped():
     system = CollisionSystem()
     
     # Create enemy beyond screen
-    enemy = Creature(name="Enemy", genome=SlimeGenome())
+    enemy = Creature(name="Enemy", genome=SlimeGenome(
+        shape="round", size="medium", base_color=(255, 0, 0),
+        pattern="solid", pattern_color=(0, 0, 0), accessory="none",
+        curiosity=0.5, energy=0.5, affection=0.5, shyness=0.5
+    ))
     enemy.kinematics.position = Vector2(500, 100)  # Beyond 480px
     enemy.current_hp = 50
     
