@@ -72,6 +72,10 @@ class Scene(BaseSystem, ABC):
         """Optional: Called when exiting the scene."""
         pass
 
+    def on_resume(self, **kwargs) -> None:
+        """Optional: Called when resuming the scene after a pop."""
+        pass
+
     @abstractmethod
     def handle_event(self, event: pygame.event.Event) -> None:
         """Process a single pygame event."""
@@ -102,6 +106,7 @@ class SceneManager:
 
         self._scenes: Dict[str, type] = {}
         self._active_scene: Optional[Scene] = None
+        self._scene_stack: List[Scene] = []
         self._running = False
         
         self.clock = SystemClock(target_fps=fps, mode=TimeMode.REAL_TIME)
@@ -130,6 +135,42 @@ class SceneManager:
             self._running = False
         else:
             self._active_scene.status = SystemStatus.RUNNING
+
+    def push(self, name: str, **kwargs) -> None:
+        """Pause current scene and push a new one onto the stack."""
+        if name not in self._scenes:
+            raise ValueError(f"Unknown scene: {name}")
+
+        if self._active_scene:
+            logger.info(f"Pausing scene: {self._active_scene.config.name}")
+            self._active_scene.status = SystemStatus.PAUSED
+            self._scene_stack.append(self._active_scene)
+
+        scene_class = self._scenes[name]
+        logger.info(f"Pushing scene: {name}")
+        self._active_scene = scene_class(self, self.spec, **kwargs)
+        
+        if not self._active_scene.initialize():
+            logger.error(f"Failed to initialize pushed scene: {name}")
+            self._running = False
+        else:
+            self._active_scene.status = SystemStatus.RUNNING
+
+    def pop(self, **kwargs) -> None:
+        """Shutdown current scene and resume the previous one from the stack."""
+        if not self._scene_stack:
+            logger.warning("Attempted to pop from empty scene stack")
+            return
+
+        if self._active_scene:
+            logger.info(f"Popping scene: {self._active_scene.config.name}")
+            self._active_scene.shutdown()
+            self._active_scene.status = SystemStatus.STOPPED
+
+        self._active_scene = self._scene_stack.pop()
+        logger.info(f"Resuming scene: {self._active_scene.config.name}")
+        self._active_scene.status = SystemStatus.RUNNING
+        self._active_scene.on_resume(**kwargs)
 
     def run(self, initial_scene: str, **kwargs) -> None:
         """Main loop."""
