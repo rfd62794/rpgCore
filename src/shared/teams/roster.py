@@ -183,6 +183,9 @@ class Roster:
         TeamRole.RACING:  Team(role=TeamRole.RACING,  slots=1),
     })
     
+    # Store original RosterSlime objects for legacy compatibility
+    _roster_slimes: dict[str, RosterSlime] = field(default_factory=dict)
+    
     # Reference to Garden for creature lookups
     _garden_ref: Optional[object] = None  # Will be set by GardenState
     
@@ -287,14 +290,25 @@ class Roster:
         """Legacy compatibility - convert entries to RosterSlime objects"""
         roster_slimes = []
         for entry in self.entries:
-            creature = self.get_creature(entry.slime_id)
+            # Try to get creature from garden
+            creature = self.get_creature(entry.slime_id) if self._garden_ref else None
+            
             if creature:
                 roster_slime = RosterSlime.from_creature(
                     creature, 
                     team=entry.team, 
                     locked=entry.locked
                 )
-                roster_slimes.append(roster_slime)
+            else:
+                # Create a minimal RosterSlime when no garden reference
+                roster_slime = RosterSlime(
+                    slime_id=entry.slime_id,
+                    name=f"Creature_{entry.slime_id}",
+                    genome=SlimeGenome(),  # Default genome
+                    team=entry.team,
+                    locked=entry.locked
+                )
+            roster_slimes.append(roster_slime)
         return roster_slimes
     
     def add_slime(self, slime: RosterSlime):
