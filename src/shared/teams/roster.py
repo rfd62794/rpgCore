@@ -335,6 +335,11 @@ class Roster:
                     generation=s.get("generation", 1)
                 )
                 roster.add_slime(rs)
+                # Set back-reference for the entry that was created by add_slime
+                for entry in roster.entries:
+                    if entry.slime_id == rs.slime_id:
+                        entry._team_ref = roster.teams[rs.team]
+                        break
         else:
             # New format - restore entries only
             for e_data in data.get("entries", []):
