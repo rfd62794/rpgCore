@@ -12,7 +12,7 @@ from src.shared.ui.spec import UISpec
 from src.shared.ui.layouts import HubLayout
 from src.apps.dungeon_crawler.ui.dungeon_session import DungeonSession
 
-from src.apps.slime_breeder.ui.slime_renderer import SlimeRenderer
+from src.shared.rendering.slime_renderer import SlimeRenderer
 from src.apps.slime_breeder.entities.slime import Slime
 from src.shared.genetics import generate_random
 from src.shared.physics import Vector2

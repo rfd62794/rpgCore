@@ -15,7 +15,7 @@ from src.shared.racing.race_track import generate_track, generate_zones, Terrain
 from src.shared.racing.minimap import RaceMinimap
 from src.shared.racing.race_hud import RaceHUD
 from src.shared.racing.race_camera import RaceCamera
-from src.apps.slime_breeder.ui.slime_renderer import SlimeRenderer
+from src.shared.rendering.slime_renderer import SlimeRenderer
 from src.shared.genetics.inheritance import generate_random
 
 class RaceScene(Scene):

@@ -15,7 +15,7 @@ from src.shared.dungeon.dungeon_track import DungeonTrack, DungeonZoneType, gene
 from src.shared.dungeon.dungeon_engine import DungeonEngine
 from src.shared.racing.race_camera import RaceCamera
 from src.shared.racing.minimap import RaceMinimap
-from src.apps.slime_breeder.ui.slime_renderer import SlimeRenderer
+from src.shared.rendering.slime_renderer import SlimeRenderer
 
 class DungeonPathScene(Scene):
     """

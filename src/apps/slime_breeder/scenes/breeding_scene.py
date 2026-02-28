@@ -15,7 +15,7 @@ from src.shared.teams.roster import Roster, RosterSlime, TeamRole
 from src.shared.genetics.inheritance import breed, generate_random
 from src.shared.genetics.genome import SlimeGenome, CulturalBase
 from src.shared.ui.profile_card import ProfileCard
-from src.apps.slime_breeder.ui.slime_renderer import SlimeRenderer
+from src.shared.rendering.slime_renderer import SlimeRenderer
 from src.apps.slime_breeder.entities.slime import Slime
 
 class BreedingState(Enum):
