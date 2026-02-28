@@ -30,8 +30,16 @@ class RaceParticipant:
         self.jump_cooldown = 0.0   # recovery time after landing
         
         # Jump stats derived from genome
-        self.jump_speed = 0.8 + slime.genome.wobble_frequency * 0.4
-        self.jump_distance = slime.genome.body_size * 0.5 + self.base_speed * 0.3
+        self.jump_speed = 0.8 + slime.genome.energy * 0.4  # Use energy instead of wobble_frequency
+        
+        # Size multiplier for jump distance
+        size_multipliers = {
+            "tiny": 0.7, "small": 0.85, "medium": 1.0, 
+            "large": 1.2, "massive": 1.5
+        }
+        size_mult = size_multipliers.get(slime.genome.size, 1.0)
+        
+        self.jump_distance = size_mult * self.base_speed * 0.3 + self.base_speed * 0.3
         self.jump_recovery = max(0.1, 0.5 - self.base_speed * 0.1)
         
         # Physics constants
