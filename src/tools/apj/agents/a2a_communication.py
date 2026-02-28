@@ -3,6 +3,7 @@ Agent-to-Agent Communication System
 Enables direct communication between agents with message routing and protocols
 """
 
+import logging
 from typing import Dict, List, Any, Optional, Callable
 from dataclasses import dataclass
 from enum import Enum
@@ -12,6 +13,8 @@ import json
 
 from .agent_registry import AGENT_REGISTRY
 from .child_agent import CHILD_AGENT_MANAGER
+
+logger = logging.getLogger(__name__)
 
 class MessageType(Enum):
     """Message types for A2A communication"""

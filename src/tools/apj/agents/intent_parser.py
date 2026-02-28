@@ -151,8 +151,12 @@ class ConversationalInterface:
                         # Create a default health report
                         print(f"🏥 Ecosystem Health: GOOD")
                         print(f"🤖 Swarm: {len(self.swarm.swarm_agents)} agents")
-                        print(f"🔗 Links: {len(A2A_MANAGER._message_handlers)} links")
-                        print(f"💬 Conversations: {len(A2A_MANAGER._message_queue)} pending")
+                        if A2A_MANAGER:
+                            print(f"🔗 Links: {len(A2A_MANAGER._message_handlers)} links")
+                            print(f"💬 Conversations: {len(A2A_MANAGER._message_queue)} pending")
+                        else:
+                            print(f"🔗 Links: 0 links")
+                            print(f"💬 Conversations: 0 pending")
                     
                     print("=" * 60)
                     
@@ -310,7 +314,8 @@ class ConversationalInterface:
                                   f"Completed: {status['progress']['completed']}/{status['progress']['total_tasks']} | "
                                   f"Runtime: {status['runtime']}")
                         time.sleep(5)
-                    except:
+                    except Exception as e:
+                        print(f"\n⚠️ Progress monitoring error: {e}")
                         break
             
             progress_thread = threading.Thread(target=show_progress, daemon=True)
