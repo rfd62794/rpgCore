@@ -72,6 +72,8 @@ class Button(Panel):
         self.add_child(self.label_comp)
         
         self.children = [self.label_comp]
+        
+        self._was_hovered = False
     
     def is_clicked(self, mouse_x: int, mouse_y: int) -> bool:
         """Check if the button was clicked"""
