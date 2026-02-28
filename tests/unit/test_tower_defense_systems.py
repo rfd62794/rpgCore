@@ -312,7 +312,8 @@ def test_collision_system_update_projectiles():
     system = CollisionSystem()
     
     # Create projectile
-    projectile = system.projectiles.__class__(
+    from src.shared.ecs.systems.collision_system import Projectile
+    projectile = Projectile(
         position=Vector2(100, 100),
         velocity=Vector2(50, 0),
         damage=10,
