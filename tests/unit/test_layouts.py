@@ -5,7 +5,7 @@ from src.shared.ui.layouts import HubLayout, SelectionLayout, ArenaLayout
 
 def test_hub_layout():
     layout = HubLayout(SPEC_720)
-    assert layout.top_bar.height == 60
+    assert layout.top_bar.height == 48
     assert layout.status_bar.bottom == 720
     assert layout.side_panel.right == 1280
 

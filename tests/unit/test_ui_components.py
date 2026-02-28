@@ -17,8 +17,8 @@ def test_button_variants():
     btn_p = Button("Primary", rect, lambda: None, SPEC_720, variant="primary")
     btn_d = Button("Danger", rect, lambda: None, SPEC_720, variant="danger")
     
-    # Primary should have a background color from spec
-    assert btn_p.bg_color == SPEC_720.color_primary
+    # Primary should use color_accent
+    assert btn_p.bg_color == SPEC_720.color_accent
     assert btn_d.bg_color == SPEC_720.color_danger
 
 def test_label_standardization():
