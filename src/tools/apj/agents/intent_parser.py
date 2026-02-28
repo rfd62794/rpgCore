@@ -63,11 +63,31 @@ class ConversationalInterface:
         self.context = {}
         self.conversation_history = []
         
-        # Initialize swarm immediately
+        # Initialize swarm using existing BaseAgent framework
         if self.ollama:
-            from .agent_swarm import AgentSwarm
-            self.swarm = AgentSwarm(self.ollama, self.project_root)
-            print("🐝 Agent Swarm initialized")
+            try:
+                from .swarm_agent import SwarmCoordinator
+                from .base_agent import AgentConfig
+                
+                # Create swarm coordinator config
+                swarm_config = AgentConfig(
+                    name="swarm_coordinator",
+                    role="Coordinate swarm tasks and manage agent orchestration",
+                    department="planning",
+                    model_preference="local",
+                    prompts={
+                        "system": "docs/agents/prompts/coordinator_system.md",
+                        "fewshot": "docs/agents/prompts/generic_system.md"
+                    },
+                    schema="SwarmTaskAssignment"
+                )
+                
+                self.swarm = SwarmCoordinator(swarm_config)
+                print("🐝 Agent Swarm initialized with BaseAgent framework")
+                
+            except Exception as e:
+                print(f"⚠️  Failed to initialize swarm: {e}")
+                self.swarm = None
         else:
             print("⚠️  No Ollama model available - Swarm disabled")
             self.swarm = None
