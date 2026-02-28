@@ -189,13 +189,13 @@ class DungeonCombatScene(CombatSceneBase):
 
     def _handle_victory(self):
         self.add_log("Victory!")
-        self.request_scene("dungeon_room", session=self.session, combat_result="victory")
+        self.manager.switch_to("dungeon_path", session=self.session, combat_result="victory")
 
     def _handle_defeat(self):
         self.add_log("Hero has fallen...")
         self.session.end_run(cause="Killed in combat")
-        self.request_scene("dungeon", session=self.session)
+        self.manager.switch_to("garden", message="Team defeated in combat")
 
     def _handle_flee(self):
         self.add_log("Fleeing...")
-        self.request_scene("dungeon_room", session=self.session)
+        self.manager.switch_to("dungeon_path", session=self.session, combat_result="flee")

@@ -20,7 +20,7 @@ class DungeonSession:
     Orchestrates the lifecycle of a Dungeon Crawler run.
     Mirrors the SpaceTraderSession pattern.
     """
-    def __init__(self):
+    def __init__(self, party_slimes: List[RosterSlime] = None):
         logger.info("Creating DungeonSession...")
         self.hub = TheRoom()
         self.hero: Optional[Hero] = None
@@ -29,10 +29,9 @@ class DungeonSession:
         self.ancestors: List[dict] = [] # List of {name, class, floor, kills}
         
         # Team Roster Integration
-        logger.info("Loading roster...")
         self.roster = load_roster()
-        self.party_slimes = [] # List of RosterSlime
-        logger.info(f"DungeonSession created: {self}")
+        self.party_slimes = party_slimes or []
+        logger.info(f"DungeonSession created with {len(self.party_slimes)} slimes")
 
     def generate_hero_name(self) -> str:
         return f"{random.choice(FIRST_NAMES)} {random.choice(LAST_NAMES)}"

@@ -6,7 +6,7 @@ from src.apps.slime_breeder.scenes.breeding_scene import BreedingScene
 from src.apps.slime_breeder.scenes.race_scene import RaceScene
 from src.apps.dungeon_crawler.ui.scene_the_room import TheRoomScene
 from src.apps.dungeon_crawler.ui.scene_dungeon_room import DungeonRoomScene
-from src.apps.dungeon_crawler.ui.scene_dungeon_path import DungeonPathScene
+from src.apps.slime_breeder.scenes.scene_dungeon_path import DungeonPathScene
 from src.apps.dungeon_crawler.ui.scene_dungeon_combat import DungeonCombatScene
 from src.apps.dungeon_crawler.ui.scene_inventory import InventoryOverlay
 from src.shared.engine.scene_manager import SceneManager

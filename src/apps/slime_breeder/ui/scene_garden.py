@@ -177,15 +177,21 @@ class GardenScene(GardenSceneBase):
 
     def _go_to_dungeon(self):
         team = self.roster.get_dungeon_team()
-        if not team.members:
-            self.request_scene("teams")
-        else:
-            # Entry point for Dungeon Crawler demo
-            # In game.py logic, we'd launch the demo. 
-            # Here we'll just log and maybe switch to a scene if we register it.
-            logger.info("⚔️ Entering Dungeon with team...")
-            # For now, transition to TeamScene as it has the ENTER button
-            self.request_scene("teams")
+        if not team or len(team.members) == 0:
+            self._show_banner(
+                "Assign slimes to Dungeon Team first",
+                color=self.spec.color_warning
+            )
+            return
+        
+        from src.apps.dungeon_crawler.ui.dungeon_session import DungeonSession
+        session = DungeonSession(party_slimes=team.members)
+        self.manager.switch_to(
+            "dungeon_path",
+            session=session,
+            team=team.members,
+            depth=1
+        )
 
     def pick_entity(self, pos: Tuple[int, int]) -> Optional[Slime]:
         # Return the top-most slime at pos
