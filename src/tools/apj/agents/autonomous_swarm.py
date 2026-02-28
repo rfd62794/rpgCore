@@ -76,14 +76,15 @@ class AutonomousSwarm:
         self.state = SwarmState.IDLE
         self.tasks: Dict[str, SwarmTask] = {}
         self.agent_workloads: Dict[str, AgentWorkload] = {}
-        self.current_task_index = 0
-        self.round_robin_cycle = 0
-        self.swarm_start_time: Optional[datetime] = None
-        self.last_activity: Optional[datetime] = None
         self.task_queue: List[str] = []  # Ordered task IDs
         self.completed_tasks: List[str] = []
         self.failed_tasks: List[str] = []
         self.blocked_tasks: List[str] = []
+        self.active_tasks: Dict[str, SwarmTask] = {}  # Add missing attribute
+        self.current_task_index = 0
+        self.round_robin_cycle = 0
+        self.swarm_start_time: Optional[datetime] = None
+        self.last_activity: Optional[datetime] = None
         
         # Swarm configuration
         self.max_concurrent_tasks = 3

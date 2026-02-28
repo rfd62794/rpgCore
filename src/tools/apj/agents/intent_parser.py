@@ -311,7 +311,7 @@ class ConversationalInterface:
                         if hasattr(self, 'autonomous_swarm') and self.autonomous_swarm:
                             status = self.autonomous_swarm.get_swarm_status()
                             print(f"\r🔄 Swarm Status: {status['progress']['progress_percentage']} | "
-                                  f"Active: {status['progress']['active']} | "
+                                  f"Active: {status['progress'].get('active', 0)} | "
                                   f"Completed: {status['progress']['completed']}/{status['progress']['total_tasks']} | "
                                   f"Runtime: {status['runtime']}")
                         time.sleep(5)
