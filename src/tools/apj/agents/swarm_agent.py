@@ -496,7 +496,14 @@ Please analyze this request and provide a helpful response.
                 }
             }
     
-    def get_swarm_status(self) -> Dict:
+    def broadcast_to_all_agents(self, content: Dict[str, Any]) -> str:
+        """Broadcast message to all agents"""
+        return A2A_MANAGER.broadcast_message(
+            sender=self.config.name,
+            content=content
+        )
+    
+    def get_available_agents(self) -> Dict[str, Any]:
         """Get status of swarm agents"""
         
         return {

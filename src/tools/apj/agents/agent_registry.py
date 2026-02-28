@@ -213,10 +213,20 @@ class AgentRegistry:
             return None
         
         try:
-            config = AgentConfig.from_config(name)
-            agent = BaseAgent(config)
-            self._agent_instances[name] = agent
-            return agent
+            # Try to load config directly
+            config_path = Path("docs/agents/configs") / f"{metadata.config_file}"
+            if config_path.exists():
+                config_data = yaml.safe_load(config_path.read_text(encoding="utf-8"))
+                config = AgentConfig(**config_data)
+                agent = BaseAgent(config)
+                self._agent_instances[name] = agent
+                return agent
+            else:
+                # Fallback to from_config method
+                config = AgentConfig.from_config(name)
+                agent = BaseAgent(config)
+                self._agent_instances[name] = agent
+                return agent
         except Exception as e:
             print(f"Failed to create agent {name}: {e}")
             return None

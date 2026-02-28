@@ -303,8 +303,12 @@ class AgentBootManager:
         }
         
         try:
+            # Extract blockers and demos from project status
+            blockers = project_status.get("blockers", [])
+            demos = project_status.get("demos", {})
+            
             # Child agent 1: ECS Rendering Specialist
-            if "ECS RenderingSystem missing" in str(project_status.get("blockers", [])):
+            if any("ECS RenderingSystem missing" in str(blocker) for blocker in blockers):
                 child_id = self.swarm_coordinator.create_child_agent(
                     purpose="Implement ECS Rendering System",
                     capabilities=["coding", "testing", "analysis"],
@@ -319,8 +323,8 @@ class AgentBootManager:
                     })
             
             # Child agent 2: Dungeon Demo Polisher
-            if "dungeon" in str(project_status.get("demos", {})):
-                if project_status.get("demos", {}).get("dungeon") == "INCOMPLETE":
+            if "dungeon" in demos:
+                if demos.get("dungeon") == "INCOMPLETE":
                     child_id = self.swarm_coordinator.create_child_agent(
                         purpose="Complete and polish dungeon demo",
                         capabilities=["coding", "testing", "review"],
@@ -335,8 +339,8 @@ class AgentBootManager:
                         })
             
             # Child agent 3: Tower Defense Architect
-            if "tower_defense" in str(project_status.get("demos", {})):
-                if project_status.get("demos", {}).get("tower_defense") == "INCOMPLETE":
+            if "tower_defense" in demos:
+                if demos.get("tower_defense") == "INCOMPLETE":
                     child_id = self.swarm_coordinator.create_child_agent(
                         purpose="Design and implement Tower Defense demo",
                         capabilities=["planning", "coding", "testing"],
