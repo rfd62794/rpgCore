@@ -31,6 +31,7 @@ class RaceScene(Scene):
         self.engine: Optional[RaceEngine] = None
         self.track = generate_track(3000)
         self.renderer = SlimeRenderer()
+        self.minimap = RaceMinimap(spec)
         
         self.ui_components = []
         self._setup_ui()
@@ -207,6 +208,10 @@ class RaceScene(Scene):
 
         for comp in self.ui_components:
             comp.render(surface)
+        
+        # Render minimap
+        if self.engine:
+            self.minimap.render(surface, self.engine.participants, 3000, self.camera_x)
             
         if self.start_countdown > 0:
             msg = "READY" if self.start_countdown > 2 else "SET" if self.start_countdown > 1 else "GO!"
