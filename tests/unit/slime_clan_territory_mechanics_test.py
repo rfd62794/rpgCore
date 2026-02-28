@@ -13,7 +13,7 @@ def mock_overworld():
     pygame.font.init()
     from unittest.mock import MagicMock
     mock_manager = MagicMock()
-    scene = OverworldScene(manager=mock_manager)
+    scene = OverworldScene(manager=mock_manager, spec=SPEC_720)
     scene.faction_manager = FactionManager()
     scene.on_enter()
     return scene
