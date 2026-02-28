@@ -174,6 +174,16 @@ class Team:
             if hasattr(self, '_roster_ref') and self._roster_ref:
                 if slime_id not in self._roster_ref._roster_slimes:
                     self._roster_ref.add_slime(slime_or_id)
+            
+            # Update existing entry in roster if it exists
+            for entry in self._roster_ref.entries:
+                if entry.slime_id == slime_id:
+                    entry.team = self.role
+                    entry._team_ref = self  # Set back-reference
+                    # Add to team members if not already there
+                    if entry not in self.members:
+                        self.members.append(entry)
+                    return True
         else:
             slime_id = slime_or_id
         
