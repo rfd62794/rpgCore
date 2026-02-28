@@ -122,12 +122,22 @@ class AutonomousSwarm:
         self.registry.initialize_specialists()  # Register all specialists
         self.task_router = TaskRouter(self.registry, self.agent_workloads, self.self_healer)
         
+        # Asyncio locks for critical sections
+        self.task_queue_lock = None  # Will be set in async context
+        self.workload_lock = None     # Will be set in async context
+        
         # Performance tracking
         self.task_durations: Dict[str, float] = {}
         self.agent_success_rates: Dict[str, float] = {}
         
         # Initialize agent workloads
         self._initialize_agent_workloads()
+    
+    async def _initialize_async_locks(self):
+        """Initialize asyncio locks for async context"""
+        import asyncio
+        self.task_queue_lock = asyncio.Lock()
+        self.workload_lock = asyncio.Lock()
     
     def _initialize_agent_workloads(self):
         """Initialize workload tracking for all available agents"""
@@ -210,6 +220,62 @@ class AutonomousSwarm:
         
         logger.info(f"✅ Classified {len(self.tasks)} tasks")
     
+    async def start_autonomous_execution(self) -> bool:
+        """
+        Start autonomous execution with intelligent routing and parallel execution
+        """
+        
+        try:
+            # Initialize async locks
+            await self._initialize_async_locks()
+            
+            self.state = SwarmState.ACTIVE
+            self.swarm_start_time = datetime.now()
+            
+            logger.info("� Starting autonomous swarm execution with intelligent routing")
+            print("🚀 Autonomous Swarm starting with intelligent task routing...")
+            
+            # Build task queue with classification
+            await self._build_task_queue()
+            
+            if not self.task_queue:
+                logger.info("No tasks to execute")
+                print("✅ No tasks to execute - swarm ready")
+                return True
+            
+            logger.info(f"📋 {len(self.task_queue)} tasks queued for execution")
+            print(f"📋 {len(self.task_queue)} tasks queued for intelligent routing")
+            
+            # Execute with intelligent routing
+            await self._execute_autonomous_round_robin()
+            
+            return True
+            
+        except Exception as e:
+            logger.error(f"❌ Failed to start autonomous execution: {e}")
+            print(f"❌ Failed to start autonomous execution: {e}")
+            self.state = SwarmState.ERROR
+            return False
+    
+    async def _build_task_queue(self) -> None:
+        """Build task queue with classification"""
+        
+        logger.info("🏗️ Building task queue with classification")
+        
+        # Classify all tasks
+        for task_id, task in self.tasks.items():
+            if not hasattr(task, 'classification') or not task.classification:
+                classification = self.task_classifier.classify(task_id, task.title, task.description)
+                task.classification = classification
+                task.agent_type = classification.detected_type
+            
+            # Add to queue if not already there
+            if task_id not in self.task_queue and task.status == TaskStatus.PENDING:
+                async with self.task_queue_lock:
+                    self.task_queue.append(task_id)
+        
+        logger.info(f"✅ Classified {len(self.tasks)} tasks")
+    
     async def _execute_autonomous_round_robin(self) -> None:
         """Execute tasks with intelligent routing and parallel execution"""
         
@@ -218,13 +284,15 @@ class AutonomousSwarm:
         while self.state == SwarmState.ACTIVE and self.task_queue:
             try:
                 # Get pending tasks with dependencies met
-                pending = [self.tasks[task_id] for task_id in self.task_queue 
-                         if self._can_execute(task_id)]
+                pending = await self._get_ready_tasks()
                 
                 if not pending:
                     # No tasks ready to run; wait a bit
                     await asyncio.sleep(0.1)
                     continue
+                
+                # Get available agents
+                available_agents = await self._get_available_agents()
                 
                 # Route each task to best available agent
                 assignments = []  # List of (task_id, agent_name) tuples
@@ -246,11 +314,12 @@ class AutonomousSwarm:
                     # Update task state
                     task.status = TaskStatus.IN_PROGRESS
                     task.assigned_agent = agent_name
-                    self.agent_workloads[agent_name].current_task = task.id
+                    await self._update_workload_assignment(agent_name, task.id)
                     
                     # Remove from queue
-                    if task.id in self.task_queue:
-                        self.task_queue.remove(task.id)
+                    async with self.task_queue_lock:
+                        if task.id in self.task_queue:
+                            self.task_queue.remove(task.id)
                 
                 if not assignments:
                     # No tasks ready to run; wait a bit
@@ -268,7 +337,7 @@ class AutonomousSwarm:
                 
                 # Track results
                 for result in results:
-                    self._update_after_execution(result)
+                    await self._update_after_execution(result)
                 
                 # Small delay to prevent overwhelming
                 await asyncio.sleep(0.1)
@@ -280,6 +349,86 @@ class AutonomousSwarm:
         self.state = SwarmState.IDLE
         print("🎉 All tasks completed!")
         logger.info("🎉 Autonomous swarm execution completed")
+    
+    async def _get_ready_tasks(self) -> List[SwarmTask]:
+        """Get tasks ready to execute (dependencies met)"""
+        
+        async with self.task_queue_lock:
+            pending = [
+                self.tasks[task_id]
+                for task_id in self.task_queue
+                if self._dependencies_met(task_id)
+            ]
+        return pending
+    
+    async def _get_available_agents(self) -> List[str]:
+        """Get agents that can accept new tasks"""
+        
+        available = []
+        for agent_name, workload in self.agent_workloads.items():
+            if workload.current_task is None:  # Agent is idle
+                # Check circuit breaker
+                if self.self_healer and agent_name in self.self_healer.circuit_breakers:
+                    continue  # Skip circuit-broken agents
+                available.append(agent_name)
+        
+        return available
+    
+    async def _update_workload_assignment(self, agent_name: str, task_id: str) -> None:
+        """Update agent workload when task is assigned"""
+        
+        async with self.workload_lock:
+            if agent_name in self.agent_workloads:
+                self.agent_workloads[agent_name].current_task = task_id
+    
+    async def _update_workload_completion(self, agent_name: str, success: bool, duration: float) -> None:
+        """Update agent workload when task completes"""
+        
+        async with self.workload_lock:
+            if agent_name in self.agent_workloads:
+                workload = self.agent_workloads[agent_name]
+                workload.current_task = None
+                workload.tasks_completed += 1
+                
+                # Update efficiency metrics
+                if hasattr(workload, 'total_work_time'):
+                    workload.total_work_time += duration
+                    workload.efficiency_score = workload.tasks_completed / workload.total_work_time
+                else:
+                    workload.total_work_time = duration
+                    workload.efficiency_score = 1.0
+    
+    async def _mark_task_complete(self, task_id: str, success: bool) -> None:
+        """Mark task as complete or failed"""
+        
+        task = self.tasks[task_id]
+        
+        async with self.task_queue_lock:
+            if success:
+                self.completed_tasks.append(task_id)
+                task.status = TaskStatus.COMPLETED
+                task.completed_at = datetime.now()
+            else:
+                self.failed_tasks.append(task_id)
+                task.status = TaskStatus.FAILED
+                task.completed_at = datetime.now()
+    
+    def _dependencies_met(self, task_id: str) -> bool:
+        """Check if all dependencies of a task are completed"""
+        
+        task = self.tasks.get(task_id)
+        if not task:
+            return False
+        
+        for dep_id in task.dependencies:
+            dep_task = self.tasks.get(dep_id)
+            if not dep_task:
+                return False  # Dependency doesn't exist
+            
+            if dep_task.status != TaskStatus.COMPLETED:
+                return False  # Dependency not yet completed
+        
+        return True  # All dependencies met
     
     async def _execute_task_async(self, task_id: str, agent_name: str) -> Any:
         """Execute a single task asynchronously"""
