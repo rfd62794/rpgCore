@@ -101,13 +101,21 @@ class ProfileCard(UIComponent):
         self.stats_panel.position = (x + 80, y + 66)
         self.stats_panel.render(surface)
         
-        # Genetic trait hint (bottom)
+        # Genetic trait hint (bottom) - render as separate badges
         trait_hint = get_dominant_trait(self.slime.genome)
-        breeding_status = "" if self.slime.can_breed else " (Young)"
-        trait_text = f"Trait: {trait_hint}{breeding_status}"
-        render_text(surface, trait_text,
-                   (x + self.PADDING, y + self.HEIGHT - 18),
-                   size=12, color=(140, 140, 160))
+        breeding_status = "" if self.slime.can_breed else "Young"
+        
+        # Trait badge
+        trait_color = (120, 100, 180)  # Purple for traits
+        render_badge(surface, trait_hint, 
+                    (x + self.PADDING, y + self.HEIGHT - 20), trait_color)
+        
+        # Age badge if not breedable
+        if breeding_status:
+            age_color = (200, 140, 60)  # Orange for young
+            trait_width = len(trait_hint) * 8 + 16  # Approximate badge width
+            render_badge(surface, breeding_status, 
+                        (x + self.PADDING + trait_width + 8, y + self.HEIGHT - 20), age_color)
 
 # --- Local Rendering Helpers ---
 
