@@ -1,3 +1,40 @@
 {
-  "slimes": []
+  "slimes": [
+    {
+      "slime_id": "pip_1",
+      "name": "Pip 1",
+      "team": "dungeon",
+      "locked": false,
+      "alive": true,
+      "genome": {
+        "shape": "amorphous",
+        "size": "large",
+        "base_color": [
+          68,
+          178,
+          229
+        ],
+        "pattern": "iridescent",
+        "pattern_color": [
+          192,
+          97,
+          194
+        ],
+        "accessory": "crystals",
+        "curiosity": 0.33199417724757296,
+        "energy": 0.2371148079359826,
+        "affection": 0.30861067215787363,
+        "shyness": 0.8429937248698148,
+        "cultural_base": "coastal",
+        "base_hp": 20.0,
+        "base_atk": 5.0,
+        "base_spd": 5.0,
+        "generation": 1
+      },
+      "level": 1,
+      "experience": 0,
+      "breeding_lock_level": 0,
+      "current_hp": 22.0
+    }
+  ]
 }
