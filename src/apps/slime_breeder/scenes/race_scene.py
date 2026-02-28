@@ -5,8 +5,8 @@ from typing import List, Optional, Tuple
 
 from src.shared.engine.scene_manager import Scene
 from src.shared.ui.panel import Panel
-from src.ui.button import Button
-from src.ui.label import Label
+from src.shared.ui.button import Button
+from src.shared.ui.label import Label
 from src.shared.ui.spec import UISpec
 from src.shared.ui.layouts import ArenaLayout
 from src.shared.teams.roster import Roster, RosterSlime, TeamRole
