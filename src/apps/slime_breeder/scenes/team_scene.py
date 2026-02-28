@@ -52,10 +52,10 @@ class TeamScene(Scene):
         dungeon_subtext = Label("4 slots — enters the ruins together", (self.layout.left_panel.x + 20, 35), self.spec, size="sm", color=(160, 160, 180))
         self.ui_components.append(dungeon_subtext)
         
-        racing_header = Label("RACING TEAM", (self.layout.center_panel.x + 20, 15), self.spec, size="lg", bold=True)
+        racing_header = Label("RACING TEAM", (self.layout.center_area.x + 20, 15), self.spec, size="lg", bold=True)
         self.ui_components.append(racing_header)
         
-        racing_subtext = Label("1 slot — competes in the derby", (self.layout.center_panel.x + 20, 35), self.spec, size="sm", color=(160, 160, 180))
+        racing_subtext = Label("1 slot — competes in the derby", (self.layout.center_area.x + 20, 35), self.spec, size="sm", color=(160, 160, 180))
         self.ui_components.append(racing_subtext)
         
         # 3. Action Buttons
@@ -88,9 +88,9 @@ class TeamScene(Scene):
                 Label("EMPTY", (empty_rect.centerx, empty_rect.centery), self.spec, centered=True).add_to(self.ui_components)
 
         # 5. Racing Team Slot (Center Panel - larger)
-        racing_slot_y = self.layout.center_panel.y + 60
-        racing_slot_rect = pygame.Rect(self.layout.center_panel.x + 20, racing_slot_y, 
-                                      self.layout.center_panel.width - 40, self.spec.card_height + 40)
+        racing_slot_y = self.layout.center_area.y + 60
+        racing_slot_rect = pygame.Rect(self.layout.center_area.x + 20, racing_slot_y, 
+                                      self.layout.center_area.width - 40, self.spec.card_height + 40)
         
         if self.racing_team.members:
             slime = self.racing_team.members[0]
