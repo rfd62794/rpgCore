@@ -186,7 +186,6 @@ class Team:
                     # Add to team members if not already there
                     if entry not in self.members:
                         self.members.append(entry)
-                    print(f"DEBUG: Updated existing entry {slime_id} to team {self.role}")
                     return True
         else:
             slime_id = slime_or_id
