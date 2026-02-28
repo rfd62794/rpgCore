@@ -19,6 +19,10 @@ class RaceParticipant:
         self.rank = 0
         self.base_speed = calculate_speed(slime.genome, slime.level)
         
+        # Lap tracking
+        self.laps_complete = 0
+        self.finish_position = 0
+        
         # Jump state
         self.jump_phase = 0.0      # 0.0 = grounded, 0-1 = in jump arc
         self.jump_height = 0.0     # current visual height
@@ -86,6 +90,8 @@ class RaceEngine:
         self.participants = [RaceParticipant(p) for p in participants]
         self.track = track
         self.length = length
+        self.total_laps = 3
+        self.lap_distance = length / self.total_laps
         self._finish_order = []
         self._finished = False
         
@@ -98,11 +104,26 @@ class RaceEngine:
                 terrain = get_terrain_at(self.track, p.distance)
                 p.update(dt, terrain)
                 
-                if p.distance >= self.length:
+                # Lap crossing check
+                if p.distance >= self.lap_distance:
+                    p.distance -= self.lap_distance  # wrap position
+                    p.laps_complete += 1
+                    
+                    # Check if race finished
+                    if p.laps_complete >= self.total_laps:
+                        p.finished = True
+                        p.finish_position = len(self._finish_order) + 1
+                        self._finish_order.append(p)
+                        p.rank = p.finish_position
+                    
+                # Also check if reached final distance (backup)
+                elif p.distance >= self.length:
                     p.distance = self.length
-                    p.finished = True
-                    self._finish_order.append(p)
-                    p.rank = len(self._finish_order)
+                    if not p.finished:
+                        p.finished = True
+                        p.finish_position = len(self._finish_order) + 1
+                        self._finish_order.append(p)
+                        p.rank = p.finish_position
                     
         if all(p.finished for p in self.participants):
             self._finished = True

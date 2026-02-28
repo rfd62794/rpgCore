@@ -200,23 +200,9 @@ class RaceScene(Scene):
     def render(self, surface: pygame.Surface):
         surface.fill(self.spec.color_bg)
         
-        # Create Arena Scratch Surface for Zoom/Shake
-        arena_surf = pygame.Surface((self.layout.arena.width, self.layout.arena.height))
-        arena_surf.fill((30, 50, 30)) # Off-track dark green background
+        # Render arena content directly (no viewport scaling)
+        self._render_arena_content(surface)
         
-        self._render_arena_content(arena_surf)
-        
-        # Apply Zoom
-        if abs(self.camera_zoom - 1.0) > 0.01:
-            scaled_w = int(arena_surf.get_width() * self.camera_zoom)
-            scaled_h = int(arena_surf.get_height() * self.camera_zoom)
-            scaled_surf = pygame.transform.smoothscale(arena_surf, (scaled_w, scaled_h))
-            ox = (arena_surf.get_width() - scaled_w) // 2
-            oy = (arena_surf.get_height() - scaled_h) // 2
-            surface.blit(scaled_surf, (self.layout.arena.x + ox, self.layout.arena.y + oy))
-        else:
-            surface.blit(arena_surf, self.layout.arena.topleft)
-
         # Shake
         if self.shake_mag > 0:
             sx = random.uniform(-self.shake_mag, self.shake_mag)
@@ -236,6 +222,9 @@ class RaceScene(Scene):
             look_ahead_distance = player.distance + 200
             self.terrain_ahead = get_terrain_at(self.track, look_ahead_distance)
             
+            # Update current lap from player
+            self.current_lap = player.laps_complete + 1 if not player.finished else self.engine.total_laps
+            
             self.minimap.render(surface, self.engine.participants, 3000, self.camera_x)
             self.hud.render(surface, self.engine.participants, self.current_lap, self.total_laps, self.terrain_ahead)
             
@@ -244,12 +233,26 @@ class RaceScene(Scene):
             Label(msg, (self.spec.screen_width // 2, self.spec.screen_height // 2), self.spec, size="hd", color=(255, 255, 255), centered=True).render(surface)
 
     def _render_arena_content(self, surface: pygame.Surface):
-        arena_w = surface.get_width()
-        arena_h = surface.get_height()
+        # Render within arena bounds
+        arena_rect = self.layout.arena
+        arena_w = arena_rect.width
+        arena_h = arena_rect.height
+        
+        # Create temporary surface for arena content
+        arena_surf = pygame.Surface((arena_w, arena_h))
+        arena_surf.fill((30, 50, 30)) # Off-track dark green background
         
         # Path Dimensions
         track_h = max(self.min_track_height, int(arena_h * self.track_height_ratio))
         track_y = (arena_h - track_h) // 2
+        
+        # Render all arena content to arena_surf
+        self._render_track_content(arena_surf, arena_w, arena_h, track_y, track_h)
+        
+        # Blit arena surface to main surface
+        surface.blit(arena_surf, arena_rect.topleft)
+    
+    def _render_track_content(self, surface, arena_w, arena_h, track_y, track_h):
         
         # 1. Draw Road Base (Continuous band)
         road_rect = pygame.Rect(0, track_y, arena_w, track_h)
