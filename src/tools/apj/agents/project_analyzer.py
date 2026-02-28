@@ -15,6 +15,7 @@ import json
 from .agent_registry import AGENT_REGISTRY
 from .workflow_builder import WORKFLOW_BUILDER
 from .autonomous_swarm import AUTONOMOUS_SWARM
+from .task_validator import TASK_VALIDATOR
 
 logger = logging.getLogger(__name__)
 
@@ -272,6 +273,18 @@ class ProjectAnalyzer:
                     if len(blocker_text) < 5 or blocker_text.startswith(('logger.', 'print(', 'return ', 'if ')):
                         continue
                     
+                    # Validate that this is a real task, not a code fragment
+                    validation = TASK_VALIDATOR.is_valid_task(
+                        f"Blocker: {blocker_text}",
+                        blocker_text,
+                        f"{file_path}:{i}"
+                    )
+                    
+                    if not validation.is_valid:
+                        # Skip false positives
+                        logger.debug(f"Skipping false positive: {blocker_text[:50]}... - {validation.reason}")
+                        continue
+                    
                     # Determine priority
                     priority = self._determine_priority(blocker_text)
                     
@@ -475,12 +488,24 @@ class ProjectAnalyzer:
                 if len(issue_text) < 5 or issue_text.startswith(('logger.', 'print(', 'return ', 'if ')):
                     continue
                 
+                # Validate that this is a real task, not a code fragment
+                validation = TASK_VALIDATOR.is_valid_task(
+                    f"Issue: {issue_text}",
+                    issue_text,
+                    f"{file_path}:{i}"
+                )
+                
+                if not validation.is_valid:
+                    # Skip false positives
+                    logger.debug(f"Skipping false positive issue: {issue_text[:50]}... - {validation.reason}")
+                    continue
+                
                 priority = Priority.MEDIUM
                 if 'CRITICAL' in issue_text.upper():
                     priority = Priority.HIGH
                 
                 issue = ProjectIssue(
-                    title=f"Code Issue: {issue_text[:50]}...",
+                    title=f"Issue: {issue_text[:50]}...",
                     description=issue_text,
                     location=f"{file_path}:{i}",
                     priority=priority,
