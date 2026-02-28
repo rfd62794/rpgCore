@@ -492,6 +492,8 @@ class AgentBootManager:
                 "error": str(e),
                 "executed_tasks": []
             }
+    
+    def _calculate_ecosystem_health(self) -> Dict[str, Any]:
         """Calculate overall ecosystem health metrics"""
         
         health = {
@@ -522,6 +524,26 @@ class AgentBootManager:
         a2a_agents = len([name for name in AGENT_REGISTRY.get_all_agents() 
                            if AGENT_REGISTRY.supports_a2a(name)])
         a2a_ratio = a2a_agents / total_expected
+        health["metrics"]["a2a_coverage"] = f"{a2a_agents}/{total_expected} ({a2a_ratio:.1%})"
+        
+        # Tool availability
+        tool_count = len(TOOL_REGISTRY.get_all_tools())
+        health["metrics"]["available_tools"] = tool_count
+        
+        # Message processing
+        pending = len(A2A_MANAGER._message_queue)
+        health["metrics"]["pending_messages"] = pending
+        
+        if pending > 10:
+            if health["overall"] == "healthy":
+                health["overall"] = "good"
+            health["issues"].append("High message queue")
+        
+        # Overall assessment
+        if not health["issues"]:
+            health["overall"] = "excellent"
+        
+        return health
         health["metrics"]["a2a_coverage"] = f"{a2a_agents}/{total_expected} ({a2a_ratio:.1%})"
         
         # Tool availability
