@@ -80,12 +80,16 @@ class BaseAgent:
     
     def _extract_json(self, raw: str) -> str:
         """Brace-depth extraction - standard APJ pattern."""
+        logger.debug(f"Raw LLM response: {raw[:200]}...")
+        
         fenced = re.search(r"```(?:json)?\s*({.*?})\s*```", raw, re.DOTALL)
         if fenced:
+            logger.debug(f"Found fenced JSON: {fenced.group(1)[:200]}...")
             return fenced.group(1)
         
         start = raw.find("{")
         if start == -1:
+            logger.debug("No JSON found in response")
             return raw.strip()
         
         depth = 0
@@ -95,7 +99,9 @@ class BaseAgent:
             elif char == "}":
                 depth -= 1
                 if depth == 0:
-                    return raw[start:i + 1]
+                    result = raw[start:i + 1]
+                    logger.debug(f"Extracted JSON: {result[:200]}...")
+                    return result
         return raw[start:].strip()
     
     def _validate(self, json_str: str) -> BaseModel:
