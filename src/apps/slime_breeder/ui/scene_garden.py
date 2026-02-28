@@ -10,7 +10,8 @@ from src.apps.slime_breeder.ui.slime_renderer import SlimeRenderer
 from src.shared.genetics import generate_random, breed
 from src.shared.teams.roster import Roster, RosterSlime, TeamRole
 from src.shared.teams.roster_save import load_roster, save_roster
-from src.shared.ui.profile_card import ProfileCard
+from src.shared.ui.profile_card import ProfileCard, render_text
+from src.shared.ui.panel import Panel
 
 NAMES = ["Mochi", "Pip", "Glimmer", "Bloop", "Sage", "Dew", "Ember", "Fizz", "Lumen", "Nook"]
 
@@ -48,6 +49,16 @@ class GardenScene(GardenSceneBase):
         self.release_btn = Button(pygame.Rect(280, btn_y, btn_w, btn_h), text="Release", on_click=self._release_selected)
         self.release_btn.set_enabled(False)
         self.action_bar.add_child(self.release_btn)
+
+        # 3. Top Navigation Bar
+        self.top_bar = Panel(pygame.Rect(0, 0, self.width - self.panel_width, 60), bg_color=(20, 20, 30))
+        self.ui_components.append(self.top_bar)
+        
+        self.teams_nav_btn = Button(pygame.Rect(20, 10, 100, 40), text="TEAMS", on_click=self._go_to_teams)
+        self.top_bar.add_child(self.teams_nav_btn)
+        
+        self.dungeon_nav_btn = Button(pygame.Rect(130, 10, 120, 40), text="DUNGEON", on_click=self._go_to_dungeon)
+        self.top_bar.add_child(self.dungeon_nav_btn)
 
         # Sync initial slimes if garden is empty but roster has slimes
         if not self.garden_state.slimes and self.roster.slimes:
@@ -122,6 +133,21 @@ class GardenScene(GardenSceneBase):
             save_roster(self.roster)
             self.selected_entities = []
             self.on_selection_changed()
+
+    def _go_to_teams(self):
+        self.request_scene("teams")
+
+    def _go_to_dungeon(self):
+        team = self.roster.get_dungeon_team()
+        if not team.members:
+            self.request_scene("teams")
+        else:
+            # Entry point for Dungeon Crawler demo
+            # In game.py logic, we'd launch the demo. 
+            # Here we'll just log and maybe switch to a scene if we register it.
+            logger.info("⚔️ Entering Dungeon with team...")
+            # For now, transition to TeamScene as it has the ENTER button
+            self.request_scene("teams")
 
     def pick_entity(self, pos: Tuple[int, int]) -> Optional[Slime]:
         # Return the top-most slime at pos
@@ -199,3 +225,23 @@ class GardenScene(GardenSceneBase):
         for slime in self.garden_state.slimes:
             is_selected = (slime in self.selected_entities)
             self.renderer.render(surface, slime, is_selected)
+            
+        self._render_team_status_bar(surface)
+
+    def _render_team_status_bar(self, surface: pygame.Surface):
+        team = self.roster.get_dungeon_team()
+        bar_rect = pygame.Rect(0, self.height - 36, self.width, 36)
+        pygame.draw.rect(surface, (20, 20, 30), bar_rect)
+        pygame.draw.rect(surface, (50, 50, 70), bar_rect, width=1)
+        
+        if not team.members:
+            render_text(surface, 
+                       "DUNGEON TEAM: Empty — visit Teams to assign slimes",
+                       (16, self.height - 24),
+                       size=18, color=(100, 100, 120))
+        else:
+            names = ", ".join(s.name for s in team.members)
+            label = f"DUNGEON TEAM: {names} [{len(team.members)}/4]"
+            render_text(surface, label,
+                       (16, self.height - 24),
+                       size=18, color=(180, 220, 180))

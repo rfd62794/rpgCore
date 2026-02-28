@@ -1,0 +1,74 @@
+import pytest
+import pygame
+from unittest.mock import MagicMock
+from src.apps.slime_breeder.scenes.team_scene import TeamScene
+from src.shared.teams.roster import RosterSlime, TeamRole, Team
+from src.shared.genetics.genome import SlimeGenome
+
+@pytest.fixture
+def mock_manager():
+    manager = MagicMock()
+    manager.width = 1024
+    manager.height = 768
+    return manager
+
+@pytest.fixture
+def sample_roster():
+    from src.shared.teams.roster import Roster
+    roster = Roster()
+    genome = SlimeGenome(
+        shape="round", size="medium", base_color=(100, 200, 100),
+        pattern="spotted", pattern_color=(50, 50, 50), accessory="none",
+        curiosity=0.8, energy=0.2, affection=0.1, shyness=0.1
+    )
+    for i in range(5):
+        rs = RosterSlime(slime_id=f"s{i}", name=f"Slime {i}", genome=genome)
+        roster.add_slime(rs)
+    return roster
+
+def test_team_scene_initialization(mock_manager, sample_roster, monkeypatch):
+    # Mock load_roster
+    monkeypatch.setattr("src.apps.slime_breeder.scenes.team_scene.load_roster", lambda: sample_roster)
+    monkeypatch.setattr("src.apps.slime_breeder.scenes.team_scene.save_roster", lambda r: None)
+    
+    scene = TeamScene(mock_manager)
+    scene.on_enter()
+    
+    assert scene.roster == sample_roster
+    assert len(scene.team.members) == 0
+    assert len(scene.buttons) > 0 # Back button + Assign buttons
+
+def test_team_scene_assign_slime(mock_manager, sample_roster, monkeypatch):
+    monkeypatch.setattr("src.apps.slime_breeder.scenes.team_scene.load_roster", lambda: sample_roster)
+    monkeypatch.setattr("src.apps.slime_breeder.scenes.team_scene.save_roster", MagicMock())
+    
+    scene = TeamScene(mock_manager)
+    scene.on_enter()
+    
+    slime = sample_roster.slimes[0]
+    scene._assign(slime)
+    
+    assert len(scene.team.members) == 1
+    assert scene.team.members[0] == slime
+
+def test_team_scene_remove_slime(mock_manager, sample_roster, monkeypatch):
+    monkeypatch.setattr("src.apps.slime_breeder.scenes.team_scene.load_roster", lambda: sample_roster)
+    monkeypatch.setattr("src.apps.slime_breeder.scenes.team_scene.save_roster", MagicMock())
+    
+    scene = TeamScene(mock_manager)
+    scene.on_enter()
+    
+    slime = sample_roster.slimes[0]
+    scene._assign(slime)
+    assert len(scene.team.members) == 1
+    
+    scene._remove(slime)
+    assert len(scene.team.members) == 0
+
+def test_team_scene_back_to_garden(mock_manager, monkeypatch):
+    monkeypatch.setattr("src.apps.slime_breeder.scenes.team_scene.load_roster", MagicMock())
+    
+    scene = TeamScene(mock_manager)
+    scene._back_to_garden()
+    mock_manager.switch_to.assert_not_called() # It uses request_scene which sets next_scene
+    assert scene.next_scene == "garden"
