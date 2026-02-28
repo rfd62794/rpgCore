@@ -91,7 +91,7 @@ class RaceParticipant:
         speed_modifier = self.profile["speed_modifier"]
         
         # Roller momentum buildup
-        if self.movement_type == MovementType.ROLLER:
+        if self.movement_type == MovementType.roller:
             self.momentum += self.profile["momentum_buildup"] * dt
             speed_modifier = min(1.4, speed_modifier + self.momentum)
         
