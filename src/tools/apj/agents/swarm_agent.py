@@ -20,14 +20,16 @@ class SwarmCoordinator(BaseAgent):
     Coordinates multiple specialized agents using existing infrastructure
     """
     
-    def __init__(self, config: AgentConfig):
+    def __init__(self, config: AgentConfig, force_reinit: bool = False):
         super().__init__(config)
         self.model_router = ModelRouter()
         self.swarm_agents = {}
-        self._initialize_swarm_agents()
+        self._initialize_swarm_agents(force_reinit)
     
-    def _initialize_swarm_agents(self) -> None:
-        """Initialize swarm agents using existing BaseAgent system"""
+    def _initialize_swarm_agents(self, force_reinit: bool = False) -> None:
+        """Initialize all swarm agents using existing BaseAgent framework"""
+        
+        logger.info("Initializing swarm agents with BaseAgent framework")
         
         # Define swarm agent configurations
         swarm_configs = {
