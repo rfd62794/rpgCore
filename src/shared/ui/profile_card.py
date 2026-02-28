@@ -40,6 +40,15 @@ class ProfileCard(UIComponent):
         """No periodic updates needed for the card itself."""
         pass
 
+    def handle_event(self, event: pygame.event.Event) -> bool:
+        """Handle click events on the profile card."""
+        if event.type == pygame.MOUSEBUTTONDOWN:
+            if self.contains_point(event.pos[0], event.pos[1]):
+                # Card was clicked - you can add custom behavior here
+                # For now, just return True to consume the event
+                return True
+        return False
+
     def render(self, surface: pygame.Surface):
         x, y = self.position
         
