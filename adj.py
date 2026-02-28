@@ -294,12 +294,14 @@ System: {system_name}
         ]
         
         for demo_name, demo_status in sorted(status.demos.items()):
-            lines.append(f"- **{demo_name}**: {demo_status['files']} files, {demo_status['docstring_coverage']:.1f}% coverage {demo_status['status']}")
+            status_emoji = demo_status['status'].replace('✅', 'Complete').replace('🔄', 'In Progress').replace('❌', 'Incomplete')
+            lines.append(f"- **{demo_name}**: {demo_status['files']} files, {demo_status['docstring_coverage']:.1f}% coverage {status_emoji}")
         
         lines.extend(["", "## By System"])
         
         for system_name, system_status in sorted(status.systems.items()):
-            lines.append(f"- **{system_name}**: {system_status['files']} files, {system_status['docstring_coverage']:.1f}% coverage {system_status['status']}")
+            status_emoji = system_status['status'].replace('✅', 'Complete').replace('🔄', 'In Progress').replace('❌', 'Incomplete')
+            lines.append(f"- **{system_name}**: {system_status['files']} files, {system_status['docstring_coverage']:.1f}% coverage {status_emoji}")
         
         lines.extend(["", "## Missing Docstrings (Top 20)"])
         
