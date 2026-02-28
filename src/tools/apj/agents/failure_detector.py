@@ -198,10 +198,10 @@ class FailureDetector:
     
     # Detection helpers
     
-    def _is_too_complex(self, context: Dict) -> bool:
+    def _is_too_complex(self, context) -> bool:
         """Task involves too many systems?"""
-        systems_touched = len(context.get("existing_implementations", {}))
-        integration_points = context.get("task_mappings", {})
+        systems_touched = len(context.existing_implementations)
+        integration_points = context.task_mappings
         
         # If touches more than 3 systems, might be complex
         if systems_touched > 3:
