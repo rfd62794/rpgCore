@@ -59,12 +59,12 @@ class BreedingScene(Scene):
         title_panel = Panel(pygame.Rect(0, 0, 800, 60), color=(40, 40, 60))
         self.ui_components.append(title_panel)
         
-        title_label = Label("BREEDING CHAMBER", (400, 30), size=32, color=(200, 200, 255))
+        title_label = Label("BREEDING CHAMBER", (400, 30), font_size=32, color=(200, 200, 255))
         self.ui_components.append(title_label)
         
         # Status Label
         status_text = self.get_status_text()
-        self.status_label = Label(status_text, (400, 80), size=24, color=(180, 180, 200))
+        self.status_label = Label(status_text, (400, 80), font_size=24, color=(180, 180, 200))
         self.ui_components.append(self.status_label)
         
         # Action Buttons
