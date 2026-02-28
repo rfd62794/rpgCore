@@ -16,11 +16,14 @@ Usage:
 
 import argparse
 import json
-import subprocess
+import os
 import sys
-from datetime import datetime
+import subprocess
+import time
+import datetime
 from pathlib import Path
 from typing import Dict, List, Optional
+from datetime import datetime
 
 # Layer imports
 from src.tools.apj.data_loader import DataLoader
@@ -1258,19 +1261,48 @@ Provide as JSON with detailed steps.
             return
         
         if args.arg == "status":
-            print(f"\n🐝 Swarm Status:")
+            print(f"\n🐝 Swarm Ecosystem Status:")
             from src.tools.apj.agents.intent_parser import ConversationalInterface
+            from src.tools.apj.agents.agent_boot import AGENT_BOOT_MANAGER
             chat = ConversationalInterface(adj.root_dir, adj._get_ollama_model())
             
             if chat.swarm:
+                # Get comprehensive swarm status
                 status = chat.swarm.get_swarm_status()
-                print(f"Total Agents: {status['total_agents']}")
-                print(f"Available Agents: {', '.join(status['available_agents'])}")
-                print(f"\nAgent Details:")
+                
+                print(f"Total Swarm Agents: {status['total_agents']}")
+                print(f"Swarm Agents: {', '.join(status['available_agents'])}")
+                
+                # Show ecosystem status
+                if 'ecosystem' in status:
+                    eco = status['ecosystem']
+                    print(f"\n🤖 Existing Agents: {eco['existing_agents']}")
+                    print(f"👶 Child Agents: {eco['child_agents']}")
+                    print(f"🔗 A2A-Enabled Agents: {eco['a2a_enabled_agents']}")
+                    print(f"🛠️ Available Tools: {len(eco['available_tools'])} tools")
+                
+                # Show communication status
+                if 'communication' in status:
+                    comm = status['communication']
+                    print(f"\n💬 Communication:")
+                    print(f"  Pending Messages: {comm['pending_messages']}")
+                    print(f"  Message History: {comm['message_history_size']}")
+                
+                # Show agent details
+                print(f"\n📋 Agent Details:")
                 for agent_type, details in status['agent_details'].items():
                     print(f"  {agent_type}: {details['name']} ({details['department']})")
+                
+                # Show boot manager status if available
+                try:
+                    boot_status = AGENT_BOOT_MANAGER.boot_time
+                    if boot_status:
+                        duration = (datetime.now() - boot_status).total_seconds()
+                        print(f"\n⏱️  Boot Time: {duration:.2f}s ago")
+                except:
+                    pass
             else:
-                print("❌ Swarm not initialized")
+                print("❌ Swarm ecosystem not initialized")
         
         elif args.arg == "list":
             print(f"\n📋 Swarm Capabilities:")
