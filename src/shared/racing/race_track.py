@@ -3,8 +3,7 @@ Adapted from TurboShells.
 """
 
 import random
-from dataclasses import dataclass
-from enum import Enum
+from src.shared.simulation.base_track import BaseZone
 
 TRACK_LENGTH_LOGIC = 1500
 SEGMENT_LENGTH = 10
@@ -19,14 +18,12 @@ class TerrainType(Enum):
     VOID = "void"          # shortcut/hazard (future)
 
 @dataclass
-class TerrainZone:
+class TerrainZone(BaseZone):
     terrain_type: TerrainType
-    start_dist: float   # world distance where zone starts
-    end_dist: float     # world distance where zone ends
     
-    @property
-    def width(self) -> float:
-        return self.end_dist - self.start_dist
+    def __init__(self, terrain_type: TerrainType, start_dist: float, end_dist: float):
+        super().__init__(terrain_type, start_dist, end_dist)
+        self.terrain_type = terrain_type
 
 # Speed modifiers per terrain
 TERRAIN_SPEED_MOD = {
