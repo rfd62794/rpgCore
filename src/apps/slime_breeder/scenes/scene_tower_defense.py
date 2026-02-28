@@ -335,17 +335,14 @@ class TowerDefenseScene(Scene):
         """Add tower to ECS system"""
         # Add components
         tower_component = TowerComponent()
-        tower_component.set_creature_reference(tower)
         self.component_registry.add_component(tower.slime_id, TowerComponent, tower_component)
         
         behavior_component = BehaviorComponent()
-        behavior_component.set_creature_reference(tower)
         self.component_registry.add_component(tower.slime_id, BehaviorComponent, behavior_component)
         
         # Add grid position
         grid_pos = self._find_tower_grid_position(tower)
         grid_component = GridPositionComponent(grid_pos[0], grid_pos[1])
-        grid_component.set_creature_reference(tower)
         self.component_registry.add_component(tower.slime_id, GridPositionComponent, grid_component)
     
     def _add_enemy_to_ecs(self, enemy: Creature) -> None:
