@@ -745,16 +745,16 @@ Blockers: {len(self.project_analysis['blockers'])} items identified
             technical_design=self.documentation.get("phase3/TECHNICAL_DESIGN.md", ""),
             feature_spec=self.documentation.get("phase3/FEATURE_SPEC.md", ""),
             system_specs=self.documentation.get("phase3/SYSTEM_SPECS.md", ""),
-            # NEW: Full project knowledge from all documentation
-            project_knowledge=self.project_knowledge,
+            # NEW: Full documentation context
+            project_knowledge={},
             vision=self.documentation.get("VISION.md", ""),
             goals=self.documentation.get("GOALS.md", ""),
             design_pillars=self.documentation.get("DESIGN_PILLARS.md", ""),
             milestones=self.documentation.get("MILESTONES.md", ""),
             tasks_doc=self.documentation.get("TASKS.md", ""),
-            ecs_details=self.project_knowledge.get("ecs_details", {}),
-            genetics_details=self.project_knowledge.get("genetics_details", {}),
-            rendering_details=self.project_knowledge.get("rendering_details", {})
+            ecs_details={},
+            genetics_details={},
+            rendering_details={}
         )
     def _get_existing_code(self, task: Dict) -> Dict:
         """Get existing code for files this task touches"""
