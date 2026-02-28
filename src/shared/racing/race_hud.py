@@ -76,7 +76,7 @@ class RaceHUD:
                 gap_to_leader = racer.distance - racers[0].distance
                 gap_text = f"+{gap_to_leader:.1f}s"
             
-            racer_text = f"{racer.name}: {gap_text}"
+            racer_text = f"{racer.slime.name}: {gap_text}"
             self._render_text(surface, racer_text, (gap_x, gap_y), size="sm", color=self.spec.color_text_dim)
     
     def _render_text(self, surface, text, pos, size="md", centered=False, color=(255, 255, 255), right_aligned=False, bold=False):
