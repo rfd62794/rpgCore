@@ -26,7 +26,7 @@ def test_race_engine_simulation():
         shape="cubic", size="massive", base_color=(100, 100, 100),
         pattern="solid", pattern_color=(0,0,0), accessory="none",
         curiosity=0.5, energy=0.1, affection=0.5, shyness=0.1,
-        cultural_base=CulturalBase.CRYSTAL # Crystal has speed modifier 0.7
+        cultural_base=CulturalBase.EMBER # Ember has rock advantage, no penalty
     ), level=1)
     
     track = ["grass"] * 100
@@ -36,9 +36,9 @@ def test_race_engine_simulation():
     for _ in range(100):
         engine.tick(0.1)
     
-    # With new mass mechanics, light slime should be faster due to rapid jumping
-    # Heavy slime jumps further but much slower
-    assert engine.participants[0].distance >= engine.participants[1].distance
+    # With new mass mechanics, heavy slime should be faster due to momentum
+    # Light slime jumps more frequently but covers less distance per jump
+    assert engine.participants[1].distance >= engine.participants[0].distance
     
     # Run until finish
     for _ in range(1000):
@@ -46,8 +46,8 @@ def test_race_engine_simulation():
         if engine.is_finished(): break
         
     assert engine.is_finished()
-    assert engine.participants[0].finished  # Light slime wins
-    assert engine.participants[0].rank == 1
+    assert engine.participants[1].finished  # Heavy slime wins
+    assert engine.participants[1].rank == 1
 
 def test_terrain_influence():
     s = RosterSlime("s", "Racer", SlimeGenome(
