@@ -9,6 +9,7 @@ class PartyState:
     pause_reason: str  = ""     # "combat", "rest", "treasure"
     current_zone: DungeonZone = None
     finished:    bool  = False
+    rest_timer:  float = 0.0
 
 class DungeonEngine:
     def __init__(self, track: DungeonTrack, 
@@ -22,6 +23,14 @@ class DungeonEngine:
         events = []
         
         if self.party.paused or self.party.finished:
+            if self.party.pause_reason == "rest":
+                self.party.rest_timer -= dt
+                if self.party.rest_timer <= 0:
+                    # Heal party slightly
+                    for slime in self.team:
+                        if hasattr(slime, 'current_hp') and hasattr(slime, 'max_hp'):
+                            slime.current_hp = min(float(slime.max_hp), slime.current_hp + (slime.max_hp * 0.1))
+                    self.resume()
             return events
         
         self.party.distance += self.party.speed * dt
@@ -59,6 +68,7 @@ class DungeonEngine:
         if zone.zone_type == DungeonZoneType.REST:
             self.party.paused = True
             self.party.pause_reason = "rest"
+            self.party.rest_timer = 2.0
             return "rest_encountered"
         
         if zone.zone_type == DungeonZoneType.TRAP:
