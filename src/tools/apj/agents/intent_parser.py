@@ -217,9 +217,12 @@ Confidence should reflect how sure you are (0.5 = unsure, 0.9 = very sure).
             import asyncio
             response = asyncio.run(agent.run(prompt))
             
+            # Extract the actual data from AgentRunResult
+            response_text = response.data if hasattr(response, 'data') else str(response)
+            
             import json
             import re
-            json_match = re.search(r'\{.*\}', response, re.DOTALL)
+            json_match = re.search(r'\{.*\}', response_text, re.DOTALL)
             
             if json_match:
                 data = json.loads(json_match.group())
