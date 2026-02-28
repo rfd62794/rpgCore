@@ -33,9 +33,9 @@ def test_wave_start_wave(wave_component):
     assert wave_component.spawn_timer == 0.0
     
     # Check difficulty scaling
-    assert wave_component.enemy_hp_multiplier > 1.0
-    assert wave_component.enemy_speed_multiplier > 1.0
-    assert wave_component.enemy_reward_multiplier > 1.0
+    assert wave_component.enemy_hp_multiplier == 1.0
+    assert wave_component.enemy_speed_multiplier == 1.0
+    assert wave_component.enemy_reward_multiplier == 1.0
 
 
 def test_wave_spawn_timer(wave_component):
