@@ -13,21 +13,37 @@ class RaceParticipant:
     def __init__(self, slime: RosterSlime):
         self.slime = slime
         self.distance = 0.0
+        self.velocity = 0.0
         self.finished = False
         self.rank = 0
         self.base_speed = calculate_speed(slime.genome, slime.level)
         
+        # Physics constants
+        self.acceleration_base = self.base_speed * 15.0  # Scales with stats
+        self.drag_coefficient = 0.95                    # Simple air/ground resistance
+        
     def update(self, dt: float, terrain: str):
         if self.finished:
+            self.velocity *= 0.9 # Slow down after finish
             return
             
-        # Terrain modifiers
-        mod = 1.0
-        if terrain == "water": mod = 0.7
-        elif terrain == "rock": mod = 0.5
+        # 1. Calculate Acceleration
+        # Base acceleration modified by terrain
+        terrain_mod = 1.0
+        if terrain == "water": terrain_mod = 0.5
+        elif terrain == "rock": terrain_mod = 0.4
         
-        step = self.base_speed * mod * 10 * dt # scaling factor
-        self.distance += step
+        accel = self.acceleration_base * terrain_mod
+        
+        # 2. Update Velocity
+        self.velocity += accel * dt
+        
+        # 3. Apply Drag (Dynamic friction)
+        # Faster slimes hit a higher terminal velocity where drag matches accel
+        self.velocity *= (self.drag_coefficient ** (dt * 60)) 
+        
+        # 4. Update Position
+        self.distance += self.velocity * dt
 
 class RaceEngine:
     def __init__(self, participants: List[RosterSlime], track: List[str], length: int = 1500):
