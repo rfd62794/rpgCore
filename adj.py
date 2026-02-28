@@ -329,6 +329,66 @@ Tests: {status['total_test_passing']} passing
         with open(report_file, 'w') as f:
             json.dump(report.to_dict(), f, indent=2)
 
+    def show_reality_status(self):
+        """Show what's actually implemented vs what's planned"""
+        from src.tools.apj.inventory.reality_audit import DEMO_REALITY, SYSTEM_REALITY
+        
+        print("""
+╔══════════════════════════════════════════════════════════════╗
+║              REALITY CHECK: Plans vs Implementation            ║
+╚══════════════════════════════════════════════════════════════╝
+
+📊 DEMOS (Current Implementation):""")
+        
+        for demo_name, reality in DEMO_REALITY.items():
+            print(f"  {demo_name:20s} {reality['status']:30s} ({reality['files']} files)")
+            if reality['missing_tasks']:
+                print(f"    Missing: {', '.join(reality['missing_tasks'][:2])}")
+            print()
+        
+        print(f"""
+🔧 SYSTEMS (Current Implementation):""")
+        
+        for system_name, reality in SYSTEM_REALITY.items():
+            print(f"  {system_name:20s} {reality['status']:30s} ({reality['coverage']}% docstrings)")
+            if reality['missing']:
+                print(f"    Missing: {', '.join(reality['missing'][:2])}")
+            print()
+
+    def show_alignment_gaps(self):
+        """Show where plans don't match reality"""
+        from src.tools.apj.inventory.reality_audit import (
+            PLANNED_BUT_MISSING, 
+            IMPLEMENTED_BUT_UNPLANNED, 
+            PARTIAL_IMPLEMENTATIONS
+        )
+        
+        print("""
+╔══════════════════════════════════════════════════════════════╗
+║              ALIGNMENT GAPS: Plans vs Reality                 ║
+╚══════════════════════════════════════════════════════════════╝
+
+❌ PLANS WITHOUT IMPLEMENTATION:""")
+        
+        for milestone_id, title, status in PLANNED_BUT_MISSING:
+            print(f"  {milestone_id}: {title}")
+            print(f"    Status: {status}")
+        
+        print(f"""
+❌ FILES WITHOUT PLANS:""")
+        
+        for name, what, note in IMPLEMENTED_BUT_UNPLANNED:
+            print(f"  {name}: {what}")
+            print(f"    Note: {note}")
+        
+        print(f"""
+⚠️  PARTIAL IMPLEMENTATIONS:""")
+        
+        for name, done, missing in PARTIAL_IMPLEMENTATIONS:
+            print(f"  {name}")
+            print(f"    Done: {done}")
+            print(f"    Missing: {missing}")
+
     def show_phase_roadmap(self, phase_num: int):
         """Show complete roadmap for a phase"""
         self._record_layer("Layer 1: Data Files")
