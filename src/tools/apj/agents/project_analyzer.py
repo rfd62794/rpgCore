@@ -453,11 +453,27 @@ class ProjectAnalyzer:
         
         lines = content.split('\n')
         for i, line in enumerate(lines, 1):
-            # Look for TODO/FIXME/HACK comments
+            # Skip lines that are too short
+            if len(line.strip()) < 10:
+                continue
+                
+            # Skip lines that are clearly code comments or debug output
+            if line.strip().startswith(('#', '//', 'print(', 'logger.', '"""', "'''")):
+                continue
+                
+            # Skip lines that are clearly variable assignments or function definitions
+            if any(pattern in line for pattern in ['=', 'def ', 'class ', 'import ', 'from ', 'return ']):
+                continue
+                
+            # Look for TODO/FIXME/HACK comments in meaningful text
             if re.search(r'TODO|FIXME|HACK|BUG', line, re.IGNORECASE):
                 issue_text = line.strip()
-                if issue_text.startswith(('•', '-', '*', '#', '//', '#')):
+                if issue_text.startswith(('•', '-', '*', '#', '//')):
                     issue_text = issue_text[1:].strip()
+                
+                # Skip if it's clearly not a real issue
+                if len(issue_text) < 5 or issue_text.startswith(('logger.', 'print(', 'return ', 'if ')):
+                    continue
                 
                 priority = Priority.MEDIUM
                 if 'CRITICAL' in issue_text.upper():

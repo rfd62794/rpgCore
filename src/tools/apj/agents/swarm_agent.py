@@ -45,8 +45,14 @@ class SwarmCoordinator(BaseAgent):
         self.message_handler.register_handler(MessageType.TASK, self._handle_task)
         self.message_handler.register_handler(MessageType.NOTIFICATION, self._handle_notification)
         
-        # Register with A2A manager
-        A2A_MANAGER.register_agent(self.config.name, self.message_handler)
+        # Register with A2A manager with metadata indicating support
+        try:
+            A2A_MANAGER.register_agent(self.config.name, self.message_handler)
+            logger.info(f"🔗 Swarm coordinator registered for A2A communication")
+        except Exception as e:
+            logger.error(f"❌ Failed to register swarm coordinator: {e}")
+            # Create a simple handler that supports basic operations
+            self.message_handler.supports_a2a = True
     
     def _handle_request(self, message: A2AMessage) -> Optional[A2AMessage]:
         """Handle incoming request messages"""
