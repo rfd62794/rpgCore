@@ -20,6 +20,9 @@ class ProfileCard(UIComponent):
         super().__init__(rect)
         self.slime = slime
         self.position = position
+
+    def update(self, dt_ms: int) -> None:
+        pass
     
     def render(self, surface: pygame.Surface):
         x, y = self.position
