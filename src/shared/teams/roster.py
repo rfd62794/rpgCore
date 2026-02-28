@@ -175,8 +175,10 @@ class Roster:
         TeamRole.RACING:  Team(role=TeamRole.RACING,  slots=1),
     })
     
-    # Reference to Garden for creature lookups
-    _garden_ref: Optional[object] = None  # Will be set by GardenState
+    def __post_init__(self):
+        # Set back-reference from teams to roster
+        for team in self.teams.values():
+            team._roster_ref = self
     
     def set_garden_reference(self, garden_state):
         """Set reference to GardenState for creature lookups"""
