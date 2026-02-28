@@ -15,7 +15,7 @@ from src.shared.dungeon.dungeon_track import DungeonTrack, DungeonZoneType, gene
 from src.shared.dungeon.dungeon_engine import DungeonEngine
 from src.shared.racing.race_camera import RaceCamera
 from src.shared.racing.minimap import RaceMinimap
-from src.shared.rendering.slime_renderer import SlimeRenderer
+from src.shared.rendering.slime_renderer import render_slime_from_genome
 
 class DungeonPathScene(Scene):
     """
@@ -44,7 +44,6 @@ class DungeonPathScene(Scene):
         self.camera = RaceCamera()
         
         # UI & Rendering
-        self.renderer = SlimeRenderer()
         self.minimap = RaceMinimap(spec)
         self.ui_components = []
         self._setup_ui()
@@ -119,15 +118,14 @@ class DungeonPathScene(Scene):
             self._on_complete()
 
     def _handle_combat(self):
-        # Pull pre-generated enemies for this zone
         zone = self.engine.party.current_zone
-        enemies = self.zone_enemies.get(id(zone), [])
+        squad = zone.squad if zone else None
         
         # Push to combat scene
         self.manager.push("dungeon_combat", 
                           session=self.session, 
-                          party_slimes=self.team,
-                          enemies=enemies)
+                          team=self.team,
+                          enemy_squad=squad)
 
     def _generate_enemy_group(self, zone, depth: int) -> List[dict]:
         """No longer used, replaced by pre-generation in _generate_zone_visuals."""
@@ -232,19 +230,23 @@ class DungeonPathScene(Scene):
                 if not zone.resolved:
                     zone_center_x = self.camera.to_screen_x((zone.start_dist + zone.end_dist) / 2, 0)
                     if zone.zone_type in [DungeonZoneType.COMBAT, DungeonZoneType.BOSS]:
-                        # Genetic Enemy Rendering (Phase 7)
-                        enemies = self.zone_enemies.get(id(zone), [])
-                        for enemy_data in enemies:
-                            ex = zone_center_x + enemy_data['offset_x']
-                            ey = track_rect.centery + enemy_data['offset_y']
+                        # Render squad members
+                        if zone.squad:
+                            members = zone.squad.members
+                            count = len(members)
+                            spacing = min(32, 120 // max(count, 1))
                             
-                            # Render small genome-based slime using a proxy object
-                            enemy_proxy = self.MockEnemy(enemy_data)
-                            self.renderer.render_at(surface, enemy_proxy, int(ex), int(ey), radius=enemy_data['size'])
+                            for i, enemy in enumerate(members):
+                                ex = zone_center_x + (i - count // 2) * spacing
+                                ey = track_rect.centery
+                                render_slime_from_genome(
+                                    surface, enemy.genome, ex, ey, radius=12
+                                )
                             
-                            # Add small red eyes for "aggression" indicator if needed, 
-                            # but the genetics alone might be enough. 
-                            # Let's add a subtle red shadow or glow if it fits.
+                            # Squad name above zone
+                            render_text(surface, zone.squad.name,
+                                       (zone_center_x, track_rect.top + 8),
+                                       size="sm", color=(255, 200, 200), centered=True)
                 else:
                     # Checkmark for resolved
                     zone_center_x = self.camera.to_screen_x((zone.start_dist + zone.end_dist) / 2, 0)
@@ -271,10 +273,7 @@ class DungeonPathScene(Scene):
         
         for i, slime in enumerate(self.team[:5]):
             sy = start_y + i * SLIME_SPACING
-            # Use SlimeRenderer or similar for visuals
-            from src.apps.slime_breeder.entities.slime import Slime
-            dummy = Slime(slime.name, slime.genome, (px, sy))
-            self.renderer.render(surface, dummy)
+            render_slime_from_genome(surface, slime.genome, int(px), int(sy), radius=16)
 
         # Pause Indicator
         if self.engine.party.paused:
@@ -314,7 +313,7 @@ class DungeonPathScene(Scene):
             pygame.draw.rect(surface, (70, 60, 90), card_rect, width=1, border_radius=6)
             
             # Portrait
-            self.renderer.render_at(surface, slime, card_x + 25, bar_y + card_h // 2, radius=18)
+            render_slime_from_genome(surface, slime.genome, card_x + 25, bar_y + card_h // 2, radius=18)
             
             # Name & LV
             render_text(surface, slime.name, (card_x + 55, bar_y + 10), size=14, bold=True, color=(255,255,255))

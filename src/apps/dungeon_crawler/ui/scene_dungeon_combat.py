@@ -12,7 +12,7 @@ from src.shared.ui.spec import UISpec
 from src.apps.dungeon_crawler.ui.dungeon_session import DungeonSession
 from src.shared.combat.d20_resolver import D20Resolver
 from src.shared.combat.turn_order import TurnOrderManager
-from src.shared.rendering.slime_renderer import SlimeRenderer
+from src.shared.rendering.slime_renderer import render_slime_from_genome
 from src.shared.teams.stat_calculator import calculate_hp, calculate_attack, calculate_speed
 
 class DungeonUnit:
@@ -38,40 +38,62 @@ class DungeonCombatScene(CombatSceneBase):
         hero = self.session.hero
         self.party[0] = DungeonUnit("hero", hero.name, hero.stats, "party", hero)
         
-        # FIX 4: Use passed enemies from kwargs
-        enemy_list = kwargs.get("enemies", [])
-        if not enemy_list:
-            # Fallback
-            enemy_list = [{
-                "id": "slime_0", 
-                "name": "Wild Slime", 
-                "stats": {"hp":20, "max_hp":20, "attack":4, "defense":2, "speed":5, "stance":"Aggressive"}
-            }]
-            
-        for i, edata in enumerate(enemy_list):
-            if i >= 4: break
-            # Setup visuals
-            from src.shared.genetics import generate_random
-            genome = edata.get("genome") or generate_random()
-            
-            class MockEnemy:
-                def __init__(self, g):
-                    self.genome = g
-                    self.level = 1
-                    class Kinematics:
-                        def __init__(self): self.position = pygame.Vector2(0,0)
-                    self.kinematics = Kinematics()
-            
-            mock_enemy = MockEnemy(genome)
-            self.enemies[i] = DungeonUnit(edata["id"], edata["name"], edata["stats"], "enemy", mock_enemy)
+        # Load enemy squad from kwargs
+        enemy_squad = kwargs.get("enemy_squad")
+        self.enemies = []  # Clear existing enemies
         
-        # 2. Setup Party Slimes
-        for i, slime in enumerate(self.session.party_slimes):
+        if enemy_squad and hasattr(enemy_squad, 'members'):
+            # Use pre-generated squad
+            for i, enemy in enumerate(enemy_squad.members):
+                if i >= 4: break
+                stats = {
+                    "hp": enemy.current_hp,
+                    "max_hp": enemy.max_hp,
+                    "attack": enemy.level * 2 + 3,
+                    "defense": 2,
+                    "speed": enemy.level + 2,
+                    "stance": "Aggressive"
+                }
+                # Mock enemy entity for renderer
+                class MockEnemy:
+                    def __init__(self, genome, level):
+                        self.genome = genome
+                        self.level = level
+                        class Kinematics:
+                            def __init__(self): self.position = pygame.Vector2(0,0)
+                        self.kinematics = Kinematics()
+                
+                mock_enemy = MockEnemy(enemy.genome, enemy.level)
+                self.enemies.append(DungeonUnit(f"enemy_{i}", enemy.name, stats, "enemy", mock_enemy))
+        else:
+            # Fallback - create random enemies
+            for i in range(3):
+                from src.shared.genetics import generate_random
+                genome = generate_random()
+                
+                class MockEnemy:
+                    def __init__(self, g):
+                        self.genome = g
+                        self.level = 1
+                        class Kinematics:
+                            def __init__(self): self.position = pygame.Vector2(0,0)
+                        self.kinematics = Kinematics()
+                
+                mock_enemy = MockEnemy(genome)
+                stats = {"hp":20, "max_hp":20, "attack":4, "defense":2, "speed":5, "stance":"Aggressive"}
+                self.enemies.append(DungeonUnit(f"enemy_{i}", f"Wild Slime {i}", stats, "enemy", mock_enemy))
+        
+        # Load team from kwargs
+        self.team = kwargs.get("team", [])
+        if not self.team and hasattr(self.session, 'party_slimes'):
+            self.team = self.session.party_slimes
+            
+        for i, slime in enumerate(self.team):
             if i >= 4: break
             slot_idx = i + 1
             stats = {
-                "hp": calculate_hp(slime.genome),
-                "max_hp": calculate_hp(slime.genome),
+                "hp": slime.current_hp,
+                "max_hp": slime.max_hp,
                 "attack": calculate_attack(slime.genome),
                 "defense": 2,
                 "speed": calculate_speed(slime.genome),
@@ -88,9 +110,6 @@ class DungeonCombatScene(CombatSceneBase):
             
             mock_slime = MockSlime(slime.genome, slime.level)
             self.party[slot_idx] = DungeonUnit(f"party_{slot_idx}", slime.name, stats, "party", mock_slime)
-            # Sync start HP
-            self.party[slot_idx].stats["hp"] = slime.current_hp
-            self.party[slot_idx].stats["max_hp"] = slime.max_hp
         
         # 3. Setup Turn Order
         self.session.turn_manager.reset()
@@ -177,7 +196,14 @@ class DungeonCombatScene(CombatSceneBase):
         super()._draw_unit_slot(surface, x, y, w, h, entity, side)
         
         if entity and entity.entity:
-            if hasattr(entity.entity, "kinematics"):
+            if hasattr(entity.entity, "genome"):
+                # Use shared renderer
+                render_slime_from_genome(
+                    surface, entity.entity.genome,
+                    x + w // 2, y + h // 3 + 4,
+                    radius=20
+                )
+            elif hasattr(entity.entity, "kinematics"):
                 old_pos = entity.entity.kinematics.position.copy()
                 entity.entity.kinematics.position.x = x + w // 2
                 entity.entity.kinematics.position.y = y + h // 3 + 4
@@ -284,8 +310,8 @@ class DungeonCombatScene(CombatSceneBase):
         """Copies combat HP back to roster slimes."""
         for unit in self.party:
             if unit and unit.id.startswith("party_"):
-                # Find matching roster slime by name
-                rs = next((s for s in self.session.party_slimes if s.name == unit.name), None)
+                # Find matching team slime by name
+                rs = next((s for s in self.team if s.name == unit.name), None)
                 if rs:
                     rs.current_hp = float(unit.stats["hp"])
                     if rs.current_hp <= 0:
