@@ -53,9 +53,6 @@ class TaskValidator:
         
         # Too short (likely fragments)
         r"^.{0,14}$",  # Very short lines
-        
-        # Identical title and description (copy-paste)
-        r"^.{15,}$",  # Will be checked separately
     ]
     
     # Patterns that strongly indicate a REAL task
