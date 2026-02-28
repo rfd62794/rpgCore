@@ -32,7 +32,7 @@ def manager():
 
 def test_collision_triggers_combat(mock_session, manager):
     pygame.init()
-    scene = DungeonRoomScene(manager, mock_session)
+    scene = DungeonRoomScene(manager, SPEC_720, mock_session)
     # Put hero and enemy on same tile
     scene.hero_grid_pos = [4, 4]
     scene.enemy_grid_pos = [4, 4]
@@ -48,7 +48,7 @@ def test_collision_triggers_combat(mock_session, manager):
 
 def test_enemy_moves_toward_hero(mock_session, manager):
     pygame.init()
-    scene = DungeonRoomScene(manager, mock_session)
+    scene = DungeonRoomScene(manager, SPEC_720, mock_session)
     scene.hero_grid_pos = [2, 2]
     scene.enemy_grid_pos = [5, 5] # Enemy far away
     
@@ -61,7 +61,7 @@ def test_enemy_moves_toward_hero(mock_session, manager):
 
 def test_combat_victory_clears_enemy_tile(mock_session, manager):
     pygame.init()
-    scene = DungeonRoomScene(manager, mock_session)
+    scene = DungeonRoomScene(manager, SPEC_720, mock_session)
     scene.enemy_defeated = False
     # Simulate return from combat with victory
     scene.on_enter(combat_result="victory")
@@ -71,8 +71,9 @@ def test_combat_victory_clears_enemy_tile(mock_session, manager):
 def test_combat_defeat_records_ancestor(mock_session, manager):
     pygame.init()
     # We test the combat scene's defeat handler
-    scene = DungeonCombatScene(manager, session=mock_session)
-    scene.on_enter(session=mock_session, enemy_entity=MagicMock())
+    scene = DungeonCombatScene(manager, SPEC_720, session=mock_session)
+    scene.on_enter()
+    scene.on_combat_enter(session=mock_session, enemy_entity=MagicMock())
     
     with patch.object(mock_session, 'end_run') as mock_end_run:
         scene._handle_defeat()
@@ -81,7 +82,7 @@ def test_combat_defeat_records_ancestor(mock_session, manager):
 
 def test_flag_appears_after_last_enemy_defeated(mock_session, manager):
     pygame.init()
-    scene = DungeonRoomScene(manager, mock_session)
+    scene = DungeonRoomScene(manager, SPEC_720, mock_session)
     scene.enemy_defeated = True
     # If enemy defeated, exploration UI should show navigation if room clear
     # We test the rendering logic indirectly by checking the attribute

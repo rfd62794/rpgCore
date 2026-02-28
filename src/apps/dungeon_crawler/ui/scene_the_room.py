@@ -28,6 +28,32 @@ class TheRoomScene(Scene):
     def on_enter(self, **kwargs) -> None:
         pass
 
+    def handle_event(self, event: pygame.event.Event) -> None:
+        """Process pygame events."""
+        for button in self.buttons:
+            if hasattr(button, 'handle_event') and button.handle_event(event):
+                return
+
+    def update(self, dt: float) -> None:
+        """Update scene state."""
+        for button in self.buttons:
+            if hasattr(button, 'update'):
+                button.update(int(dt * 1000))
+
+    def render(self, surface: pygame.Surface) -> None:
+        """Render the scene."""
+        surface.fill(self.bg_color)
+        
+        # Render panels
+        for panel in self.panels:
+            if hasattr(panel, 'render'):
+                panel.render(surface)
+        
+        # Render buttons
+        for button in self.buttons:
+            if hasattr(button, 'render'):
+                button.render(surface)
+
     def on_exit(self) -> None:
         pass
 
