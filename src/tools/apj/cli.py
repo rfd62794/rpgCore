@@ -562,6 +562,16 @@ def main():
             improver.apply(suggestion)
             print(f"Prompt updated. Backup saved.")
 
+    elif cmd == "ui-review":
+        from src.tools.ui_reviewer.review_mode import run_review
+        scene_name = sys.argv[2] if len(sys.argv) > 2 else "all"
+        if scene_name == "all":
+            scenes = ["garden"] # Supported scenes
+            for s in scenes:
+                run_review(s)
+        else:
+            run_review(scene_name)
+
     else:
         print(f"Unknown command: {cmd}")
 
