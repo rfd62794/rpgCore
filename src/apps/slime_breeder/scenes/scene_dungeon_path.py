@@ -51,17 +51,16 @@ class DungeonPathScene(Scene):
         self.track_height_ratio = 0.4
         self.track_rect = self._get_track_rect()
         
-        # Pre-generate enemies to show genetic slimes on path
+        # Genetic Enemy Management
         self.zone_enemies = {}
         
-        # Helper for rendering pre-generated enemies
         class MockEnemy:
             def __init__(self, data):
                 self.genome = data['genome']
                 self.level = 1
                 class Kinematics:
-                    def __init__(self, x, y): self.position = pygame.Vector2(x, y)
-                self.kinematics = Kinematics(0, 0)
+                    def __init__(self): self.position = pygame.Vector2(0,0)
+                self.kinematics = Kinematics()
         self.MockEnemy = MockEnemy
 
         self._generate_zone_visuals()
@@ -72,7 +71,8 @@ class DungeonPathScene(Scene):
         
         for zone in self.track.zones:
             if zone.zone_type in [DungeonZoneType.COMBAT, DungeonZoneType.BOSS]:
-                count = 1 if zone.zone_type == DungeonZoneType.BOSS else random.randint(1, 3)
+                # Dynamic squad size: 1-4 for combat, 1 for boss
+                count = 1 if zone.zone_type == DungeonZoneType.BOSS else random.randint(1, 4)
                 enemies = []
                 name_prefix = "Boss" if zone.zone_type == DungeonZoneType.BOSS else "Wild"
                 
@@ -82,7 +82,7 @@ class DungeonPathScene(Scene):
                         hp *= 3
                         
                     enemies.append({
-                        "id": f"enemy_{i}",
+                        "id": f"enemy_{id(zone)}_{i}",
                         "name": f"{name_prefix} Slime {i+1}" if count > 1 else f"{name_prefix} Slime",
                         "stats": {
                             "hp": hp,
@@ -93,7 +93,7 @@ class DungeonPathScene(Scene):
                             "stance": "Aggressive"
                         },
                         "genome": generate_random(),
-                        "offset_x": (i - count/2 + 0.5) * 45, # Adjusted spacing
+                        "offset_x": (i - (count-1)/2) * 35, # Centered squad
                         "offset_y": random.choice([-20, 0, 20]),
                         "size": 14 if zone.zone_type == DungeonZoneType.COMBAT else 30
                     })
