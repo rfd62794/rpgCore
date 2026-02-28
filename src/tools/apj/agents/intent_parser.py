@@ -113,6 +113,10 @@ class ConversationalInterface:
                 self.autonomous_swarm = AUTONOMOUS_SWARM
                 self.available_workflows = list(WORKFLOWS.keys())
                 
+                # Initialize workflow builder
+                from .workflow_builder import WORKFLOW_BUILDER
+                self.workflow_builder = WORKFLOW_BUILDER
+                
                 # Boot complete agent ecosystem
                 boot_results = AGENT_BOOT_MANAGER.boot_ecosystem(self.context)
                 
@@ -208,14 +212,15 @@ Type 'quit' or 'exit' to leave.
             "test", "analyze", "plan", "execute", "code", "system",
             "component", "feature", "complex", "architecture",
             "swarm", "ecs", "rendering", "dungeon", "tower defense",
-            "autonomous", "round robin", "workflow", "self-sufficient"
+            "autonomous", "round robin", "workflow", "self-sufficient",
+            "build workflow", "create workflow", "design workflow"
         ]
         
         # Also check for explicit swarm requests
         explicit_swarm = [
             "engage the swarm", "use swarm", "swarm help", "delegate to swarm",
             "start autonomous", "run workflow", "execute workflow", 
-            "autonomous swarm", "round robin"
+            "autonomous swarm", "round robin", "build workflow", "create workflow"
         ]
         
         user_lower = user_input.lower()
