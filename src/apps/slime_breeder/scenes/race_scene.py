@@ -4,7 +4,7 @@ import math
 from typing import List, Optional, Tuple
 
 from src.shared.engine.scene_manager import Scene
-from src.shared.ui.widgets import Panel, Button, Label
+from src.shared.ui import Panel, Button, Label
 from src.shared.teams.roster import Roster, RosterSlime, TeamRole
 from src.shared.racing.race_engine import RaceEngine
 from src.shared.racing.race_track import generate_track, SEGMENT_LENGTH

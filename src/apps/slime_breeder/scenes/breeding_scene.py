@@ -5,7 +5,7 @@ from typing import Optional, List, Tuple
 
 from src.shared.engine.scene_manager import Scene
 from src.shared.ui.base import UIComponent
-from src.shared.ui.widgets import Panel, Button, Label
+from src.shared.ui import Panel, Button, Label
 from src.shared.teams.roster import Roster, RosterSlime, TeamRole
 from src.shared.genetics.inheritance import breed, generate_random
 from src.shared.genetics.genome import SlimeGenome
