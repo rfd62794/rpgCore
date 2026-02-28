@@ -2,6 +2,7 @@ from typing import Tuple, Optional, Callable
 import pygame
 from src.shared.ui.button import Button
 from src.shared.ui.label import Label
+from src.shared.ui.spec import UISpec
 
 class Card(Button):
     """Specialized action/dialogue button with stance coloring and animations."""
@@ -11,27 +12,22 @@ class Card(Button):
         rect: pygame.Rect,
         number: int,
         text: str,
+        spec: UISpec,
         stance_color: Tuple[int, int, int] = (100, 100, 120),
         on_click: Optional[Callable[[], None]] = None,
         on_hover: Optional[Callable[[], None]] = None,
         z_order: int = 0
     ):
-        # Base colors adjusted for the Card style
-        bg_normal = (18, 18, 30)
-        bg_hover = (25, 25, 40)
-        bg_pressed = (30, 30, 45)
+        # Use a custom label that includes number
+        display_text = f"{number}. {text}"
         
         super().__init__(
+            label=display_text,
             rect=rect,
-            text="",  # We handle text custom
             on_click=on_click,
-            on_hover=on_hover,
-            keyboard_index=number,
-            bg_color_normal=bg_normal,
-            bg_color_hover=bg_hover,
-            bg_color_pressed=bg_pressed,
-            border_color=stance_color,  # Border is colored by stance
-            border_width=2,
+            spec=spec,
+            variant="primary",
+            enabled=True,
             z_order=z_order
         )
         
@@ -39,18 +35,8 @@ class Card(Button):
         self.raw_text = text
         self.stance_color = stance_color
         
-        # Override the button's auto-centered label
-        self.remove_child(self.label)
-        
-        # Number Label (Left aligned)
-        num_rect = pygame.Rect(rect.x + 15, rect.y, 30, rect.height)
-        self.num_label = Label(num_rect, text=f"{number}.", font_size=24, color=(100, 100, 128))
-        self.add_child(self.num_label)
-        
-        # Text Label (Indented)
-        text_rect = pygame.Rect(rect.x + 50, rect.y + 10, rect.width - 60, rect.height - 20)
-        self.text_label = Label(text_rect, text=text, font_size=24, color=(220, 220, 220), wrap_width=text_rect.width)
-        self.add_child(self.text_label)
+        # Override border color for stance coloring
+        self.border_color = stance_color
         
         # Animation properties
         self.fade_alpha = 0.0
@@ -71,10 +57,9 @@ class Card(Button):
             self.rect.y = self.base_y + self.shift_y
             
             # Sync children y-positions
-            self.num_label.rect.y = self.rect.y
-            self.text_label.rect.y = self.rect.y + 10
-            self.num_label._cache_text()
-            self.text_label._cache_text()
+            for child in self.children:
+                child.rect.y = self.rect.y + (child.rect.y - self.base_y)
+            self.base_y = self.rect.y
 
     def render(self, surface: pygame.Surface) -> None:
         if not self.visible or self.fade_alpha <= 0:
@@ -113,6 +98,5 @@ class Card(Button):
 
     def get_required_height(self) -> int:
         """Calculate height based on wrapped text label."""
-        # Padding top (10) + label height + padding bottom (10)
         # Minimum height of 40 to avoid tiny cards
-        return max(40, self.text_label.get_required_height() + 20)
+        return max(40, self.rect.height)
