@@ -220,12 +220,32 @@ Confidence should reflect how sure you are (0.5 = unsure, 0.9 = very sure).
             # Extract the actual data from AgentRunResult
             response_text = response.data if hasattr(response, 'data') else str(response)
             
+            # Try to extract JSON more robustly
             import json
             import re
+            
+            # First try standard JSON extraction
             json_match = re.search(r'\{.*\}', response_text, re.DOTALL)
             
+            if not json_match:
+                # Try to find JSON with quotes
+                json_match = re.search(r'"\{.*?\}"', response_text, re.DOTALL)
+            
+            if not json_match:
+                # Try to find JSON without quotes
+                json_match = re.search(r'\{.*?\}', response_text, re.DOTALL)
+            
             if json_match:
-                data = json.loads(json_match.group())
+                try:
+                    data = json.loads(json_match.group())
+                except json.JSONDecodeError:
+                    # Try to fix common JSON issues
+                    json_str = json_match.group()
+                    # Replace single quotes with double quotes
+                    json_str = json_str.replace("'", '"')
+                    # Remove trailing commas
+                    json_str = re.sub(r',\s*}', '', json_str)
+                    data = json.loads(json_str)
                 
                 return ParsedCommand(
                     intent=Intent[data.get("intent", "UNKNOWN").upper()],
