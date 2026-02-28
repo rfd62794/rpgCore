@@ -270,31 +270,100 @@ class AutonomousSwarm:
                 print(f"🎯 Executing task: {task.title}")
                 print(f"🤖 Agent: {task.assigned_agent} | Priority: {task.priority}")
                 
+                # Start timing
+                task_start_time = datetime.now()
+                
                 # Execute task based on agent type
-                if task.assigned_agent == "ecs_specialist":
-                    self._execute_ecs_task(task)
-                elif task.assigned_agent == "dungeon_specialist":
-                    self._execute_dungeon_task(task)
-                elif task.assigned_agent == "tower_defense_specialist":
-                    self._execute_tower_defense_task(task)
-                elif task.assigned_agent == "code_quality_specialist":
-                    self._execute_code_quality_task(task)
-                elif task.assigned_agent == "performance_specialist":
-                    self._execute_performance_task(task)
-                elif task.assigned_agent == "testing_specialist":
-                    self._execute_testing_task(task)
-                else:
-                    self._execute_generic_task(task)
+                try:
+                    if task.assigned_agent == "ecs_specialist":
+                        self._execute_ecs_task(task)
+                    elif task.assigned_agent == "dungeon_specialist":
+                        self._execute_dungeon_task(task)
+                    elif task.assigned_agent == "tower_defense_specialist":
+                        self._execute_tower_defense_task(task)
+                    elif task.assigned_agent == "code_quality_specialist":
+                        self._execute_code_quality_task(task)
+                    elif task.assigned_agent == "performance_specialist":
+                        self._execute_performance_task(task)
+                    elif task.assigned_agent == "testing_specialist":
+                        self._execute_testing_task(task)
+                    elif task.assigned_agent == "documentation_specialist":
+                        self._execute_documentation_task(task)
+                    elif task.assigned_agent == "architecture_specialist":
+                        self._execute_architecture_task(task)
+                    elif task.assigned_agent == "genetics_specialist":
+                        self._execute_genetics_task(task)
+                    elif task.assigned_agent == "ui_specialist":
+                        self._execute_ui_task(task)
+                    elif task.assigned_agent == "integration_specialist":
+                        self._execute_integration_task(task)
+                    elif task.assigned_agent == "debugging_specialist":
+                        self._execute_debugging_task(task)
+                    else:
+                        self._execute_generic_task(task)
+                    
+                    # Record success
+                    task_duration = (datetime.now() - task_start_time).total_seconds()
+                    self.task_durations[task_id] = task_duration
+                    
+                    if self.learning_system:
+                        self.learning_system.record_success(
+                            task.assigned_agent, 
+                            task.agent_type, 
+                            f"standard_{task.agent_type}_approach"
+                        )
+                    
+                    # Mark as completed
+                    task.status = TaskStatus.COMPLETED
+                    task.completed_at = datetime.now()
+                    self.completed_tasks.append(task_id)
+                    
+                    print(f"✅ Completed: {task.title}")
+                    
+                except Exception as e:
+                    # Handle failure with self-healing
+                    task_duration = (datetime.now() - task_start_time).total_seconds()
+                    self.task_durations[task_id] = task_duration
+                    
+                    print(f"❌ Task failed: {e}")
+                    
+                    # Try to recover
+                    if self.self_healer:
+                        recovered = self.self_healer.detect_and_recover(
+                            task.assigned_agent, e, task_id
+                        )
+                        
+                        if recovered:
+                            print(f"🔄 Recovery successful - retrying task")
+                            # Put task back in queue for retry
+                            self.task_queue.insert(0, task_id)
+                        else:
+                            print(f"💀 Recovery failed - marking as failed")
+                            task.status = TaskStatus.FAILED
+                            task.error = str(e)
+                            task.completed_at = datetime.now()
+                            self.failed_tasks.append(task_id)
+                            
+                            if self.learning_system:
+                                self.learning_system.record_failure(
+                                    task.assigned_agent,
+                                    task.agent_type,
+                                    f"standard_{task.agent_type}_approach",
+                                    str(e)
+                                )
+                    else:
+                        # No self-healer available - mark as failed
+                        task.status = TaskStatus.FAILED
+                        task.error = str(e)
+                        task.completed_at = datetime.now()
+                        self.failed_tasks.append(task_id)
                 
-                # Mark as completed
-                task.status = TaskStatus.COMPLETED
-                task.completed_at = datetime.now()
-                self.completed_tasks.append(task_id)
-                
-                print(f"✅ Completed: {task.title}")
+                # Update monitoring
+                if self.monitor:
+                    swarm_state = self._get_swarm_state()
+                    self.monitor.collect_metrics(swarm_state)
                 
                 # Small delay to prevent overwhelming
-                import time
                 time.sleep(0.1)
                 
             except Exception as e:
