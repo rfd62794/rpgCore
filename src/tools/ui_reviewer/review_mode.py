@@ -23,9 +23,12 @@ def run_review(scene_name: str):
     
     # We need to manually register the scenes we want to review
     from src.apps.slime_breeder.ui.scene_garden import GardenScene
+    from src.apps.dungeon_crawler.ui.scene_dungeon_room import DungeonRoomScene
+    from src.apps.dungeon_crawler.ui.dungeon_session import DungeonSession
     
     scene_classes = {
-        "garden": GardenScene
+        "garden": GardenScene,
+        "dungeon_room": DungeonRoomScene
     }
     
     if scene_name not in scene_classes:
@@ -34,7 +37,12 @@ def run_review(scene_name: str):
         return
 
     # Initialize scene
-    scene = scene_classes[scene_name](manager, spec, roster=roster)
+    if scene_name == "dungeon_room":
+        session = DungeonSession()
+        session.start_run()
+        scene = DungeonRoomScene(manager, spec, session=session, roster=roster)
+    else:
+        scene = scene_classes[scene_name](manager, spec, roster=roster)
     scene.on_enter()
     
     # Force selection of one slime for the profile card review
