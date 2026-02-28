@@ -138,3 +138,29 @@ class DataLoader:
         mapper = TaskFileMapper(task_loader, classifications)
         mapper.build_mappings()
         return mapper
+    
+    def load_milestone_tasks(self, milestone_id: str) -> List[Dict]:
+        """Load all tasks for a milestone"""
+        task_loader = self.load_task_loader()
+        milestone = task_loader.milestones.get(milestone_id)
+        
+        if not milestone:
+            return []
+        
+        tasks = []
+        for task_id in (milestone.linked_tasks or []):
+            task = task_loader.tasks.get(task_id)
+            if task:
+                # Convert task to dict format for executor
+                tasks.append({
+                    'id': task.id,
+                    'title': task.title,
+                    'description': task.description,
+                    'files': task.file_references or [],
+                    'estimated_hours': task.estimated_hours,
+                    'success_criteria': f"{task.id} complete",
+                    'priority': task.priority,
+                    'status': task.status
+                })
+        
+        return tasks
