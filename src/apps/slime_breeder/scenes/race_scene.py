@@ -115,7 +115,7 @@ class RaceScene(Scene):
         # Countdown Overlay
         if self.start_countdown > 0:
             msg = str(int(self.start_countdown) + 1)
-            Label(msg, (400, 300), size=120, color=(255, 255, 255)).render(surface)
+            Label(msg, (400, 300), font_size=120, color=(255, 255, 255)).render(surface)
 
     def _render_track(self, surface: pygame.Surface):
         # Draw terrain segments based on camera
