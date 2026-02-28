@@ -5,8 +5,8 @@ from typing import List, Optional, Tuple
 
 from src.shared.engine.scene_manager import Scene
 from src.shared.ui.panel import Panel
-from src.shared.ui.button import Button
-from src.shared.ui.label import Label
+from src.ui.button import Button
+from src.ui.label import Label
 from src.shared.ui.spec import UISpec
 from src.shared.ui.layouts import ArenaLayout
 from src.shared.teams.roster import Roster, RosterSlime, TeamRole
@@ -17,22 +17,33 @@ from src.shared.racing.race_hud import RaceHUD
 from src.shared.racing.race_camera import RaceCamera
 from src.shared.rendering.slime_renderer import SlimeRenderer
 from src.shared.genetics.inheritance import generate_random
+from src.shared.racing.racing_session import RacingSession
 
 class RaceScene(Scene):
     """
-    Focused racing screen using ArenaLayout.
+    Focused racing screen using ArenaLayout with persistent session state.
     """
     def __init__(self, manager, spec: UISpec, **kwargs):
         super().__init__(manager, spec, **kwargs)
         self.layout = ArenaLayout(spec)
+        
+        # Session management
+        self.session = kwargs.get("session")
+        if not self.session:
+            # Try to load existing session
+            self.session = RacingSession.load_from_file()
+        
+        # Roster for team management
         self.roster = kwargs.get("roster")
         if not self.roster:
             from src.shared.teams.roster_save import load_roster
             self.roster = load_roster()
+            # Set garden reference for roster
+            self.roster.set_garden_reference(kwargs.get("garden_state"))
             
         self.engine: Optional[RaceEngine] = None
-        self.track = generate_track(3000, 3)
-        self.terrain_zones = generate_zones(3000, 3)
+        self.track = generate_track(self.session.track_length, 3)
+        self.terrain_zones = generate_zones(self.session.track_length, 3)
         self.renderer = SlimeRenderer()
         self.minimap = RaceMinimap(spec)
         self.hud = RaceHUD(spec, self.layout)
@@ -83,15 +94,27 @@ class RaceScene(Scene):
                self._exit_race, self.spec, variant="secondary").add_to(self.ui_components)
 
     def on_enter(self) -> None:
-        team = self.roster.teams[TeamRole.RACING].members
-        participants = [team[0]] if team else [next((s for s in self.roster.slimes if s.alive), None)]
-        participants = [p for p in participants if p]
+        # Get racing team from roster (using new reference layer)
+        racing_team = self.roster.get_racing_team()
+        participants = []
         
-        for i in range(3):
+        # Add player's creature if assigned
+        if racing_team.members:
+            player_creature = self.roster.get_creature(racing_team.members[0].slime_id)
+            if player_creature:
+                participants.append(player_creature)
+        
+        # Add AI racers (create temporary RosterSlime for compatibility)
+        for i in range(4 - len(participants)):
             ai_slime = RosterSlime(slime_id=f"ai_{i}", name=f"Racer_{i+1}", genome=generate_random(), level=random.randint(1, 5))
             participants.append(ai_slime)
-            
-        self.engine = RaceEngine(participants, self.track, length=9000)
+        
+        # Update session with current team
+        self.session.team = participants
+        self.session.auto_save()  # Save session state
+        
+        # Initialize race engine
+        self.engine = RaceEngine(participants, self.track, length=self.session.track_length * 3)
         self.start_countdown = 3.0
         self.camera.x = 0.0
         self.camera.zoom_x = 1.0
