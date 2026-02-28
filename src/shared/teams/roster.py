@@ -145,8 +145,20 @@ class Team:
             (s for s in self.members if s.slime_id == slime_id), 
             None
         )
-        if not member or member.locked:
+        if not member:
             return False
+        
+        # Check if creature is locked - check actual creature state if available
+        # First try to get from garden reference
+        if hasattr(self, '_roster_ref') and self._roster_ref and self._roster_ref._garden_ref:
+            creature = self._roster_ref._garden_ref.get_creature(slime_id)
+            if creature and creature.locked:
+                return False
+        
+        # Fallback to entry state
+        if member.locked:
+            return False
+            
         member.team = TeamRole.UNASSIGNED
         self.members = [
             s for s in self.members 
