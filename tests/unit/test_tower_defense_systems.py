@@ -219,7 +219,7 @@ def test_upgrade_system_upgrade_tower():
     # Cannot upgrade with insufficient gold
     success, remaining_gold = system.upgrade_tower(tower, "range", 30)
     assert success is False
-    assert remaining_gold == 50  # Gold should remain unchanged
+    assert remaining_gold == 50  # Gold should remain unchanged when upgrade fails
 
 
 def test_upgrade_system_get_upgrade_cost():
