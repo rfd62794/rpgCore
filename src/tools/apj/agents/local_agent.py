@@ -52,7 +52,7 @@ class LocalAgent:
     """
     
     def __init__(self, project_root: Path = Path(".")):
-        """Initialize agent with full documentation context"""
+        """Initialize agent with full documentation context and confirm before proceeding"""
         
         self.project_root = Path(project_root)
         self.docs_dir = self.project_root / "docs"
@@ -66,6 +66,12 @@ class LocalAgent:
         
         # Build documentation context for Ollama
         self.documentation_context = self._build_documentation_context()
+        
+        # Analyze current project state
+        self._analyze_project_state()
+        
+        # Show context summary and ask for confirmation
+        self._show_context_summary_and_confirm()
         
         # Ollama model for reasoning
         from src.tools.apj.agents.ollama_client import get_ollama_model
@@ -81,9 +87,7 @@ class LocalAgent:
 📚 Documentation: {len(self.documentation)} files loaded
 🗂️  Code Context: {len(self.symbol_map.files)} files indexed
 🔌 Connectivity: Offline (no cloud dependency)
-
-DOCUMENTATION LOADED:
-{json.dumps({k: v['description'] for k, v in self.documentation.items()}, indent=2)}
+✅ Context confirmed and ready to proceed
 """)
     
     def _load_context_tools(self):
