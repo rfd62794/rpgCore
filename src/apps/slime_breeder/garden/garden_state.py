@@ -63,7 +63,7 @@ class GardenState:
         if selected_id:
             self.selected = self.get_creature(selected_id)
 
-    # === Legacy compatibility methods (deprecated) ===
+    # Legacy compatibility methods (deprecated) ===
     def add_slime(self, slime) -> None:
         """Legacy compatibility - convert Slime to Creature"""
         # Convert old Slime to Creature
@@ -72,6 +72,8 @@ class GardenState:
             genome=slime.genome,
             kinematics=slime.kinematics
         )
+        # Store reference to original slime for identity preservation
+        creature._original_slime = slime
         self.add_creature(creature)
 
     def remove_slime(self, name: str) -> None:
@@ -80,11 +82,20 @@ class GardenState:
         if creature:
             self.remove_creature(creature.slime_id)
 
-    def get_slime(self, name: str) -> Optional[Creature]:
-        """Legacy compatibility - get by name"""
-        return self.get_creature_by_name(name)
+    def get_slime(self, name: str) -> Optional[object]:
+        """Legacy compatibility - get by name, return original Slime if available"""
+        creature = self.get_creature_by_name(name)
+        if creature and hasattr(creature, '_original_slime'):
+            return creature._original_slime
+        return creature
 
     @property
-    def slimes(self) -> List[Creature]:
-        """Legacy compatibility - expose creatures as slimes"""
-        return self.creatures
+    def slimes(self) -> List[object]:
+        """Legacy compatibility - expose creatures as original objects when possible"""
+        result = []
+        for creature in self.creatures:
+            if hasattr(creature, '_original_slime'):
+                result.append(creature._original_slime)
+            else:
+                result.append(creature)
+        return result
