@@ -160,3 +160,19 @@ class SlimeRenderer:
                     self.size_map[slime.genome.size] = old_size
         else:
             self.render(surface, proxy, selected)
+
+
+def render_slime_from_genome(surface: pygame.Surface, genome, x: int, y: int, radius: int = 24) -> None:
+    """
+    Render a slime directly from a genome object without needing a full Slime entity.
+    This is a convenience function for UI rendering.
+    """
+    # Create a minimal mock object with the required attributes
+    class MockSlime:
+        def __init__(self, genome, level=1):
+            self.genome = genome
+            self.level = level
+    
+    mock_slime = MockSlime(genome)
+    renderer = SlimeRenderer()
+    renderer.render_at(surface, mock_slime, x, y, radius)
