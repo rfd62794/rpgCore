@@ -39,19 +39,10 @@ class TeamMembersList(list):
     def __getitem__(self, index):
         """Get item by index - return RosterSlime for legacy compatibility"""
         entry = super().__getitem__(index)
-        print(f"DEBUG: __getitem__ called for index {index}, entry.slime_id={entry.slime_id}, entry.team={entry.team}")
         # Get the RosterSlime from the roster
         if hasattr(self, '_team_ref') and self._team_ref:
-            print(f"DEBUG: Has _team_ref: {hasattr(self._team_ref, '_roster_ref')}")
             if hasattr(self._team_ref, '_roster_ref') and self._team_ref._roster_ref:
-                print(f"DEBUG: _roster_slimes keys: {list(self._team_ref._roster_ref._roster_slimes.keys())}")
-                result = self._team_ref._roster_ref._roster_slimes.get(entry.slime_id)
-                print(f"DEBUG: Found RosterSlime: {result}")
-                return result
-            else:
-                print(f"DEBUG: _team_ref exists but no _roster_ref")
-        else:
-            print(f"DEBUG: No _team_ref")
+                return self._team_ref._roster_ref._roster_slimes.get(entry.slime_id)
         return entry
 
 class TeamRole(Enum):
