@@ -103,7 +103,7 @@ class RosterEntry:
 class Team:
     role: TeamRole
     slots: int = 4
-    members: list[RosterEntry] = field(default_factory=list)
+    members: TeamMembersList = field(default_factory=TeamMembersList)
     
     def is_full(self) -> bool:
         return len(self.members) >= self.slots
