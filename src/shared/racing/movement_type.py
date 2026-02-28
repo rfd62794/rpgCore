@@ -12,7 +12,7 @@ def classify_movement(genome: SlimeGenome) -> MovementType:
     """Classify slime movement type based on genome traits."""
     # Get body roundness from genome (assuming it exists)
     roundness = getattr(genome, 'body_roundness', 0.5)  # Default middle value
-    wobble = genome.wobble_frequency
+    energy = genome.energy  # Use energy instead of wobble_frequency
     size = 0.7  # Default medium size mapping
     
     # Convert size string to numeric
@@ -26,8 +26,8 @@ def classify_movement(genome: SlimeGenome) -> MovementType:
     if roundness > 0.7 and size > 0.6:
         return MovementType.roller
     
-    # Scooter: low wobble + small
-    if wobble < 0.8 and size < 0.6:
+    # Scooter: low energy + small
+    if energy < 0.5 and size < 0.6:
         return MovementType.scooter
     
     # Default: jumper
