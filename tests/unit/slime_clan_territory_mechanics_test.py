@@ -70,7 +70,7 @@ def test_stronghold_bonus_logic():
     pygame.init()
     from unittest.mock import MagicMock
     mock_manager = MagicMock()
-    scene = AutoBattleScene(manager=mock_manager)
+    scene = AutoBattleScene(manager=mock_manager, spec=SPEC_720)
     
     # Case 1: No bonus
     scene.on_enter(stronghold_bonus=False)
