@@ -287,29 +287,8 @@ class Roster:
     # === Legacy compatibility methods (deprecated) ===
     @property
     def slimes(self) -> list[RosterSlime]:
-        """Legacy compatibility - convert entries to RosterSlime objects"""
-        roster_slimes = []
-        for entry in self.entries:
-            # Try to get creature from garden
-            creature = self.get_creature(entry.slime_id) if self._garden_ref else None
-            
-            if creature:
-                roster_slime = RosterSlime.from_creature(
-                    creature, 
-                    team=entry.team, 
-                    locked=entry.locked
-                )
-            else:
-                # Create a minimal RosterSlime when no garden reference
-                roster_slime = RosterSlime(
-                    slime_id=entry.slime_id,
-                    name=f"Creature_{entry.slime_id}",
-                    genome=SlimeGenome(),  # Default genome
-                    team=entry.team,
-                    locked=entry.locked
-                )
-            roster_slimes.append(roster_slime)
-        return roster_slimes
+        """Legacy compatibility - return stored RosterSlime objects"""
+        return list(self._roster_slimes.values())
     
     def add_slime(self, slime: RosterSlime):
         """Legacy compatibility - convert RosterSlime to entry"""
