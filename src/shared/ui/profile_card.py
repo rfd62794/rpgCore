@@ -10,19 +10,23 @@ from src.shared.teams.stat_calculator import (
 )
 from src.shared.ui.stats_panel import StatsPanel
 
+from src.shared.ui.spec import UISpec
+
 class ProfileCard(UIComponent):
-    def __init__(self, slime: RosterSlime, position: Tuple[int, int]):
-        # Card dimensions
-        self.WIDTH = 220
-        self.HEIGHT = 140
-        self.PADDING = 10
+    def __init__(self, slime: RosterSlime, position: Tuple[int, int], spec: UISpec):
+        # Card dimensions from spec
+        self.WIDTH = spec.card_width
+        self.HEIGHT = spec.card_height
+        self.PADDING = spec.padding_sm
         
         rect = pygame.Rect(position[0], position[1], self.WIDTH, self.HEIGHT)
         super().__init__(rect)
         self.slime = slime
         self.position = position
+        self.spec = spec
         
         # Add StatsPanel as a "child" (manually rendered for now)
+        # StatsPanel might also need standardizing, but keeping simple for now
         self.stats_panel = StatsPanel(slime, (position[0] + 80, position[1] + 60), width=self.WIDTH - 90)
 
     def update(self, dt_ms: int):
@@ -34,9 +38,9 @@ class ProfileCard(UIComponent):
         
         # Background
         card_rect = pygame.Rect(x, y, self.WIDTH, self.HEIGHT)
-        bg_color = (40, 40, 50) if self.slime.is_elder else (30, 30, 40)
-        border_color = (255, 215, 0) if self.slime.is_elder else (80, 80, 100)
-        border_w = 2 if self.slime.is_elder else 1
+        bg_color = self.spec.color_surface_alt if self.slime.is_elder else self.spec.color_surface
+        border_color = self.spec.color_accent if self.slime.is_elder else self.spec.color_border
+        border_w = 2
         
         pygame.draw.rect(surface, bg_color, card_rect, border_radius=8)
         pygame.draw.rect(surface, border_color, card_rect, width=border_w, border_radius=8)

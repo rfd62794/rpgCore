@@ -17,7 +17,7 @@ from src.shared.ui.panel import Panel
 NAMES = ["Mochi", "Pip", "Glimmer", "Bloop", "Sage", "Dew", "Ember", "Fizz", "Lumen", "Nook"]
 
 class GardenScene(GardenSceneBase):
-    def on_garden_enter(self, **kwargs) -> None:
+    def on_garden_enter(self) -> None:
         self.garden_state = GardenState()
         self.renderer = SlimeRenderer()
         self.roster = load_roster()
@@ -26,41 +26,46 @@ class GardenScene(GardenSceneBase):
         # 1. Custom Details UI (Profile Card)
         self.profile_card: Optional[ProfileCard] = None
         
-        # Position buttons below the card area (Card is ~140h + margin)
-        btn_y = 200
-        self.assign_btn = Button(pygame.Rect(self.detail_rect.x + 10, btn_y, self.panel_width-20, 40), text="→ Dungeon Team", on_click=self._assign_to_dungeon)
+        # Position buttons below the card area
+        btn_y = self.detail_rect.y + self.spec.card_height + self.spec.margin_md
+        btn_w = self.layout.side_panel.width - self.spec.padding_md * 2
+        btn_h = self.spec.button_height_sm
+        
+        self.assign_btn = Button("→ Dungeon Team", pygame.Rect(self.detail_rect.x + self.spec.padding_md, btn_y, btn_w, btn_h), self._assign_to_dungeon, self.spec)
         self.assign_btn.set_visible(False)
         self.detail_panel.add_child(self.assign_btn)
 
-        self.remove_btn = Button(pygame.Rect(self.detail_rect.x + 10, btn_y, self.panel_width-20, 40), text="Remove from Team", on_click=self._remove_from_team)
+        self.remove_btn = Button("Remove from Team", pygame.Rect(self.detail_rect.x + self.spec.padding_md, btn_y + btn_h + 8, btn_w, btn_h), self._remove_from_team, self.spec)
         self.remove_btn.set_visible(False)
         self.detail_panel.add_child(self.remove_btn)
         
         # 2. Custom Action Bar Buttons
-        btn_y = 15
-        btn_w, btn_h = 120, 50
+        btn_y = self.bar_rect.y + 10
+        btn_w, btn_h = 130, 44
         
-        self.new_btn = Button(pygame.Rect(20, btn_y, btn_w, btn_h), text="New Slime", on_click=self._add_new_slime)
+        self.new_btn = Button("New Slime", pygame.Rect(20, btn_y, btn_w, btn_h), self._add_new_slime, self.spec)
         self.action_bar.add_child(self.new_btn)
         
-        self.breed_btn = Button(pygame.Rect(150, btn_y, btn_w, btn_h), text="Breed", on_click=self._go_to_breeding)
+        self.breed_btn = Button("Breed", pygame.Rect(160, btn_y, btn_w, btn_h), self._go_to_breeding, self.spec)
         self.action_bar.add_child(self.breed_btn)
 
-        self.release_btn = Button(pygame.Rect(280, btn_y, btn_w, btn_h), text="Release", on_click=self._release_selected)
+        self.release_btn = Button("Release", pygame.Rect(300, btn_y, btn_w, btn_h), self._release_selected, self.spec, variant="danger")
         self.release_btn.set_enabled(False)
         self.action_bar.add_child(self.release_btn)
 
-        # 3. Top Navigation Bar
-        self.top_bar = Panel(pygame.Rect(0, 0, self.width - self.panel_width, 60), bg_color=(20, 20, 30))
+        # 3. Top Navigation Bar (Using HubLayout.top_bar)
+        self.top_bar = Panel(self.layout.top_bar, self.spec, variant="surface")
         self.ui_components.append(self.top_bar)
         
-        self.teams_nav_btn = Button(pygame.Rect(20, 10, 100, 40), text="TEAMS", on_click=self._go_to_teams)
+        nav_y = self.layout.top_bar.y + 4
+        nav_h = self.layout.top_bar.height - 8
+        self.teams_nav_btn = Button("TEAMS", pygame.Rect(20, nav_y, 100, nav_h), self._go_to_teams, self.spec, variant="ghost")
         self.top_bar.add_child(self.teams_nav_btn)
         
-        self.dungeon_nav_btn = Button(pygame.Rect(130, 10, 120, 40), text="DUNGEON", on_click=self._go_to_dungeon)
+        self.dungeon_nav_btn = Button("DUNGEON", pygame.Rect(130, nav_y, 120, nav_h), self._go_to_dungeon, self.spec, variant="ghost")
         self.top_bar.add_child(self.dungeon_nav_btn)
 
-        self.racing_nav_btn = Button(pygame.Rect(260, 10, 100, 40), text="RACING", on_click=self._go_to_racing)
+        self.racing_nav_btn = Button("RACING", pygame.Rect(260, nav_y, 100, nav_h), self._go_to_racing, self.spec, variant="ghost")
         self.top_bar.add_child(self.racing_nav_btn)
 
         # Sync initial slimes if garden is empty but roster has slimes
@@ -159,7 +164,7 @@ class GardenScene(GardenSceneBase):
             # Find in roster
             rs = next((r for r in self.roster.slimes if r.name == s.name), None)
             if rs:
-                self.profile_card = ProfileCard(rs, (self.detail_rect.x + 10, 50))
+                self.profile_card = ProfileCard(rs, (self.detail_rect.x + 10, self.detail_rect.y + 10), self.spec)
                 self.detail_panel.add_child(self.profile_card)
                 
                 if rs.locked:
@@ -197,8 +202,7 @@ class GardenScene(GardenSceneBase):
                     save_roster(self.roster)
                     self.on_selection_changed()
 
-    def update_garden(self, dt_ms: float):
-        dt = dt_ms / 1000.0
+    def update_garden(self, dt: float):
         mouse_pos = pygame.mouse.get_pos()
         # Only pass cursor if in garden area
         cursor = mouse_pos if self.garden_rect.collidepoint(mouse_pos) else None
