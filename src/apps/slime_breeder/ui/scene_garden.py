@@ -7,7 +7,7 @@ from src.shared.ui.label import Label
 from src.shared.ui.button import Button
 from src.apps.slime_breeder.garden.garden_state import GardenState
 from src.apps.slime_breeder.entities.slime import Slime
-from src.apps.slime_breeder.ui.slime_renderer import SlimeRenderer
+from src.shared.rendering.slime_renderer import SlimeRenderer
 from src.shared.genetics import generate_random, breed
 from src.shared.teams.roster import Roster, RosterSlime, TeamRole
 from src.shared.teams.roster_save import load_roster, save_roster
