@@ -25,6 +25,9 @@ def sample_roster():
     for i in range(5):
         rs = RosterSlime(slime_id=f"s{i}", name=f"Slime {i}", genome=genome)
         roster.add_slime(rs)
+    
+    # Set up back-references for legacy compatibility
+    roster._set_back_references()
     return roster
 
 def test_team_scene_initialization(mock_manager, sample_roster, monkeypatch):
