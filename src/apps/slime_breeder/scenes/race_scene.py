@@ -291,15 +291,46 @@ class RaceScene(Scene):
                     pygame.draw.ellipse(shadow_surface, (0, 0, 0, shadow_alpha), pygame.Rect(0, 0, 24, 8))
                     surface.blit(shadow_surface, (screen_x - 12, ly - 4))
                 
-                # Create dummy slime with jump height offset
+                # Create dummy slime with jump height offset and squash/stretch effects
                 from src.apps.slime_breeder.entities.slime import Slime
                 jump_y = ly - int(p.jump_height)
                 dummy_slime = Slime(p.slime.name, p.slime.genome, (screen_x, jump_y))
                 
+                # Apply squash/stretch based on jump phase
+                scale_x, scale_y = 1.0, 1.0
+                if p.is_jumping:
+                    if p.jump_phase < 0.15:  # Launch - stretch vertically
+                        scale_y = 1.2
+                        scale_x = 0.85
+                    elif p.jump_phase > 0.85:  # Landing - squash vertically
+                        scale_y = 0.7
+                        scale_x = 1.2
+                
                 # Override render size to be fixed regardless of zoom
                 original_radius = getattr(self.renderer, 'render_radius', None)
                 self.renderer.render_radius = self.SLIME_RENDER_RADIUS
-                self.renderer.render(surface, dummy_slime)
+                
+                # Apply scale transformation
+                if scale_x != 1.0 or scale_y != 1.0:
+                    # Render to temporary surface with scaling
+                    slime_size = int(self.SLIME_RENDER_RADIUS * 2)
+                    temp_surface = pygame.Surface((slime_size * 2, slime_size * 2), pygame.SRCALPHA)
+                    temp_surface.fill((0, 0, 0, 0))
+                    
+                    # Render slime to temp surface
+                    temp_slime = Slime(p.slime.name, p.slime.genome, (slime_size, slime_size))
+                    temp_renderer = SlimeRenderer()
+                    temp_renderer.render_radius = self.SLIME_RENDER_RADIUS
+                    temp_renderer.render(temp_surface, temp_slime)
+                    
+                    # Scale and blit
+                    scaled_width = int(slime_size * 2 * scale_x)
+                    scaled_height = int(slime_size * 2 * scale_y)
+                    scaled_surface = pygame.transform.scale(temp_surface, (scaled_width, scaled_height))
+                    surface.blit(scaled_surface, (screen_x - scaled_width // 2, jump_y - scaled_height // 2))
+                else:
+                    self.renderer.render(surface, dummy_slime)
+                
                 if original_radius is not None:
                     self.renderer.render_radius = original_radius
                 
