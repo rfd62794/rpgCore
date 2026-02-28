@@ -135,72 +135,6 @@ class ADJSystem:
         
         self.show_cost()
     
-    def get_current_status(self) -> Dict:
-        """Get current DGT Engine status"""
-        return {
-            "test_floor": self.get_test_count(),
-            "protected_minimum": 462,
-            "phases": {
-                "phase_1": {"status": "✅ Complete", "tests": 545},
-                "phase_2": {"status": "✅ Complete", "tests": 583},
-                "phase_3": {"status": "🔄 In Planning", "tests": "Target 785"}
-            },
-            "active_milestone": "M_PHASE3",
-            "blockers": self.get_blockers(),
-            "priorities": self.get_priorities()
-        }
-    
-    def get_blockers(self) -> List[Dict]:
-        """Get current blockers"""
-        blockers = []
-        
-        # Check test failures
-        test_count = self.get_test_count()
-        if test_count < 685:
-            blockers.append({
-                "type": "test_failures",
-                "description": f"Only {test_count} tests passing, target 685",
-                "impact": "medium",
-                "fix_time": "30 minutes"
-            })
-        
-        # Check Phase 3 documentation
-        if not self.dashboard_file.exists():
-            blockers.append({
-                "type": "documentation",
-                "description": "ADJ_DASHBOARD.md missing",
-                "impact": "high",
-                "fix_time": "15 minutes"
-            })
-        
-        return blockers
-    
-    def get_priorities(self) -> List[Dict]:
-        """Get current priorities"""
-        return [
-            {
-                "priority": 1,
-                "task": "Fix any remaining test failures",
-                "impact": "Unblocks all development",
-                "time": "30 minutes",
-                "status": "✅ Complete" if self.get_test_count() >= 685 else "🔄 In Progress"
-            },
-            {
-                "priority": 2,
-                "task": "Director approval for Phase 3",
-                "impact": "Unlocks Phase 3 specification",
-                "time": "Awaiting Robert",
-                "status": "🔄 Awaiting Director"
-            },
-            {
-                "priority": 3,
-                "task": "Begin Phase 3 implementation",
-                "impact": "Modular sprite-driven engine",
-                "time": "6-8 sessions",
-                "status": "🔄 Pending approval"
-            }
-        ]
-    
     def show_status(self):
         """Show current DGT Engine status"""
         status = self.get_current_status()
@@ -217,7 +151,7 @@ class ADJSystem:
   Phase 2: ECS Foundation     {status['phases']['phase_2']['status']} ({status['phases']['phase_2']['tests']} tests)
   Phase 3: Tower Defense     {status['phases']['phase_3']['status']} ({status['phases']['phase_3']['tests']} tests)
 
-🎯 ACTIVE MILESTONE: {status['active_milestone']}
+🎯 ACTIVE MILESTONE: M_PHASE3
 
 🚫 CURRENT BLOCKERS:""")
         
@@ -242,6 +176,7 @@ class ADJSystem:
 
 📖 FULL DASHBOARD: {self.dashboard_file}
 """)
+        self.show_cost()  # Add cost display
     
     def show_phase(self, phase_number: str):
         """Show specific phase status"""
