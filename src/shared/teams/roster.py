@@ -329,10 +329,6 @@ class Roster:
                 entry.locked = slime.locked
                 # Add to team if not unassigned
                 if slime.team != TeamRole.UNASSIGNED:
-                    if slime.team not in self.teams:
-                        self.teams[slime.team] = Team(role=slime.team)
-                    if entry not in self.teams[slime.team].members:
-                        self.teams[slime.team].members.append(entry)
                 break
     
     def unassigned(self) -> list[RosterSlime]:
