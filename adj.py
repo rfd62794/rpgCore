@@ -49,17 +49,13 @@ class ADJSystem:
         
         # Track layers used
         self.layers_used = []
-        
-    def run_command(self, cmd: List[str]) -> str:
-        """Run command and return output"""
-        try:
-            result = subprocess.run(cmd, capture_output=True, text=True, cwd=self.root_dir)
-            return result.stdout.strip()
-        except Exception as e:
-            return f"Error: {e}"
     
-    def get_test_count(self) -> int:
-        """Get current test count"""
+    def _record_layer(self, layer: str):
+        """Track which layers are used"""
+        self.layers_used.append(layer)
+    
+    def _run_tests(self) -> int:
+        """Run tests and return count"""
         output = self.run_command(["uv", "run", "pytest", "--tb=no", "-q"])
         if "passed" in output:
             # Extract number from "685 passed, 3 skipped"
@@ -71,6 +67,73 @@ class ADJSystem:
                     except ValueError:
                         pass
         return 0
+    
+    def get_test_count(self) -> int:
+        """Get test count - try journal first, then run tests"""
+        self._record_layer("Layer 1: Data Files")
+        
+        # Try journal first
+        cached = self.data_loader.get_latest_test_floor()
+        if cached is not None:
+            return cached
+        
+        # Run tests if no cached value
+        return self._run_tests()
+    
+    def get_current_status(self) -> Dict:
+        """Get status - use Layer 1 + 2 only"""
+        self._record_layer("Layer 1: Data Files")
+        self._record_layer("Layer 2: Local Analysis")
+        
+        return {
+            "test_floor": self.get_test_count(),
+            "protected_minimum": 462,
+            "phases": self.analyzer.milestones,
+            "blockers": self.analyzer.get_blockers(),
+            "priorities": self.analyzer.get_priorities()
+        }
+    
+    def show_cost(self):
+        """Show which layers were used"""
+        print("\n🔧 Layers Used:")
+        for layer in self.layers_used:
+            cost = self.router.get_layer_cost(layer)
+            print(f"  {layer} ({cost})")
+    
+    def show_strategy(self, phase_number: str):
+        """Show phase strategy using available layers"""
+        phase_data = self.analyzer.get_phase_status(int(phase_number))
+        
+        print(f"""
+╔══════════════════════════════════════════════════════════════╗
+║                    PHASE {phase_number} STRATEGY ANALYSIS           ║
+╚══════════════════════════════════════════════════════════════╝
+
+📊 PHASE DATA:
+  Name: {phase_data.get('name', 'Unknown')}
+  Status: {phase_data.get('status', 'Unknown')}
+  Goals: {', '.join(phase_data.get('goals', []))}
+""")
+        
+        # Use Layer 3 if available
+        self._record_layer("Layer 1: Data Files")
+        self._record_layer("Layer 2: Local Analysis")
+        
+        result, layer_used = self.router.phase_strategy(int(phase_number), phase_data)
+        self._record_layer(layer_used)
+        
+        if "error" in result:
+            print(f"🤖 AI Analysis: {result.get('fallback', 'Local analysis only')}")
+            print(f"📋 Local Analysis:")
+            print(f"  - Strategic Importance: {phase_data.get('name', 'Unknown')}")
+            print(f"  - Current Status: {phase_data.get('status', 'Unknown')}")
+            print(f"  - Success Criteria: Complete phase goals")
+        else:
+            print(f"🤖 AI Analysis (Layer 3):")
+            if 'response' in result:
+                print(f"  {result['response']}")
+        
+        self.show_cost()
     
     def get_current_status(self) -> Dict:
         """Get current DGT Engine status"""
