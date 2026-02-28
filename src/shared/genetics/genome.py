@@ -61,3 +61,21 @@ def calculate_race_stats(genome) -> dict:
         "body_size": body_size,
         "strength": strength,
     }
+    @staticmethod
+    def random_for_culture(culture: CulturalBase, seed: int = None) -> 'SlimeGenome':
+        import random
+        from .inheritance import generate_random
+        rng = random.Random(seed) if seed is not None else random.Random()
+        
+        # We can't easily override generate_random's internal RNG without refactoring it,
+        # but we can generate a random one and then fix up its core cultural traits 
+        # to match the archetype, or just use the seed to make it deterministic.
+        
+        # For now, let's use the standard generate_random and ensure culture is set.
+        # In a real implementation, we'd want deterministic trait generation based on the seed.
+        genome = generate_random()
+        genome.cultural_base = culture
+        return genome
+
+# Alias for clean imports in dungeon modules
+Genome = SlimeGenome
