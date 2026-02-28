@@ -70,8 +70,15 @@ def breed(parent_a: SlimeGenome, parent_b: SlimeGenome, mutation_chance: float =
                     result = (random.randint(50, 255), random.randint(50, 255), random.randint(50, 255))
         return result
 
-    if r < 0.1: new_culture = parent_a.cultural_base
-    elif r < 0.2: new_culture = parent_b.cultural_base
+    # Cultural inheritance
+    new_culture = CulturalBase.MIXED
+    if parent_a.cultural_base == parent_b.cultural_base:
+        new_culture = parent_a.cultural_base
+    else:
+        # 20% chance to inherit from either parent instead of mixed
+        r = random.random()
+        if r < 0.1: new_culture = parent_a.cultural_base
+        elif r < 0.2: new_culture = parent_b.cultural_base
 
     # Base Stat Inheritance Rules
     params = CULTURAL_PARAMETERS[new_culture]
