@@ -106,11 +106,29 @@ class BaseAgent:
     
     def _validate(self, json_str: str) -> BaseModel:
         try:
+            logger.debug(f"Attempting to validate JSON: {json_str}")
+            
             # First try loading as JSON to catch basic syntax errors
             data = json.loads(json_str)
-            return self.schema.model_validate(data)
+            logger.debug(f"JSON parsed successfully: {type(data)}")
+            
+            # Check if it matches the expected schema structure
+            if hasattr(self.schema, 'model_fields'):
+                logger.debug(f"Expected fields: {list(self.schema.model_fields.keys())}")
+            
+            result = self.schema.model_validate(data)
+            logger.debug(f"Schema validation successful: {type(result)}")
+            return result
+            
+        except json.JSONDecodeError as e:
+            logger.warning(f"JSON decode error: {e}")
+            logger.warning(f"JSON content was: {json_str}")
+            logger.warning(f"Using fallback due to JSON decode error")
+            return self.schema.model_validate(self.config.fallback)
         except Exception as e:
-            logger.warning(f"Agent {self.config.name} validation failed: {e}. Using fallback.")
+            logger.warning(f"Agent {self.config.name} validation failed: {e}")
+            logger.warning(f"JSON content was: {json_str}")
+            logger.warning(f"Using fallback due to validation error")
             return self.schema.model_validate(self.config.fallback)
     
     def _serialize_input(self, task_input: Any) -> str:
