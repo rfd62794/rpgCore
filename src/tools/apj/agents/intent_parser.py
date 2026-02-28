@@ -206,10 +206,16 @@ Type 'quit' or 'exit' to leave.
                     
                     # Extract meaningful content from the result
                     result_content = task_result.get('result', 'No result')
-                    if hasattr(result_content, 'summary'):
-                        formatted_result += f"   {result_content.summary}\n"
-                    elif hasattr(result_content, 'response'):
-                        formatted_result += f"   {result_content.response}\n"
+                    
+                    # Handle Pydantic objects - convert to dict for display
+                    if hasattr(result_content, 'dict'):
+                        # Pydantic object - convert to dict and format
+                        result_dict = result_content.dict()
+                        formatted_result += self._format_pydantic_result(result_dict)
+                    elif hasattr(result_content, 'model_dump'):
+                        # Alternative Pydantic method
+                        result_dict = result_content.model_dump()
+                        formatted_result += self._format_pydantic_result(result_dict)
                     elif isinstance(result_content, str):
                         formatted_result += f"   {result_content[:200]}...\n"
                     else:
@@ -219,6 +225,42 @@ Type 'quit' or 'exit' to leave.
             
         except Exception as e:
             return f"❌ Swarm processing failed: {e}"
+    
+    def _format_pydantic_result(self, result_dict: Dict) -> str:
+        """Format Pydantic result dict for display"""
+        
+        formatted = ""
+        
+        # Show summary if available
+        if 'summary' in result_dict:
+            formatted += f"   📋 {result_dict['summary']}\n"
+        
+        # Show key findings
+        if 'findings' in result_dict and result_dict['findings']:
+            formatted += f"   🔍 Key Findings:\n"
+            for finding in result_dict['findings'][:3]:  # Show first 3 findings
+                formatted += f"     • {finding}\n"
+        
+        # Show recommendations
+        if 'recommendations' in result_dict and result_dict['recommendations']:
+            formatted += f"   💡 Recommendations:\n"
+            for rec in result_dict['recommendations'][:2]:  # Show first 2 recommendations
+                formatted += f"     • {rec}\n"
+        
+        # Show metrics if available
+        if 'metrics' in result_dict and result_dict['metrics']:
+            formatted += f"   📊 Metrics:\n"
+            for key, value in list(result_dict['metrics'].items())[:3]:  # Show first 3 metrics
+                formatted += f"     • {key}: {value}\n"
+        
+        # Show risks if available
+        if 'risks' in result_dict and result_dict['risks']:
+            formatted += f"   ⚠️  Risks:\n"
+            for risk in result_dict['risks'][:2]:  # Show first 2 risks
+                formatted += f"     • {risk}\n"
+        
+        formatted += "\n"
+        return formatted
     
     def _get_llm_response(self, user_input: str) -> str:
         """
