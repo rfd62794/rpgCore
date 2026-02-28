@@ -38,20 +38,24 @@ class DungeonCombatScene(CombatSceneBase):
         hero = self.session.hero
         self.party[0] = DungeonUnit("hero", hero.name, hero.stats, "party", hero)
         
-        # Load enemy squad from kwargs
-        enemy_squad = kwargs.get("enemy_squad")
+        # Read squad from session.active_zone
+        # Same object that path rendered
+        # Guaranteed match
+        zone = self.session.active_zone
+        self.enemy_squad = zone.squad if zone else None
+        
         # Clear existing enemies but maintain list size
         for i in range(5):
             self.enemies[i] = None
         
-        if enemy_squad and hasattr(enemy_squad, 'members'):
+        if self.enemy_squad and hasattr(self.enemy_squad, 'members'):
             # Debug: Print received squad info
-            print(f"[DEBUG] Combat scene - Received squad: {enemy_squad.name}")
-            for i, member in enumerate(enemy_squad.members):
+            print(f"[DEBUG] Combat scene - Received squad: {self.enemy_squad.name}")
+            for i, member in enumerate(self.enemy_squad.members):
                 print(f"[DEBUG]   Member {i}: {member.name}, genome colors: {member.genome.base_color}")
             
             # Use pre-generated squad
-            for i, enemy in enumerate(enemy_squad.members):
+            for i, enemy in enumerate(self.enemy_squad.members):
                 if i >= 4: break
                 stats = {
                     "hp": enemy.current_hp,
@@ -90,11 +94,9 @@ class DungeonCombatScene(CombatSceneBase):
                 stats = {"hp":20, "max_hp":20, "attack":4, "defense":2, "speed":5, "stance":"Aggressive"}
                 self.enemies[i] = DungeonUnit(f"enemy_{i}", f"Wild Slime {i}", stats, "enemy", mock_enemy)
         
-        # Load team from kwargs
-        self.team = kwargs.get("team", [])
-        if not self.team and hasattr(self.session, 'party_slimes'):
-            self.team = self.session.party_slimes
-            
+        # Load team from session
+        self.team = self.session.team
+        
         for i, slime in enumerate(self.team):
             if i >= 4: break
             slot_idx = i + 1

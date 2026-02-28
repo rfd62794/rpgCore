@@ -1,5 +1,6 @@
 import random
 from typing import List, Optional
+from dataclasses import dataclass, field
 from loguru import logger
 
 from src.apps.dungeon_crawler.entities.hero import Hero
@@ -15,23 +16,32 @@ FIRST_NAMES = ["Aldric", "Maren", "Thorn", "Vex", "Sable", "Dusk"]
 LAST_NAMES  = ["the Bold", "the Unlucky", "of the Deep", 
               "the Forgotten", "Ironhands", "of Ashfall"]
 
+@dataclass
 class DungeonSession:
     """
     Orchestrates the lifecycle of a Dungeon Crawler run.
     Mirrors the SpaceTraderSession pattern.
     """
-    def __init__(self, party_slimes: List[RosterSlime] = None):
-        logger.info("Creating DungeonSession...")
+    team:            List = field(default_factory=list)
+    floor:           int = 1
+    seed:            int = None
+    track:           object = None  # DungeonTrack — set once
+    active_zone:     object = None  # current zone being fought
+    combat_results:  List = field(default_factory=list)
+    
+    def __post_init__(self):
+        if self.seed is None:
+            self.seed = random.randint(0, 99999)
+        # Legacy compatibility
         self.hub = TheRoom()
         self.hero: Optional[Hero] = None
-        self.floor: Optional[Floor] = None
+        self.floor_obj: Optional[Floor] = None
         self.turn_manager: Optional[TurnOrderManager] = None
-        self.ancestors: List[dict] = [] # List of {name, class, floor, kills}
+        self.ancestors: List[dict] = []
         
         # Team Roster Integration
         self.roster = load_roster()
-        self.party_slimes = party_slimes or []
-        logger.info(f"DungeonSession created with {len(self.party_slimes)} slimes")
+        self.party_slimes = self.team  # Alias for compatibility
 
     def generate_hero_name(self) -> str:
         return f"{random.choice(FIRST_NAMES)} {random.choice(LAST_NAMES)}"
@@ -60,16 +70,16 @@ class DungeonSession:
         save_roster(self.roster)
 
     def descend(self) -> Floor:
-        if not self.floor:
+        if not self.floor_obj:
             self.start_run()
-            return self.floor
+            return self.floor_obj
         
-        new_depth = self.floor.depth + 1
+        new_depth = self.floor_obj.depth + 1
         logger.info(f"🔽 Descending to floor {new_depth}")
         gen = RoomGenerator()
-        self.floor = gen.generate(depth=new_depth)
-        self.floor.move_to("entrance")
-        return self.floor
+        self.floor_obj = gen.generate(depth=new_depth)
+        self.floor_obj.move_to("entrance")
+        return self.floor_obj
 
     def end_run(self, cause: str = "extraction") -> None:
         if not self.hero:
@@ -90,7 +100,7 @@ class DungeonSession:
         ancestor_record = {
             "name": self.hero.name,
             "class": self.hero.class_type,
-            "floor": self.floor.depth if self.floor else 1,
+            "floor": self.floor_obj.depth if self.floor_obj else 1,
             "kills": 0, # Could be expanded later
             "cause": cause
         }
@@ -98,7 +108,7 @@ class DungeonSession:
         
         # Reset but keep ancestors list
         self.hero = None
-        self.floor = None
+        self.floor_obj = None
         self.turn_manager = None
 
     def get_ancestor_list(self) -> List[str]:

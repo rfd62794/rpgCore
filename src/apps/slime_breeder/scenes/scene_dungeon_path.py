@@ -26,27 +26,31 @@ class DungeonPathScene(Scene):
         super().__init__(manager, spec, **kwargs)
         self.layout = ArenaLayout(spec)
         self.session = kwargs.get('session')
-        self.team = kwargs.get('team', [])
         
         # Load team if not provided
-        if not self.team:
+        team = kwargs.get('team', [])
+        if not team:
             from src.shared.teams.roster_save import load_roster
             self.roster = load_roster()
             d_team = self.roster.teams.get(TeamRole.DUNGEON)
-            self.team = d_team.members if d_team else []
+            team = d_team.members if d_team else []
+        
+        # Store team on session for combat access
+        self.session.team = team
+        self.team = team
 
-        # Core Simulation Components
-        self.depth = kwargs.get('depth', 1)
-        # Use a stable seed for the floor if possible, e.g. from session
-        seed = getattr(self.session, 'seed', random.randint(0, 99999))
+        # Generate track ONCE and store on session
+        # If session already has a track (on_resume after combat)
+        # reuse it — never regenerate
+        if self.session.track is None:
+            self.session.track = generate_dungeon_track(
+                depth=self.session.floor,
+                seed=self.session.seed
+            )
         
-        # Check if track already exists in session
-        if hasattr(self.session, 'track') and self.session.track:
-            self.track = self.session.track
-        else:
-            self.track = generate_dungeon_track(self.depth, seed=seed)
-            self.session.track = self.track  # Store in session
-        
+        # Always use session.track — never self.track
+        # This ensures path and combat see same data
+        self.track = self.session.track
         self.engine = DungeonEngine(self.track, self.team)
         self.camera = RaceCamera()
         
@@ -126,19 +130,19 @@ class DungeonPathScene(Scene):
 
     def _handle_combat(self):
         zone = self.engine.party.current_zone
-        squad = zone.squad if zone else None
+        
+        # Store on session — combat reads from here
+        self.session.active_zone = zone
         
         # Debug: Print squad info
-        if squad:
-            print(f"[DEBUG] Path scene - Squad: {squad.name}")
-            for i, member in enumerate(squad.members):
+        if zone and zone.squad:
+            print(f"[DEBUG] Path scene - Squad: {zone.squad.name}")
+            for i, member in enumerate(zone.squad.members):
                 print(f"[DEBUG]   Member {i}: {member.name}, genome colors: {member.genome.base_color}")
         
         # Push to combat scene
         self.manager.push("dungeon_combat", 
-                          session=self.session, 
-                          team=self.team,
-                          enemy_squad=squad)
+                          session=self.session)  # session carries everything
 
     def _generate_enemy_group(self, zone, depth: int) -> List[dict]:
         """No longer used, replaced by pre-generation in _generate_zone_visuals."""
