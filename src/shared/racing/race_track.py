@@ -3,6 +3,8 @@ Adapted from TurboShells.
 """
 
 import random
+from dataclasses import dataclass
+from enum import Enum
 from src.shared.simulation.base_track import BaseZone
 
 TRACK_LENGTH_LOGIC = 1500

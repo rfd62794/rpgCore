@@ -12,8 +12,11 @@ from .race_track import get_terrain_at, get_terrain_speed_modifier
 from .movement_type import classify_movement, MovementType
 from .movement_profiles import MOVEMENT_PROFILES
 
-class RaceParticipant:
+from src.shared.simulation.base_engine import BaseParticipant, BaseEngine
+
+class RaceParticipant(BaseParticipant):
     def __init__(self, slime: RosterSlime):
+        super().__init__(slime)
         self.slime = slime
         self.distance = 0.0
         self.velocity = 0.0
@@ -56,10 +59,12 @@ class RaceParticipant:
         self.acceleration_base = self.base_speed * 15.0  # Scales with stats
         self.drag_coefficient = 0.95                    # Simple air/ground resistance
         
-    def update(self, dt: float, terrain: str):
+    def update(self, dt: float, terrain: str = "grass"):
         if self.finished:
             self.velocity *= 0.9 # Slow down after finish
             return
+
+    # ... (skipping for now to see if I can do it in one chunk or need multiple)
             
         # Jump physics update
         self._update_jump(dt)
