@@ -36,7 +36,8 @@ def test_team_scene_initialization(mock_manager, sample_roster, monkeypatch):
     scene.on_enter()
     
     assert scene.roster == sample_roster
-    assert len(scene.team.members) == 0
+    assert len(scene.dungeon_team.members) == 0
+    assert len(scene.racing_team.members) == 0
     assert len(scene.ui_components) > 0 # Back button + panels + labels
 
 def test_team_scene_assign_slime(mock_manager, sample_roster, monkeypatch):
@@ -47,16 +48,26 @@ def test_team_scene_assign_slime(mock_manager, sample_roster, monkeypatch):
     scene.on_enter()
     
     slime = sample_roster.slimes[0]
-    scene._assign(slime)
+    scene._assign_to_dungeon(slime)
     
-    assert len(scene.team.members) == 1
-    assert scene.team.members[0] == slime
+    assert len(scene.dungeon_team.members) == 1
+    assert scene.dungeon_team.members[0] == slime
 
 def test_team_scene_remove_slime(mock_manager, sample_roster, monkeypatch):
     monkeypatch.setattr("src.apps.slime_breeder.scenes.team_scene.load_roster", lambda: sample_roster)
     monkeypatch.setattr("src.apps.slime_breeder.scenes.team_scene.save_roster", MagicMock())
     
     scene = TeamScene(mock_manager, SPEC_720)
+    scene.on_enter()
+    
+    # First assign a slime to dungeon team
+    slime = sample_roster.slimes[0]
+    scene._assign_to_dungeon(slime)
+    
+    # Then remove it
+    scene._remove_from_dungeon(slime)
+    
+    assert len(scene.dungeon_team.members) == 0
     scene.on_enter()
     
     slime = sample_roster.slimes[0]
@@ -70,6 +81,10 @@ def test_team_scene_back_to_garden(mock_manager, monkeypatch):
     monkeypatch.setattr("src.apps.slime_breeder.scenes.team_scene.load_roster", MagicMock())
     
     scene = TeamScene(mock_manager, SPEC_720)
+    scene.on_enter()
+    
+    # Mock the request_scene method
+    scene.request_scene = MagicMock()
     scene._back_to_garden()
-    mock_manager.switch_to.assert_not_called() # It uses request_scene which sets next_scene
-    assert scene.next_scene == "garden"
+    
+    scene.request_scene.assert_called_once_with("garden")
