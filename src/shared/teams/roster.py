@@ -444,36 +444,3 @@ class Roster:
                 for s in self.slimes
             ]
         }
-    
-    @classmethod
-    def from_dict(cls, data: dict) -> "Roster":
-        """Legacy compatibility - restore from full RosterSlime data"""
-        roster = cls()
-        for s in data.get("slimes", []):
-            g_data = s["genome"]
-            # Cast culture string back to Enum
-            from src.shared.genetics.cultural_base import CulturalBase
-            g_data["cultural_base"] = CulturalBase(g_data.get("cultural_base", "mixed"))
-            
-            # Ensure base stats exist (for backward compatibility if needed)
-            if "base_hp" not in g_data: g_data["base_hp"] = 20.0
-            if "base_atk" not in g_data: g_data["base_atk"] = 5.0
-            if "base_spd" not in g_data: g_data["base_spd"] = 5.0
-            if "generation" not in g_data: g_data["generation"] = 1
-            
-            genome = SlimeGenome(**g_data)
-            rs = RosterSlime(
-                slime_id=s["slime_id"],
-                name=s["name"],
-                genome=genome,
-                team=TeamRole(s["team"]),
-                locked=s["locked"],
-                alive=s["alive"],
-                level=s.get("level", 1),
-                experience=s.get("experience", 0),
-                breeding_lock_level=s.get("breeding_lock_level", 0),
-                current_hp=s.get("current_hp", -1.0),
-                generation=s.get("generation", 1)
-            )
-            roster.add_slime(rs)
-        return roster
