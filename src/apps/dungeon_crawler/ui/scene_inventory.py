@@ -107,27 +107,3 @@ class InventoryOverlay(Scene):
     def _handle_close(self):
         # Return to previous scene
         self.request_scene("the_room", session=self.session) # Simple fallback, could be smarter if tracked history
-
-    def handle_events(self, events: list[pygame.event.Event]) -> None:
-        for event in events:
-            if event.type == pygame.QUIT:
-                self.request_quit()
-            elif event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
-                self._handle_close()
-                
-            for btn in self.buttons:
-                btn.handle_event(event)
-
-    def update(self, dt_ms: float) -> None:
-        pass
-
-    def render(self, surface: pygame.Surface) -> None:
-        # Full screen dimmed overlay if desired
-        overlay = pygame.Surface((self.manager.width, self.manager.height), pygame.SRCALPHA)
-        overlay.fill((0, 0, 0, 150))
-        surface.blit(overlay, (0, 0))
-
-        for p in self.panels:
-            p.render(surface)
-        for btn in self.buttons:
-            btn.render(surface)
