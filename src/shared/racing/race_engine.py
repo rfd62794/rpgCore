@@ -64,8 +64,12 @@ class RaceParticipant:
         # Jump physics update
         self._update_jump(dt)
         
-        # Terrain affects jump performance based on mass and strength
+        # Base terrain modifier
         terrain_mod = get_terrain_speed_modifier(terrain, self.slime.genome.cultural_base.value)
+        
+        # Apply movement profile terrain modifiers
+        if terrain in self.profile["terrain_mods"]:
+            terrain_mod *= self.profile["terrain_mods"][terrain]
         
         # Additional terrain modifiers based on mass
         if terrain == "water":
@@ -83,18 +87,32 @@ class RaceParticipant:
             mud_penalty = self.mass * 0.4
             terrain_mod = max(0.2, terrain_mod - mud_penalty)
         
-        # Distance gained during jump (affected by terrain)
+        # Apply movement profile speed modifier
+        speed_modifier = self.profile["speed_modifier"]
+        
+        # Roller momentum buildup
+        if self.movement_type == MovementType.ROLLER:
+            self.momentum += self.profile["momentum_buildup"] * dt
+            speed_modifier = min(1.4, speed_modifier + self.momentum)
+        
+        # Distance gained during jump (affected by terrain and movement type)
         distance_gained = 0.0
         if self.is_jumping:
             # Jumping OVER terrain: reduced penalty
             jump_terrain_mod = min(1.0, terrain_mod + 0.3)  # 30% less penalty when jumping
-            distance_gained = self.jump_distance * jump_terrain_mod * dt
-        elif self.jump_cooldown > 0:
-            # Recovery: slower movement
-            distance_gained = self.jump_distance * 0.1 * terrain_mod * dt
+            distance_gained = self.jump_distance * jump_terrain_mod * speed_modifier * dt
+        elif self.ground_time > 0:
+            # Ground time for scooters
+            self.ground_time -= dt
+            distance_gained = self.jump_distance * 0.1 * terrain_mod * speed_modifier * dt
         else:
-            # Auto-jump: normal movement
-            distance_gained = self.jump_distance * terrain_mod * dt
+            # Auto-jump or continuous movement
+            if self.movement_type == MovementType.ROLLER:
+                # Continuous rolling
+                distance_gained = self.jump_distance * terrain_mod * speed_modifier * dt
+            else:
+                # Auto-jump: normal movement
+                distance_gained = self.jump_distance * terrain_mod * speed_modifier * dt
         
         self.distance += distance_gained
         
