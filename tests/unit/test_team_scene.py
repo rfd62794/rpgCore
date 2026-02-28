@@ -54,7 +54,15 @@ def test_team_scene_assign_slime(mock_manager, sample_roster, monkeypatch):
     scene._assign_to_dungeon(slime)
     
     assert len(scene.dungeon_team.members) == 1
-    assert scene.dungeon_team.members[0] == slime
+    
+    # NEW: Check functional assignment instead of object identity
+    assigned_entry = scene.dungeon_team.members[0]
+    assert assigned_entry.slime_id == slime.slime_id
+    assert assigned_entry.team == TeamRole.DUNGEON
+    
+    # Verify the slime is correctly updated in the roster
+    updated_slime = sample_roster.slimes[0]
+    assert updated_slime.team == TeamRole.DUNGEON
 
 def test_team_scene_remove_slime(mock_manager, sample_roster, monkeypatch):
     monkeypatch.setattr("src.apps.slime_breeder.scenes.team_scene.load_roster", lambda: sample_roster)
