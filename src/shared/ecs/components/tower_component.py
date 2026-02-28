@@ -45,6 +45,8 @@ class TowerComponent:
     
     def can_fire(self, current_time: float) -> bool:
         """Check if tower can fire based on cooldown"""
+        if self.last_fire_time == 0.0:
+            return True  # Can fire initially
         return current_time - self.last_fire_time >= (1.0 / self.get_fire_rate())
     
     def fire(self, current_time: float) -> None:
@@ -85,6 +87,8 @@ class TowerComponent:
     
     def can_upgrade(self, upgrade_type: str, gold: int) -> bool:
         """Check if tower can be upgraded"""
+        if upgrade_type not in ["damage", "range", "fire_rate"]:
+            return False
         return gold >= self.get_upgrade_cost(upgrade_type)
     
     def upgrade(self, upgrade_type: str) -> None:

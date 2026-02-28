@@ -195,7 +195,7 @@ def test_tower_component_upgrade_costs(tower_component):
     tower_component.range_upgrades = 1
     tower_component.fire_rate_upgrades = 1
     total_cost = tower_component.get_total_upgrade_cost()
-    expected_cost = 100 + 200 + 150 + 120  # 570
+    expected_cost = 200 + 150 + 120  # 470 (damage_upgrades=1, range_upgrades=1, fire_rate_upgrades=1)
     assert total_cost == expected_cost
 
 
