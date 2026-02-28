@@ -211,33 +211,104 @@ Return as JSON with task assignments.
         # Step 2: Execute task assignments
         try:
             import re
-            json_match = re.search(r'\{.*\}', coordinator_result, re.DOTALL)
+            
+            # Look for JSON block in the response
+            # First try to find JSON in markdown code blocks
+            json_match = re.search(r'```json\s*\n(.*?)\n```', coordinator_result, re.DOTALL)
+            
+            if not json_match:
+                # Try to find JSON with explicit markers
+                json_match = re.search(r'```json\s*(.*?)\s*```', coordinator_result, re.DOTALL)
+            
+            if not json_match:
+                # Try to find JSON between "Task Assignment" and next section
+                json_match = re.search(r'Task Assignment.*?```json\s*\n(.*?)\n```', coordinator_result, re.DOTALL)
+            
+            if not json_match:
+                # Fallback: look for any JSON-like structure
+                json_match = re.search(r'\{[\s\S]*?\}', coordinator_result)
             
             if json_match:
-                task_assignments = json.loads(json_match.group())
-                return self._execute_task_assignments(task_assignments, context)
-            else:
-                return {"error": "Could not parse coordinator response"}
+                # Extract the JSON content
+                json_content = json_match.group(1) if json_match.lastindex == 1 else json_match.group()
                 
-        except Exception as e:
-            return {"error": f"Failed to process coordinator response: {e}"}
+                # Clean up the JSON content
+                json_content = json_content.strip()
+                
+                # Parse the JSON
+                task_assignments = json.loads(json_content)
+                
+                # Handle both "tasks" array and direct task object
+                if "tasks" in task_assignments:
+                    return self._execute_task_assignments(task_assignments["tasks"], context)
+                else:
+                    return self._execute_task_assignments(task_assignments, context)
+            else:
+                return {"error": "Could not find JSON in coordinator response"}
+                
+    except json.JSONDecodeError as e:
+        return {"error": f"JSON decode error: {e}"}
+    except Exception as e:
+        return {"error": f"Failed to process coordinator response: {e}"}
     
-    def _execute_task_assignments(self, assignments: Dict, context: Dict) -> Dict:
-        """Execute the task assignments from coordinator"""
+def _execute_task_assignments(self, assignments, context: Dict) -> Dict:
+    """Execute the task assignments from coordinator"""
         
-        results = {}
+    results = {}
         
+    # Handle both list of tasks and dict of tasks
+    if isinstance(assignments, list):
+        # It's a list of task objects
+        for task in assignments:
+            task_id = task.get("task_id", f"task_{len(results)}")
+            print(f"🔄 Executing task: {task_id}")
+                
+            # Determine which agent to use
+            agents = task.get("agents", [])
+            if agents:
+                # Use the first agent in the list
+                agent_name = agents[0].lower()
+                agent_role = self._map_task_to_agent(agent_name)
+                    
+                if not agent_role:
+                    results[task_id] = {"error": f"No agent available for: {agent_name}"}
+                    continue
+                    
+                # Call the agent
+                agent_result = self._call_agent(
+                    agent_role,
+                    f"""
+Task: {task.get('description', '')}
+
+Context:
+{json.dumps(context, indent=2)}
+
+Execute this task and provide detailed results.
+""",
+                    task.get("output_format", "text")
+                )
+                    
+                results[task_id] = {
+                    "agent": agent_role.value,
+                    "result": agent_result,
+                    "status": "completed"
+                }
+            else:
+                results[task_id] = {"error": "No agents specified for task"}
+        
+    else:
+        # It's a dict of tasks (original format)
         for task_id, task_info in assignments.items():
             print(f"🔄 Executing task: {task_id}")
-            
+                
             # Determine which agent to use
             agent_role = self._map_task_to_agent(task_info.get("task_type", ""))
-            
+                
             if not agent_role:
                 results[task_id] = {"error": f"No agent available for task type: {task_info.get('task_type')}"}
                 continue
-            
-            # Call the appropriate agent
+                
+            # Call the agent
             agent_result = self._call_agent(
                 agent_role,
                 f"""
@@ -246,25 +317,23 @@ Task: {task_info.get('description', '')}
 Context:
 {json.dumps(context, indent=2)}
 
-Previous results:
-{json.dumps(results, indent=2)}
-
 Execute this task and provide detailed results.
 """,
                 task_info.get("output_format", "text")
             )
-            
+                
             results[task_id] = {
                 "agent": agent_role.value,
                 "result": agent_result,
                 "status": "completed"
             }
         
-        return results
+    return results
     
-    def _call_agent(self, role: AgentRole, prompt: str, expected_format: str = "text") -> str:
-        """Call a specific agent with the given prompt"""
+def _call_agent(self, role: AgentRole, prompt: str, expected_format: str = "text") -> str:
+    """Call a specific agent with the given prompt"""
         
+    agent = self.agents[role]
         agent = self.agents[role]
         
         agent_prompt = f"""
