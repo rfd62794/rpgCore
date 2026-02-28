@@ -20,7 +20,11 @@ class GardenScene(GardenSceneBase):
     def on_garden_enter(self) -> None:
         self.garden_state = GardenState()
         self.renderer = SlimeRenderer()
-        self.roster = load_roster()
+        
+        # Respect injected roster if provided (for UI Review)
+        if not hasattr(self, "roster") or not self.roster:
+            self.roster = load_roster()
+            
         self._sync_roster_with_garden()
         
         # 1. Custom Details UI (Profile Card)

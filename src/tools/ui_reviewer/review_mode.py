@@ -21,9 +21,7 @@ def run_review(scene_name: str):
     manager = SceneManager(screen, spec)
     
     # We need to manually register the scenes we want to review
-    from src.shared.engine.scene_templates.garden_scene import GardenScene
-    # Note: In a real system we'd use a registry or dynamic imports
-    # For now, let's just support Garden for the direct task
+    from src.apps.slime_breeder.ui.scene_garden import GardenScene
     
     scene_classes = {
         "garden": GardenScene
@@ -36,6 +34,13 @@ def run_review(scene_name: str):
 
     # Initialize scene
     scene = scene_classes[scene_name](manager, spec, roster=roster)
+    
+    # Force selection of one slime for the profile card review
+    if scene_name == "garden" and roster.slimes:
+        # Simulate picking the first slime
+        s = scene.garden_state.slimes[0]
+        scene.selected_entities = [s]
+        scene.on_selection_changed()
     
     # Brief render loop (enough to layout)
     for _ in range(5):
