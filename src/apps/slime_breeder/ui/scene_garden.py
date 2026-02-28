@@ -230,3 +230,7 @@ class GardenScene(GardenSceneBase):
             render_text(surface, label,
                        (16, self.height - 24),
                        size=18, color=(180, 220, 180))
+
+    def on_exit(self):
+        """Cleanup logic."""
+        pass

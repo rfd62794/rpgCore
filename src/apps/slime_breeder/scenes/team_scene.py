@@ -153,3 +153,12 @@ class TeamScene(Scene):
         # Render buttons
         for btn in self.buttons:
             btn.render(surface)
+
+    def update(self, dt_ms: float):
+        """Update buttons."""
+        for btn in self.buttons:
+            btn.update(int(dt_ms))
+
+    def on_exit(self):
+        """Cleanup logic."""
+        pass
