@@ -118,9 +118,16 @@ Type 'quit' or 'exit' to leave.
                     swarm_result = self._process_with_swarm(user_input)
                     print(f"\nadj> Swarm result:\n{swarm_result}\n")
                 else:
-                    # Simple LLM response
-                    response = self._get_llm_response(user_input)
-                    print(f"\nadj> {response}\n")
+                    # Try to get extension template
+                    from src.tools.apj.agents.swarm_manager import get_extension_template
+                    template = get_extension_template("documentation")
+                    
+                    if template:
+                        manager.add_agent_template(template)
+                        manager.create_agent_from_template(template.name)
+                    else:
+                        print(f"❌ Unknown template: documentation")
+                        print("Available extensions: documentation, performance, security, deployment")
                 
                 # Add to history
                 self.conversation_history.append(("assistant", "Swarm processing complete"))

@@ -1329,7 +1329,7 @@ Provide as JSON with detailed steps.
                 
                 if template:
                     manager.add_agent_template(template)
-                    manager.create_agent_from_template(args.arg2)
+                    manager.create_agent_from_template(template.name)
                 else:
                     print(f"❌ Unknown template: {args.arg2}")
                     print("Available extensions: documentation, performance, security, deployment")
