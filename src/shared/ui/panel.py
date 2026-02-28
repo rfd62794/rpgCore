@@ -1,26 +1,36 @@
-from typing import List, Optional, Tuple
+from typing import List, Optional, Tuple, Union
 import pygame
 from src.shared.ui.base import UIComponent
+from src.shared.ui.spec import UISpec
 
 class Panel(UIComponent):
-    """A container component that can hold and render children."""
+    """A container component that can hold and render children, driven by UISpec."""
     
     def __init__(
         self, 
         rect: pygame.Rect, 
-        bg_color: Tuple[int, int, int] = (20, 20, 30),
-        border_color: Tuple[int, int, int] = (100, 100, 120),
-        border_width: int = 2,
-        border_radius: int = 5,
-        title: Optional[str] = None,
+        spec: UISpec,
+        variant: str = "surface",
+        border: bool = True,
         z_order: int = 0
     ):
         super().__init__(rect, z_order)
-        self.bg_color = bg_color
-        self.border_color = border_color
-        self.border_width = border_width
-        self.border_radius = border_radius
-        self.title = title
+        self.spec = spec
+        self.variant = variant
+        
+        # Map variants to spec colors
+        variants = {
+            "surface": {"bg": spec.color_surface, "border_color": spec.color_border},
+            "card":    {"bg": spec.color_surface_alt, "border_color": spec.color_accent},
+            "overlay": {"bg": (spec.color_bg[0], spec.color_bg[1], spec.color_bg[2], 230), "border_color": spec.color_border},
+        }
+        style = variants.get(variant, variants["surface"])
+        
+        self.bg_color = style["bg"]
+        self.border_color = style["border_color"]
+        self.border_width = 2 if border else 0
+        self.border_radius = 8
+        self.title = None
         
         self.children: List[UIComponent] = []
         
