@@ -113,67 +113,58 @@ def test_simple_race_simulation():
 
 def test_registry_centralization():
     """Test registry centralization functionality"""
-    try:
-        from dgt_engine.foundation.registry import DGTRegistry, RegistryType
-        from dgt_engine.foundation.protocols import WorldStateSnapshot, EntityStateSnapshot, EntityType
-        from dgt_engine.foundation.vector import Vector2
-        
-        print("✅ Registry centralization imports successful")
-        
-        # Create registry
-        registry = DGTRegistry()
-        
-        # Create multiple entities
-        entities = [
-            EntityStateSnapshot("entity_1", EntityType.SHIP, Vector2(10, 10), Vector2(1, 0), 5.0, True, {}),
-            EntityStateSnapshot("entity_2", EntityType.ASTEROID, Vector2(50, 50), Vector2(0, 1), 8.0, True, {}),
-            EntityStateSnapshot("entity_3", EntityType.SCRAP, Vector2(100, 100), Vector2(-1, -1), 3.0, True, {})
-        ]
-        
-        # Register all entities
-        for entity in entities:
-            registry.register(entity.entity_id, entity, RegistryType.ENTITY, {})
-        
-        print("✅ Multiple entities registered")
-        
-        # Get world snapshot
-        snapshot_result = registry.get_world_snapshot()
-        assert snapshot_result.success, f"World snapshot failed: {snapshot_result.error}"
-        
-        snapshot = snapshot_result.value
-        assert len(snapshot.entities) == 3
-        assert snapshot.game_active == True
-        print("✅ World snapshot contains all entities")
-        
-        # Test system state management
-        system_states = {
-            "race_system": {"status": "running", "participants": 3},
-            "physics_system": {"status": "running", "fps": 60.0},
-            "render_system": {"status": "running", "frames": 1000}
-        }
-        
-        for system_id, state in system_states.items():
-            registry.register_system(system_id, type("MockSystem", (), {"get_state": lambda s=state: s})(), state)
-        
-        print("✅ Multiple systems registered")
-        
-        # Get all system states
-        all_states_result = registry.get_all_system_states()
-        assert all_states_result.success, f"System states failed: {all_states_result.error}"
-        
-        all_states = all_states_result.value
-        assert len(all_states) == 3
-        assert "race_system" in all_states
-        assert all_states["race_system"]["participants"] == 3
-        print("✅ All system states retrieved")
-        
-        return True
-        
-    except Exception as e:
-        print(f"❌ Error: {e}")
-        import traceback
-        traceback.print_exc()
-        return False
+    from dgt_engine.foundation.registry import DGTRegistry, RegistryType
+    from dgt_engine.foundation.protocols import WorldStateSnapshot, EntityStateSnapshot, EntityType
+    from dgt_engine.foundation.vector import Vector2
+    
+    print("✅ Registry centralization imports successful")
+    
+    # Create registry
+    registry = DGTRegistry()
+    
+    # Create multiple entities
+    entities = [
+        EntityStateSnapshot("entity_1", EntityType.SHIP, Vector2(10, 10), Vector2(1, 0), 5.0, True, {}),
+        EntityStateSnapshot("entity_2", EntityType.ASTEROID, Vector2(50, 50), Vector2(0, 1), 8.0, True, {}),
+        EntityStateSnapshot("entity_3", EntityType.SCRAP, Vector2(100, 100), Vector2(-1, -1), 3.0, True, {})
+    ]
+    
+    # Register all entities
+    for entity in entities:
+        registry.register(entity.entity_id, entity, RegistryType.ENTITY, {})
+    
+    print("✅ Multiple entities registered")
+    
+    # Get world snapshot
+    snapshot_result = registry.get_world_snapshot()
+    assert snapshot_result.success, f"World snapshot failed: {snapshot_result.error}"
+    
+    snapshot = snapshot_result.value
+    assert len(snapshot.entities) == 3
+    assert snapshot.game_active == True
+    print("✅ World snapshot contains all entities")
+    
+    # Test system state management
+    system_states = {
+        "race_system": {"status": "running", "participants": 3},
+        "physics_system": {"status": "running", "fps": 60.0},
+        "render_system": {"status": "running", "frames": 1000}
+    }
+    
+    for system_id, state in system_states.items():
+        registry.register_system(system_id, type("MockSystem", (), {"get_state": lambda s=state: s})(), state)
+    
+    print("✅ Multiple systems registered")
+    
+    # Get all system states
+    all_states_result = registry.get_all_system_states()
+    assert all_states_result.success, f"System states failed: {all_states_result.error}"
+    
+    all_states = all_states_result.value
+    assert len(all_states) == 3
+    assert "race_system" in all_states
+    assert all_states["race_system"]["participants"] == 3
+    print("✅ All system states retrieved")
 
 if __name__ == "__main__":
     print("🔧 Testing Sprint D Orchestration Layer (Simplified)...")

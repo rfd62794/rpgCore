@@ -5,6 +5,7 @@ from src.apps.dungeon_crawler.ui.scene_dungeon_room import DungeonRoomScene
 from src.apps.dungeon_crawler.ui.scene_dungeon_combat import DungeonCombatScene
 from src.apps.dungeon_crawler.ui.dungeon_session import DungeonSession
 from src.apps.dungeon_crawler.entities.hero import Hero
+from src.shared.ui.spec import SPEC_720
 
 @pytest.fixture
 def mock_session():
