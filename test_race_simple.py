@@ -43,11 +43,13 @@ def main():
                     running = False
                 else:
                     # Forward events to scene
-                    manager.active_scene.handle_event(event)
+                    if hasattr(manager, '_active_scene') and manager._active_scene:
+                        manager._active_scene.handle_event(event)
         
         # Update and render
-        manager.active_scene.update(dt)
-        manager.active_scene.render(surface)
+        if hasattr(manager, '_active_scene') and manager._active_scene:
+            manager._active_scene.update(dt)
+            manager._active_scene.render(surface)
         
         pygame.display.flip()
     
