@@ -138,15 +138,28 @@ class RaceScene(Scene):
             self.shake_mag = 0
 
     def _update_zoom(self):
+        if not self.engine or not self.engine.participants:
+            return
+            
         dists = [p.distance for p in self.engine.participants]
         gap = max(dists) - min(dists)
-        new_target = 1.0
-        if gap > 400: new_target = 0.85
-        if gap > 800: new_target = 0.75
         lead_p = max(self.engine.participants, key=lambda x: x.distance)
         dist_to_finish = 3000 - lead_p.distance
-        if dist_to_finish < 600: new_target = 1.2 
-        self.camera_zoom += (new_target - self.camera_zoom) * 0.05
+        
+        # Determine target zoom based on race conditions
+        new_target = self.ZOOM_NORMAL
+        
+        # Zoom out if pack is spread out
+        if gap > 400: 
+            new_target = self.ZOOM_OUT_MAX
+        
+        # Zoom in on final stretch
+        if dist_to_finish < 600: 
+            new_target = self.ZOOM_FINISH
+        
+        # Smooth zoom transition (lerp)
+        zoom_speed = 0.03  # Slower = more cinematic
+        self.camera_zoom += (new_target - self.camera_zoom) * zoom_speed
 
     def _update_speed_lines(self, dt: float):
         lead_p = max(self.engine.participants, key=lambda x: x.distance)
