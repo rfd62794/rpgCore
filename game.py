@@ -26,18 +26,12 @@ def main():
     args = sys.argv[1:]
     
     if not args:
-        # Interactive menu
-        while True:
-            launcher.show_menu()
-            selection = launcher.get_selection()
-            if not selection:
-                print("Exiting...")
-                break
-            demo = registry.get(selection)
-            if demo:
-                launcher.launch(demo)
-            else:
-                print(f"Error: Unknown demo '{selection}'")
+        # Launch Garden (Slime Breeder) directly as home base
+        demo = registry.get("slime_breeder")
+        if demo:
+            launcher.launch(demo)
+        else:
+            print("Error: Could not find 'slime_breeder' demo.")
         return
 
     command = args[0]
