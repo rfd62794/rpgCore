@@ -98,8 +98,9 @@ class GraphicsConfig(BaseModel):
 
     model_config = ConfigDict(use_enum_values=False)
 
-    @validator('resolution_width', 'resolution_height')
-    def validate_resolution(cls, v):
+    @field_validator('resolution_width', 'resolution_height', mode='before')
+    @classmethod
+    def validate_resolution(cls, v: Any) -> Any:
         """Resolution must be multiple of 16 for alignment."""
         if v % 16 != 0:
             raise ValueError(f"Resolution must be multiple of 16, got {v}")
@@ -184,8 +185,9 @@ class GameConfig(BaseModel):
 
     model_config = ConfigDict(use_enum_values=False)
 
-    @validator('game_version')
-    def validate_version(cls, v):
+    @field_validator('game_version', mode='before')
+    @classmethod
+    def validate_version(cls, v: Any) -> Any:
         """Version must be semantic versioning (X.Y.Z)."""
         parts = v.split('.')
         if len(parts) != 3:
@@ -196,8 +198,10 @@ class GameConfig(BaseModel):
             raise ValueError(f"Version parts must be integers, got {v}")
         return v
 
-    @validator('game_type')
-    def ensure_game_type_config(cls, v, values):
+    @field_validator('game_type', mode='before')
+    @classmethod
+    def ensure_game_type_config(cls, v: Any, info: Any) -> Any:
+        values = info.data
         """Ensure appropriate config exists for game type."""
         configs = {
             GameType.SPACE: 'space',
@@ -225,8 +229,9 @@ class SystemConfig(BaseModel):
     performance_metrics_enabled: bool = Field(default=True)
     custom_hooks: Dict[str, str] = Field(default_factory=dict)
 
-    @validator('log_level')
-    def validate_log_level(cls, v):
+    @field_validator('log_level', mode='before')
+    @classmethod
+    def validate_log_level(cls, v: Any) -> Any:
         """Log level must be valid."""
         valid_levels = {"DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"}
         if v.upper() not in valid_levels:

@@ -9,7 +9,7 @@ from enum import Enum
 from dataclasses import dataclass
 from pathlib import Path
 
-from pydantic import BaseModel, Field, ConfigDict, validator, HttpUrl
+from pydantic import BaseModel, Field, ConfigDict, field_validator, HttpUrl
 from loguru import logger
 import time
 
@@ -64,15 +64,17 @@ class RenderPacket(BaseModel):
     
     model_config = ConfigDict(arbitrary_types_allowed=True)
     
-    @validator('layers', pre=True)
-    def validate_layers(cls, v):
+    @field_validator('layers', mode='before')
+    @classmethod
+    def validate_layers(cls, v: Any) -> Any:
         """Ensure layers are RenderLayer objects"""
         if isinstance(v, list):
             return [RenderLayer(**layer) if isinstance(layer, dict) else layer for layer in v]
         return v
     
-    @validator('hud', pre=True)
-    def validate_hud(cls, v):
+    @field_validator('hud', mode='before')
+    @classmethod
+    def validate_hud(cls, v: Any) -> Any:
         """Ensure HUD is HUDData object"""
         if isinstance(v, dict):
             return HUDData(**v)
@@ -169,8 +171,10 @@ class MaterialAsset(BaseModel):
         use_enum_values=True
     )
     
-    @validator('accent_color')
-    def validate_accent_color(cls, v, values):
+    @field_validator('accent_color', mode='before')
+    @classmethod
+    def validate_accent_color(cls, v: Any, info: Any) -> Any:
+        values = info.data
         """Validate accent color is different from base color"""
         if v and v == values['base_color']:
             raise ValueError("Accent color must be different from base color")
@@ -565,15 +569,18 @@ class ViewportLayout(BaseModel):
         use_enum_values=True
     )
     
-    @validator('window_width', 'window_height')
-    def validate_window_dimensions(cls, v):
+    @field_validator('window_width', 'window_height', mode='before')
+    @classmethod
+    def validate_window_dimensions(cls, v: Any) -> Any:
         """Validate window dimensions are positive"""
         if v <= 0:
             raise ValueError("Window dimensions must be positive")
         return v
     
-    @validator('ppu_scale')
-    def validate_ppu_scale(cls, v, values):
+    @field_validator('ppu_scale', mode='before')
+    @classmethod
+    def validate_ppu_scale(cls, v: Any, info: Any) -> Any:
+        values = info.data
         """Validate PPU scale fits in window"""
         if 'window_height' in values:
             max_scale = values['window_height'] // 144  # SOVEREIGN_HEIGHT

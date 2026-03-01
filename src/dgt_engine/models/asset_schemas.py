@@ -6,7 +6,7 @@ Follows strict typing with comprehensive validation rules.
 """
 
 from typing import Dict, List, Any, Optional, Tuple, Literal, Union
-from pydantic import BaseModel, Field, validator, model_validator
+from pydantic import BaseModel, Field, field_validator, model_validator
 from pydantic.types import NonNegativeInt
 from enum import Enum
 
@@ -60,8 +60,9 @@ class CharacterMetadata(BaseModel):
     tags: List[str] = Field(default_factory=list)
     base_stats: Optional[Dict[str, Union[int, float]]] = None
     
-    @validator('tags')
-    def validate_tags(cls, v):
+    @field_validator('tags', mode='before')
+    @classmethod
+    def validate_tags(cls, v: Any) -> Any:
         """Validate tag format."""
         if len(v) > 10:
             raise ValueError("Too many tags (max 10)")
@@ -88,8 +89,9 @@ class EnvironmentMetadata(BaseModel):
     npc_count: NonNegativeInt
     tags: List[str] = Field(default_factory=list)
     
-    @validator('dimensions')
-    def validate_dimensions(cls, v):
+    @field_validator('dimensions', mode='before')
+    @classmethod
+    def validate_dimensions(cls, v: Any) -> Any:
         """Validate environment dimensions."""
         width, height = v
         if width == 0 or height == 0:
@@ -104,8 +106,9 @@ class PaletteDefinition(BaseModel):
     description: str = Field(..., min_length=1, max_length=100)
     colors: Dict[NonNegativeInt, Union[PaletteColor, str]] = Field(..., min_length=1)
     
-    @validator('colors')
-    def validate_colors(cls, v):
+    @field_validator('colors', mode='before')
+    @classmethod
+    def validate_colors(cls, v: Any) -> Any:
         """Validate color mapping."""
         if len(v) > 8:
             raise ValueError("Too many colors (max 8)")
@@ -159,8 +162,9 @@ class DialogueSet(BaseModel):
     offers: Optional[List[str]] = None
     threats: Optional[List[str]] = None
     
-    @validator('*')
-    def validate_dialogue_lines(cls, v):
+    @field_validator('*', mode='before')
+    @classmethod
+    def validate_dialogue_lines(cls, v: Any) -> Any:
         """Validate dialogue line format."""
         if isinstance(v, list):
             for line in v:
@@ -179,8 +183,10 @@ class AssetManifest(BaseModel):
     interactions: Dict[str, InteractionDefinition] = Field(default_factory=dict)
     dialogue_sets: Dict[str, DialogueSet] = Field(default_factory=dict)
     
-    @validator('characters')
-    def validate_character_references(cls, v, values):
+    @field_validator('characters', mode='before')
+    @classmethod
+    def validate_character_references(cls, v: Any, info: Any) -> Any:
+        values = info.data
         """Validate character palette references."""
         palettes = values.get('palettes', {})
         for char_id, char_meta in v.items():
@@ -188,8 +194,10 @@ class AssetManifest(BaseModel):
                 raise ValueError(f"Character {char_id} references unknown palette: {char_meta.palette}")
         return v
     
-    @validator('objects')
-    def validate_object_references(cls, v, values):
+    @field_validator('objects', mode='before')
+    @classmethod
+    def validate_object_references(cls, v: Any, info: Any) -> Any:
+        values = info.data
         """Validate object interaction references."""
         interactions = values.get('interactions', {})
         for obj_id, obj_meta in v.items():
@@ -197,8 +205,10 @@ class AssetManifest(BaseModel):
                 raise ValueError(f"Object {obj_id} references unknown interaction: {obj_meta.interaction}")
         return v
     
-    @validator('dialogue_sets')
-    def validate_dialogue_references(cls, v, values):
+    @field_validator('dialogue_sets', mode='before')
+    @classmethod
+    def validate_dialogue_references(cls, v: Any, info: Any) -> Any:
+        values = info.data
         """Validate dialogue set references in interactions."""
         interactions = values.get('interactions', {})
         dialogue_set_ids = set(v.keys())
@@ -219,8 +229,9 @@ class BinaryAssetHeader(BaseModel):
     asset_count: NonNegativeInt = Field(..., description="Total number of assets")
     data_offset: NonNegativeInt = Field(..., description="Offset to compressed data")
     
-    @validator('magic')
-    def validate_magic(cls, v):
+    @field_validator('magic', mode='before')
+    @classmethod
+    def validate_magic(cls, v: Any) -> Any:
         """Validate file magic number."""
         if v != b'DGT\x01':
             raise ValueError(f"Invalid magic number: {v}")
@@ -235,8 +246,9 @@ class AssetLoadResult(BaseModel):
     validation_errors: List[str] = Field(default_factory=list)
     warnings: List[str] = Field(default_factory=list)
     
-    @validator('load_time_ms')
-    def validate_load_time(cls, v):
+    @field_validator('load_time_ms', mode='before')
+    @classmethod
+    def validate_load_time(cls, v: Any) -> Any:
         """Validate load time is reasonable."""
         if v is not None and v > 10000:  # 10 seconds
             raise ValueError("Load time exceeds acceptable limit")
@@ -254,8 +266,9 @@ class CacheStatistics(BaseModel):
     hit_rate: float = Field(..., ge=0.0, le=1.0)
     ttl_seconds: Optional[NonNegativeInt] = None
     
-    @validator('cache_type')
-    def validate_cache_type(cls, v):
+    @field_validator('cache_type', mode='before')
+    @classmethod
+    def validate_cache_type(cls, v: Any) -> Any:
         """Validate cache type."""
         allowed_types = ["character", "object", "environment", "generic"]
         if v not in allowed_types:
