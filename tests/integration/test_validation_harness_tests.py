@@ -13,6 +13,7 @@ from tests.integration.test_validation_harness import (
 from tests.fixtures.test_tasks_10 import validate_task_distribution_10
 from tests.fixtures.test_tasks_50 import validate_task_distribution_50
 from tests.fixtures.test_tasks_100 import validate_task_distribution_100
+from src.tools.apj.agents.types import SwarmTask, TaskStatus
 
 
 class TestTaskGeneration:

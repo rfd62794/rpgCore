@@ -8,7 +8,7 @@ from typing import List, Dict, Any
 from enum import Enum
 import random
 
-from src.tools.apj.agents.autonomous_swarm import SwarmTask, TaskStatus
+from src.tools.apj.agents.types import SwarmTask, TaskStatus
 
 
 class TaskType(Enum):

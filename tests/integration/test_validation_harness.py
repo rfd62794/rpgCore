@@ -10,7 +10,8 @@ from dataclasses import dataclass
 from datetime import datetime
 from collections import defaultdict, Counter
 
-from src.tools.apj.agents.autonomous_swarm import AutonomousSwarm, SwarmTask, TaskStatus
+from src.tools.apj.agents.autonomous_swarm import AutonomousSwarm
+from src.tools.apj.agents.types import SwarmTask, TaskStatus
 from src.tools.apj.agents.task_router import RoutingLevel
 from tests.fixtures.test_tasks_10 import get_test_tasks_10
 from tests.fixtures.test_tasks_50 import get_test_tasks_50
