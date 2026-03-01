@@ -250,7 +250,8 @@ class AgentRegistry:
         capabilities: List[str],
         tool_categories: List[str],
         context_size: int = 2000,
-        dependencies: Optional[List[str]] = None
+        dependencies: Optional[List[str]] = None,
+        display_name: Optional[str] = None
     ) -> None:
         """Register a specialized agent"""
         
@@ -269,9 +270,12 @@ class AgentRegistry:
                 if dep not in self._agents:
                     raise ValueError(f"Dependency agent '{dep}' not found in registry")
         
+        # Use display_name if provided, otherwise use agent_name
+        final_display_name = display_name or agent_name
+        
         # Create AgentMetadata for the specialist
         metadata = AgentMetadata(
-            name=agent_name,
+            name=final_display_name,  # Use display name for the metadata
             agent_type=AgentType.SPECIALIST,
             capabilities=agent_capabilities,
             department="specialists",
@@ -285,8 +289,9 @@ class AgentRegistry:
             dependencies=dependencies or []
         )
         
-        # Store in registry
-        self._agents[agent_name] = metadata
+        # Store in registry with both keys for lookup
+        self._agents[final_display_name] = metadata
+        self._agents[agent_name] = metadata  # Also store with internal name
     
     def find_agent_by_specialty(self, specialty: str) -> Optional[AgentMetadata]:
         """Find agent by specialty (e.g., "documentation" → documentation_specialist)"""
@@ -430,42 +435,48 @@ class AgentRegistry:
                 "capabilities": ["documentation", "analysis"],
                 "tools": ["doc_ops"],
                 "context_size": 1000,
-                "dependencies": []
+                "dependencies": [],
+                "display_name": "Documentation Specialist"
             },
             "architecture_specialist": {
                 "specialty": "architecture",
                 "capabilities": ["architecture", "analysis"],
                 "tools": ["analysis_ops"],
                 "context_size": 500,
-                "dependencies": []
+                "dependencies": [],
+                "display_name": "Architecture Specialist"
             },
             "genetics_specialist": {
                 "specialty": "genetics",
                 "capabilities": ["genetics", "breeding"],
                 "tools": ["genetics_ops"],
                 "context_size": 300,
-                "dependencies": []
+                "dependencies": [],
+                "display_name": "Genetics System Specialist"
             },
             "ui_systems_specialist": {
                 "specialty": "ui",
                 "capabilities": ["ui", "design"],
                 "tools": ["ui_ops"],
                 "context_size": 200,
-                "dependencies": []
+                "dependencies": [],
+                "display_name": "UI Systems Specialist"
             },
             "integration_specialist": {
                 "specialty": "integration",
                 "capabilities": ["integration", "testing"],
                 "tools": ["integration_ops"],
                 "context_size": 400,
-                "dependencies": []
+                "dependencies": ["testing", "architecture"],
+                "display_name": "Integration Specialist"
             },
             "debugging_specialist": {
                 "specialty": "debugging",
                 "capabilities": ["debugging", "testing"],
                 "tools": ["debug_ops"],
                 "context_size": 250,
-                "dependencies": []
+                "dependencies": ["testing"],
+                "display_name": "Debugging Specialist"
             },
             # Add missing dependency agents
             "code_quality_specialist": {
@@ -473,14 +484,16 @@ class AgentRegistry:
                 "capabilities": ["code_quality", "analysis", "testing"],
                 "tools": ["code_ops", "test_ops"],
                 "context_size": 300,
-                "dependencies": []
+                "dependencies": [],
+                "display_name": "Code Quality Specialist"
             },
             "testing_specialist": {
                 "specialty": "testing",
                 "capabilities": ["testing", "quality_assurance"],
                 "tools": ["test_ops", "qa_ops"],
                 "context_size": 400,
-                "dependencies": []
+                "dependencies": [],
+                "display_name": "Testing Specialist"
             }
         }
         
