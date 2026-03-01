@@ -63,13 +63,13 @@ def test_base_system_orchestration():
         assert system.status == SystemStatus.STOPPED
         print("✅ System shutdown successful")
         
-        return True
+        pass
         
     except Exception as e:
         print(f"❌ Error: {e}")
         import traceback
         traceback.print_exc()
-        return False
+        raise
 
 def test_race_runner_system():
     """Test RaceRunner system functionality"""
@@ -136,13 +136,13 @@ def test_race_runner_system():
         assert system.race_active == False
         print("✅ Race stopped")
         
-        return True
+        pass
         
     except Exception as e:
         print(f"❌ Error: {e}")
         import traceback
         traceback.print_exc()
-        return False
+        raise
 
 def test_mock_race_simulation():
     """Test complete mock race simulation"""
@@ -177,13 +177,13 @@ def test_mock_race_simulation():
         final_state = system.get_race_state()
         print(f"🏆 Race completed! Final distance: {final_state['participants']['scout_1']['distance_traveled']:.1f}")
         
-        return True
+        pass
         
     except Exception as e:
         print(f"❌ Mock race simulation failed: {e}")
         import traceback
         traceback.print_exc()
-        return False
+        raise
 
 def test_system_metrics():
     """Test system metrics and registry integration"""
@@ -249,13 +249,13 @@ def test_system_metrics():
         
         system.shutdown()
         
-        return True
+        pass
         
     except Exception as e:
         print(f"❌ System metrics test failed: {e}")
         import traceback
         traceback.print_exc()
-        return False
+        raise
 
 if __name__ == "__main__":
     print("🔧 Testing Sprint D Orchestration Layer...")
@@ -270,7 +270,11 @@ if __name__ == "__main__":
     results = []
     for test_name, test_func in tests:
         print(f"\n--- {test_name} ---")
-        success = test_func()
+        try:
+            test_func()
+            success = True
+        except Exception:
+            success = False
         results.append((test_name, success))
     
     print(f"\n🏁 Sprint D Test Results:")

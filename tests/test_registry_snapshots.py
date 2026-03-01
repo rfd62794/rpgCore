@@ -58,15 +58,19 @@ def test_registry_state_snapshots():
         assert restore_result.success, f"Restore from snapshot failed: {restore_result.error}"
         print("✅ Restore from snapshot successful")
         
-        return True
+        pass
         
     except Exception as e:
         print(f"❌ Error: {e}")
         import traceback
         traceback.print_exc()
-        return False
+        raise
 
 if __name__ == "__main__":
     print("🔧 Testing registry state snapshots...")
-    success = test_registry_state_snapshots()
+    try:
+        test_registry_state_snapshots()
+        success = True
+    except Exception:
+        success = False
     print(f"🏁 Test {'PASSED' if success else 'FAILED'}")

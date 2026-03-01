@@ -36,15 +36,19 @@ def test_simple_physics():
         wrapped_y = new_position.y % SOVEREIGN_HEIGHT
         print(f"✅ Toroidal wrapping: {wrapped_x}, {wrapped_y}")
         
-        return True
+        pass
         
     except Exception as e:
         print(f"❌ Error: {e}")
         import traceback
         traceback.print_exc()
-        return False
+        raise
 
 if __name__ == "__main__":
     print("🔧 Testing simple physics operations...")
-    success = test_simple_physics()
+    try:
+        test_simple_physics()
+        success = True
+    except Exception:
+        success = False
     print(f"🏁 Test {'PASSED' if success else 'FAILED'}")

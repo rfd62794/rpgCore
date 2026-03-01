@@ -35,15 +35,19 @@ def test_simple_registry():
         if retrieved_result.value:
             print(f"✅ Retrieved genome color: {retrieved_result.value.shell_base_color}")
         
-        return True
+        pass
         
     except Exception as e:
         print(f"❌ Error: {e}")
         import traceback
         traceback.print_exc()
-        return False
+        raise
 
 if __name__ == "__main__":
     print("🔧 Testing simple registry operations...")
-    success = test_simple_registry()
+    try:
+        test_simple_registry()
+        success = True
+    except Exception:
+        success = False
     print(f"🏁 Test {'PASSED' if success else 'FAILED'}")
