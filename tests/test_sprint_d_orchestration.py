@@ -13,7 +13,7 @@ def test_base_system_orchestration():
     """Test BaseSystem orchestration patterns"""
     try:
         from src.engines.base import BaseSystem, SystemConfig, SystemStatus
-        from src.foundation.registry import DGTRegistry, RegistryType
+        from src.dgt_engine.foundation.registry import DGTRegistry, RegistryType
         
         print("✅ Imports successful")
         
@@ -75,7 +75,7 @@ def test_race_runner_system():
     """Test RaceRunner system functionality"""
     try:
         from src.engines.body.systems.race_runner import RaceRunnerSystem, create_race_runner_system, start_mock_race
-        from src.foundation.registry import DGTRegistry
+        from src.dgt_engine.foundation.registry import DGTRegistry
         
         print("✅ RaceRunner imports successful")
         
@@ -189,7 +189,7 @@ def test_system_metrics():
     """Test system metrics and registry integration"""
     try:
         from src.engines.base import BaseSystem, SystemConfig
-        from src.foundation.registry import DGTRegistry
+        from src.dgt_engine.foundation.registry import DGTRegistry
         
         # Create test system
         config = SystemConfig(
