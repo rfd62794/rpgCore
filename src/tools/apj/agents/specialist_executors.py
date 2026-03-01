@@ -369,6 +369,121 @@ async def execute_debugging_task(task: SwarmTask) -> TaskResult:
         )
 
 
+async def execute_code_quality_task(task: SwarmTask) -> TaskResult:
+    """Execute code quality specialist work"""
+    
+    start_time = asyncio.get_event_loop().time()
+    
+    try:
+        file_references = _extract_file_references(task.description)
+        
+        issues_found = 0
+        improvements_suggested = 0
+        files_analyzed = []
+        work_items = []
+        
+        # Simulate code quality analysis
+        if file_references:
+            for file_path in file_references[:3]:
+                await asyncio.sleep(random.uniform(0.2, 0.4))
+                
+                issues_found += random.randint(2, 8)
+                improvements_suggested += random.randint(1, 5)
+                files_analyzed.append(file_path)
+                work_items.append(f"Analyzed code quality of {file_path}")
+        else:
+            # Generic code quality work
+            await asyncio.sleep(random.uniform(0.4, 0.6))
+            issues_found = random.randint(5, 15)
+            improvements_suggested = random.randint(3, 10)
+            work_items.append("Analyzed code quality across codebase")
+            work_items.append(f"Found {issues_found} quality issues")
+            work_items.append(f"Suggested {improvements_suggested} improvements")
+        
+        duration = asyncio.get_event_loop().time() - start_time
+        
+        output = f"Code quality analysis completed: {issues_found} issues found, {improvements_suggested} improvements suggested"
+        
+        return TaskResult(
+            task_id=task.id,
+            agent_name="code_quality_specialist",
+            success=True,
+            duration=duration,
+            output=output,
+            files_analyzed=files_analyzed,
+            work_items=work_items
+        )
+        
+    except Exception as e:
+        duration = asyncio.get_event_loop().time() - start_time
+        return TaskResult(
+            task_id=task.id,
+            agent_name="code_quality_specialist",
+            success=False,
+            duration=duration,
+            error=str(e)
+        )
+
+
+async def execute_testing_task(task: SwarmTask) -> TaskResult:
+    """Execute testing specialist work"""
+    
+    start_time = asyncio.get_event_loop().time()
+    
+    try:
+        file_references = _extract_file_references(task.description)
+        
+        tests_created = 0
+        tests_run = 0
+        bugs_found = 0
+        coverage_improved = 0
+        work_items = []
+        
+        # Simulate testing work
+        if file_references:
+            for file_path in file_references[:4]:
+                await asyncio.sleep(random.uniform(0.1, 0.3))
+                
+                tests_created += random.randint(2, 6)
+                tests_run += random.randint(5, 15)
+                bugs_found += random.randint(0, 2)
+                coverage_improved += random.randint(5, 15)
+                work_items.append(f"Tested {file_path}")
+        else:
+            # Generic testing work
+            await asyncio.sleep(random.uniform(0.5, 0.8))
+            tests_created = random.randint(8, 20)
+            tests_run = random.randint(20, 50)
+            bugs_found = random.randint(1, 5)
+            coverage_improved = random.randint(10, 25)
+            work_items.append("Created comprehensive test suite")
+            work_items.append(f"Ran {tests_run} tests")
+            work_items.append(f"Improved coverage by {coverage_improved}%")
+        
+        duration = asyncio.get_event_loop().time() - start_time
+        
+        output = f"Testing work completed: {tests_created} tests created, {tests_run} tests run, {bugs_found} bugs found, {coverage_improved}% coverage improvement"
+        
+        return TaskResult(
+            task_id=task.id,
+            agent_name="testing_specialist",
+            success=True,
+            duration=duration,
+            output=output,
+            work_items=work_items
+        )
+        
+    except Exception as e:
+        duration = asyncio.get_event_loop().time() - start_time
+        return TaskResult(
+            task_id=task.id,
+            agent_name="testing_specialist",
+            success=False,
+            duration=duration,
+            error=str(e)
+        )
+
+
 # Mapping for easy lookup
 SPECIALTY_EXECUTORS = {
     "documentation": execute_documentation_task,

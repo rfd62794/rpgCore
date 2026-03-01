@@ -466,6 +466,21 @@ class AgentRegistry:
                 "tools": ["debug_ops"],
                 "context_size": 250,
                 "dependencies": []
+            },
+            # Add missing dependency agents
+            "code_quality_specialist": {
+                "specialty": "code_quality",
+                "capabilities": ["code_quality", "analysis", "testing"],
+                "tools": ["code_ops", "test_ops"],
+                "context_size": 300,
+                "dependencies": []
+            },
+            "testing_specialist": {
+                "specialty": "testing",
+                "capabilities": ["testing", "quality_assurance"],
+                "tools": ["test_ops", "qa_ops"],
+                "context_size": 400,
+                "dependencies": []
             }
         }
         

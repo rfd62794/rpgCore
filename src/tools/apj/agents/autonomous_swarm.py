@@ -506,22 +506,32 @@ class AutonomousSwarm:
         
         # Update learning system
         if self.learning_system and hasattr(result, 'success'):
-            # Extract task info for learning
-            task_id = result.get('task_id', 'unknown')
+            # Extract task info for learning - handle both TaskResult and dict
+            if hasattr(result, 'task_id'):  # TaskResult object
+                task_id = result.task_id
+                agent_name = result.agent_name
+                success = result.success
+                error = result.error
+            else:  # Dictionary
+                task_id = result.get('task_id', 'unknown')
+                agent_name = result.get('agent_name', 'unknown')
+                success = result.get('success', False)
+                error = result.get('error', 'Unknown error')
+            
             task = self.tasks.get(task_id)
             if task:
-                if result.get('success'):
+                if success:
                     self.learning_system.record_success(
-                        result.get('agent_name', 'unknown'),
+                        agent_name,
                         task.agent_type,
                         f"async_{task.agent_type}_approach"
                     )
                 else:
                     self.learning_system.record_failure(
-                        result.get('agent_name', 'unknown'),
+                        agent_name,
                         task.agent_type,
                         f"async_{task.agent_type}_approach",
-                        result.get('error', 'Unknown error')
+                        error
                     )
     
     async def run(self):
