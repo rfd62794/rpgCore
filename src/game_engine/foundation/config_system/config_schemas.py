@@ -7,7 +7,7 @@ SOLID Principle: Single Responsibility
 - Type hints provide documentation
 """
 
-from pydantic import BaseModel, Field, validator
+from pydantic import BaseModel, Field, ConfigDict, field_validator
 from typing import Dict, Any, List, Optional
 from enum import Enum
 
