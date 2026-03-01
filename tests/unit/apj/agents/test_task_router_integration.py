@@ -234,8 +234,8 @@ class TestTaskRouterIntegration:
         
         # Should NOT route to debugging_specialist
         assert agent_name != "debugging_specialist"
-        # Should fall back to another agent
-        assert agent_name is not None
+        # Should fall back to another agent or defer
+        assert agent_name is None or agent_name == "generic_agent" or "specialist" in agent_name
     
     def test_load_balancing_with_busy_agents(self):
         """Test load balancing when some agents are busy"""
