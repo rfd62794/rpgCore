@@ -60,7 +60,9 @@ testpaths = ["tests"]
 norecursedirs = ["archive", "scripts", "docs", "logs", "tests/verification", "tests/benchmarks", "tests/integration"]
 python_files = ["test_*.py", "*_test.py"]
 pythonpath = ["."]
-asyncio_mode = "auto"
+markers = [
+    "asyncio: marks tests as async (skipped without pytest-asyncio)",
+]
 
 [tool.isort]
 profile = "black"
