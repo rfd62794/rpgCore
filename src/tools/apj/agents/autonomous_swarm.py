@@ -20,6 +20,7 @@ from .agent_boot import AGENT_BOOT_MANAGER
 from .task_classifier import TaskClassifier
 from .task_router import TaskRouter
 from .specialist_executors import get_executor_for_agent
+from .types import SwarmTask, TaskStatus, AgentWorkload, SwarmState, TaskResult
 
 # Import extended components
 try:
@@ -34,57 +35,6 @@ except ImportError:
     EXTENDED_TOOLS = {}
 
 logger = logging.getLogger(__name__)
-
-
-class TaskStatus(Enum):
-    """Task execution status"""
-    PENDING = "pending"
-    IN_PROGRESS = "in_progress"
-    COMPLETED = "completed"
-    FAILED = "failed"
-    BLOCKED = "blocked"
-
-
-class SwarmState(Enum):
-    """Swarm operational state"""
-    IDLE = "idle"
-    ACTIVE = "active"
-    PAUSED = "paused"
-    COMPLETED = "completed"
-    ERROR = "error"
-
-
-@dataclass
-class SwarmTask:
-    """Individual task for swarm execution"""
-    id: str
-    title: str
-    description: str
-    agent_type: str  # Which agent type should handle this
-    priority: int  # 1-10, lower is higher priority
-    estimated_hours: float
-    dependencies: List[str]  # Task IDs that must complete first
-    assigned_agent: str = "generic"  # Which specific agent is assigned
-    status: TaskStatus = TaskStatus.PENDING
-    created_at: datetime = field(default_factory=datetime.now)
-    started_at: Optional[datetime] = None
-    completed_at: Optional[datetime] = None
-    result: Optional[str] = None
-    error: Optional[str] = None
-    retry_count: int = 0
-    max_retries: int = 3
-
-
-@dataclass
-class AgentWorkload:
-    """Track agent workload and availability"""
-    agent_name: str
-    current_task: Optional[str] = None
-    tasks_completed: int = 0
-    total_work_time: float = 0.0  # Hours
-    last_activity: Optional[datetime] = None
-    efficiency_score: float = 1.0  # Tasks completed per hour
-    is_available: bool = True
 
 
 class AutonomousSwarm:
