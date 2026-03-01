@@ -11,8 +11,8 @@ sys.path.append(str(Path(__file__).parent.parent.parent.parent / "src"))
 def test_simple_registry():
     """Test registry without complex dependencies"""
     try:
-        from src.foundation.registry import DGTRegistry, RegistryType
-        from src.foundation.genetics.genome_engine import TurboGenome
+        from src.dgt_engine.foundation.registry import DGTRegistry, RegistryType
+        from src.dgt_engine.foundation.genetics.genome_engine import TurboGenome
         
         print("✅ Imports successful")
         

@@ -12,9 +12,9 @@ sys.path.append(str(Path(__file__).parent.parent.parent / "src"))
 def test_registry_state_snapshots():
     """Test registry state snapshot functionality"""
     try:
-        from src.foundation.registry import DGTRegistry
-        from src.foundation.protocols import WorldStateSnapshot, EntityStateSnapshot, EntityType
-        from src.foundation.vector import Vector2
+        from src.dgt_engine.foundation.registry import DGTRegistry
+        from src.dgt_engine.foundation.protocols import WorldStateSnapshot, EntityStateSnapshot, EntityType
+        from src.dgt_engine.foundation.vector import Vector2
         
         print("✅ Imports successful")
         
