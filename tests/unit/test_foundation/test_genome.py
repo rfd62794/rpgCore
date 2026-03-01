@@ -21,13 +21,13 @@ import sys
 from pathlib import Path
 sys.path.append(str(Path(__file__).parent.parent.parent.parent / "src"))
 
-from src.foundation.genetics.genome_engine import (
+from src.dgt_engine.foundation.genetics.genome_engine import (
     TurboGenome, 
     ShellPatternType, 
     BodyPatternType, 
     LimbShapeType
 )
-from src.foundation.types import Result, ValidationResult
+from src.dgt_engine.foundation.types import Result, ValidationResult
 
 
 class TestTurboGenomeValidation:
@@ -293,7 +293,7 @@ class TestGenomeEngineIntegration:
     
     def test_genome_registration(self) -> None:
         """Test that genomes can be registered in the DGT registry"""
-        from src.foundation.registry import register_genome, get_genome, RegistryType
+        from src.dgt_engine.foundation.registry import register_genome, get_genome, RegistryType
         
         # Create test genome
         genome = TurboGenome(
@@ -318,7 +318,7 @@ class TestGenomeEngineIntegration:
     
     def test_genome_registry_validation(self) -> None:
         """Test that registry validates genome integrity"""
-        from src.foundation.registry import get_dgt_registry
+        from src.dgt_engine.foundation.registry import get_dgt_registry
         
         registry = get_dgt_registry()
         
