@@ -22,8 +22,8 @@ import sys
 from pathlib import Path
 sys.path.append(str(Path(__file__).parent.parent.parent / "src"))
 
-from src.dgt_engine.apps.space.physics_body import PhysicsBody, PhysicsState
-from src.dgt_engine.apps.space.entities.space_entity import SpaceEntity, EntityType
+from src.apps.space.physics_body import PhysicsBody, PhysicsState
+from src.apps.space.entities.space_entity import SpaceEntity, EntityType
 from src.dgt_engine.foundation.vector import Vector2
 from src.dgt_engine.foundation.constants import SOVEREIGN_WIDTH, SOVEREIGN_HEIGHT
 from src.dgt_engine.foundation.types import Result
