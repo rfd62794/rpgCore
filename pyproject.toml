@@ -60,6 +60,7 @@ testpaths = ["tests"]
 norecursedirs = ["archive", "scripts", "docs", "logs", "tests/verification", "tests/benchmarks", "tests/integration"]
 python_files = ["test_*.py", "*_test.py"]
 pythonpath = ["."]
+asyncio_mode = "auto"
 
 [tool.isort]
 profile = "black"
