@@ -390,6 +390,7 @@ class AgentRegistry:
     def initialize_specialists(self) -> None:
         """Initialize specialist agents from specialized_agents module"""
         
+        # Try to import from specialized_agents module
         try:
             from ..swarm.agents.specialized_agents import SPECIALIZED_AGENTS as SPECIALIST_AGENTS
             
@@ -418,6 +419,7 @@ class AgentRegistry:
         except ImportError as e:
             print(f"[WARN]  Could not import specialist agents: {e}")
             # Fallback: register basic specialists manually
+            print("[INFO] Using fallback specialist registration...")
             self._register_fallback_specialists()
     
     def _register_fallback_specialists(self) -> None:
