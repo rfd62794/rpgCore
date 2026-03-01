@@ -265,7 +265,7 @@ class TestTurboGenomeValidation:
         genome = TurboGenome()
         
         # Count traits by introspection
-        trait_names = genome.model_fields.keys()
+        trait_names = genome.__class__.model_fields.keys()
         
         # Verify we have exactly 18 traits
         assert len(trait_names) == 18, f"Expected 18 traits, got {len(trait_names)}"
