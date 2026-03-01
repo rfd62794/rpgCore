@@ -402,7 +402,7 @@ def validate_genome(genome: TurboGenome) -> bool:
     try:
         # Pydantic validation happens automatically on instantiation
         # This function provides explicit validation for debugging
-        genome.dict()  # Triggers full validation
+        genome.model_dump()  # Triggers full validation
         return True
     except Exception as e:
         raise ValueError(f"Genome validation failed: {e}")

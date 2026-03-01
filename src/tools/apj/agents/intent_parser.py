@@ -381,7 +381,7 @@ class ConversationalInterface:
                         # Handle Pydantic objects - convert to dict for display
                         if hasattr(result_content, 'dict'):
                             # Pydantic object - convert to dict and format
-                            result_dict = result_content.dict()
+                            result_dict = result_content.model_dump()
                             formatted_result += self._format_pydantic_result(result_dict)
                         elif hasattr(result_content, 'model_dump'):
                             # Alternative Pydantic method

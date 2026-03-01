@@ -99,7 +99,7 @@ class ShipCompositor:
             'position': position,
             'layers': layers,
             'stats': genome.calculate_combat_stats(),
-            'genome': genome.dict()
+            'genome': genome.model_dump()
         }
     
     def _create_layer_from_component(self, component: ShipComponent, ship_position: Tuple[int, int]) -> Optional[ShipLayer]:

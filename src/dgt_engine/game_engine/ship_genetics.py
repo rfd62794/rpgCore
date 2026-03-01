@@ -256,7 +256,7 @@ class ShipGenome(BaseModel):
         }
         
         # Apply mutations with constraints
-        new_data = self.dict()
+        new_data = self.model_dump()
         for trait, mutation in mutations.items():
             if trait in new_data and isinstance(new_data[trait], (int, float)):
                 new_value = new_data[trait] * mutation

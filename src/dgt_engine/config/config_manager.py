@@ -317,7 +317,7 @@ class ConfigManager:
             Path(file_path).parent.mkdir(parents=True, exist_ok=True)
             
             # Convert to dict and save
-            config_dict = self.config.dict()
+            config_dict = self.config.model_dump()
             with open(file_path, 'w') as f:
                 json.dump(config_dict, f, indent=2, default=str)
             
