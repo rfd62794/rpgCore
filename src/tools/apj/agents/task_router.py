@@ -36,28 +36,28 @@ class TaskRouter:
         self.capability_mappings = {
             # Documentation keywords
             "docstring": "generate_docstrings",
+            "api_doc": "documentation",
             "document": "documentation",
             "readme": "documentation",
-            "api_doc": "documentation",
             
             # Architecture keywords
             "refactor": "identify_coupling",
             "coupling": "identify_coupling",
-            "design": "design_new_systems",
             "architecture": "analyze_architecture",
+            
+            # UI keywords (must come before 'design')
+            "ui": "design_ui_layouts",
+            "component": "implement_ui_components",
+            "button": "implement_ui_components",
+            "layout": "design_ui_layouts",
+            "interface": "design_ui_layouts",
+            "design": "design_new_systems",
             
             # Genetics keywords
             "genetic": "implement_genetics",
             "trait": "create_trait_systems",
             "breeding": "implement_breeding",
             "inheritance": "create_inheritance_rules",
-            
-            # UI keywords
-            "ui": "design_ui_layouts",
-            "component": "implement_ui_components",
-            "button": "implement_ui_components",
-            "layout": "design_ui_layouts",
-            "interface": "design_ui_layouts",
             
             # Integration keywords
             "integration": "test_integration",
