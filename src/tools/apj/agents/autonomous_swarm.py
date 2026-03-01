@@ -108,7 +108,7 @@ class AutonomousSwarm:
         """Define a complete workflow of tasks for autonomous execution"""
         
         try:
-            logger.info(f"📋 Defining workflow: {workflow_name}")
+            logger.info(f"[QUEUE] Defining workflow: {workflow_name}")
             
             # Clear existing tasks for this workflow
             workflow_prefix = f"{workflow_name}_"
@@ -135,11 +135,11 @@ class AutonomousSwarm:
             # Build task queue based on dependencies and priority
             self._build_task_queue()
             
-            logger.info(f"✅ Created {len(created_tasks)} tasks for workflow: {workflow_name}")
+            logger.info(f"[OK] Created {len(created_tasks)} tasks for workflow: {workflow_name}")
             return True
             
         except Exception as e:
-            logger.error(f"❌ Failed to define workflow {workflow_name}: {e}")
+            logger.error(f"[FAIL] Failed to define workflow {workflow_name}: {e}")
             return False
     
     def _calculate_dependency_levels(self, steps: List[SwarmTask]) -> Dict[int, List[str]]:
@@ -168,7 +168,7 @@ class AutonomousSwarm:
                 if deps_resolved:
                     self.task_queue.append(task_id)
         
-        logger.info(f"✅ Classified {len(self.tasks)} tasks")
+        logger.info(f"[OK] Classified {len(self.tasks)} tasks")
     
     async def start_autonomous_execution(self) -> bool:
         """
@@ -182,19 +182,19 @@ class AutonomousSwarm:
             self.state = SwarmState.ACTIVE
             self.swarm_start_time = datetime.now()
             
-            logger.info("� Starting autonomous swarm execution with intelligent routing")
-            print("🚀 Autonomous Swarm starting with intelligent task routing...")
+            logger.info(" Starting autonomous swarm execution with intelligent routing")
+            print("[LAUNCH] Autonomous Swarm starting with intelligent task routing...")
             
             # Build task queue with classification
             await self._build_task_queue()
             
             if not self.task_queue:
                 logger.info("No tasks to execute")
-                print("✅ No tasks to execute - swarm ready")
+                print("[OK] No tasks to execute - swarm ready")
                 return True
             
-            logger.info(f"📋 {len(self.task_queue)} tasks queued for execution")
-            print(f"📋 {len(self.task_queue)} tasks queued for intelligent routing")
+            logger.info(f"[QUEUE] {len(self.task_queue)} tasks queued for execution")
+            print(f"[QUEUE] {len(self.task_queue)} tasks queued for intelligent routing")
             
             # Execute with intelligent routing
             await self._execute_autonomous_round_robin()
@@ -202,15 +202,15 @@ class AutonomousSwarm:
             return True
             
         except Exception as e:
-            logger.error(f"❌ Failed to start autonomous execution: {e}")
-            print(f"❌ Failed to start autonomous execution: {e}")
+            logger.error(f"[FAIL] Failed to start autonomous execution: {e}")
+            print(f"[FAIL] Failed to start autonomous execution: {e}")
             self.state = SwarmState.ERROR
             return False
     
     async def _build_task_queue(self) -> None:
         """Build task queue with classification"""
         
-        logger.info("🏗️ Building task queue with classification")
+        logger.info("[BUILD] Building task queue with classification")
         
         # Classify all tasks
         for task_id, task in self.tasks.items():
@@ -224,12 +224,12 @@ class AutonomousSwarm:
                 async with self.task_queue_lock:
                     self.task_queue.append(task_id)
         
-        logger.info(f"✅ Classified {len(self.tasks)} tasks")
+        logger.info(f"[OK] Classified {len(self.tasks)} tasks")
     
     async def _execute_autonomous_round_robin(self) -> None:
         """Execute tasks with intelligent routing and parallel execution"""
         
-        logger.info("🔄 Starting intelligent round-robin execution")
+        logger.info(" Starting intelligent round-robin execution")
         
         while self.state == SwarmState.ACTIVE and self.task_queue:
             try:
@@ -277,8 +277,8 @@ class AutonomousSwarm:
                     continue
                 
                 # Execute assigned tasks concurrently
-                logger.info(f"🎯 Executing {len(assignments)} tasks concurrently")
-                print(f"🎯 Executing {len(assignments)} tasks concurrently")
+                logger.info(f" Executing {len(assignments)} tasks concurrently")
+                print(f" Executing {len(assignments)} tasks concurrently")
                 
                 results = await asyncio.gather(*[
                     self._execute_task_async(task_id, agent_name)
@@ -293,12 +293,12 @@ class AutonomousSwarm:
                 await asyncio.sleep(0.1)
                 
             except Exception as e:
-                logger.error(f"❌ Task execution failed: {e}")
-                print(f"❌ Failed to execute task: {e}")
+                logger.error(f"[FAIL] Task execution failed: {e}")
+                print(f"[FAIL] Failed to execute task: {e}")
         
         self.state = SwarmState.IDLE
-        print("🎉 All tasks completed!")
-        logger.info("🎉 Autonomous swarm execution completed")
+        print("[SUCCESS] All tasks completed!")
+        logger.info("[SUCCESS] Autonomous swarm execution completed")
     
     async def _get_ready_tasks(self) -> List[SwarmTask]:
         """Get tasks ready to execute (dependencies met)"""
@@ -387,9 +387,9 @@ class AutonomousSwarm:
         start_time = asyncio.get_event_loop().time()
         
         try:
-            logger.info(f"🎯 Executing task: {task.title}")
-            print(f"🎯 Executing task: {task.title}")
-            print(f"🤖 Agent: {agent_name} | Priority: {task.priority}")
+            logger.info(f" Executing task: {task.title}")
+            print(f" Executing task: {task.title}")
+            print(f" Agent: {agent_name} | Priority: {task.priority}")
             
             # Get executor for agent
             executor = get_executor_for_agent(agent_name)
@@ -418,8 +418,8 @@ class AutonomousSwarm:
             await self._mark_task_complete(task_id, True)
             await self._update_workload_completion(agent_name, True, duration)
             
-            print(f"✅ Completed: {task.title}")
-            logger.info(f"✅ Completed task {task_id}")
+            print(f"[OK] Completed: {task.title}")
+            logger.info(f"[OK] Completed task {task_id}")
             
             return result
             
@@ -428,8 +428,8 @@ class AutonomousSwarm:
             duration = asyncio.get_event_loop().time() - start_time
             self.task_durations[task_id] = duration
             
-            print(f"⏱️ Task timeout: {task.title}")
-            logger.error(f"⏱️ Task {task_id} timed out")
+            print(f" Task timeout: {task.title}")
+            logger.error(f" Task {task_id} timed out")
             
             await self._mark_task_complete(task_id, False)
             await self._update_workload_completion(agent_name, False, duration)
@@ -444,8 +444,8 @@ class AutonomousSwarm:
             duration = asyncio.get_event_loop().time() - start_time
             self.task_durations[task_id] = duration
             
-            print(f"❌ Task failed: {e}")
-            logger.error(f"❌ Task {task_id} failed: {e}")
+            print(f"[FAIL] Task failed: {e}")
+            logger.error(f"[FAIL] Task {task_id} failed: {e}")
             
             # Try to recover
             if self.self_healer:
@@ -454,14 +454,14 @@ class AutonomousSwarm:
                 )
                 
                 if recovered:
-                    print(f"🔄 Recovery successful - retrying task")
-                    logger.info(f"🔄 Task {task_id} recovery successful - retrying")
+                    print(f" Recovery successful - retrying task")
+                    logger.info(f" Task {task_id} recovery successful - retrying")
                     # Put task back in queue for retry
                     async with self.task_queue_lock:
                         self.task_queue.insert(0, task_id)
                 else:
-                    print(f"💀 Recovery failed - marking as failed")
-                    logger.error(f"💀 Task {task_id} recovery failed")
+                    print(f" Recovery failed - marking as failed")
+                    logger.error(f" Task {task_id} recovery failed")
                     await self._mark_task_complete(task_id, False)
                     await self._update_workload_completion(agent_name, False, duration)
                     
@@ -491,7 +491,7 @@ class AutonomousSwarm:
         steps = max(1, int(task.estimated_hours * 10))
         for i in range(steps):
             progress = (i + 1) / steps * 100
-            print(f"  📊 Generic progress: {progress:.1f}%")
+            print(f"  [REPORT] Generic progress: {progress:.1f}%")
             await asyncio.sleep(0.05)  # Short simulation time
         
         return {"success": True, "output": f"Completed {task.title}"}
@@ -545,37 +545,37 @@ class AutonomousSwarm:
     
     def _execute_dungeon_task(self, task):
         """Execute dungeon demo task"""
-        print(f"🏰 Dungeon Specialist working on: {task.title}")
+        print(f" Dungeon Specialist working on: {task.title}")
         # Simulate dungeon work
         self._simulate_work("dungeon", task.estimated_hours * 0.1)
     
     def _execute_tower_defense_task(self, task):
         """Execute tower defense task"""
-        print(f"🏰 Tower Defense Specialist working on: {task.title}")
+        print(f" Tower Defense Specialist working on: {task.title}")
         # Simulate tower defense work
         self._simulate_work("tower_defense", task.estimated_hours * 0.1)
     
     def _execute_code_quality_task(self, task):
         """Execute code quality task"""
-        print(f"🔧 Code Quality Specialist working on: {task.title}")
+        print(f" Code Quality Specialist working on: {task.title}")
         # Simulate code quality work
         self._simulate_work("code_quality", task.estimated_hours * 0.1)
     
     def _execute_performance_task(self, task):
         """Execute performance task"""
-        print(f"⚡ Performance Specialist working on: {task.title}")
+        print(f" Performance Specialist working on: {task.title}")
         # Simulate performance work
         self._simulate_work("performance", task.estimated_hours * 0.1)
     
     def _execute_testing_task(self, task):
         """Execute testing task"""
-        print(f"🧪 Testing Specialist working on: {task.title}")
+        print(f" Testing Specialist working on: {task.title}")
         # Simulate testing work
         self._simulate_work("testing", task.estimated_hours * 0.1)
     
     def _execute_generic_task(self, task):
         """Execute generic task"""
-        print(f"🤖 Generic agent working on: {task.title}")
+        print(f" Generic agent working on: {task.title}")
         # Simulate generic work
         self._simulate_work("generic", task.estimated_hours * 0.1)
     
@@ -588,37 +588,37 @@ class AutonomousSwarm:
         steps = max(1, int(duration * 10))
         for i in range(steps):
             progress = (i + 1) / steps * 100
-            print(f"  📊 {work_type.title()} progress: {progress:.1f}%")
+            print(f"  [REPORT] {work_type.title()} progress: {progress:.1f}%")
             time.sleep(0.05)  # Short simulation time
     
     def _execute_documentation_task(self, task):
         """Execute documentation task"""
-        print(f"📝 Documentation Specialist working on: {task.title}")
+        print(f" Documentation Specialist working on: {task.title}")
         self._simulate_work("documentation", task.estimated_hours * 0.1)
     
     def _execute_architecture_task(self, task):
         """Execute architecture task"""
-        print(f"🏗️ Architecture Specialist working on: {task.title}")
+        print(f"[BUILD] Architecture Specialist working on: {task.title}")
         self._simulate_work("architecture", task.estimated_hours * 0.1)
     
     def _execute_genetics_task(self, task):
         """Execute genetics task"""
-        print(f"🧬 Genetics Specialist working on: {task.title}")
+        print(f" Genetics Specialist working on: {task.title}")
         self._simulate_work("genetics", task.estimated_hours * 0.1)
     
     def _execute_ui_task(self, task):
         """Execute UI task"""
-        print(f"🎨 UI Specialist working on: {task.title}")
+        print(f" UI Specialist working on: {task.title}")
         self._simulate_work("ui", task.estimated_hours * 0.1)
     
     def _execute_integration_task(self, task):
         """Execute integration task"""
-        print(f"🔗 Integration Specialist working on: {task.title}")
+        print(f" Integration Specialist working on: {task.title}")
         self._simulate_work("integration", task.estimated_hours * 0.1)
     
     def _execute_debugging_task(self, task):
         """Execute debugging task"""
-        print(f"🐛 Debugging Specialist working on: {task.title}")
+        print(f" Debugging Specialist working on: {task.title}")
         self._simulate_work("debugging", task.estimated_hours * 0.1)
     
     def _get_swarm_state(self) -> Dict[str, Any]:
@@ -719,7 +719,7 @@ class AutonomousSwarm:
         workload.is_available = False
         workload.last_activity = datetime.now()
         
-        logger.info(f"📋 Assigned task '{task.title}' to {agent_name}")
+        logger.info(f"[QUEUE] Assigned task '{task.title}' to {agent_name}")
     
     def _execute_task(self, task_id: str, agent_name: str) -> bool:
         """Execute task through agent"""
@@ -728,7 +728,7 @@ class AutonomousSwarm:
         workload = self.agent_workloads[agent_name]
         
         try:
-            logger.info(f"🔧 Executing task: {task.title} ({agent_name})")
+            logger.info(f" Executing task: {task.title} ({agent_name})")
             
             # Send task to agent via A2A communication
             if agent_name.startswith("swarm_"):
@@ -767,7 +767,7 @@ class AutonomousSwarm:
             return True
             
         except Exception as e:
-            logger.error(f"❌ Task execution failed: {e}")
+            logger.error(f"[FAIL] Task execution failed: {e}")
             self._fail_task(task_id, agent_name, str(e))
             return False
     
@@ -790,7 +790,7 @@ class AutonomousSwarm:
         self.completed_tasks.append(task_id)
         self.last_activity = datetime.now()
         
-        logger.info(f"✅ Task completed: {task.title} by {agent_name}")
+        logger.info(f"[OK] Task completed: {task.title} by {agent_name}")
     
     def _fail_task(self, task_id: str, agent_name: str, error_message: str):
         """Mark task as failed"""
@@ -808,10 +808,10 @@ class AutonomousSwarm:
         if task.retry_count < task.max_retries and self.auto_retry_enabled:
             # Retry task
             task.status = TaskStatus.PENDING
-            logger.warning(f"🔄 Retrying task: {task.title} (attempt {task.retry_count + 1})")
+            logger.warning(f" Retrying task: {task.title} (attempt {task.retry_count + 1})")
         else:
             self.failed_tasks.append(task_id)
-            logger.error(f"❌ Task failed permanently: {task.title}")
+            logger.error(f"[FAIL] Task failed permanently: {task.title}")
     
     def _are_all_tasks_completed(self) -> bool:
         """Check if all tasks are completed"""
@@ -845,7 +845,7 @@ class AutonomousSwarm:
         else:
             runtime_str = "00:00:00"
         
-        logger.info(f"📊 Swarm Progress: {progress_pct:.1f}% ({completed}/{total_tasks}) | "
+        logger.info(f"[REPORT] Swarm Progress: {progress_pct:.1f}% ({completed}/{total_tasks}) | "
                    f"Active: {in_progress} | Pending: {pending} | Failed: {failed} | "
                    f"Efficiency: {swarm_efficiency:.1f} tasks/hr | Runtime: {runtime_str}")
     
@@ -890,19 +890,19 @@ class AutonomousSwarm:
         """Pause autonomous execution"""
         if self.state == SwarmState.ACTIVE:
             self.state = SwarmState.PAUSED
-            logger.info("⏸️ Swarm execution paused")
+            logger.info(" Swarm execution paused")
     
     def resume_execution(self):
         """Resume autonomous execution"""
         if self.state == SwarmState.PAUSED:
             self.state = SwarmState.ACTIVE
-            logger.info("▶️ Swarm execution resumed")
+            logger.info(" Swarm execution resumed")
             self._autonomous_execution_loop()
     
     def stop_execution(self):
         """Stop autonomous execution"""
         self.state = SwarmState.IDLE
-        logger.info("⏹️ Swarm execution stopped")
+        logger.info(" Swarm execution stopped")
 
 
 # Global autonomous swarm instance

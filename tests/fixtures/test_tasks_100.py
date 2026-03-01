@@ -92,7 +92,7 @@ class TestTaskGenerator:
                 "Analyze coupling in {system}",
                 "Analyze {system_path} and identify:\n1. Tight coupling between {components}\n2. Circular dependencies (if any)\n3. Violations of DRY principle\n4. Suggest refactoring approach",
                 (2, 3), (2.5, 4.0), (0.80, 0.92),
-                ["{system_path}/{comp}.py" for comp in components],
+                ["src/{system}/component_a.py", "src/{system}/component_b.py"],
                 ["architecture", "coupling", "refactoring", "{system_name}"]
             ),
             TaskTemplate(
@@ -271,40 +271,70 @@ class TestTaskGenerator:
         
         # Format title and description
         title = template.title_pattern.format(
-            file=f"file_{index+1}.py",
-            module=f"module_{index+1}",
-            system=f"system_{index+1}",
             component=f"component_{index+1}",
-            screen=f"screen_{index+1}",
             demo=f"demo_{index+1}",
             error_type=f"error_type_{index+1}",
-            issue=f"issue_{index+1}"
+            file=f"file_{index+1}.py",
+            issue=f"issue_{index+1}",
+            legacy_system=f"LegacySystem_{index+1}",
+            module=f"module_{index+1}",
+            module_a=f"module_a_{index+1}",
+            module_b=f"module_b_{index+1}",
+            screen=f"screen_{index+1}",
+            system=f"system_{index+1}",
+            system_a=f"system_a_{index+1}",
+            system_b=f"system_b_{index+1}",
+            version=f"v0.{index+1}.0"
         )
         
         description = template.description_pattern.format(
-            file_path=f"src/path/to/file_{index+1}.py",
-            module_path=f"src/modules/module_{index+1}",
-            system_name=f"System {index+1}",
-            module_name=f"Module {index+1}",
-            system_path=f"systems/system_{index+1}",
+            agent_type="unknown",
+            breaking_changes=f"Breaking change {index+1}",
+            bug_fixes=f"Bug fix {index+1}, Bug fix {index+2}",
+            classes=f"Class{index+1}, Class{index+2}",
+            component=f"component_{index+1}",
+            component_name=f"component_{index+1}",
             components=f"ComponentA, ComponentB, ComponentC",
-            decisions=f"Decision 1, Decision 2, Decision 3",
+            count=100,
             current_issues=f"Issue 1, Issue 2, Issue 3",
-            patterns=f"Pattern 1, Pattern 2",
-            requirements=f"Requirement 1, Requirement 2",
-            layout_spec=f"Grid layout with responsive design",
+            decisions=f"Decision 1, Decision 2, Decision 3",
+            demo=f"demo_{index+1}",
+            demo_name=f"demo_{index+1}",
+            domain=f"domain_{index+1}",
+            error_context=f"Error occurs when {index+1} operations",
+            error_type=f"error_type_{index+1}",
+            features=f"Feature {index+1}, Feature {index+2}",
+            file=f"file_{index+1}.py",
+            file_name=f"file_{index+1}.py",
+            file_path=f"src/path/to/file_{index+1}.py",
             input_types=f"Mouse, keyboard, touch",
             interface_points=f"Method A, Method B",
-            legacy_system=f"LegacySystem_{index+1}",
-            error_context=f"Error occurs when {index+1} operations",
-            symptoms=f"Symptom 1, Symptom 2",
+            issue=f"issue_{index+1}",
             issue_description=f"Issue description for {index+1}",
+            issue_name=f"issue_{index+1}",
+            layout_spec=f"Grid layout with responsive design",
+            legacy_system=f"LegacySystem_{index+1}",
             methods=f"method_{index+1}(), method_{index+2}()",
-            classes=f"Class{index+1}, Class{index+2}",
-            features=f"Feature {index+1}, Feature {index+2}",
-            bug_fixes=f"Bug fix {index+1}, Bug fix {index+2}",
-            breaking_changes=f"Breaking change {index+1}",
-            test_cases=f"Test case {index+1}, Test case {index+2}"
+            module=f"module_{index+1}",
+            module_a=f"module_a_{index+1}",
+            module_a_path=f"modules/module_a_{index+1}",
+            module_b=f"module_b_{index+1}",
+            module_b_path=f"modules/module_b_{index+1}",
+            module_name=f"Module {index+1}",
+            module_path=f"src/modules/module_{index+1}",
+            patterns=f"Pattern 1, Pattern 2",
+            requirements=f"Requirement 1, Requirement 2",
+            rules=f"Rule 1, Rule 2, Rule 3",
+            screen=f"screen_{index+1}",
+            screen_name=f"screen_{index+1}",
+            symptoms=f"Symptom 1, Symptom 2",
+            system=f"system_{index+1}",
+            system_a=f"system_a_{index+1}",
+            system_b=f"system_b_{index+1}",
+            system_name=f"System {index+1}",
+            system_path=f"systems/system_{index+1}",
+            test_cases=f"Test case {index+1}, Test case {index+2}",
+            version=f"v0.{index+1}.0"
         )
         
         # Random values within ranges
@@ -315,13 +345,22 @@ class TestTaskGenerator:
         # Format file references
         file_references = []
         for ref in template.file_references:
-            if "{file}" in ref:
-                file_references.append(ref.format(file=f"file_{index+1}"))
-            elif "{module_path}" in ref:
-                file_references.append(ref.format(module_path=f"modules/module_{index+1}"))
-            elif "{system_path}" in ref:
-                file_references.append(ref.format(system_path=f"systems/system_{index+1}"))
-            else:
+            try:
+                # Try to format with all possible placeholders
+                formatted_ref = ref.format(
+                    file=f"file_{index+1}",
+                    module_path=f"modules/module_{index+1}",
+                    system_path=f"systems/system_{index+1}",
+                    demo_name=f"demo_{index+1}",
+                    file_name=f"file_{index+1}.py",
+                    issue_name=f"issue_{index+1}",
+                    system_name=f"system_{index+1}",
+                    component_name=f"component_{index+1}",
+                    screen_name=f"screen_{index+1}"
+                )
+                file_references.append(formatted_ref)
+            except (KeyError, IndexError):
+                # If formatting fails, just use the ref as-is
                 file_references.append(ref)
         
         # Format tags

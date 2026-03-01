@@ -392,7 +392,7 @@ class AgentRegistry:
         """Initialize specialist agents from specialized_agents module"""
         
         try:
-            from ..swarm.agents.specialized_agents import SPECIALIST_AGENTS
+            from ..swarm.agents.specialized_agents import SPECIALIZED_AGENTS as SPECIALIST_AGENTS
             
             specialists = SPECIALIST_AGENTS
             
@@ -403,7 +403,7 @@ class AgentRegistry:
                     if self.get_agent_metadata(dep):
                         available_deps.append(dep)
                     else:
-                        print(f"⚠️  Skipping dependency '{dep}' for {specialist.name} - not found in registry")
+                        print(f"[WARN]  Skipping dependency '{dep}' for {specialist.name} - not found in registry")
                 
                 self.register_specialist(
                     agent_name=specialist.name,
@@ -414,10 +414,10 @@ class AgentRegistry:
                     dependencies=available_deps
                 )
                 
-                print(f"✅ Registered specialist: {specialist.name} ({specialist.specialty.value})")
+                print(f"[OK] Registered specialist: {specialist.name} ({specialist.specialty.value})")
         
         except ImportError as e:
-            print(f"⚠️  Could not import specialist agents: {e}")
+            print(f"[WARN]  Could not import specialist agents: {e}")
             # Fallback: register basic specialists manually
             self._register_fallback_specialists()
     
@@ -478,7 +478,7 @@ class AgentRegistry:
                 context_size=config["context_size"],
                 dependencies=config["dependencies"]
             )
-            print(f"✅ Registered fallback specialist: {agent_name} ({config['specialty']})")
+            print(f"[OK] Registered fallback specialist: {agent_name} ({config['specialty']})")
 
 # Global agent registry
 AGENT_REGISTRY = AgentRegistry()

@@ -31,7 +31,9 @@
       "Bash(pytest:*)",
       "Bash(powershell -Command:*)",
       "Bash(xargs grep -l \"473\\\\|tasks\")",
-      "Bash(grep -r \"tasks\\\\|items\\\\|queue\" /c/Github/rpgCore/src/tools/apj/agents/*.py)"
+      "Bash(grep -r \"tasks\\\\|items\\\\|queue\" /c/Github/rpgCore/src/tools/apj/agents/*.py)",
+      "mcp__plugin_serena_serena__list_dir",
+      "Bash(tee validation_output.log)"
     ]
   }
 }

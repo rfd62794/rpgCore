@@ -95,7 +95,7 @@ class TestHarness:
             status = "PASSED"
         except Exception as e:
             status = "ERROR"
-            print(f"❌ Swarm execution failed: {e}")
+            print(f"[FAIL] Swarm execution failed: {e}")
         
         execution_time = time.time() - start_time
         
@@ -205,9 +205,9 @@ class TestHarness:
     
     def _calculate_performance_metrics(self, results: List[Dict[str, Any]], execution_time: float) -> Dict[str, Any]:
         """Calculate performance metrics"""
-        
+
         # Concurrent execution analysis
-        durations = [r['duration'] for r in results if r['duration'] > 0]
+        durations = [r['duration'] for r in results if r['duration'] is not None and r['duration'] > 0]
         
         if durations:
             avg_duration = sum(durations) / len(durations)
@@ -245,7 +245,7 @@ class TestHarness:
         routing_levels = Counter(r['routing_level'] for r in results)
         
         # Confidence distribution
-        confidences = [r['routing_confidence'] for r in results if r['routing_confidence'] > 0]
+        confidences = [r['routing_confidence'] for r in results if r['routing_confidence'] is not None and r['routing_confidence'] > 0]
         
         if confidences:
             avg_confidence = sum(confidences) / len(confidences)
@@ -302,19 +302,19 @@ class TestHarness:
         print(f"{'-'*60}")
         
         for agent_type, metrics in result.routing_metrics['specialist_routing'].items():
-            status = "✓" if metrics['meets_target'] else "✗"
+            status = "[OK]" if metrics['meets_target'] else "[FAIL]"
             print(f"{agent_type.title()} specialist: {metrics['successful']}/{metrics['total']} "
                   f"({metrics['actual_rate']:.1%}) {status} "
                   f"[Target: {metrics['expected_rate']:.1%}]")
         
         overall_rate = result.routing_metrics['overall_specialist_rate']
         target_rate = result.routing_metrics['target_rate']
-        status = "✓" if overall_rate >= target_rate else "✗"
+        status = "[OK]" if overall_rate >= target_rate else "[FAIL]"
         print(f"\nOverall specialist routing: {overall_rate:.1%} {status} [Target: >= {target_rate:.1%}]")
         
         generic_count = result.routing_metrics['agent_counts'].get('generic', 0)
         generic_rate = generic_count / result.task_count if result.task_count > 0 else 0
-        generic_status = "✓" if generic_rate <= 0.20 else "✗"
+        generic_status = "[OK]" if generic_rate <= 0.20 else "[FAIL]"
         print(f"Generic agent usage: {generic_count}/{result.task_count} ({generic_rate:.1%}) {generic_status} [Target: <= 20%]")
         
         # Performance Metrics
@@ -322,11 +322,11 @@ class TestHarness:
         print(f"{'-'*60}")
         
         perf = result.performance_metrics
-        print(f"Peak concurrent tasks: 3 ✓")
-        print(f"Avg concurrent: {perf['tasks_per_second']:.1f} ✓")
+        print(f"Peak concurrent tasks: 3 [OK]")
+        print(f"Avg concurrent: {perf['tasks_per_second']:.1f} [OK]")
         print(f"Total execution time: {perf['execution_time']:.1f}s ({perf['execution_time']/60:.1f} minutes)")
-        print(f"Tasks/second: {perf['tasks_per_second']:.2f} ✓")
-        print(f"Completion rate: {perf['completion_rate']:.1%} ✓")
+        print(f"Tasks/second: {perf['tasks_per_second']:.2f} [OK]")
+        print(f"Completion rate: {perf['completion_rate']:.1%} [OK]")
         print(f"Avg task duration: {perf['avg_task_duration']:.1f}s")
         
         # Quality Metrics
@@ -334,7 +334,7 @@ class TestHarness:
         print(f"{'-'*60}")
         
         quality = result.quality_metrics
-        print(f"Successful executions: {quality['successful_tasks']}/{result.task_count} ({quality['success_rate']:.1%}) ✓")
+        print(f"Successful executions: {quality['successful_tasks']}/{result.task_count} ({quality['success_rate']:.1%}) [OK]")
         print(f"Failed executions: {quality['failed_tasks']}/{result.task_count}")
         
         print(f"\nRouting level distribution:")
@@ -355,8 +355,10 @@ class TestHarness:
                 print(f"  Type: {failure['task_type']}")
                 print(f"  Agent: {failure['assigned_agent']}")
                 print(f"  Level: {failure['routing_level']}")
-                print(f"  Confidence: {failure['routing_confidence']:.2f}")
-                print(f"  Duration: {failure['duration']:.1f}s")
+                confidence = failure['routing_confidence'] if failure['routing_confidence'] is not None else 0.0
+                duration = failure['duration'] if failure['duration'] is not None else 0.0
+                print(f"  Confidence: {confidence:.2f}")
+                print(f"  Duration: {duration:.1f}s")
                 print()
         
         # Recommendations
@@ -364,23 +366,23 @@ class TestHarness:
         print(f"{'-'*60}")
         
         if result.status == "PASSED":
-            print("1. ✅ Specialist routing meets targets")
-            print("2. ✅ Parallel execution verified")
-            print("3. ✅ Performance within acceptable range")
-            print("4. ✅ Quality metrics look good")
-            print("5. ✅ Proceed to 473-task scale")
+            print("1. [OK] Specialist routing meets targets")
+            print("2. [OK] Parallel execution verified")
+            print("3. [OK] Performance within acceptable range")
+            print("4. [OK] Quality metrics look good")
+            print("5. [OK] Proceed to 473-task scale")
         elif result.status == "FAILED":
-            print("1. ❌ Investigate routing failures")
-            print("2. ❌ Check performance bottlenecks")
-            print("3. ❌ Review quality metrics")
-            print("4. ❌ Fix issues before scaling")
-            print("5. ❌ Re-run validation")
+            print("1. [FAIL] Investigate routing failures")
+            print("2. [FAIL] Check performance bottlenecks")
+            print("3. [FAIL] Review quality metrics")
+            print("4. [FAIL] Fix issues before scaling")
+            print("5. [FAIL] Re-run validation")
         else:
-            print("1. 🔴 System error occurred")
-            print("2. 🔴 Check swarm initialization")
-            print("3. 🔴 Review error logs")
-            print("4. 🔴 Fix system issues")
-            print("5. 🔴 Re-run validation")
+            print("1. [ERROR] System error occurred")
+            print("2. [ERROR] Check swarm initialization")
+            print("3. [ERROR] Review error logs")
+            print("4. [ERROR] Fix system issues")
+            print("5. [ERROR] Re-run validation")
         
         print(f"\n{'='*60}")
     
@@ -417,32 +419,32 @@ if __name__ == "__main__":
     async def main():
         """Run all validation phases"""
         
-        print("🚀 Starting APJ Swarm Routing Validation")
+        print("[LAUNCH] Starting APJ Swarm Routing Validation")
         print("Phase 1: Small Validation (10 tasks)")
         print("Phase 2: Medium Validation (50 tasks)")
         print("Phase 3: Full Validation (100 tasks)")
         
         # Phase 1: Small validation
-        print("\n🔍 Phase 1: Small Validation (10 tasks)")
+        print("\n[SEARCH] Phase 1: Small Validation (10 tasks)")
         result_10 = await run_small_validation()
         
         if result_10.status == "FAILED":
-            print("❌ Phase 1 failed - stopping execution")
+            print("[FAIL] Phase 1 failed - stopping execution")
             return
         
         # Phase 2: Medium validation
-        print("\n🔍 Phase 2: Medium Validation (50 tasks)")
+        print("\n[SEARCH] Phase 2: Medium Validation (50 tasks)")
         result_50 = await run_medium_validation()
         
         if result_50.status == "FAILED":
-            print("❌ Phase 2 failed - stopping execution")
+            print("[FAIL] Phase 2 failed - stopping execution")
             return
         
         # Phase 3: Full validation
-        print("\n🔍 Phase 3: Full Validation (100 tasks)")
+        print("\n[SEARCH] Phase 3: Full Validation (100 tasks)")
         result_100 = await run_full_validation()
         
-        print(f"\n🎉 ALL VALIDATION PHASES COMPLETE")
+        print(f"\n[SUCCESS] ALL VALIDATION PHASES COMPLETE")
         print(f"Final Status: {result_100.status}")
         
         # Summary
