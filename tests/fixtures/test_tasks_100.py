@@ -36,7 +36,7 @@ class TaskTemplate:
     dependencies: List[str] = None
 
 
-class TestTaskGenerator:
+class MockTaskGenerator:
     """Generate test tasks covering all agent types"""
     
     def __init__(self):
@@ -416,13 +416,13 @@ class TestTaskGenerator:
 
 def get_test_tasks_100() -> List[SwarmTask]:
     """Return 100 test tasks covering all agent types"""
-    generator = TestTaskGenerator()
+    generator = MockTaskGenerator()
     return generator.generate_tasks(100)
 
 
 def get_test_tasks_50() -> List[SwarmTask]:
     """Return 50 test tasks (subset of 100)"""
-    generator = TestTaskGenerator()
+    generator = MockTaskGenerator()
     all_tasks = generator.generate_tasks(100)
     
     # Take first 50 tasks (balanced distribution)
@@ -431,7 +431,7 @@ def get_test_tasks_50() -> List[SwarmTask]:
 
 def get_test_tasks_10() -> List[SwarmTask]:
     """Return 10 test tasks (small validation)"""
-    generator = TestTaskGenerator()
+    generator = MockTaskGenerator()
     all_tasks = generator.generate_tasks(100)
     
     # Take 2 tasks from each type for small validation

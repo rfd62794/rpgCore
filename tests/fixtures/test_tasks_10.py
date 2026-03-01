@@ -3,7 +3,7 @@
 Quick validation of routing logic
 """
 
-from .test_tasks_100 import get_test_tasks_100
+from tests.fixtures.test_tasks_100 import get_test_tasks_100
 
 
 def get_test_tasks_10() -> list:

@@ -3,7 +3,7 @@
 Balanced validation of routing logic
 """
 
-from .test_tasks_100 import get_test_tasks_100, validate_task_distribution
+from tests.fixtures.test_tasks_100 import get_test_tasks_100, validate_task_distribution
 
 
 def get_test_tasks_50() -> list:
