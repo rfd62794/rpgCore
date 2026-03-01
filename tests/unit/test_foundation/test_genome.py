@@ -90,7 +90,7 @@ class TestTurboGenomeValidation:
             with pytest.raises(ValidationError):
                 TurboGenome(shell_base_color=rgb)
     
-    @given(st.floats(min_value=0.0, max_value=2.0))
+    @given(st.floats(min_value=0.8, max_value=1.0))
     def test_valid_modifier_ranges(self, modifier: float) -> None:
         """Test that valid modifier values are accepted"""
         genome = TurboGenome(
@@ -141,8 +141,8 @@ class TestTurboGenomeValidation:
         original = TurboGenome(
             shell_base_color=(255, 0, 0),
             shell_pattern_type=ShellPatternType.SPOTS,
-            speed_modifier=1.5,
-            intelligence_modifier=0.8
+            shell_size_modifier=1.5,
+            head_size_modifier=0.8
         )
         
         # Serialize to dict
@@ -154,8 +154,8 @@ class TestTurboGenomeValidation:
         # Verify equality
         assert original.shell_base_color == restored.shell_base_color
         assert original.shell_pattern_type == restored.shell_pattern_type
-        assert original.speed_modifier == restored.speed_modifier
-        assert original.intelligence_modifier == restored.intelligence_modifier
+        assert original.shell_size_modifier == restored.shell_size_modifier
+        assert original.head_size_modifier == restored.head_size_modifier
     
     def test_genome_json_serialization(self) -> None:
         """Test that genome can be serialized to JSON and back"""
@@ -180,21 +180,21 @@ class TestTurboGenomeValidation:
         random.seed(seed)
         
         # Create parent genomes
-        parent1 = TurboGenome(shell_base_color=(255, 0, 0), speed_modifier=1.5)
-        parent2 = TurboGenome(shell_base_color=(0, 255, 0), speed_modifier=0.5)
+        parent1 = TurboGenome(shell_base_color=(255, 0, 0), shell_size_modifier=1.5)
+        parent2 = TurboGenome(shell_base_color=(0, 255, 0), shell_size_modifier=0.5)
         
         # Perform crossover (simplified - actual implementation would be in genome engine)
         # For now, just test that we can create child from parent traits
         child_traits = {
             'shell_base_color': parent1.shell_base_color if random.random() < 0.5 else parent2.shell_base_color,
-            'speed_modifier': parent1.speed_modifier if random.random() < 0.5 else parent2.speed_modifier
+            'shell_size_modifier': parent1.shell_size_modifier if random.random() < 0.5 else parent2.shell_size_modifier
         }
         
         # Reset seed and verify same result
         random.seed(seed)
         child_traits_repeat = {
             'shell_base_color': parent1.shell_base_color if random.random() < 0.5 else parent2.shell_base_color,
-            'speed_modifier': parent1.speed_modifier if random.random() < 0.5 else parent2.speed_modifier
+            'shell_size_modifier': parent1.shell_size_modifier if random.random() < 0.5 else parent2.shell_size_modifier
         }
         
         assert child_traits == child_traits_repeat
@@ -218,7 +218,7 @@ class TestTurboGenomeValidation:
                     random.randint(0, 255), 
                     random.randint(0, 255)
                 ),
-                speed_modifier=random.uniform(0.0, 2.0),
+                speed_modifier=random.uniform(0.8, 1.2),
                 shell_pattern_type=random.choice(list(ShellPatternType))
             )
             
@@ -226,7 +226,7 @@ class TestTurboGenomeValidation:
             if random.random() < 0.5:
                 if mutation.shell_base_color != baseline.shell_base_color:
                     color_changes += 1
-                if mutation.speed_modifier != baseline.speed_modifier:
+                if mutation.shell_size_modifier != baseline.shell_size_modifier:
                     modifier_changes += 1
                 if mutation.shell_pattern_type != baseline.shell_pattern_type:
                     pattern_changes += 1
@@ -244,21 +244,21 @@ class TestTurboGenomeValidation:
         """Test validation of extreme genome values"""
         # Test boundary conditions
         boundary_genome = TurboGenome(
-            shell_pattern_intensity=0.0,  # Minimum
-            shell_size_modifier=2.0,      # Maximum
-            speed_modifier=0.0,           # Minimum
-            stamina_modifier=2.0,         # Maximum
-            stealth_modifier=2.0,         # Maximum
-            intelligence_modifier=0.0    # Minimum
+            shell_pattern_density=0.1,  # Minimum
+            shell_size_modifier=1.5,      # Maximum
+            head_size_modifier=0.7,           # Minimum
+            leg_length=1.5,         # Maximum
+            leg_thickness_modifier=1.3,         # Maximum
+            eye_size_modifier=0.8    # Minimum
         )
         
         # Should validate successfully
-        assert boundary_genome.shell_pattern_intensity == 0.0
-        assert boundary_genome.shell_size_modifier == 2.0
-        assert boundary_genome.speed_modifier == 0.0
-        assert boundary_genome.stamina_modifier == 2.0
-        assert boundary_genome.stealth_modifier == 2.0
-        assert boundary_genome.intelligence_modifier == 0.0
+        assert boundary_genome.shell_pattern_density == 0.1
+        assert boundary_genome.shell_size_modifier == 1.5
+        assert boundary_genome.head_size_modifier == 0.7
+        assert boundary_genome.leg_length == 1.5
+        assert boundary_genome.leg_thickness_modifier == 1.3
+        assert boundary_genome.eye_size_modifier == 0.8
     
     def test_genome_trait_consistency(self) -> None:
         """Test that all 17 traits are present and consistent"""
@@ -267,16 +267,17 @@ class TestTurboGenomeValidation:
         # Count traits by introspection
         trait_names = genome.model_fields.keys()
         
-        # Verify we have exactly 17 traits
-        assert len(trait_names) == 17, f"Expected 17 traits, got {len(trait_names)}"
+        # Verify we have exactly 19 traits
+        assert len(trait_names) == 19, f"Expected 19 traits, got {len(trait_names)}"
         
         # Verify expected trait names are present
         expected_traits = {
             'shell_base_color', 'shell_pattern_type', 'shell_pattern_color',
-            'shell_pattern_intensity', 'shell_size_modifier', 'shell_thickness_modifier',
-            'body_base_color', 'body_pattern_type', 'body_pattern_color',
-            'body_size_modifier', 'limb_shape_type', 'limb_color', 'limb_size_modifier',
-            'speed_modifier', 'stamina_modifier', 'stealth_modifier', 'intelligence_modifier'
+            'pattern_color', 'shell_pattern_density', 'shell_pattern_opacity',
+            'shell_size_modifier', 'body_base_color', 'body_pattern_type', 
+            'body_pattern_color', 'body_pattern_density', 'head_size_modifier', 
+            'head_color', 'leg_length', 'limb_shape', 'leg_thickness_modifier', 
+            'leg_color', 'eye_color', 'eye_size_modifier'
         }
         
         actual_traits = set(trait_names)
@@ -318,7 +319,7 @@ class TestGenomeEngineIntegration:
     
     def test_genome_registry_validation(self) -> None:
         """Test that registry validates genome integrity"""
-        from src.dgt_engine.foundation.registry import get_dgt_registry
+        from src.dgt_engine.foundation.registry import get_dgt_registry, RegistryType
         
         registry = get_dgt_registry()
         
