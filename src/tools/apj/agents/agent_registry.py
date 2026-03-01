@@ -389,35 +389,29 @@ class AgentRegistry:
         }
     
     def initialize_specialists(self) -> None:
-        """Auto-register all SpecializedAgents from specialized_agents.py"""
+        """Initialize specialist agents from specialized_agents module"""
         
         try:
-            from ..swarm.agents.specialized_agents import (
-                DOCUMENTATION_SPECIALIST,
-                ARCHITECTURE_SPECIALIST,
-                GENETICS_SPECIALIST,
-                UI_SPECIALIST,
-                INTEGRATION_SPECIALIST,
-                DEBUGGING_SPECIALIST
-            )
+            from ..swarm.agents.specialized_agents import SPECIALIST_AGENTS
             
-            specialists = [
-                DOCUMENTATION_SPECIALIST,
-                ARCHITECTURE_SPECIALIST,
-                GENETICS_SPECIALIST,
-                UI_SPECIALIST,
-                INTEGRATION_SPECIALIST,
-                DEBUGGING_SPECIALIST
-            ]
+            specialists = SPECIALIST_AGENTS
             
             for specialist in specialists:
+                # Filter dependencies to only those that exist
+                available_deps = []
+                for dep in specialist.dependencies:
+                    if self.get_agent_metadata(dep):
+                        available_deps.append(dep)
+                    else:
+                        print(f"⚠️  Skipping dependency '{dep}' for {specialist.name} - not found in registry")
+                
                 self.register_specialist(
                     agent_name=specialist.name,
                     specialty=specialist.specialty.value,
                     capabilities=specialist.capabilities,
                     tool_categories=specialist.tools,
                     context_size=specialist.context_size,
-                    dependencies=specialist.dependencies
+                    dependencies=available_deps
                 )
                 
                 print(f"✅ Registered specialist: {specialist.name} ({specialist.specialty.value})")
@@ -434,32 +428,44 @@ class AgentRegistry:
             "documentation_specialist": {
                 "specialty": "documentation",
                 "capabilities": ["documentation", "analysis"],
-                "tools": ["file_ops", "code_ops", "doc_ops"]
+                "tools": ["doc_ops"],
+                "context_size": 1000,
+                "dependencies": []
             },
             "architecture_specialist": {
-                "specialty": "architecture", 
-                "capabilities": ["analysis", "planning", "design"],
-                "tools": ["file_ops", "code_ops", "analysis_ops"]
+                "specialty": "architecture",
+                "capabilities": ["architecture", "analysis"],
+                "tools": ["analysis_ops"],
+                "context_size": 500,
+                "dependencies": []
             },
             "genetics_specialist": {
                 "specialty": "genetics",
-                "capabilities": ["coding", "testing"],
-                "tools": ["file_ops", "code_ops", "test_ops", "genetics_ops"]
+                "capabilities": ["genetics", "breeding"],
+                "tools": ["genetics_ops"],
+                "context_size": 300,
+                "dependencies": []
             },
             "ui_systems_specialist": {
                 "specialty": "ui",
-                "capabilities": ["coding", "design"],
-                "tools": ["file_ops", "code_ops", "test_ops", "ui_ops"]
+                "capabilities": ["ui", "design"],
+                "tools": ["ui_ops"],
+                "context_size": 200,
+                "dependencies": []
             },
             "integration_specialist": {
                 "specialty": "integration",
-                "capabilities": ["testing", "analysis"],
-                "tools": ["file_ops", "code_ops", "test_ops", "integration_ops"]
+                "capabilities": ["integration", "testing"],
+                "tools": ["integration_ops"],
+                "context_size": 400,
+                "dependencies": []
             },
             "debugging_specialist": {
                 "specialty": "debugging",
-                "capabilities": ["analysis", "coding", "testing"],
-                "tools": ["file_ops", "code_ops", "test_ops", "debug_ops"]
+                "capabilities": ["debugging", "testing"],
+                "tools": ["debug_ops"],
+                "context_size": 250,
+                "dependencies": []
             }
         }
         
@@ -468,10 +474,11 @@ class AgentRegistry:
                 agent_name=agent_name,
                 specialty=config["specialty"],
                 capabilities=config["capabilities"],
-                tool_categories=config["tools"]
+                tool_categories=config["tools"],
+                context_size=config["context_size"],
+                dependencies=config["dependencies"]
             )
-            
-            print(f"✅ Registered fallback specialist: {agent_name}")
+            print(f"✅ Registered fallback specialist: {agent_name} ({config['specialty']})")
 
 # Global agent registry
 AGENT_REGISTRY = AgentRegistry()
