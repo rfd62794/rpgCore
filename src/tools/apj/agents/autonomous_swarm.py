@@ -431,7 +431,7 @@ class AutonomousSwarm:
         return True  # All dependencies met
     
     async def _execute_task_async(self, task_id: str, agent_name: str) -> Any:
-        """Execute a single task asynchronously"""
+        """Execute a single task asynchronously with timeout and proper error handling"""
         
         task = self.tasks[task_id]
         start_time = asyncio.get_event_loop().time()
@@ -447,8 +447,11 @@ class AutonomousSwarm:
                 # Fallback to generic execution
                 result = await self._execute_generic_task_async(task)
             else:
-                # Use specialist executor
-                result = await executor(task)
+                # Use specialist executor with timeout
+                result = await asyncio.wait_for(
+                    executor(task),
+                    timeout=self.task_timeout_minutes * 60  # Convert minutes to seconds
+                )
             
             # Record success
             duration = asyncio.get_event_loop().time() - start_time
@@ -462,19 +465,29 @@ class AutonomousSwarm:
                 )
             
             # Mark as completed
-            task.status = TaskStatus.COMPLETED
-            task.completed_at = datetime.now()
-            self.completed_tasks.append(task_id)
-            
-            # Update workload
-            if agent_name in self.agent_workloads:
-                self.agent_workloads[agent_name].current_task = None
-                self.agent_workloads[agent_name].tasks_completed += 1
+            await self._mark_task_complete(task_id, True)
+            await self._update_workload_completion(agent_name, True, duration)
             
             print(f"✅ Completed: {task.title}")
             logger.info(f"✅ Completed task {task_id}")
             
             return result
+            
+        except asyncio.TimeoutError:
+            # Handle timeout
+            duration = asyncio.get_event_loop().time() - start_time
+            self.task_durations[task_id] = duration
+            
+            print(f"⏱️ Task timeout: {task.title}")
+            logger.error(f"⏱️ Task {task_id} timed out")
+            
+            await self._mark_task_complete(task_id, False)
+            await self._update_workload_completion(agent_name, False, duration)
+            
+            if self.self_healer:
+                self.self_healer.detect_and_recover(agent_name, Exception("Task timeout"), task_id)
+            
+            return {"success": False, "error": "Task timeout", "duration": duration}
             
         except Exception as e:
             # Handle failure with self-healing
@@ -494,14 +507,13 @@ class AutonomousSwarm:
                     print(f"🔄 Recovery successful - retrying task")
                     logger.info(f"🔄 Task {task_id} recovery successful - retrying")
                     # Put task back in queue for retry
-                    self.task_queue.insert(0, task_id)
+                    async with self.task_queue_lock:
+                        self.task_queue.insert(0, task_id)
                 else:
                     print(f"💀 Recovery failed - marking as failed")
                     logger.error(f"💀 Task {task_id} recovery failed")
-                    task.status = TaskStatus.FAILED
-                    task.error = str(e)
-                    task.completed_at = datetime.now()
-                    self.failed_tasks.append(task_id)
+                    await self._mark_task_complete(task_id, False)
+                    await self._update_workload_completion(agent_name, False, duration)
                     
                     if self.learning_system:
                         self.learning_system.record_failure(
@@ -512,21 +524,74 @@ class AutonomousSwarm:
                         )
             else:
                 # No self-healer available - mark as failed
-                task.status = TaskStatus.FAILED
-                task.error = str(e)
-                task.completed_at = datetime.now()
-                self.failed_tasks.append(task_id)
-            
-            # Update workload
-            if agent_name in self.agent_workloads:
-                self.agent_workloads[agent_name].current_task = None
+                await self._mark_task_complete(task_id, False)
+                await self._update_workload_completion(agent_name, False, duration)
             
             # Update monitoring
             if self.monitor:
                 swarm_state = self._get_swarm_state()
                 self.monitor.collect_metrics(swarm_state)
             
-            return {"success": False, "error": str(e)}
+            return {"success": False, "error": str(e), "duration": duration}
+    
+    async def _execute_generic_task_async(self, task: SwarmTask) -> Any:
+        """Execute generic task asynchronously"""
+        
+        # Simulate work with progress updates
+        steps = max(1, int(task.estimated_hours * 10))
+        for i in range(steps):
+            progress = (i + 1) / steps * 100
+            print(f"  📊 Generic progress: {progress:.1f}%")
+            await asyncio.sleep(0.05)  # Short simulation time
+        
+        return {"success": True, "output": f"Completed {task.title}"}
+    
+    async def _update_after_execution(self, result: Any) -> None:
+        """Update swarm state after task execution"""
+        
+        # Update monitoring
+        if self.monitor:
+            swarm_state = self._get_swarm_state()
+            self.monitor.collect_metrics(swarm_state)
+        
+        # Update learning system
+        if self.learning_system and hasattr(result, 'success'):
+            # Extract task info for learning
+            task_id = result.get('task_id', 'unknown')
+            task = self.tasks.get(task_id)
+            if task:
+                if result.get('success'):
+                    self.learning_system.record_success(
+                        result.get('agent_name', 'unknown'),
+                        task.agent_type,
+                        f"async_{task.agent_type}_approach"
+                    )
+                else:
+                    self.learning_system.record_failure(
+                        result.get('agent_name', 'unknown'),
+                        task.agent_type,
+                        f"async_{task.agent_type}_approach",
+                        result.get('error', 'Unknown error')
+                    )
+    
+    async def run(self):
+        """Main async entry point for swarm execution"""
+        self.state = SwarmState.ACTIVE
+        
+        try:
+            await self._execute_autonomous_round_robin()
+        except Exception as e:
+            logger.error(f"Swarm execution failed: {e}")
+            self.state = SwarmState.ERROR
+        finally:
+            self.state = SwarmState.COMPLETED
+    
+    def run_sync(self):
+        """Synchronous wrapper for backward compatibility"""
+        # Run async code from sync context
+        import asyncio
+        loop = asyncio.get_event_loop()
+        return loop.run_until_complete(self.run())
     
     def _execute_dungeon_task(self, task):
         """Execute dungeon demo task"""
