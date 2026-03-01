@@ -62,8 +62,7 @@ class PhysicsConfig(BaseModel):
         description="Maximum entity velocity"
     )
 
-    class Config:
-        use_enum_values = False
+    model_config = ConfigDict(use_enum_values=False)
 
 
 class GraphicsConfig(BaseModel):
@@ -97,8 +96,7 @@ class GraphicsConfig(BaseModel):
         description="Fullscreen mode"
     )
 
-    class Config:
-        use_enum_values = False
+    model_config = ConfigDict(use_enum_values=False)
 
     @validator('resolution_width', 'resolution_height')
     def validate_resolution(cls, v):
@@ -184,8 +182,7 @@ class GameConfig(BaseModel):
     log_level: str = Field(default="INFO")
     custom_settings: Dict[str, Any] = Field(default_factory=dict)
 
-    class Config:
-        use_enum_values = False
+    model_config = ConfigDict(use_enum_values=False)
 
     @validator('game_version')
     def validate_version(cls, v):
