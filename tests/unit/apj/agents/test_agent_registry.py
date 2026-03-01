@@ -337,6 +337,9 @@ class TestAgentRegistryExtended:
     def test_capability_mapping(self):
         """Test capability mapping for string to enum conversion"""
         
+        # Clear registry to avoid picking up default agents like archivist
+        self.registry._agents.clear()
+        
         self.registry.register_specialist(
             agent_name="debugging_specialist",
             specialty="debugging",

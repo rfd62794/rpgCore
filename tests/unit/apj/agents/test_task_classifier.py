@@ -140,8 +140,8 @@ class TestTaskClassifier:
         
         result = TaskClassifier.classify(
             "task_10",
-            "Validate cross-system interfaces",
-            "Ensure all system interfaces work together correctly"
+            "Validate cross-system operations",
+            "Ensure all subsystems work together correctly"
         )
         
         assert result.detected_type in ["integration", "ui", "architecture"]
