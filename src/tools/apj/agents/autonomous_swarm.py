@@ -230,33 +230,44 @@ class AutonomousSwarm:
         """Execute tasks with intelligent routing and parallel execution"""
         
         logger.info(" Starting intelligent round-robin execution")
+        print("[EXEC] Starting intelligent round-robin execution")
         
+        task_count = 0
         while self.state == SwarmState.ACTIVE and self.task_queue:
+            task_count += 1
+            print(f"[EXEC] Loop {task_count}: Queue has {len(self.task_queue)} tasks, State: {self.state.value}")
+            
             try:
                 # Get pending tasks with dependencies met
                 pending = await self._get_ready_tasks()
+                print(f"[EXEC] Ready tasks: {len(pending)}")
                 
                 if not pending:
                     # No tasks ready to run; wait a bit
+                    print("[EXEC] No ready tasks, waiting...")
                     await asyncio.sleep(0.1)
                     continue
                 
                 # Get available agents
                 available_agents = await self._get_available_agents()
+                print(f"[EXEC] Available agents: {len(available_agents)}")
                 
                 # Route each task to best available agent
                 assignments = []  # List of (task_id, agent_name) tuples
                 
                 for task in pending:
                     agent_name = self.task_router.route_task(task, task.classification)
+                    print(f"[EXEC] Task {task.id} routed to {agent_name}")
                     
                     if agent_name is None:
                         # Task deferred (agent busy), skip for now
+                        print(f"[EXEC] Task {task.id} deferred (agent busy)")
                         continue
                     
                     # Check if we've hit max concurrent tasks
                     active_count = sum(1 for w in self.agent_workloads.values() if w.current_task)
                     if active_count >= self.max_concurrent_tasks:
+                        print(f"[EXEC] Max concurrent tasks reached ({active_count}), stopping assignment")
                         break  # Stop assigning; execute what we have
                     
                     assignments.append((task.id, agent_name))
@@ -273,18 +284,18 @@ class AutonomousSwarm:
                 
                 if not assignments:
                     # No tasks ready to run; wait a bit
+                    print("[EXEC] No assignments made, waiting...")
                     await asyncio.sleep(0.1)
                     continue
                 
+                print(f"[EXEC] Executing {len(assignments)} tasks concurrently")
                 # Execute assigned tasks concurrently
-                logger.info(f" Executing {len(assignments)} tasks concurrently")
-                print(f" Executing {len(assignments)} tasks concurrently")
-                
                 results = await asyncio.gather(*[
                     self._execute_task_async(task_id, agent_name)
                     for task_id, agent_name in assignments
                 ])
                 
+                print(f"[EXEC] Completed {len(results)} tasks")
                 # Track results
                 for result in results:
                     await self._update_after_execution(result)
@@ -294,8 +305,10 @@ class AutonomousSwarm:
                 
             except Exception as e:
                 logger.error(f"[FAIL] Task execution failed: {e}")
-                print(f"[FAIL] Failed to execute task: {e}")
+                print(f"[FAIL] Task execution failed: {e}")
+                break
         
+        print(f"[EXEC] Execution completed. Processed {task_count} loops.")
         self.state = SwarmState.IDLE
         print("[SUCCESS] All tasks completed!")
         logger.info("[SUCCESS] Autonomous swarm execution completed")
