@@ -23,7 +23,7 @@ from typing import Dict
 
 import httpx
 from loguru import logger
-from pydantic_ai.models.openai import OpenAIModel as OpenAI
+from pydantic_ai.models.openai import OpenAIChatModel as OpenAI
 from pydantic_ai.settings import ModelSettings
 
 OLLAMA_BASE_URL = "http://localhost:11434"
