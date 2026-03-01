@@ -1,30 +1,16 @@
 """
-Specialist Executors - Async executor functions for meaningful specialist work
-Real work execution for each specialist type
+Specialist Executors for APJ Agents
+Async executor functions for each specialist agent type
 """
 
+import logging
 import asyncio
-import random
-import re
-import ast
-from dataclasses import dataclass
-from typing import Optional, List, Dict, Any
-from pathlib import Path
+from typing import Dict, Any, Optional, Callable
+from datetime import datetime
 
-from .autonomous_swarm import SwarmTask
+from .types import SwarmTask, TaskStatus, TaskResult
 
-
-@dataclass
-class TaskResult:
-    """Result of task execution"""
-    task_id: str
-    agent_name: str
-    success: bool
-    duration: float  # seconds
-    output: Optional[str]  # result/work done
-    error: Optional[str]  # if failed
-    files_analyzed: List[str] = None  # files that were analyzed
-    work_items: List[str] = None  # specific work items completed
+logger = logging.getLogger(__name__)
 
 
 async def execute_documentation_task(task: SwarmTask) -> TaskResult:
