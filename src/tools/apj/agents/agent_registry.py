@@ -420,7 +420,7 @@ class AgentRegistry:
                     dependencies=specialist.dependencies
                 )
                 
-                print(f"✅ Registered specialist: {specialist.name} ({specialty.specialty.value})")
+                print(f"✅ Registered specialist: {specialist.name} ({specialist.specialty.value})")
         
         except ImportError as e:
             print(f"⚠️  Could not import specialist agents: {e}")
