@@ -404,7 +404,21 @@ class AgentRegistry:
                 # Filter dependencies to only those that exist
                 available_deps = []
                 for dep in specialist.dependencies:
-                    if self.get_agent_metadata(dep):
+                    # Check both by specialty and by name
+                    found_agent = None
+                    # First try by specialty (e.g., "code_quality")
+                    for agent_metadata in self._agents.values():
+                        if agent_metadata.specialty == dep:
+                            found_agent = agent_metadata
+                            break
+                    # If not found, try by name (e.g., "Code Quality Specialist")
+                    if not found_agent:
+                        for agent_metadata in self._agents.values():
+                            if agent_metadata.name == dep:
+                                found_agent = agent_metadata
+                                break
+                    
+                    if found_agent:
                         available_deps.append(dep)
                     else:
                         print(f"[WARN]  Skipping dependency '{dep}' for {specialist.name} - not found in registry")

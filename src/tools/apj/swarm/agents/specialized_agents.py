@@ -116,7 +116,7 @@ DOCUMENTATION_SPECIALIST = SpecializedAgent(
 )
 
 
-# AGENT 8: Architecture Specialist
+# AGENT 9: Architecture Specialist
 ARCHITECTURE_SPECIALIST = SpecializedAgent(
     name="Architecture Specialist",
     specialty=AgentSpecialty.ARCHITECTURE,
@@ -134,13 +134,13 @@ ARCHITECTURE_SPECIALIST = SpecializedAgent(
     tools=[
         "file_ops", "code_ops", "analysis_ops", "design_ops"
     ],
-    priority=8,
+    priority=9,
     context_size=3000,
     dependencies=["code_quality", "testing"]
 )
 
 
-# AGENT 9: Genetics System Specialist
+# AGENT 10: Genetics System Specialist
 GENETICS_SPECIALIST = SpecializedAgent(
     name="Genetics System Specialist",
     specialty=AgentSpecialty.GENETICS,
@@ -158,13 +158,13 @@ GENETICS_SPECIALIST = SpecializedAgent(
     tools=[
         "file_ops", "code_ops", "test_ops", "genetics_ops"
     ],
-    priority=9,
+    priority=10,
     context_size=2500,
     dependencies=["testing"]
 )
 
 
-# AGENT 10: UI Systems Specialist
+# AGENT 11: UI Systems Specialist
 UI_SPECIALIST = SpecializedAgent(
     name="UI Systems Specialist",
     specialty=AgentSpecialty.UI_SYSTEMS,
@@ -182,13 +182,13 @@ UI_SPECIALIST = SpecializedAgent(
     tools=[
         "file_ops", "code_ops", "test_ops", "ui_ops"
     ],
-    priority=10,
+    priority=11,
     context_size=2500,
     dependencies=["testing"]
 )
 
 
-# AGENT 11: Integration Specialist
+# AGENT 12: Integration Specialist
 INTEGRATION_SPECIALIST = SpecializedAgent(
     name="Integration Specialist",
     specialty=AgentSpecialty.INTEGRATION,
@@ -206,13 +206,13 @@ INTEGRATION_SPECIALIST = SpecializedAgent(
     tools=[
         "file_ops", "code_ops", "test_ops", "integration_ops"
     ],
-    priority=11,
+    priority=12,
     context_size=3000,
     dependencies=["testing", "architecture"]
 )
 
 
-# AGENT 12: Debugging Specialist
+# AGENT 13: Debugging Specialist
 DEBUGGING_SPECIALIST = SpecializedAgent(
     name="Debugging Specialist",
     specialty=AgentSpecialty.DEBUGGING,
@@ -230,7 +230,7 @@ DEBUGGING_SPECIALIST = SpecializedAgent(
     tools=[
         "file_ops", "code_ops", "test_ops", "debug_ops", "log_ops"
     ],
-    priority=12,
+    priority=13,
     context_size=2000,
     dependencies=["testing"]
 )
@@ -238,6 +238,8 @@ DEBUGGING_SPECIALIST = SpecializedAgent(
 
 # Registry of all specialized agents
 SPECIALIZED_AGENTS = [
+    CODE_QUALITY_SPECIALIST,
+    TESTING_SPECIALIST,
     DOCUMENTATION_SPECIALIST,
     ARCHITECTURE_SPECIALIST,
     GENETICS_SPECIALIST,
