@@ -18,11 +18,35 @@ class HUD:
             border=True
         )
         
-        # Labels for stats
-        self.score_label = Label(pygame.Rect(4, 4, 52, 12), text="SCORE: 0", font_size=16, color=(0, 255, 0))
-        self.lives_label = Label(pygame.Rect(4, 16, 52, 12), text="LIVES: 0", font_size=16, color=(0, 255, 0))
-        self.wave_label = Label(pygame.Rect(4, 28, 52, 12), text="WAVE: 0", font_size=16, color=(0, 255, 0))
-        self.rocks_label = Label(pygame.Rect(4, 40, 52, 12), text="ROCKS: 0", font_size=16, color=(0, 255, 0))
+        # Labels for stats - using new Label constructor
+        self.score_label = Label(
+            text="SCORE: 0",
+            position=(4, 4),
+            spec=SPEC_160,
+            size="sm",
+            color=(0, 255, 0)
+        )
+        self.lives_label = Label(
+            text="LIVES: 0",
+            position=(4, 16),
+            spec=SPEC_160,
+            size="sm",
+            color=(0, 255, 0)
+        )
+        self.wave_label = Label(
+            text="WAVE: 0",
+            position=(4, 28),
+            spec=SPEC_160,
+            size="sm",
+            color=(0, 255, 0)
+        )
+        self.rocks_label = Label(
+            text="ROCKS: 0",
+            position=(4, 40),
+            spec=SPEC_160,
+            size="sm",
+            color=(0, 255, 0)
+        )
         
         self.panel.add_child(self.score_label)
         self.panel.add_child(self.lives_label)
