@@ -147,7 +147,7 @@ class TestTaskRouter:
         
         agent_name = self.router.route_task(task, classification)
         
-        assert agent_name in ["debugging_specialist", "debugger", "troubleshooter", "bugfixer", "generic_agent"]
+        assert agent_name in ["debugging_specialist", "debugger", "troubleshooter", "bugfixer", "generic_agent", "strategist"]
         
         # Check routing log
         decision = self.router.routing_log[0]
@@ -216,7 +216,7 @@ class TestTaskRouter:
             ("Generate docstrings", "generate_docstrings"),
             ("Refactor architecture", "identify_coupling"),
             ("Fix bug", "fix_bug"),
-            ("Design UI layout", "design_ui"),
+            ("Design UI layout", "design_ui_layouts"),
             ("Test integration", "test_integration"),
             ("Create trait system", "create_trait_systems")
         ]
@@ -395,11 +395,11 @@ class TestTaskRouter:
             "trait": "create_trait_systems",
             "breeding": "implement_breeding",
             "inheritance": "create_inheritance_rules",
-            "ui": "design_ui",
+            "ui": "design_ui_layouts",
             "component": "implement_ui_components",
             "button": "implement_ui_components",
-            "layout": "design_ui",
-            "interface": "design_ui",
+            "layout": "design_ui_layouts",
+            "interface": "design_ui_layouts",
             "integration": "test_integration",
             "test": "test_integration",
             "cross-system": "test_integration",
