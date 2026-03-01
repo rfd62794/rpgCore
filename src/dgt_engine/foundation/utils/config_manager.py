@@ -14,7 +14,7 @@ from dataclasses import dataclass, field, asdict
 from abc import ABC, abstractmethod
 
 import yaml
-from pydantic import BaseModel, Field, validator
+from pydantic import BaseModel, Field, field_validator
 from loguru import logger
 
 T = TypeVar('T', bound=BaseModel)
@@ -129,29 +129,33 @@ class SystemConfigModel(BaseModel):
     data_path: str = Field(default="data/", description="数据路径")
     logs_path: str = Field(default="logs/", description="日志路径")
     
-    @validator('mode')
-    def validate_mode(cls, v):
+    @field_validator('mode', mode='before')
+    @classmethod
+    def validate_mode(cls, v: Any) -> Any:
         allowed_modes = ['autonomous', 'demo', 'interactive', 'server']
         if v not in allowed_modes:
             raise ValueError(f"Mode must be one of: {allowed_modes}")
         return v
     
-    @validator('scene')
-    def validate_scene(cls, v):
+    @field_validator('scene', mode='before')
+    @classmethod
+    def validate_scene(cls, v: Any) -> Any:
         allowed_scenes = ['tavern', 'forest', 'demo', 'custom']
         if v not in allowed_scenes:
             raise ValueError(f"Scene must be one of: {allowed_scenes}")
         return v
     
-    @validator('log_level')
-    def validate_log_level(cls, v):
+    @field_validator('log_level', mode='before')
+    @classmethod
+    def validate_log_level(cls, v: Any) -> Any:
         allowed_levels = ['TRACE', 'DEBUG', 'INFO', 'WARNING', 'ERROR', 'CRITICAL']
         if v.upper() not in allowed_levels:
             raise ValueError(f"Log level must be one of: {allowed_levels}")
         return v.upper()
     
-    @validator('assets_path', 'data_path', 'logs_path')
-    def validate_paths(cls, v):
+    @field_validator('assets_path', 'data_path', 'logs_path', mode='before')
+    @classmethod
+    def validate_paths(cls, v: Any) -> Any:
         return v.rstrip('/') + '/'
 
 

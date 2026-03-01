@@ -8,7 +8,7 @@ This is the "Genetic Anchor" - the immutable foundation that all turtle systems 
 """
 
 from typing import Tuple, Union, Literal, Dict, Any
-from pydantic import BaseModel, Field, validator, model_validator
+from pydantic import BaseModel, Field, field_validator, model_validator
 from enum import Enum
 
 
@@ -64,8 +64,10 @@ class ContinuousGene(BaseModel):
     min_val: float = Field(description="Minimum valid value")
     max_val: float = Field(description="Maximum valid value")
     
-    @validator('value')
-    def validate_range(cls, v, values):
+    @field_validator('value', mode='before')
+    @classmethod
+    def validate_range(cls, v: Any, info: Any) -> Any:
+        values = info.data
         """Validate value is within range"""
         if 'min_val' in values and 'max_val' in values:
             if not (values['min_val'] <= v <= values['max_val']):

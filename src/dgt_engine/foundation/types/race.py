@@ -9,7 +9,7 @@ They are the "Source of Truth" for race simulation and rendering.
 """
 
 from typing import List, Optional, Dict, Any, Union
-from pydantic import BaseModel, Field, validator
+from pydantic import BaseModel, Field, field_validator
 from enum import Enum
 import time
 
@@ -44,8 +44,10 @@ class TerrainSegment(BaseModel):
     speed_modifier: float = Field(default=1.0, ge=0, description="Speed multiplier for terrain")
     energy_drain: float = Field(default=1.0, ge=0, description="Energy drain multiplier")
     
-    @validator('end_distance')
-    def validate_distance(cls, v, values):
+    @field_validator('end_distance', mode='before')
+    @classmethod
+    def validate_distance(cls, v: Any, info: Any) -> Any:
+        values = info.data
         """Validate end distance is after start distance"""
         if 'start_distance' in values and v <= values['start_distance']:
             raise ValueError("end_distance must be greater than start_distance")
@@ -87,15 +89,19 @@ class TurtleState(BaseModel):
     average_speed: float = Field(default=0.0, ge=0, description="Average speed")
     race_time: float = Field(default=0.0, ge=0, description="Time in race")
     
-    @validator('current_energy')
-    def validate_energy(cls, v, values):
+    @field_validator('current_energy', mode='before')
+    @classmethod
+    def validate_energy(cls, v: Any, info: Any) -> Any:
+        values = info.data
         """Validate current energy doesn't exceed maximum"""
         if 'max_energy' in values and v > values['max_energy']:
             return values['max_energy']
         return v
     
-    @validator('rank')
-    def validate_rank_finished(cls, v, values):
+    @field_validator('rank', mode='before')
+    @classmethod
+    def validate_rank_finished(cls, v: Any, info: Any) -> Any:
+        values = info.data
         """Validate rank only set when finished"""
         if v is not None and not values.get('finished', False):
             raise ValueError("rank can only be set when turtle is finished")
@@ -207,16 +213,19 @@ class RaceSnapshot(BaseModel):
     finished_turtles: int = Field(ge=0, description="Number of finished turtles")
     active_turtles: int = Field(ge=0, description="Number of actively racing turtles")
     
-    @validator('turtles')
-    def validate_turtle_ids(cls, v):
+    @field_validator('turtles', mode='before')
+    @classmethod
+    def validate_turtle_ids(cls, v: Any) -> Any:
         """Validate all turtle IDs are unique"""
         ids = [t.id for t in v]
         if len(ids) != len(set(ids)):
             raise ValueError("Turtle IDs must be unique")
         return v
     
-    @validator('finished_turtles')
-    def validate_finished_count(cls, v, values):
+    @field_validator('finished_turtles', mode='before')
+    @classmethod
+    def validate_finished_count(cls, v: Any, info: Any) -> Any:
+        values = info.data
         """Validate finished count matches turtle states"""
         if 'turtles' in values:
             actual_finished = sum(1 for t in values['turtles'] if t.finished)
@@ -224,8 +233,10 @@ class RaceSnapshot(BaseModel):
                 return actual_finished
         return v
     
-    @validator('active_turtles')
-    def validate_active_count(cls, v, values):
+    @field_validator('active_turtles', mode='before')
+    @classmethod
+    def validate_active_count(cls, v: Any, info: Any) -> Any:
+        values = info.data
         """Validate active count matches turtle states"""
         if 'turtles' in values:
             actual_active = sum(1 for t in values['turtles'] if t.is_active())

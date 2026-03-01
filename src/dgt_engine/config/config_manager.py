@@ -12,7 +12,7 @@ from pathlib import Path
 from dataclasses import dataclass, field
 from enum import Enum
 
-from pydantic import BaseModel, Field, validator, ConfigDict
+from pydantic import BaseModel, Field, field_validator, ConfigDict
 from loguru import logger
 
 
@@ -137,22 +137,25 @@ class DGTConfig(BaseModel):
     cors_enabled: bool = False
     api_rate_limit: Optional[int] = None
     
-    @validator('environment')
-    def validate_environment(cls, v):
+    @field_validator('environment', mode='before')
+    @classmethod
+    def validate_environment(cls, v: Any) -> Any:
         """Validate environment setting"""
         if v not in EnvironmentType:
             raise ValueError(f"Invalid environment: {v}")
         return v
     
-    @validator('log_level')
-    def validate_log_level(cls, v):
+    @field_validator('log_level', mode='before')
+    @classmethod
+    def validate_log_level(cls, v: Any) -> Any:
         """Validate log level"""
         if v not in LogLevel:
             raise ValueError(f"Invalid log level: {v}")
         return v
     
-    @validator('performance')
-    def validate_performance(cls, v):
+    @field_validator('performance', mode='before')
+    @classmethod
+    def validate_performance(cls, v: Any) -> Any:
         """Validate performance settings"""
         if v.target_fps <= 0 or v.target_fps > 120:
             raise ValueError("Target FPS must be between 1 and 120")
