@@ -392,8 +392,11 @@ class AutonomousSwarm:
         for dep_id in task.dependencies:
             dep_task = self.tasks.get(dep_id)
             if not dep_task:
-                print(f"[DEP] Dependency {dep_id} not found for task {task_id}")
-                return False  # Dependency doesn't exist
+                print(f"[DEP] Dependency {dep_id} not found for task {task_id} - breaking deadlock")
+                # Break deadlock: remove the non-existent dependency
+                task.dependencies = [dep for dep in task.dependencies if dep != dep_id]
+                print(f"[DEP] Removed dependency {dep_id} from task {task_id}")
+                continue  # Continue checking other dependencies
             
             print(f"[DEP] Dependency {dep_id} status: {dep_task.status.value}")
             if dep_task.status != TaskStatus.COMPLETED:
