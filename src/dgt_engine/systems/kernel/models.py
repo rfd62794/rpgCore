@@ -9,7 +9,7 @@ from enum import Enum
 from dataclasses import dataclass
 from pathlib import Path
 
-from pydantic import BaseModel, Field, validator, HttpUrl
+from pydantic import BaseModel, Field, ConfigDict, validator, HttpUrl
 from loguru import logger
 import time
 
@@ -62,8 +62,7 @@ class RenderPacket(BaseModel):
     timestamp: float = Field(default_factory=time.time)
     metadata: Dict[str, Any] = Field(default_factory=dict)
     
-    class Config:
-        arbitrary_types_allowed = True
+    model_config = ConfigDict(arbitrary_types_allowed=True)
     
     @validator('layers', pre=True)
     def validate_layers(cls, v):
@@ -165,10 +164,10 @@ class MaterialAsset(BaseModel):
     texture_path: Optional[str] = Field(None, description="Path to texture file")
     shader_path: Optional[str] = Field(None, description="Path to custom shader")
     
-    class Config:
-        """Pydantic configuration"""
-        validate_assignment = True
-        use_enum_values = True
+    model_config = ConfigDict(
+        validate_assignment=True,
+        use_enum_values=True
+    )
     
     @validator('accent_color')
     def validate_accent_color(cls, v, values):
@@ -244,10 +243,10 @@ class EntityBlueprint(BaseModel):
     material_id: Optional[str] = Field(None, description="Associated material asset ID")
     equipment_slots: List[str] = Field(default_factory=list, description="Equipment slot identifiers")
     
-    class Config:
-        """Pydantic configuration"""
-        validate_assignment = True
-        use_enum_values = True
+    model_config = ConfigDict(
+        validate_assignment=True,
+        use_enum_values=True
+    )
     
     def get_combat_rating(self) -> float:
         """Calculate overall combat rating"""
@@ -314,10 +313,10 @@ class StoryFragment(BaseModel):
     choice_options: List[str] = Field(default_factory=list, description="Available choice options")
     choice_outcomes: Dict[str, str] = Field(default_factory=dict, description="Choice outcomes")
     
-    class Config:
-        """Pydantic configuration"""
-        validate_assignment = True
-        use_enum_values = True
+    model_config = ConfigDict(
+        validate_assignment=True,
+        use_enum_values=True
+    )
     
     def get_llm_prompt(self, context: Optional[Dict[str, Any]] = None) -> str:
         """Get LLM-ready prompt"""
@@ -561,10 +560,10 @@ class ViewportLayout(BaseModel):
     window_width: int = Field(description="Total window width")
     window_height: int = Field(description="Total window height")
     
-    class Config:
-        """Pydantic configuration"""
-        validate_assignment = True
-        use_enum_values = True
+    model_config = ConfigDict(
+        validate_assignment=True,
+        use_enum_values=True
+    )
     
     @validator('window_width', 'window_height')
     def validate_window_dimensions(cls, v):
@@ -634,10 +633,10 @@ class ScaleBucket(BaseModel):
     ppu_scale: int = Field(description="Recommended PPU scale")
     wing_width: int = Field(description="Recommended wing width")
     
-    class Config:
-        """Pydantic configuration"""
-        validate_assignment = True
-        use_enum_values = True
+    model_config = ConfigDict(
+        validate_assignment=True,
+        use_enum_values=True
+    )
 
 
 # Standard scale buckets (ADR 193)
@@ -686,7 +685,7 @@ class OverlayComponent(BaseModel):
     slide_animation: bool = Field(default=True, description="Enable slide animation")
     visible: bool = Field(default=False, description="Overlay visibility")
     
-    class Config:
-        """Pydantic configuration"""
-        validate_assignment = True
-        use_enum_values = True
+    model_config = ConfigDict(
+        validate_assignment=True,
+        use_enum_values=True
+    )
