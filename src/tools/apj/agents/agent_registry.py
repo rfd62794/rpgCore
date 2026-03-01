@@ -423,7 +423,8 @@ class AgentRegistry:
     def _register_fallback_specialists(self) -> None:
         """Register basic specialists if import fails"""
         
-        fallback_specialists = {
+        # First register base specialists without dependencies
+        base_specialists = {
             "documentation_specialist": {
                 "specialty": "documentation",
                 "capabilities": ["documentation", "analysis"],
@@ -456,23 +457,7 @@ class AgentRegistry:
                 "dependencies": [],
                 "display_name": "UI Systems Specialist"
             },
-            "integration_specialist": {
-                "specialty": "integration",
-                "capabilities": ["integration", "testing"],
-                "tools": ["integration_ops"],
-                "context_size": 400,
-                "dependencies": ["testing", "architecture"],
-                "display_name": "Integration Specialist"
-            },
-            "debugging_specialist": {
-                "specialty": "debugging",
-                "capabilities": ["debugging", "testing"],
-                "tools": ["debug_ops"],
-                "context_size": 250,
-                "dependencies": ["testing"],
-                "display_name": "Debugging Specialist"
-            },
-            # Add missing dependency agents
+            # Add missing dependency agents first
             "code_quality_specialist": {
                 "specialty": "code_quality",
                 "capabilities": ["code_quality", "analysis", "testing"],
@@ -491,7 +476,8 @@ class AgentRegistry:
             }
         }
         
-        for agent_name, config in fallback_specialists.items():
+        # Register base specialists first
+        for agent_name, config in base_specialists.items():
             self.register_specialist(
                 agent_name=agent_name,
                 specialty=config["specialty"],
@@ -499,6 +485,47 @@ class AgentRegistry:
                 tool_categories=config["tools"],
                 context_size=config["context_size"],
                 dependencies=config["dependencies"],
+                display_name=config.get("display_name")
+            )
+            print(f"[OK] Registered fallback specialist: {config.get('display_name', agent_name)} ({config['specialty']})")
+        
+        # Now register specialists with dependencies
+        dependent_specialists = {
+            "integration_specialist": {
+                "specialty": "integration",
+                "capabilities": ["integration", "testing"],
+                "tools": ["integration_ops"],
+                "context_size": 400,
+                "dependencies": ["testing", "architecture"],
+                "display_name": "Integration Specialist"
+            },
+            "debugging_specialist": {
+                "specialty": "debugging",
+                "capabilities": ["debugging", "testing"],
+                "tools": ["debug_ops"],
+                "context_size": 250,
+                "dependencies": ["testing"],
+                "display_name": "Debugging Specialist"
+            }
+        }
+        
+        # Register dependent specialists
+        for agent_name, config in dependent_specialists.items():
+            # Filter dependencies to only those that exist
+            available_deps = []
+            for dep in config["dependencies"]:
+                if self.get_agent_metadata(dep):
+                    available_deps.append(dep)
+                else:
+                    print(f"[WARN]  Skipping dependency '{dep}' for {config['display_name']} - not found in registry")
+            
+            self.register_specialist(
+                agent_name=agent_name,
+                specialty=config["specialty"],
+                capabilities=config["capabilities"],
+                tool_categories=config["tools"],
+                context_size=config["context_size"],
+                dependencies=available_deps,
                 display_name=config.get("display_name")
             )
             print(f"[OK] Registered fallback specialist: {config.get('display_name', agent_name)} ({config['specialty']})")
