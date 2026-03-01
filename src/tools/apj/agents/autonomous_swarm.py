@@ -381,13 +381,21 @@ class AutonomousSwarm:
         
         task = self.tasks.get(task_id)
         if not task:
+            print(f"[DEP] Task {task_id} not found")
             return False
+        
+        if not task.dependencies:
+            return True  # No dependencies
+        
+        print(f"[DEP] Task {task_id} has dependencies: {task.dependencies}")
         
         for dep_id in task.dependencies:
             dep_task = self.tasks.get(dep_id)
             if not dep_task:
+                print(f"[DEP] Dependency {dep_id} not found for task {task_id}")
                 return False  # Dependency doesn't exist
             
+            print(f"[DEP] Dependency {dep_id} status: {dep_task.status.value}")
             if dep_task.status != TaskStatus.COMPLETED:
                 return False  # Dependency not yet completed
         
