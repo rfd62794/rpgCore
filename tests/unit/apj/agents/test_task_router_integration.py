@@ -302,7 +302,7 @@ class TestTaskRouterIntegration:
         assert metrics["total_routed"] == 3
         assert "perfect_match" in metrics["routing_levels"]
         assert "specialty_match" in metrics["routing_levels"]
-        assert "fallback" in metrics["routing_levels"]
+        assert "load_balanced" in metrics["routing_levels"]
         assert 0.0 <= metrics["specialist_ratio"] <= 1.0
         assert 0.0 <= metrics["fallback_ratio"] <= 1.0
         assert len(metrics["recent_decisions"]) <= 10
@@ -370,8 +370,8 @@ class TestTaskRouterIntegration:
         # Route task
         agent_name = self.router.route_task(task, classification)
         
-        # Should still route to generic agent (it can handle load)
-        assert agent_name == "generic_agent"
+        # Should return None because all agents are busy and no generic agent exists
+        assert agent_name is None
     
     def test_edge_case_no_workloads(self):
         """Test edge case: no workloads provided"""
