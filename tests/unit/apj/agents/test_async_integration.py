@@ -213,8 +213,7 @@ class TestAsyncIntegration:
         assert result["duration"] > 0
     
     @pytest.mark.asyncio
-    asyncio
-    def test_execute_task_async_timeout(self):
+    async def test_execute_task_async_timeout(self):
         """Test task execution timeout handling"""
         
         await self.swarm._initialize_async_locks()
@@ -249,7 +248,7 @@ class TestAsyncIntegration:
         assert result["duration"] > 0
         assert self.swarm.tasks["fail_task"].status == TaskStatus.FAILED
     
-    @pytest.asyncio
+    @pytest.mark.asyncio
     async def test_generic_task_async_execution(self):
         """Test generic async task execution"""
         
