@@ -11,7 +11,7 @@ from datetime import datetime
 import random
 
 from .types import SwarmTask, TaskStatus, AgentWorkload, RoutingDecision, RoutingLevel
-from .agent_registry import AgentRegistry
+from .agent_registry import AgentRegistry, AgentMetadata
 from .task_classifier import TaskClassificationResult
 
 # Import SelfHealer if available
