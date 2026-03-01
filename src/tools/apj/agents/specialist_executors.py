@@ -384,6 +384,13 @@ def get_executor_for_agent(agent_name: str):
     """Get the async executor function for an agent"""
     
     agent_to_specialty = {
+        "Documentation Specialist": execute_documentation_task,
+        "Architecture Specialist": execute_architecture_task,
+        "Genetics System Specialist": execute_genetics_task,
+        "UI Systems Specialist": execute_ui_task,
+        "Integration Specialist": execute_integration_task,
+        "Debugging Specialist": execute_debugging_task,
+        # Also support the underscore versions for backward compatibility
         "documentation_specialist": execute_documentation_task,
         "architecture_specialist": execute_architecture_task,
         "genetics_specialist": execute_genetics_task,
