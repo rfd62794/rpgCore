@@ -425,41 +425,8 @@ class AgentRegistry:
     def _register_fallback_specialists(self) -> None:
         """Register basic specialists if import fails"""
         
-        # First register base specialists without dependencies
-        base_specialists = {
-            "documentation_specialist": {
-                "specialty": "documentation",
-                "capabilities": ["documentation", "analysis"],
-                "tools": ["doc_ops"],
-                "context_size": 1000,
-                "dependencies": [],
-                "display_name": "Documentation Specialist"
-            },
-            "architecture_specialist": {
-                "specialty": "architecture",
-                "capabilities": ["architecture", "analysis"],
-                "tools": ["analysis_ops"],
-                "context_size": 500,
-                "dependencies": [],
-                "display_name": "Architecture Specialist"
-            },
-            "genetics_specialist": {
-                "specialty": "genetics",
-                "capabilities": ["genetics", "breeding"],
-                "tools": ["genetics_ops"],
-                "context_size": 300,
-                "dependencies": [],
-                "display_name": "Genetics System Specialist"
-            },
-            "ui_systems_specialist": {
-                "specialty": "ui",
-                "capabilities": ["ui", "design"],
-                "tools": ["ui_ops"],
-                "context_size": 200,
-                "dependencies": [],
-                "display_name": "UI Systems Specialist"
-            },
-            # Add missing dependency agents first
+        # First register dependency specialists that others depend on
+        dependency_specialists = {
             "code_quality_specialist": {
                 "specialty": "code_quality",
                 "capabilities": ["code_quality", "analysis", "testing"],
@@ -478,8 +445,8 @@ class AgentRegistry:
             }
         }
         
-        # Register base specialists first
-        for agent_name, config in base_specialists.items():
+        # Register dependency specialists first
+        for agent_name, config in dependency_specialists.items():
             self.register_specialist(
                 agent_name=agent_name,
                 specialty=config["specialty"],
@@ -487,6 +454,70 @@ class AgentRegistry:
                 tool_categories=config["tools"],
                 context_size=config["context_size"],
                 dependencies=config["dependencies"],
+                display_name=config.get("display_name")
+            )
+            print(f"[OK] Registered fallback specialist: {config.get('display_name', agent_name)} ({config['specialty']})")
+        
+        # Now register base specialists without dependencies
+        base_specialists = {
+            "documentation_specialist": {
+                "specialty": "documentation",
+                "capabilities": ["documentation", "analysis"],
+                "tools": ["doc_ops"],
+                "context_size": 1000,
+                "dependencies": [],
+                "display_name": "Documentation Specialist"
+            },
+            "architecture_specialist": {
+                "specialty": "architecture",
+                "capabilities": ["architecture", "analysis"],
+                "tools": ["analysis_ops"],
+                "context_size": 500,
+                "dependencies": ["code_quality", "testing"],  # Now these dependencies exist
+                "display_name": "Architecture Specialist"
+            },
+            "genetics_specialist": {
+                "specialty": "genetics",
+                "capabilities": ["genetics", "breeding"],
+                "tools": ["genetics_ops"],
+                "context_size": 300,
+                "dependencies": ["testing"],  # Now this dependency exists
+                "display_name": "Genetics System Specialist"
+            },
+            "ui_systems_specialist": {
+                "specialty": "ui",
+                "capabilities": ["ui", "design"],
+                "tools": ["ui_ops"],
+                "context_size": 200,
+                "dependencies": ["testing"],  # Now this dependency exists
+                "display_name": "UI Systems Specialist"
+            }
+        }
+        
+        # Register base specialists
+        for agent_name, config in base_specialists.items():
+            # Filter dependencies to only those that exist
+            available_deps = []
+            for dep in config["dependencies"]:
+                # Check both display names and specialties
+                found_agent = None
+                for agent_metadata in self._agents.values():
+                    if agent_metadata.name == dep or agent_metadata.specialty == dep:
+                        found_agent = agent_metadata
+                        break
+                
+                if found_agent:
+                    available_deps.append(dep)
+                else:
+                    print(f"[WARN]  Skipping dependency '{dep}' for {config['display_name']} - not found in registry")
+            
+            self.register_specialist(
+                agent_name=agent_name,
+                specialty=config["specialty"],
+                capabilities=config["capabilities"],
+                tool_categories=config["tools"],
+                context_size=config["context_size"],
+                dependencies=available_deps,
                 display_name=config.get("display_name")
             )
             print(f"[OK] Registered fallback specialist: {config.get('display_name', agent_name)} ({config['specialty']})")
