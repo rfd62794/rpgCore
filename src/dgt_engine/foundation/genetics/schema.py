@@ -220,7 +220,7 @@ class TurboGenome(BaseModel):
     
     def get_trait_names(self) -> list[str]:
         """Get list of all trait names"""
-        return list(self.model_fields.keys())
+        return list(self.__class__.model_fields.keys())
     
     def get_trait_value(self, trait_name: str) -> Union[Tuple[int, int, int], str, float]:
         """Get trait value in legacy format"""
