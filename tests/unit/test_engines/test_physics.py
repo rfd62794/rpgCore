@@ -71,7 +71,7 @@ class TestPhysicsBody:
         """Test toroidal wrapping in horizontal direction"""
         # Test wrapping from right edge to left edge
         entity = SpaceEntity(
-            entity_type=EntityType.ASTEROID,
+            entity_type=EntityType.LARGE_ASTEROID,
             position=Vector2(SOVEREIGN_WIDTH + 10, 50),  # 10 pixels past right edge
             velocity=Vector2(5, 0),
             heading=0.0,
@@ -93,7 +93,7 @@ class TestPhysicsBody:
         """Test toroidal wrapping in vertical direction"""
         # Test wrapping from bottom edge to top edge
         entity = SpaceEntity(
-            entity_type=EntityType.ASTEROID,
+            entity_type=EntityType.LARGE_ASTEROID,
             position=Vector2(50, SOVEREIGN_HEIGHT + 10),  # 10 pixels past bottom edge
             velocity=Vector2(0, 5),
             heading=0.0,
@@ -115,7 +115,7 @@ class TestPhysicsBody:
         """Test toroidal wrapping with negative coordinates"""
         # Test wrapping from left edge to right edge (negative coordinates)
         entity = SpaceEntity(
-            entity_type=EntityType.ASTEROID,
+            entity_type=EntityType.LARGE_ASTEROID,
             position=Vector2(-10, 50),  # 10 pixels past left edge
             velocity=Vector2(-5, 0),
             heading=0.0,
@@ -138,7 +138,7 @@ class TestPhysicsBody:
         """Test toroidal wrapping for comprehensive coordinate ranges"""
         # Create entity at any coordinate
         entity = SpaceEntity(
-            entity_type=EntityType.ASTEROID,
+            entity_type=EntityType.LARGE_ASTEROID,
             position=Vector2(float(x), float(y)),
             velocity=Vector2(1.0, 1.0),
             heading=0.0,
@@ -159,7 +159,7 @@ class TestPhysicsBody:
         """Test Newtonian momentum conservation"""
         # Create entity with initial velocity
         entity = SpaceEntity(
-            entity_type=EntityType.ASTEROID,
+            entity_type=EntityType.LARGE_ASTEROID,
             position=Vector2(50, 50),
             velocity=Vector2(10, 5),
             heading=0.0,
@@ -256,7 +256,7 @@ class TestPhysicsBody:
         
         # Create entity with random initial conditions
         entity = SpaceEntity(
-            entity_type=EntityType.ASTEROID,
+            entity_type=EntityType.LARGE_ASTEROID,
             position=Vector2(random.uniform(0, SOVEREIGN_WIDTH), random.uniform(0, SOVEREIGN_HEIGHT)),
             velocity=Vector2(random.uniform(-50, 50), random.uniform(-50, 50)),
             heading=random.uniform(0, 2 * math.pi),
@@ -282,7 +282,7 @@ class TestPhysicsBody:
         random.seed(seed)
         
         entity_repeat = SpaceEntity(
-            entity_type=EntityType.ASTEROID,
+            entity_type=EntityType.LARGE_ASTEROID,
             position=initial_position,
             velocity=initial_velocity,
             heading=0.0,
@@ -304,7 +304,7 @@ class TestPhysicsBody:
     def test_1000_random_movement_steps(self) -> None:
         """Test 1000 random movement steps for wrapping consistency"""
         entity = SpaceEntity(
-            entity_type=EntityType.ASTEROID,
+            entity_type=EntityType.LARGE_ASTEROID,
             position=Vector2(80, 72),
             velocity=Vector2(0, 0),
             heading=0.0,
@@ -338,7 +338,7 @@ class TestPhysicsBody:
         state = PhysicsState(
             entities=[
                 SpaceEntity(EntityType.SHIP, Vector2(10, 20), Vector2(5, 3), 0.5, 4.0),
-                SpaceEntity(EntityType.ASTEROID, Vector2(100, 50), Vector2(-2, 1), 1.2, 8.0)
+                SpaceEntity(EntityType.LARGE_ASTEROID, Vector2(100, 50), Vector2(-2, 1), 1.2, 8.0)
             ],
             ship_entity=SpaceEntity(EntityType.SHIP, Vector2(10, 20), Vector2(5, 3), 0.5, 4.0),
             score=1500,
@@ -390,7 +390,7 @@ class TestPhysicsBody:
         """Test collision detection setup"""
         # Create two entities
         entity1 = SpaceEntity(EntityType.SHIP, Vector2(50, 50), Vector2(0, 0), 0.0, 4.0)
-        entity2 = SpaceEntity(EntityType.ASTEROID, Vector2(55, 50), Vector2(0, 0), 0.0, 8.0)
+        entity2 = SpaceEntity(EntityType.LARGE_ASTEROID, Vector2(55, 50), Vector2(0, 0), 0.0, 8.0)
         
         # Calculate distance
         distance = (entity1.position - entity2.position).magnitude()
