@@ -4,18 +4,18 @@ Asteroids HUD Rendering using Shared UI Components
 import pygame
 from src.shared.entities.game_state import GameSession
 from src.shared.ui import Panel, Label
+from src.shared.ui.spec import SPEC_160
 
 class HUD:
     """Renders game status using shared UI system"""
     
     def __init__(self):
-        # Small panel in top-left
+        # Small panel in top-left using 160x144 spec
         self.panel = Panel(
             rect=pygame.Rect(0, 0, 60, 52),
-            bg_color=(0, 0, 0, 100),  # Transparent black
-            border_color=(0, 255, 0),
-            border_width=1,
-            border_radius=0
+            spec=SPEC_160,
+            variant="overlay",
+            border=True
         )
         
         # Labels for stats

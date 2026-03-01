@@ -143,3 +143,49 @@ SPEC_1080 = UISpec(
     panel_width=int(300 * 1.5),
     bar_height=int(36 * 1.5)
 )
+
+# --- Game Boy Style 160x144 ---  
+SPEC_160 = UISpec(
+    screen_width=160 * 4,  # 640 (scaled for desktop)
+    screen_height=144 * 4, # 576 (scaled for desktop)
+    scale_factor=0.125,    # 1/8 of 720p
+    
+    font_size_sm=2,         # Tiny fonts for Game Boy style
+    font_size_md=3,
+    font_size_lg=4,
+    font_size_xl=6,
+    font_size_hd=8,
+    
+    padding_sm=1,
+    padding_md=2,
+    padding_lg=3,
+    margin_sm=1,
+    margin_md=2,
+    
+    color_bg=(0, 0, 0),           # Pure black background
+    color_surface=(15, 15, 15),    # Dark gray
+    color_surface_alt=(25, 25, 25), # Lighter gray
+    color_border=(100, 100, 100),  # Light gray border
+    color_text=(200, 200, 200),    # Light gray text
+    color_text_dim=(120, 120, 120), # Dim gray text
+    color_accent=(0, 255, 0),       # Green accent (classic Game Boy)
+    color_accent_alt=(0, 200, 0),   # Darker green
+    color_danger=(255, 0, 0),       # Red danger
+    color_success=(0, 255, 0),      # Green success
+    color_warning=(255, 255, 0),    # Yellow warning
+    
+    color_ember=(255, 100, 0),      # Orange ember
+    color_crystal=(0, 200, 255),    # Cyan crystal
+    color_moss=(0, 255, 0),        # Green moss
+    color_coastal=(0, 200, 200),   # Teal coastal
+    color_void=(200, 0, 255),      # Purple void
+    color_mixed=(200, 200, 200),   # Gray mixed
+    
+    button_height_sm=8,
+    button_height_md=12,
+    button_height_lg=16,
+    card_width=60,
+    card_height=40,
+    panel_width=80,
+    bar_height=8
+)
