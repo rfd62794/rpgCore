@@ -10,7 +10,6 @@ from src.tools.apj.agents.task_router import TaskRouter, RoutingLevel
 from src.tools.apj.agents.agent_registry import AgentRegistry
 from src.tools.apj.agents.task_classifier import TaskClassificationResult
 from src.tools.apj.agents.types import SwarmTask, TaskStatus, AgentWorkload
-from src.tools.apj.agents.resilience.self_healing import SelfHealer
 
 
 class TestTaskRouter:
@@ -20,7 +19,7 @@ class TestTaskRouter:
         """Set up test router and registry"""
         self.registry = AgentRegistry()
         self.workloads = {}
-        self.self_healer = Mock(spec=SelfHealer)
+        self.self_healer = Mock()
         self.self_healer.circuit_breakers = {}
         
         self.router = TaskRouter(self.registry, self.workloads, self.self_healer)

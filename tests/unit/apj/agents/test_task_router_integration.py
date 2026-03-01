@@ -11,7 +11,6 @@ from src.tools.apj.agents.agent_registry import AgentRegistry
 from src.tools.apj.agents.task_classifier import TaskClassificationResult
 from src.tools.apj.agents.autonomous_swarm import AutonomousSwarm
 from src.tools.apj.agents.types import SwarmTask, TaskStatus, AgentWorkload
-from src.tools.apj.agents.resilience.self_healing import SelfHealer
 
 
 class TestTaskRouterIntegration:
@@ -21,7 +20,7 @@ class TestTaskRouterIntegration:
         """Set up test environment"""
         self.registry = AgentRegistry()
         self.workloads = {}
-        self.self_healer = Mock(spec=SelfHealer)
+        self.self_healer = Mock()
         self.self_healer.circuit_breakers = {}
         
         # Register test specialists

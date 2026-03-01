@@ -12,7 +12,6 @@ from src.tools.apj.agents.task_router import TaskRouter, RoutingLevel
 from src.tools.apj.agents.agent_registry import AgentRegistry
 from src.tools.apj.agents.task_classifier import TaskClassificationResult
 from src.tools.apj.agents.types import SwarmTask, TaskStatus, AgentWorkload, SwarmState
-from src.tools.apj.agents.resilience.self_healing import SelfHealer
 
 
 class TestAsyncIntegration:
