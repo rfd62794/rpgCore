@@ -492,6 +492,8 @@ SPECIALTY_EXECUTORS = {
     "ui": execute_ui_task,
     "integration": execute_integration_task,
     "debugging": execute_debugging_task,
+    "code_quality": execute_code_quality_task,
+    "testing": execute_testing_task,
 }
 
 
@@ -505,6 +507,8 @@ def get_executor_for_agent(agent_name: str):
         "UI Systems Specialist": execute_ui_task,
         "Integration Specialist": execute_integration_task,
         "Debugging Specialist": execute_debugging_task,
+        "Code Quality Specialist": execute_code_quality_task,
+        "Testing Specialist": execute_testing_task,
         # Also support the underscore versions for backward compatibility
         "documentation_specialist": execute_documentation_task,
         "architecture_specialist": execute_architecture_task,
@@ -512,6 +516,8 @@ def get_executor_for_agent(agent_name: str):
         "ui_systems_specialist": execute_ui_task,
         "integration_specialist": execute_integration_task,
         "debugging_specialist": execute_debugging_task,
+        "code_quality_specialist": execute_code_quality_task,
+        "testing_specialist": execute_testing_task,
     }
     
     return agent_to_specialty.get(agent_name)
