@@ -33,6 +33,11 @@ class AgentCapability(Enum):
     COMMUNICATION = "communication"
     DOCUMENTATION = "documentation"
     COORDINATION = "coordination"
+    DEBUGGING = "debugging"
+    ARCHITECTURE = "architecture"
+    GENETICS = "genetics"
+    UI = "ui"
+    INTEGRATION = "integration"
 
 @dataclass
 class AgentMetadata:

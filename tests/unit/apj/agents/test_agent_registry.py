@@ -299,6 +299,7 @@ class TestAgentRegistryExtended:
         
         # Test with empty registry
         empty_registry = AgentRegistry()
+        empty_registry._agents.clear()
         
         # All find methods should return Generic or None
         assert empty_registry.find_agent_by_specialty("documentation") is None
