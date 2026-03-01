@@ -511,10 +511,17 @@ class AgentRegistry:
         
         # Register dependent specialists
         for agent_name, config in dependent_specialists.items():
-            # Filter dependencies to only those that exist
+            # Filter dependencies to only those that exist - check both display names and internal names
             available_deps = []
             for dep in config["dependencies"]:
-                if self.get_agent_metadata(dep):
+                # First try to find by display name (e.g., "Testing Specialist")
+                found_agent = None
+                for agent_metadata in self._agents.values():
+                    if agent_metadata.name == dep or agent_metadata.specialty == dep:
+                        found_agent = agent_metadata
+                        break
+                
+                if found_agent:
                     available_deps.append(dep)
                 else:
                     print(f"[WARN]  Skipping dependency '{dep}' for {config['display_name']} - not found in registry")
