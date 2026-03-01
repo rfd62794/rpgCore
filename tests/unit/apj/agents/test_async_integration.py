@@ -266,7 +266,7 @@ class TestAsyncIntegration:
         
         import time
         
-        # Create tasks that each take 1 second
+        # Create tasks that each take 0.1 seconds
         tasks = [
             SwarmTask("task_1", "Task 1", "Test task 1", "generic", 1, 0.1, [], "generic_agent", TaskStatus.PENDING),
             SwarmTask("task_2", "Task 2", "Test task 2", "generic", 1, 0.1, [], "generic_agent", TaskStatus.PENDING),
@@ -278,9 +278,9 @@ class TestAsyncIntegration:
             self.swarm.tasks[task.id] = task
             self.swarm.task_queue.append(task.id)
         
-        # Mock executors to simulate 1-second work
+        # Mock executors to simulate 0.1-second work
         async def mock_executor(task):
-            await asyncio.sleep(0.1)  # Simulate 1 second work
+            await asyncio.sleep(0.1)
             return {"success": True, "output": f"Completed {task.title}"}
         
         with patch('src.tools.apj.agents.autonomous_swarm.get_executor_for_agent', return_value=mock_executor):
@@ -301,7 +301,7 @@ class TestAsyncIntegration:
             assert len(results) == 3
             for result in results:
                 assert result["success"] is True
-    
+
     @pytest.mark.asyncio
     async def test_async_run_entry_point(self):
         """Test main async entry point"""
@@ -316,12 +316,13 @@ class TestAsyncIntegration:
         async def mock_execute():
             await asyncio.sleep(0.05)
             self.swarm.state = SwarmState.COMPLETED
+            return "completed"
         
         with patch.object(self.swarm, '_execute_autonomous_round_robin', mock_execute):
             await self.swarm.run()
         
         assert self.swarm.state == SwarmState.COMPLETED
-    
+
     @pytest.mark.asyncio
     async def test_sync_wrapper_backward_compatibility(self):
         """Test synchronous wrapper for backward compatibility"""
@@ -337,7 +338,7 @@ class TestAsyncIntegration:
             
             assert result == "completed"
             assert self.swarm.state == SwarmState.COMPLETED
-    
+
     @pytest.mark.asyncio
     async def test_concurrent_queue_modification(self):
         """Test concurrent queue modification safety"""
@@ -360,10 +361,9 @@ class TestAsyncIntegration:
         assert len(self.swarm.tasks) == len(self.tasks) + len(tasks)
         assert len(self.swarm.task_queue) == len(self.swarm.task_queue) + len(tasks)
         assert all(task_id in self.swarm.task_queue for task_id in tasks)
-    
+
     @pytest.mark.asyncio
-    asyncio
-    def test_concurrent_workload_updates(self):
+    async def test_concurrent_workload_updates(self):
         """Test concurrent workload updates safety"""
         
         await self.swarm._initialize_async_locks()
@@ -384,10 +384,9 @@ class TestAsyncIntegration:
             assert workload.tasks_completed == 1
             assert workload.total_work_time == 1.0
             assert workload.efficiency_score == 1.0
-    
+
     @pytest.mark.asyncio
-    asyncio
-    def test_self_healing_integration_async(self):
+    async def test_self_healing_integration_async(self):
         """Test self-healing integration with async execution"""
         
         await self.swarm._initialize_async_locks()
@@ -410,10 +409,9 @@ class TestAsyncIntegration:
         # Check if self-healer was called
         self.swarm.self_healer.detect_and_recover.assert_called_once()
         assert self.swarm.tasks["fail_task"].status == TaskStatus.FAILED
-    
+
     @pytest.mark.asyncio
-    async
-    def test_learning_system_integration_async(self):
+    async def test_learning_system_integration_async(self):
         """Test learning system integration with async execution"""
         
         await self.swarm._initialize_async_locks()
@@ -440,10 +438,9 @@ class TestAsyncIntegration:
         
         # Check if learning system was called for failure
         self.swarm.learning_system.record_failure.assert_called()
-    
+
     @pytest.mark.asyncio
-    async
-    def test_monitoring_integration_async(self):
+    async def test_monitoring_integration_async(self):
         """Test monitoring integration with async execution"""
         
         await self.swarm._initialize_async_locks()
@@ -460,10 +457,9 @@ class TestAsyncIntegration:
         
         # Check if monitor was called
         self.swarm.monitor.collect_metrics.assert_called()
-    
+
     @pytest.mark.asyncio
-    async
-    def test_task_timeout_handling(self):
+    async def test_task_timeout_handling(self):
         """Test timeout handling with different timeout values"""
         
         # Test with short timeout
@@ -478,10 +474,9 @@ class TestAsyncIntegration:
         assert result["success"] is False
         assert result["error"] == "Task timeout"
         assert result["duration"] >= 6.0  # Should be at least timeout duration
-    
+
     @pytest.mark.asyncio
-    async
-    def test_error_propagation_in_async_context(self):
+    async def test_error_propagation_in_async_context(self):
         """Test error propagation in async context"""
         
         await self.swarm._initialize_async_locks()
@@ -504,10 +499,9 @@ class TestAsyncIntegration:
                 assert result["success"] is False
                 assert error_msg in result["error"]
                 assert result["duration"] > 0
-    
+
     @pytest.mark.asyncio
-    async
-    def test_task_state_transitions(self):
+    async def test_task_state_transitions(self):
         """Test task state transitions during async execution"""
         
         task = self.swarm.tasks["doc_1"]
