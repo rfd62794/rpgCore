@@ -5,7 +5,9 @@ Async executor functions for each specialist agent type
 
 import logging
 import asyncio
-from typing import Dict, Any, Optional, Callable
+import random
+import re
+from typing import Dict, Any, Optional, Callable, List
 from datetime import datetime
 
 from .types import SwarmTask, TaskStatus, TaskResult
@@ -378,7 +380,7 @@ SPECIALTY_EXECUTORS = {
 }
 
 
-async def get_executor_for_agent(agent_name: str):
+def get_executor_for_agent(agent_name: str):
     """Get the async executor function for an agent"""
     
     agent_to_specialty = {
