@@ -5,7 +5,7 @@ from datetime import datetime
 from pathlib import Path
 from typing import Any, Optional, Union
 from loguru import logger
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, ConfigDict
 
 from src.tools.apj.agents.ollama_client import warm_model_sync, resolve_model
 
@@ -28,8 +28,7 @@ class AgentConfig(BaseModel):
     save_output: bool = True
     log_quality: bool = True
 
-    class Config:
-        populate_by_name = True
+    model_config = ConfigDict(populate_by_name=True)
 
 class BaseAgent:
     def __init__(self, config: AgentConfig):

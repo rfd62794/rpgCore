@@ -12,7 +12,7 @@ from pathlib import Path
 from dataclasses import dataclass, field
 from enum import Enum
 
-from pydantic import BaseModel, Field, validator
+from pydantic import BaseModel, Field, validator, ConfigDict
 from loguru import logger
 
 
@@ -160,11 +160,11 @@ class DGTConfig(BaseModel):
             raise ValueError("Intent cooldown must be non-negative")
         return v
     
-    class Config:
-        """Pydantic configuration"""
-        use_enum_values = True
-        validate_assignment = True
-        extra = "forbid"  # Strict validation - no extra fields
+    model_config = ConfigDict(
+        use_enum_values=True,
+        validate_assignment=True,
+        extra="forbid"
+    )
 
 
 class ConfigManager:

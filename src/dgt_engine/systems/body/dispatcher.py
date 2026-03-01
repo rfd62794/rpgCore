@@ -14,7 +14,7 @@ import sys
 sys.path.append(str(Path(__file__).parent.parent.parent))
 sys.path.append(str(Path(__file__).parent.parent))
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, ConfigDict
 from loguru import logger
 
 class DisplayMode(Enum):
@@ -51,8 +51,7 @@ class RenderPacket(BaseModel):
     timestamp: float = Field(default_factory=time.time)
     metadata: Dict[str, Any] = Field(default_factory=dict)
     
-    class Config:
-        arbitrary_types_allowed = True
+    model_config = ConfigDict(arbitrary_types_allowed=True)
 
 class DisplayBody:
     """Abstract base class for all display bodies"""

@@ -13,7 +13,7 @@ from dataclasses import dataclass, field
 from enum import Enum
 import hashlib
 
-from pydantic import BaseModel, Field, validator
+from pydantic import BaseModel, Field, validator, ConfigDict
 from loguru import logger
 
 print("DEBUG: Importing apps.rpg.logic.ship_genetics")
@@ -95,9 +95,7 @@ class ShipGenome(BaseModel):
     mutation_rate: float = Field(default=0.1, ge=0.0, le=1.0, description="Mutation rate")
     ship_signature: Optional[str] = Field(default=None, description="Unique ship hash")
     
-    class Config:
-        validate_assignment = True
-        use_enum_values = True
+    model_config = ConfigDict(validate_assignment=True, use_enum_values=True)
     
     @validator('ship_signature', pre=True, always=True)
     def generate_signature(cls, v, values):
