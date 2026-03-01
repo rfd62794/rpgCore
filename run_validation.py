@@ -13,14 +13,28 @@ sys.path.insert(0, str(project_root))
 
 # Import after path fix
 try:
-    from tests.integration.test_validation_harness import (
-        run_small_validation, run_medium_validation, run_full_validation,
-        TestHarness
-    )
+    from tests.integration.test_validation_harness import TestHarness
 except ImportError as e:
     print(f"Import error: {e}")
     print("Make sure you're running from the project root directory")
     sys.exit(1)
+
+
+async def run_quick_test():
+    """Run a quick 10-task test"""
+    print("🔍 Quick Test: 10 tasks only")
+    
+    try:
+        harness = TestHarness()
+        result = await harness.run_test_suite(10)
+        print(f"Result: {result.status}")
+        print(f"Tasks: {result.task_count}")
+        print(f"Time: {result.execution_time:.1f}s")
+        print(f"Specialist routing: {result.routing_metrics['overall_specialist_rate']:.1%}")
+        return result.status == "PASSED"
+    except Exception as e:
+        print(f"Error: {e}")
+        return False
 
 
 async def main():
@@ -37,7 +51,8 @@ async def main():
     print("Testing basic routing functionality...")
     
     try:
-        result_10 = await run_small_validation()
+        harness = TestHarness()
+        result_10 = await harness.run_test_suite(10)
         print(f"✅ Phase 1: {result_10.status}")
         print(f"   Tasks: {result_10.task_count}")
         print(f"   Time: {result_10.execution_time:.1f}s")
@@ -56,7 +71,7 @@ async def main():
     print("Testing routing with larger task set...")
     
     try:
-        result_50 = await run_medium_validation()
+        result_50 = await harness.run_test_suite(50)
         print(f"✅ Phase 2: {result_50.status}")
         print(f"   Tasks: {result_50.task_count}")
         print(f"   Time: {result_50.execution_time:.1f}s")
@@ -75,7 +90,7 @@ async def main():
     print("Testing complete routing system...")
     
     try:
-        result_100 = await run_full_validation()
+        result_100 = await harness.run_test_suite(100)
         print(f"✅ Phase 3: {result_100.status}")
         print(f"   Tasks: {result_100.task_count}")
         print(f"   Time: {result_100.execution_time:.1f}s")
