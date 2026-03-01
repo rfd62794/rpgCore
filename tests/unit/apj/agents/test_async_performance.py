@@ -8,7 +8,8 @@ import asyncio
 import time
 from unittest.mock import patch, AsyncMock
 
-from src.tools.apj.agents.autonomous_swarm import AutonomousSwarm, SwarmTask, TaskStatus
+from src.tools.apj.agents.autonomous_swarm import AutonomousSwarm
+from src.tools.apj.agents.types import SwarmTask, TaskStatus
 
 
 class TestAsyncPerformance:

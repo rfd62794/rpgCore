@@ -4,13 +4,14 @@ Async/Await Integration Tests for AutonomousSwarm
 
 import pytest
 import asyncio
-from unittest.mock import Mock, AsyncMock, patch
+from unittest.mock import Mock, AsyncMock
 from datetime import datetime
 
-from src.tools.apj.agents.autonomous_swarm import AutonomousSwarm, SwarmTask, TaskStatus, AgentWorkload, SwarmState
-from src.tools.apj.agents.task_router import TaskRouter
+from src.tools.apj.agents.autonomous_swarm import AutonomousSwarm
+from src.tools.apj.agents.task_router import TaskRouter, RoutingLevel
 from src.tools.apj.agents.agent_registry import AgentRegistry
 from src.tools.apj.agents.task_classifier import TaskClassificationResult
+from src.tools.apj.agents.types import SwarmTask, TaskStatus, AgentWorkload, SwarmState
 from src.tools.apj.agents.resilience.self_healing import SelfHealer
 
 
