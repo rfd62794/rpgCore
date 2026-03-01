@@ -390,9 +390,13 @@ class AgentRegistry:
     def initialize_specialists(self) -> None:
         """Initialize specialist agents from specialized_agents module"""
         
+        print("[DEBUG] initialize_specialists() called")
+        
         # Try to import from specialized_agents module
         try:
+            print("[DEBUG] Trying to import from ..swarm.agents.specialized_agents")
             from ..swarm.agents.specialized_agents import SPECIALIZED_AGENTS as SPECIALIST_AGENTS
+            print("[DEBUG] Import successful!")
             
             specialists = SPECIALIST_AGENTS
             

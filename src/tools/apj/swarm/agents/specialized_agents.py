@@ -44,7 +44,55 @@ class SpecializedAgent:
         self.failed_tasks = 0
 
 
-# AGENT 7: Documentation Specialist
+# AGENT 6: Code Quality Specialist
+CODE_QUALITY_SPECIALIST = SpecializedAgent(
+    name="Code Quality Specialist",
+    specialty=AgentSpecialty.CODE_QUALITY,
+    description="Ensures high code quality and standards",
+    capabilities=[
+        "analyze_code_quality",
+        "identify_smells",
+        "suggest_improvements",
+        "enforce_standards",
+        "review_code",
+        "measure_complexity",
+        "check_coverage",
+        "optimize_code"
+    ],
+    tools=[
+        "file_ops", "code_ops", "test_ops", "analysis_ops"
+    ],
+    priority=6,
+    context_size=2000,
+    dependencies=[]
+)
+
+
+# AGENT 7: Testing Specialist
+TESTING_SPECIALIST = SpecializedAgent(
+    name="Testing Specialist",
+    specialty=AgentSpecialty.TESTING,
+    description="Creates and maintains comprehensive test suites",
+    capabilities=[
+        "create_unit_tests",
+        "create_integration_tests",
+        "create_system_tests",
+        "measure_coverage",
+        "test_performance",
+        "debug_tests",
+        "automate_testing",
+        "validate_requirements"
+    ],
+    tools=[
+        "file_ops", "code_ops", "test_ops", "qa_ops"
+    ],
+    priority=7,
+    context_size=2500,
+    dependencies=[]
+)
+
+
+# AGENT 8: Documentation Specialist
 DOCUMENTATION_SPECIALIST = SpecializedAgent(
     name="Documentation Specialist",
     specialty=AgentSpecialty.DOCUMENTATION,
