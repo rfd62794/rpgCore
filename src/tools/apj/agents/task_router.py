@@ -1,43 +1,26 @@
 """
-TaskRouter - Intelligent task-to-agent matcher
-Replaces hardcoded routing with dynamic, priority-based matching system
+TaskRouter - Intelligent task-to-agent routing system
+Routes tasks to best available agent based on classification and availability
 """
 
 import logging
 from typing import Dict, List, Optional, Any
 from dataclasses import dataclass
-from datetime import datetime
 from enum import Enum
+from datetime import datetime
+import random
 
-from .agent_registry import AgentRegistry, AgentMetadata
+from .types import SwarmTask, TaskStatus, AgentWorkload, RoutingDecision, RoutingLevel
+from .agent_registry import AgentRegistry
 from .task_classifier import TaskClassificationResult
-from .autonomous_swarm import SwarmTask, TaskStatus, AgentWorkload
-from .resilience.self_healing import SelfHealer
+
+# Import SelfHealer if available
+try:
+    from ..swarm.resilience.self_healing import SelfHealer
+except ImportError:
+    SelfHealer = None
 
 logger = logging.getLogger(__name__)
-
-
-class RoutingLevel(Enum):
-    """Routing confidence levels"""
-    PERFECT_MATCH = "perfect_match"
-    SPECIALTY_MATCH = "specialty_match"
-    CAPABILITY_MATCH = "capability_match"
-    LOAD_BALANCED = "load_balanced"
-    FALLBACK = "fallback"
-
-
-@dataclass
-class RoutingDecision:
-    """Record of routing decision"""
-    task_id: str
-    task_title: str
-    classification_type: str
-    classification_confidence: float
-    selected_agent: str
-    routing_level: RoutingLevel
-    routing_confidence: float
-    timestamp: str
-    reason: str
 
 
 class TaskRouter:
