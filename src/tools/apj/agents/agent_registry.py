@@ -264,12 +264,6 @@ class AgentRegistry:
                 # Skip unknown capabilities
                 continue
         
-        # Validate dependencies exist
-        if dependencies:
-            for dep in dependencies:
-                if dep not in self._agents:
-                    raise ValueError(f"Dependency agent '{dep}' not found in registry")
-        
         # Use display_name if provided, otherwise use agent_name
         final_display_name = display_name or agent_name
         
@@ -504,9 +498,10 @@ class AgentRegistry:
                 capabilities=config["capabilities"],
                 tool_categories=config["tools"],
                 context_size=config["context_size"],
-                dependencies=config["dependencies"]
+                dependencies=config["dependencies"],
+                display_name=config.get("display_name")
             )
-            print(f"[OK] Registered fallback specialist: {agent_name} ({config['specialty']})")
+            print(f"[OK] Registered fallback specialist: {config.get('display_name', agent_name)} ({config['specialty']})")
 
 # Global agent registry
 AGENT_REGISTRY = AgentRegistry()
