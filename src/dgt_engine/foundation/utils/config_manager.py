@@ -95,39 +95,39 @@ class SystemConfigModel(BaseModel):
     """Pydantic model for system configuration with validation"""
     
     # Core system settings
-    mode: str = Field(default="autonomous", description="System运行模式")
-    scene: str = Field(default="tavern", description="游戏场景")
-    seed: str = Field(default="TAVERN_SEED", description="世界种子")
+    mode: str = Field(default="autonomous", description="System run mode")
+    scene: str = Field(default="tavern", description="Game scene")
+    seed: str = Field(default="TAVERN_SEED", description="World seed")
     
     # Performance settings
-    target_fps: int = Field(default=60, ge=1, le=240, description="目标帧率")
-    enable_performance_monitoring: bool = Field(default=True, description="启用性能监控")
+    target_fps: int = Field(default=60, ge=1, le=240, description="Target frame rate")
+    enable_performance_monitoring: bool = Field(default=True, description="Enable performance monitoring")
     
     # Graphics settings
-    enable_graphics: bool = Field(default=True, description="启用图形渲染")
-    graphics_width: int = Field(default=1024, ge=640, description="图形宽度")
-    graphics_height: int = Field(default=768, ge=480, description="图形高度")
-    fullscreen: bool = Field(default=False, description="全屏模式")
+    enable_graphics: bool = Field(default=True, description="Enable graphics rendering")
+    graphics_width: int = Field(default=1024, ge=640, description="Graphics width")
+    graphics_height: int = Field(default=768, ge=480, description="Graphics height")
+    fullscreen: bool = Field(default=False, description="Fullscreen mode")
     
     # System features
-    enable_persistence: bool = Field(default=True, description="启用数据持久化")
-    enable_logging: bool = Field(default=True, description="启用日志记录")
-    enable_console: bool = Field(default=True, description="启用开发者控制台")
-    enable_debug_mode: bool = Field(default=False, description="启用调试模式")
+    enable_persistence: bool = Field(default=True, description="Enable data persistence")
+    enable_logging: bool = Field(default=True, description="Enable logging")
+    enable_console: bool = Field(default=True, description="Enable developer console")
+    enable_debug_mode: bool = Field(default=False, description="Enable debug mode")
     
     # Logging configuration
-    log_level: str = Field(default="INFO", description="日志级别")
-    log_file: Optional[str] = Field(default=None, description="日志文件路径")
-    log_rotation: str = Field(default="10 MB", description="日志轮转大小")
+    log_level: str = Field(default="INFO", description="Log level")
+    log_file: Optional[str] = Field(default=None, description="Log file path")
+    log_rotation: str = Field(default="10 MB", description="Log rotation size")
     
     # Network settings (for future use)
-    enable_network: bool = Field(default=False, description="启用网络功能")
-    network_port: int = Field(default=8080, ge=1024, le=65535, description="网络端口")
+    enable_network: bool = Field(default=False, description="Enable network features")
+    network_port: int = Field(default=8080, ge=1024, le=65535, description="Network port")
     
     # Resource paths
-    assets_path: str = Field(default="assets/", description="资源路径")
-    data_path: str = Field(default="data/", description="数据路径")
-    logs_path: str = Field(default="logs/", description="日志路径")
+    assets_path: str = Field(default="assets/", description="Asset path")
+    data_path: str = Field(default="data/", description="Data path")
+    logs_path: str = Field(default="logs/", description="Log path")
     
     @field_validator('mode', mode='before')
     @classmethod
