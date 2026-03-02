@@ -15,7 +15,11 @@ from src.shared.ui.stats_panel import StatsPanel
 from src.shared.ui.spec import UISpec
 
 class ProfileCard(UIComponent):
-    def __init__(self, slime: RosterSlime, position: Tuple[int, int], spec: UISpec):
+    def __init__(self, slime: RosterSlime, position: Tuple[int, int], spec: UISpec, theme: Optional[UITheme] = None):
+        # Use theme or default
+        self.theme = theme or UITheme.DEFAULT
+        self.spec = spec
+        
         # Card dimensions: respect parent panel boundaries
         side_panel_width = spec.screen_width * 0.35  # HubLayout side panel width
         self.WIDTH = min(spec.card_width, int(side_panel_width - spec.padding_md * 2))
@@ -30,11 +34,13 @@ class ProfileCard(UIComponent):
         self.LEFT_CONTENT_MAX_X = self.WIDTH - self.STATS_PANEL_WIDTH - (self.PADDING * 2)
         self.TEXT_AREA_WIDTH = self.LEFT_CONTENT_MAX_X - self.PORTRAIT_SIZE - (self.PADDING * 2)
         
+        # Create rect for base component
         rect = pygame.Rect(position[0], position[1], self.WIDTH, self.HEIGHT)
-        super().__init__(rect)
+        super().__init__(rect, theme, z_order=0)
+        
+        # Store slime data
         self.slime = slime
         self.position = position
-        self.spec = spec
         
         # Add StatsPanel with proper width constraint for right side
         stats_x = position[0] + self.PORTRAIT_SIZE + self.PADDING * 2
