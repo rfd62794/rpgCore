@@ -839,3 +839,68 @@ class GardenScene(GardenSceneBase):
                     self.selected_entities = [clicked_slime]
                 self.on_selection_changed()
                 return
+
+    def _update_hover_tooltip(self, dt: float, mouse_pos: Tuple[int, int]):
+        """Update hover tooltip state"""
+        # Find slime under cursor (within 40px)
+        hovered_slime = None
+        for slime in self.garden_state.slimes:
+            slime_pos = (int(slime.kinematics.position.x), int(slime.kinematics.position.y))
+            distance = ((mouse_pos[0] - slime_pos[0])**2 + (mouse_pos[1] - slime_pos[1])**2)**0.5
+            if distance <= 40:  # 40px hover radius
+                hovered_slime = slime
+                break
+        
+        # Update hover state
+        if hovered_slime != self.hovered_slime:
+            self.hovered_slime = hovered_slime
+            self.hover_timer = 0.0
+        
+        # Increment timer if hovering
+        if self.hovered_slime:
+            self.hover_timer += dt
+    
+    def _render_hover_tooltip(self, surface: pygame.Surface):
+        """Render hover tooltip if conditions met"""
+        if not self.hovered_slime or self.hover_timer < self.tooltip_delay:
+            return
+        
+        # Get slime info
+        slime = self.hovered_slime
+        name = slime.name
+        
+        # Get stage and tier info
+        stage = getattr(slime.genome, 'stage', 'Unknown')
+        tier = getattr(slime.genome, 'tier', 1)
+        
+        # Create tooltip text
+        tooltip_text = f"{name} | {stage} | T{tier}"
+        
+        # Create tooltip surface
+        font = pygame.font.Font(None, 12)  # font_tiny
+        text_surface = font.render(tooltip_text, True, DEFAULT_THEME.text_primary)
+        
+        # Add padding
+        padding = 4
+        tooltip_width = text_surface.get_width() + padding * 2
+        tooltip_height = text_surface.get_height() + padding * 2
+        
+        # Position tooltip above slime
+        slime_pos = (int(slime.kinematics.position.x), int(slime.kinematics.position.y))
+        tooltip_x = slime_pos[0] - tooltip_width // 2
+        tooltip_y = slime_pos[1] - 60  # Above slime
+        
+        # Create tooltip background
+        tooltip_surface = pygame.Surface((tooltip_width, tooltip_height), pygame.SRCALPHA)
+        tooltip_surface.fill((*DEFAULT_THEME.surface, 230))  # Semi-transparent background
+        
+        # Draw border
+        pygame.draw.rect(tooltip_surface, DEFAULT_THEME.border, tooltip_surface.get_rect(), 1)
+        
+        # Render text
+        text_x = padding
+        text_y = padding
+        tooltip_surface.blit(text_surface, (text_x, text_y))
+        
+        # Blit to main surface
+        surface.blit(tooltip_surface, (tooltip_x, tooltip_y))
