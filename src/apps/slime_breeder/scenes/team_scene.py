@@ -169,20 +169,6 @@ class TeamScene(Scene):
             Label(f"... and {len(unassigned) - max_visible} more", 
                   (self.available_panel.rect.x + 20, self.available_panel.rect.bottom - 25), 
                   self.spec, size="sm", color=self.spec.color_text_dim, theme=DEFAULT_THEME).add_to(self.available_panel.children)
-            
-            # Assign buttons
-            btn_y = row_rect.y + 40
-            btn_width = 65
-            
-            if not self.dungeon_team.is_full():
-                dungeon_btn = Button("⚔", pygame.Rect(row_rect.x + 10, btn_y, btn_width, 20),
-                                     lambda s=slime: self._assign_to_dungeon(s), self.spec, variant="primary", theme=DEFAULT_THEME)
-                dungeon_btn.add_to(self.available_panel.children)
-            
-            if not self.racing_team.is_full():
-                racing_btn = Button("◎", pygame.Rect(row_rect.x + 80, btn_y, btn_width, 20),
-                                    lambda s=slime: self._assign_to_racing(s), self.spec, variant="secondary", theme=DEFAULT_THEME)
-                racing_btn.add_to(self.available_panel.children)
         
         # Team assignment rules
         rules_y = self.available_panel.rect.y + self.available_panel.rect.height - 80
