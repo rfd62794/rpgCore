@@ -27,9 +27,10 @@ class TestSaveManager:
             SaveManager.SAVE_FILE = SaveManager.SAVE_DIR / 'player.json'
             SaveManager.BACKUP_FILE = SaveManager.SAVE_DIR / 'player.backup.json'
             
-            # Create initial save
+            # Create initial save with some data
             roster = Roster()
             session = GameSession.new_game()
+            session.resources['gold'] = 100
             
             # First save should create main file but no backup
             result1 = SaveManager.save(roster, session)
@@ -75,9 +76,8 @@ class TestSaveManager:
             assert len(main_data['roster']['slimes']) == 1
             assert main_data['roster']['slimes'][0]['name'] == "Test Slime"
             assert main_data['session']['resources']['gold'] == 200
-            assert len(backup_data['roster']['slimes']) == 1
-            assert backup_data['roster']['slimes'][0]['name'] == "Test Slime"
-            assert backup_data['session']['resources']['gold'] == 200
+            assert len(backup_data['roster']['slimes']) == 0  # Backup has old data (empty)
+            assert backup_data['session']['resources']['gold'] == 100  # Backup has old gold
     
     def test_save_failure_doesnt_corrupt_existing(self):
         """Test that save failure doesn't corrupt existing save"""
