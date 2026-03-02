@@ -438,6 +438,26 @@ class GardenScene(GardenSceneBase):
         cursor = mouse_pos if self.garden_rect.collidepoint(mouse_pos) else None
         self.garden_state.update(dt, cursor)
 
+    def _update_idle_zones(self, dt: float):
+        """Update idle zone resource generation"""
+        if not self.game_session or not self.garden_renderer:
+            return
+        
+        # Get idle zone target from garden renderer
+        idle_target = self.garden_renderer.get_idle_zone_target()
+        if not idle_target:
+            return
+        
+        # Simple resource generation for idle zones
+        # In a full implementation, this would check zone type and generate appropriate resources
+        resource_generation_rate = 0.1  # Resources per second
+        
+        # Generate small amounts of resources
+        if random.random() < resource_generation_rate * dt:
+            resource_type = random.choice(['gold', 'food', 'scrap'])
+            amount = random.randint(1, 3)
+            self.game_session.resources[resource_type] = self.game_session.resources.get(resource_type, 0) + amount
+
     def render_garden(self, surface: pygame.Surface):
         # Render environmental elements before slimes
         if self.garden_renderer:
