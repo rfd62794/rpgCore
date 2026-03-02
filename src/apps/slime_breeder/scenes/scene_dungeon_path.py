@@ -310,9 +310,12 @@ class DungeonPathScene(Scene):
         total_h = len(self.team[:5]) * SLIME_SPACING
         start_y = py - total_h // 2 + SLIME_SPACING // 2
         
-        for i, slime in enumerate(self.team[:5]):
+        for i, entry in enumerate(self.team[:5]):
             sy = start_y + i * SLIME_SPACING
-            render_slime_from_genome(surface, slime.genome, int(px), int(sy), radius=16)
+            # Get the actual slime from roster to access genome
+            slime = self.roster.get_slime(entry.slime_id)
+            if slime:
+                render_slime_from_genome(surface, slime.genome, int(px), int(sy), radius=16)
 
         # Pause Indicator
         if self.engine.party.paused:
@@ -352,10 +355,14 @@ class DungeonPathScene(Scene):
             pygame.draw.rect(surface, (70, 60, 90), card_rect, width=1, border_radius=6)
             
             # Portrait
-            render_slime_from_genome(surface, slime.genome, card_x + 25, bar_y + card_h // 2, radius=18)
+            # Get the actual slime from roster to access genome
+            slime = self.roster.get_slime(entry.slime_id)
+            if slime:
+                render_slime_from_genome(surface, slime.genome, card_x + 25, bar_y + card_h // 2, radius=18)
             
             # Name & LV
-            render_text(surface, slime.name, (card_x + 55, bar_y + 10), size=14, bold=True, color=(255,255,255))
+            name = slime.name if slime else entry.slime_id
+            render_text(surface, name, (card_x + 55, bar_y + 10), size=14, bold=True, color=(255,255,255))
             render_text(surface, f"Lv.{slime.level}", (card_x + 55, bar_y + 26), size=12, color=(180, 180, 200))
             
             # HP Bar
