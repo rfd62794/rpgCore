@@ -43,6 +43,9 @@ class Label(UIComponent):
         self.bold = bold
         self.spec = spec
         
+        # Add visible attribute for compatibility
+        self.visible = True
+        
         try:
             self.font = pygame.font.Font(None, self.font_size)
             if self.bold:
