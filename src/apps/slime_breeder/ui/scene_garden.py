@@ -151,9 +151,14 @@ class GardenScene(GardenSceneBase):
         class UIComponentsHandler:
             def handle_event(self, event: pygame.event.Event) -> bool:
                 # Handle specialized team buttons first
-                for btn in [self.dungeon_btn, self.racing_btn, self.remove_btn, self.mission_btn]:
-                    if btn.visible and hasattr(btn, "handle_event") and btn.handle_event(event):
-                        return True
+                if hasattr(self, 'dungeon_btn') and self.dungeon_btn.visible and hasattr(self.dungeon_btn, "handle_event") and self.dungeon_btn.handle_event(event):
+                    return True
+                if hasattr(self, 'racing_btn') and self.racing_btn.visible and hasattr(self.racing_btn, "handle_event") and self.racing_btn.handle_event(event):
+                    return True
+                if hasattr(self, 'remove_btn') and self.remove_btn.visible and hasattr(self.remove_btn, "handle_event") and self.remove_btn.handle_event(event):
+                    return True
+                if hasattr(self, 'mission_btn') and self.mission_btn.visible and hasattr(self.mission_btn, "handle_event") and self.mission_btn.handle_event(event):
+                    return True
                 
                 # Handle other UI components
                 for comp in reversed(self.ui_components):
@@ -193,26 +198,6 @@ class GardenScene(GardenSceneBase):
         # Register handlers with router
         self.router.register(UIComponentsHandler(), InputPriority.UI_COMPONENTS)
         self.router.register(SceneDefaultHandler(), InputPriority.SCENE_DEFAULT)
-        
-        # We'll use these specific buttons for the actions area
-        self.dungeon_btn = Button("→ Dungeon Team", pygame.Rect(self.actions_rect.x + 10, btn_y, btn_w, btn_h), self._assign_to_dungeon, self.spec)
-        self.racing_btn = Button("→ Racing Team", pygame.Rect(self.actions_rect.x + 10, btn_y + btn_h + 8, btn_w, btn_h), self._assign_to_racing, self.spec)
-        self.remove_btn = Button("Remove", pygame.Rect(self.actions_rect.x + 10, btn_y + btn_h + 8, btn_w, btn_h), self._remove_from_team, self.spec, variant="danger")
-        self.mission_btn = Button("ON MISSION", pygame.Rect(self.actions_rect.x + 10, btn_y, btn_w, btn_h), None, self.spec, variant="warning")
-        
-        # Hide initially
-        self.dungeon_btn.set_visible(False)
-        self.racing_btn.set_visible(False)
-        self.remove_btn.set_visible(False)
-        self.mission_btn.set_visible(False)
-        
-        # Store buttons for later addition to detail_panel
-        self._pending_buttons = [
-            self.dungeon_btn,
-            self.racing_btn, 
-            self.remove_btn,
-            self.mission_btn
-        ]
         
         # 3. Custom Action Bar Buttons
         btn_y = self.bar_rect.y + 10
