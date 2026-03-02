@@ -149,8 +149,13 @@ class GardenScene(GardenSceneBase):
         self.racing_nav_btn = Button("RACING", pygame.Rect(260, nav_y, 100, nav_h), self._go_to_racing, self.spec, variant="ghost")
         self.top_bar.add_child(self.racing_nav_btn)
 
-        # Sync initial slimes if garden is empty but roster has slimes
-        if not self.garden_state.slimes and self.roster.slimes:
+        # Sync initial slimes if garden is empty but entity registry has slimes
+        if not self.garden_state.slimes and self.entity_registry:
+            for rs in self.entity_registry.all():
+                pos = (random.randint(50, self.garden_rect.width - 50), random.randint(50, self.garden_rect.height - 50))
+                slime = Slime(rs.name, rs.genome, pos, level=rs.level)
+                self.garden_state.add_slime(slime)
+        elif not self.garden_state.slimes and self.roster.slimes:
             for rs in self.roster.slimes:
                 pos = (random.randint(50, self.garden_rect.width - 50), random.randint(50, self.garden_rect.height - 50))
                 slime = Slime(rs.name, rs.genome, pos, level=rs.level)
