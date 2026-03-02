@@ -51,7 +51,7 @@ class DungeonPathScene(Scene):
         # reuse it — never regenerate
         if self.session.track is None:
             self.session.track = generate_dungeon_track(
-                depth=self.session.floor,
+                depth=self.session.floor.depth,  # Use floor.depth instead of floor
                 seed=self.session.seed
             )
         
