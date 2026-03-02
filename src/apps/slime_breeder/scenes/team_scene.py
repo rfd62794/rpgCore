@@ -335,13 +335,17 @@ class TeamScene(Scene):
         return card
 
     def handle_event(self, event: pygame.event.Event) -> None:
+        # First check tabbed panel for tab changes
+        if hasattr(self, 'tabbed_panel'):
+            tab_event = self.tabbed_panel.handle_event(event)
+            if tab_event and tab_event.event_type == 'tab_change':
+                self._update_enter_button()
+                return
+        
+        # Then handle other UI components
         for comp in reversed(self.ui_components):
             if hasattr(comp, "handle_event") and comp.handle_event(event):
                 break
-
-    def update(self, dt: float) -> None:
-        for comp in self.ui_components:
-            comp.update(int(dt * 1000))
 
     def render(self, surface: pygame.Surface) -> None:
         surface.fill(self.spec.color_bg)
