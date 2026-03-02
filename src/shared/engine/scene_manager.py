@@ -136,6 +136,9 @@ class SceneManager:
         self._scene_stack: List[Scene] = []
         self._running = False
         
+        # Shared state that gets passed to all scenes
+        self._shared_state: Dict[str, Any] = {}
+        
         self.clock = SystemClock(target_fps=fps, mode=TimeMode.REAL_TIME)
 
     def register(self, name: str, scene_class: type) -> None:
@@ -151,11 +154,14 @@ class SceneManager:
             self._active_scene.shutdown()
             self._active_scene.status = SystemStatus.STOPPED
 
+        # Merge shared state with scene-specific kwargs
+        merged_kwargs = {**self._shared_state, **kwargs}
+        
         scene_class = self._scenes[name]
         logger.info(f"Switching to scene: {name}")
         logger.info(f"Scene class: {scene_class}")
-        logger.info(f"Kwargs: {kwargs}")
-        self._active_scene = scene_class(self, self.spec, **kwargs)
+        logger.info(f"Kwargs: {merged_kwargs}")
+        self._active_scene = scene_class(self, self.spec, **merged_kwargs)
         
         if not self._active_scene.initialize():
             logger.error(f"Failed to initialize scene: {name}")

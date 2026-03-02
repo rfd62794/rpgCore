@@ -31,19 +31,30 @@ class BreedingScene(Scene):
     def __init__(self, manager, spec: UISpec, **kwargs):
         super().__init__(manager, spec, **kwargs)
         self.layout = SelectionLayout(spec)
-        self.roster = kwargs.get("roster")
+        
+        # Use shared roster from kwargs or create SceneContext
+        self.roster = kwargs.get('roster')
         if not self.roster:
-            from src.shared.teams.roster_save import load_roster
-            self.roster = load_roster()
+            # Create SceneContext to get shared roster
+            from src.shared.engine.scene_context import SceneContext
+            context = SceneContext(
+                entity_registry=kwargs.get('entity_registry'),
+                game_session=kwargs.get('game_session'),
+                dispatch_system=kwargs.get('dispatch_system'),
+                roster=None,  # Will load from file if not provided
+                theme=None
+            )
+            self.set_context(context)
+            self.roster = context.roster
             
         self.state = BreedingState.SELECT_A
         
         # Selection state
         self.parent_a: Optional[RosterSlime] = None
         self.parent_b: Optional[RosterSlime] = None
-        self.offspring_genome: Optional[SlimeGenome] = None
-        self.offspring_name: str = ""
-        self.offspring_slime: Optional[RosterSlime] = None
+        self.offspring_genome = None
+        self.offspring_slime = None
+        self.offspring_name = ""
         
         # UI Setup
         self.ui_components: List[UIComponent] = []
@@ -253,8 +264,13 @@ class BreedingScene(Scene):
             generation=self.offspring_genome.generation
         )
         self.roster.add_slime(self.offspring_slime)
-        from src.shared.teams.roster_save import save_roster
-        save_roster(self.roster)
+        
+        # Save through context if available, otherwise fallback
+        if self.context and hasattr(self.context, 'save_roster'):
+            self.context.save_roster()
+        else:
+            from src.shared.teams.roster_save import save_roster
+            save_roster(self.roster)
         
         self.state = BreedingState.COMPLETE
         self._complete_timer = 3.0
