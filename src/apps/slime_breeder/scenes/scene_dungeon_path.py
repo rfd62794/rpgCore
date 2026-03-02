@@ -50,8 +50,14 @@ class DungeonPathScene(Scene):
         # If session already has a track (on_resume after combat)
         # reuse it — never regenerate
         if self.session.track is None:
+            # Handle both Floor object and integer depth
+            if hasattr(self.session.floor, 'depth'):
+                depth = self.session.floor.depth
+            else:
+                depth = self.session.floor  # It's already an integer
+            
             self.session.track = generate_dungeon_track(
-                depth=self.session.floor.depth,  # Use floor.depth instead of floor
+                depth=depth,
                 seed=self.session.seed
             )
         
