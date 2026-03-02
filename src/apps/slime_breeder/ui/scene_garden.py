@@ -192,10 +192,10 @@ class GardenScene(GardenSceneBase):
                 print(f"DEBUG: Releasing {s.name} into the wild...")
                 self.garden_state.remove_slime(s.name)
                 # Remove from roster
-                self.roster.slimes = [rs for rs in self.roster.slimes if rs.name != s.name]
+                self.roster.entries = [e for e in self.roster.entries if e.slime_id != s.name.lower().replace(" ", "_")]
                 # Also remove from any team
                 for team in self.roster.teams.values():
-                    team.members = [m for m in team.members if m.name != s.name]
+                    team.members = [m for m in team.members if m.slime_id != s.name.lower().replace(" ", "_")]
             
             save_roster(self.roster)
             self.selected_entities = []
