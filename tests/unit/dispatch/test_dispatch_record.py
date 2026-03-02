@@ -126,7 +126,7 @@ class TestDispatchRecord:
         assert "DispatchRecord" in repr_str
         assert "zone=racing" in repr_str
         assert "status=preparing" in repr_str
-        assert "squad_size=2" in repr_str
+        assert "slimes=2" in repr_str
     
     def test_dispatch_record_squad_size(self):
         """Test squad size calculation"""
