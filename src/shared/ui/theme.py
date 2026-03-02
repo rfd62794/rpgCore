@@ -68,13 +68,20 @@ class UITheme:
     tier_colors: Dict[int, tuple] = field(
         default_factory=lambda: {
             1: (200, 200, 200),
-            2: (200, 200, 200),
-            3: (144, 238, 144),
-            4: (144, 238, 144),
-            5: (100, 149, 237),
-            6: (100, 149, 237),
-            7: (147, 112, 219),
-            8: (255, 215, 0),
+            2: (0, 255, 0),
+            3: (0, 255, 255),
+            4: (255, 255, 0),
+            5: (255, 0, 255),
+        }
+    )
+    
+    # Canonical team colors
+    team_colors: Dict[str, tuple] = field(
+        default_factory=lambda: {
+            'dungeon': (180, 60, 60),   # dark red
+            'racing':  (60, 140, 220),  # race blue
+            'garden': (80, 160, 80),   # soft green (unassigned)
+            'conquest': (140, 60, 140), # purple
         }
     )
     
@@ -90,6 +97,10 @@ class UITheme:
     def tier_color(self, tier: int, fallback: tuple = (150, 150, 150)) -> tuple:
         """Get tier color with fallback."""
         return self.tier_colors.get(tier, fallback)
+    
+    def team_color(self, team: str, fallback: tuple = (150, 150, 150)) -> tuple:
+        """Get team color with fallback."""
+        return self.team_colors.get(team.lower(), fallback)
 
 
 # Module-level default instance
