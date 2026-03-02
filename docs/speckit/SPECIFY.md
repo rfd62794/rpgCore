@@ -330,6 +330,94 @@ class LoreRecordComponent:
 
 ---
 
+## 11. Visual Expression System Specifications
+
+### 11.1 Visual Architecture
+```python
+@dataclass
+class VisualComponent:
+    """Complete visual profile of a slime"""
+    shape_params: ShapeParameters
+    color_profile: ColorProfile
+    pattern_params: PatternParameters
+    expression_state: ExpressionState
+    rendering_context: RenderingContext
+
+@dataclass
+class ExpressionComponent:
+    """Emotional expression state and transitions"""
+    current_emotion: EmotionType
+    target_emotion: EmotionType
+    transition_progress: float
+    expression_intensity: float
+
+@dataclass
+class RenderingContextComponent:
+    """Rendering context and mode"""
+    mode: RenderMode  # WORLD, INTIMATE, SILHOUETTE
+    scale: float
+    detail_level: DetailLevel  # LOW, MEDIUM, HIGH, FULL
+    background_context: Optional[str]
+```
+
+### 11.2 Shape System
+| Shape | Physical Profile | Gameplay Relevance |
+|-------|-----------------|-------------------|
+| Round | Balanced, stable | Default. Reliable |
+| Wide/Flat | Low center of gravity | Sumo advantage |
+| Tall/Narrow | Extended reach | Speed/stability trade |
+| Compact | Dense, heavy | Strength/Defense |
+| Irregular | Unpredictable | Trickster archetype |
+
+### 11.3 Color Blend Modes
+| Mode | Tier | Visual Effect |
+|------|------|---------------|
+| Solid | 1 (Blooded) | Single culture color |
+| Gradient | 2 (Bordered) | Smooth adjacent blend |
+| Sectional | 3 (Sundered) | Hard opposing boundary |
+| Soft Edge | 4 (Drifted) | Partial soft blend |
+| Complex Mix | 5 (Threaded) | Multiple hues visible |
+| Deepening | 6 (Convergent) | Darkening + iridescence |
+| Near-Void | 7 (Liminal) | Five colors, one absent |
+| Iridescent | 8 (Void) | Full spectrum cycling |
+
+### 11.4 Expression System
+| Emotion | Eye Shape | Brow Angle | Mouth Curve | Symbol |
+|---------|-----------|------------|-------------|--------|
+| Happy | Round, open | Neutral/raised | Upward curl | Blush circles |
+| Sad | Half-closed | Angled inward | Downward curl | Tear drop |
+| Angry | Narrowed | Sharply down | Tight line | Heat waves |
+| Curious | Wide, asymmetric | One raised | Slight open | Question mark |
+| Scared | Wide, pupils small | Raised high | Open O | Sweat drop |
+| Content | Closed/squint | Soft | Gentle curve | None |
+| Excited | Stars/sparkles | Raised | Wide open | Bounce |
+| Confused | Asymmetric | Mixed | Crooked | Spiral |
+
+### 11.5 Rendering Contexts
+| Context | Scale | Mode | Detail Level |
+|---------|-------|------|-------------|
+| Garden overview | Small | World | Shape + color + basic expression |
+| Garden interaction | Medium | World | Full expression system |
+| Dispatch track | Small | World | Shape + color only (performance) |
+| Combat/Sumo | Medium | World | Shape + physics expression |
+| Visual novel scene | Large | Intimate | Full fidelity, expression priority |
+| Silhouette | Any | Intimate | Shape + culture glow only |
+| Lore record portrait | Medium | Static | Full genetics expression, frozen |
+
+### 11.6 ECS Integration
+- **VisualRenderingSystem**: Main visual rendering pipeline
+- **ShapeRenderingSystem**: Procedural shape generation
+- **ColorRenderingSystem**: Culture colors and blend modes
+- **ExpressionRenderingSystem**: Emotional expression and animation
+
+### 11.7 Performance Specifications
+- **Memory**: ~300 bytes per slime visual data
+- **Computation**: <1ms shape generation, <0.5ms color blending
+- **Rendering**: 60 FPS world mode, 30 FPS intimate mode
+- **Patterns**: <1ms per slime, adaptive detail based on distance
+
+---
+
 ## 🎯 Implementation Priority
 
 ### Phase 1: Core Geography
