@@ -18,9 +18,23 @@ from src.shared.ui.panel import Panel
 NAMES = ["Mochi", "Pip", "Glimmer", "Bloop", "Sage", "Dew", "Ember", "Fizz", "Lumen", "Nook"]
 
 class GardenScene(GardenSceneBase):
-    def on_garden_enter(self, **kwargs) -> None:
-        self.garden_state = GardenState()
-        self.renderer = SlimeRenderer()
+    def __init__(self, manager, spec: UISpec, **kwargs):
+        super().__init__(manager, spec, **kwargs)
+        self.layout = HubLayout(spec)
+        
+        # Get shared entity registry
+        self.entity_registry = kwargs.get('entity_registry')
+        
+        # Garden area (center of screen, excluding right panel)
+        self.garden_rect = pygame.Rect(
+            0,
+            self.layout.top_bar.height,
+            self.spec.screen_width - self.layout.right_panel.width,
+            self.spec.screen_height - self.layout.top_bar.height - self.layout.team_bar.height
+        )
+        
+        # Initialize garden state
+        self.garden_state = GardenState(self.garden_rect)
         
         # Initialize garden renderer with level
         self.garden_level = 0
