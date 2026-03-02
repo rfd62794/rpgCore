@@ -74,18 +74,18 @@ class TeamScene(Scene):
             slot_y = self.layout.left_panel.y + 60 + (i * (self.spec.card_height + 20))
             if i < len(self.dungeon_team.members):
                 slime = self.dungeon_team.members[i]
-                card = ProfileCard(slime, (self.layout.left_panel.x + 20, slot_y), self.spec)
+                card = ProfileCard(slime, (self.layout.left_panel.x + 20, slot_y), self.spec, theme=DEFAULT_THEME)
                 self.ui_components.append(card)
                 
                 if not slime.locked:
                     rem_btn = Button("Remove", pygame.Rect(self.layout.left_panel.x + 20, slot_y + self.spec.card_height + 5, 100, 30),
-                                     lambda s=slime: self._remove_from_dungeon(s), self.spec, variant="ghost")
+                                     lambda s=slime: self._remove_from_dungeon(s), self.spec, variant="ghost", theme=DEFAULT_THEME)
                     self.ui_components.append(rem_btn)
             else:
                 # Empty Slot
                 empty_rect = pygame.Rect(self.layout.left_panel.x + 20, slot_y, self.spec.card_width, self.spec.card_height)
-                Panel(empty_rect, self.spec, variant="surface", border=True).add_to(self.ui_components)
-                Label("EMPTY", (empty_rect.centerx, empty_rect.centery), self.spec, centered=True).add_to(self.ui_components)
+                Panel(empty_rect, self.spec, variant="surface", border=True, theme=DEFAULT_THEME).add_to(self.ui_components)
+                Label("EMPTY", (empty_rect.centerx, empty_rect.centery), self.spec, centered=True, theme=DEFAULT_THEME).add_to(self.ui_components)
 
         # 5. Racing Team Slot (Center Panel - larger)
         racing_slot_y = self.layout.center_area.y + 60
@@ -100,12 +100,12 @@ class TeamScene(Scene):
             
             if not slime.locked:
                 rem_btn = Button("Remove", pygame.Rect(racing_slot_rect.x + 20, racing_slot_rect.bottom - 35, 100, 30),
-                                     lambda s=slime: self._remove_from_racing(s), self.spec, variant="ghost")
+                                     lambda s=slime: self._remove_from_racing(s), self.spec, variant="ghost", theme=DEFAULT_THEME)
                 self.ui_components.append(rem_btn)
         else:
             # Empty Racing Slot
-            Panel(racing_slot_rect, self.spec, variant="surface", border=True).add_to(self.ui_components)
-            Label("EMPTY", (racing_slot_rect.centerx, racing_slot_rect.centery), self.spec, centered=True, size="lg").add_to(self.ui_components)
+            Panel(racing_slot_rect, self.spec, variant="surface", border=True, theme=DEFAULT_THEME).add_to(self.ui_components)
+            Label("EMPTY", (racing_slot_rect.centerx, racing_slot_rect.centery), self.spec, centered=True, size="lg", theme=DEFAULT_THEME).add_to(self.ui_components)
         
         # 6. Available Slimes (Right Panel)
         Label("AVAILABLE SLIMES", (self.layout.right_panel.x + 20, self.layout.right_panel.y + 10), 
