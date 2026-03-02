@@ -28,6 +28,12 @@ class SceneContext:
     roster: Any = None
     theme: Optional['UITheme'] = None
     
+    def __post_init__(self):
+        """Ensure roster is available in context for all scenes"""
+        if self.roster is None:
+            from src.shared.teams.roster_save import load_roster
+            self.roster = load_roster()
+    
     # Convenience accessors
     def get_team(self, role: str) -> List[Any]:
         """Get team members by role"""
@@ -74,4 +80,15 @@ class SceneContext:
         """Remove entity through registry"""
         if self.entity_registry and hasattr(self.entity_registry, 'remove'):
             return self.entity_registry.remove(entity_id)
+        return False
+    
+    def save_roster(self) -> bool:
+        """Save roster to file"""
+        if self.roster:
+            from src.shared.teams.roster_save import save_roster
+            try:
+                save_roster(self.roster)
+                return True
+            except Exception:
+                return False
         return False

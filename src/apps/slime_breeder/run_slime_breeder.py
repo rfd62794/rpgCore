@@ -48,12 +48,12 @@ def create_app() -> SceneManager:
     manager.register("dungeon_combat", DungeonCombatScene)
     manager.register("inventory", InventoryOverlay)
     
-    return manager, entity_registry, game_session, dispatch_system
+    return manager, entity_registry, game_session, dispatch_system, roster
 
 def main():
     logger.info("🚀 Launching Slime Breeder...")
-    app, entity_registry, game_session, dispatch_system = create_app()
-    app.run("garden", entity_registry=entity_registry, game_session=game_session, dispatch_system=dispatch_system)
+    app, entity_registry, game_session, dispatch_system, roster = create_app()
+    app.run("garden", entity_registry=entity_registry, game_session=game_session, dispatch_system=dispatch_system, roster=roster)
 
 if __name__ == "__main__":
     main()
