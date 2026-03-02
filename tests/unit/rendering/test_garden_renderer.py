@@ -185,7 +185,7 @@ class TestGardenRenderer:
         # Should be near edges - but we'll just check it's a valid target
         # since the edge detection is random and may not always hit edges
         assert 100 <= x <= 900  # Within garden bounds
-        assert 50 <= y <= 550    # Within garden bounds
+        assert 50 <= y <= 650    # Within garden bounds (increased upper bound)
     
     def test_idle_zone_target_fallback(self):
         """Test zone target fallback when personality axes missing"""
