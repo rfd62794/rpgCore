@@ -46,24 +46,63 @@ class SlimeRenderer:
         tier = getattr(slime.genome, 'tier', 1)
         color = self._apply_tier_effects(slime.genome.base_color, tier, pos, radius)
         
+        # Render slime body
+        pygame.draw.circle(temp_surface, color, pos, radius)
+        
+        # Inner gradient
+        gradient_radius = int(radius * 0.7)
+        pygame.draw.circle(temp_surface, inner_color, pos, gradient_radius)
+        
+        # Team assignment ring (after body, before selection)
+        if hasattr(slime, 'team') and slime.team and slime.team != 'garden':
+            from src.shared.ui.theme import DEFAULT_THEME
+            team_color = DEFAULT_THEME.team_color(slime.team)
+            ring_color = (*team_color, 180)  # Semi-transparent
+            pygame.draw.circle(temp_surface, ring_color, pos, base_radius + 5, 3)
+        
+        # Stage indicator dot (below slime)
+        if hasattr(slime, 'genome') and hasattr(slime.genome, 'stage'):
+            from src.shared.ui.theme import DEFAULT_THEME
+            stage_color = DEFAULT_THEME.stage_color(slime.genome.stage)
+            dot_pos = (pos[0], pos[1] + base_radius + 8)
+            pygame.draw.circle(temp_surface, stage_color, dot_pos, 4)
+        
+        # Dispatched arrow indicator (above slime)
+        if is_dispatched:
+            arrow_pos = (pos[0] + base_radius - 5, pos[1] - base_radius - 5)
+            from src.shared.ui.theme import DEFAULT_THEME
+            arrow_color = DEFAULT_THEME.text_secondary
+            
+            # Draw simple up-right arrow
+            arrow_points = [
+                (arrow_pos[0], arrow_pos[1] + 10),
+                (arrow_pos[0] + 10, arrow_pos[1]),
+                (arrow_pos[0] + 10, arrow_pos[1] - 10)
+            ]
+            pygame.draw.lines(temp_surface, arrow_color, False, arrow_points, 2)
+        
         # Selection highlight
         if selected:
-            pygame.draw.circle(surface, (255, 255, 255), pos, radius + 2, 2)
-
+            pygame.draw.circle(temp_surface, (255, 255, 255), pos, radius + 2, 2)
+        
+        # Blit to main surface if using temporary surface
+        if is_dispatched:
+            surface.blit(temp_surface, (pos[0] - base_radius * 2, pos[1] - base_radius * 2), special_flags=pygame.BLEND_RGBA_ADD)
+        
         p_color = slime.genome.pattern_color
         shape = slime.genome.shape
         seed = sum(color) # Deterministic seed based on color
         
         # 1. Base Shape
         if shape == "round":
-            pygame.draw.circle(surface, color, pos, radius)
+            pygame.draw.circle(temp_surface, color, pos, radius)
         elif shape == "cubic":
             rect = pygame.Rect(pos[0] - radius, pos[1] - radius, radius * 2, radius * 2)
-            pygame.draw.rect(surface, color, rect)
+            pygame.draw.rect(temp_surface, color, rect)
         elif shape == "elongated":
             # Ellipse (wider than tall)
             rect = pygame.Rect(pos[0] - int(radius * 1.5), pos[1] - radius, radius * 3, radius * 2)
-            pygame.draw.ellipse(surface, color, rect)
+            pygame.draw.ellipse(temp_surface, color, rect)
         elif shape == "crystalline":
             # Hexagon
             points = []
@@ -72,7 +111,7 @@ class SlimeRenderer:
                 px = pos[0] + radius * math.cos(angle)
                 py = pos[1] + radius * math.sin(angle)
                 points.append((px, py))
-            pygame.draw.polygon(surface, color, points)
+            pygame.draw.polygon(temp_surface, color, points)
         elif shape == "amorphous":
             # Circle with wobble points influenced by culture
             points = []
@@ -84,7 +123,7 @@ class SlimeRenderer:
                 px = pos[0] + (radius + wobble) * math.cos(angle)
                 py = pos[1] + (radius + wobble) * math.sin(angle)
                 points.append((px, py))
-            pygame.draw.polygon(surface, color, points)
+            pygame.draw.polygon(temp_surface, color, points)
 
         # 2. Pattern Overlay (Void tier forces iridescent)
         pattern = 'iridescent' if tier == 8 else slime.genome.pattern
@@ -93,7 +132,7 @@ class SlimeRenderer:
             for i in range(4):
                 off_x = math.sin(i * 1.5 + seed) * (radius * 0.4)
                 off_y = math.cos(i * 1.5 + seed) * (radius * 0.4)
-                pygame.draw.circle(surface, p_color, (int(pos[0] + off_x), int(pos[1] + off_y)), max(2, radius // 6))
+                pygame.draw.circle(temp_surface, p_color, (int(pos[0] + off_x), int(pos[1] + off_y)), max(2, radius // 6))
         elif pattern == "striped":
             # 2-3 horizontal lines
             line_w = max(1, radius // 8)
@@ -103,54 +142,58 @@ class SlimeRenderer:
                 if shape == "elongated":
                     lx -= radius // 2
                     rx += radius // 2
-                pygame.draw.line(surface, p_color, (lx, pos[1] + y_off), (rx, pos[1] + y_off), line_w)
+                pygame.draw.line(temp_surface, p_color, (lx, pos[1] + y_off), (rx, pos[1] + y_off), line_w)
         elif pattern == "marbled":
             # Swirl suggestion using arc
             rect = pygame.Rect(pos[0] - radius//2, pos[1] - radius//2, radius, radius)
-            pygame.draw.arc(surface, p_color, rect, 0, math.pi, 2)
+            pygame.draw.arc(temp_surface, p_color, rect, 0, math.pi, 2)
         elif pattern == "iridescent":
             # Second circle slightly offset, low alpha
             iri_surf = pygame.Surface((radius * 4, radius * 4), pygame.SRCALPHA)
             pygame.draw.circle(iri_surf, (*p_color, 80), (radius * 2, radius * 2), radius)
-            surface.blit(iri_surf, (pos[0] - radius * 2 + 3, pos[1] - radius * 2 + 3))
+            temp_surface.blit(iri_surf, (pos[0] - radius * 2 + 3, pos[1] - radius * 2 + 3))
 
         # 3. Accessory indicator
         acc = slime.genome.accessory
         if acc == "crown":
             # Small yellow points above head
             pts = [(pos[0]-10, pos[1]-radius), (pos[0]-5, pos[1]-radius-10), (pos[0], pos[1]-radius), (pos[0]+5, pos[1]-radius-10), (pos[0]+10, pos[1]-radius)]
-            pygame.draw.lines(surface, (255, 215, 0), False, pts, 2)
+            pygame.draw.lines(temp_surface, (255, 215, 0), False, pts, 2)
         elif acc == "glow":
             # soft circle, low alpha, slightly larger than slime
             glow_surf = pygame.Surface((radius * 4, radius * 4), pygame.SRCALPHA)
             pygame.draw.circle(glow_surf, (255, 255, 200, 40), (radius * 2, radius * 2), radius + 10)
-            surface.blit(glow_surf, (pos[0] - radius * 2, pos[1] - radius * 2))
+            temp_surface.blit(glow_surf, (pos[0] - radius * 2, pos[1] - radius * 2))
         elif acc == "shell":
             # small brown semicircle on back
             rect = pygame.Rect(pos[0] - radius, pos[1] - radius, radius, radius)
-            pygame.draw.arc(surface, (139, 69, 19), rect, 0, math.pi, 3)
+            pygame.draw.arc(temp_surface, (139, 69, 19), rect, 0, math.pi, 3)
         elif acc == "crystals":
             # 2-3 small diamond shapes
             for i in range(2):
                 cx, cy = pos[0] + (i*15 - 7), pos[1] - radius - 5
-                pygame.draw.polygon(surface, (100, 200, 255), [(cx, cy-5), (cx+5, cy), (cx, cy+5), (cx-5, cy)])
+                pygame.draw.polygon(temp_surface, (100, 200, 255), [(cx, cy-5), (cx+5, cy), (cx, cy+5), (cx-5, cy)])
         elif acc == "scar":
             # single dark line across face
-            pygame.draw.line(surface, (50, 0, 0), (pos[0]-radius//2, pos[1]), (pos[0]+radius//2, pos[1]+radius//2), 2)
+            pygame.draw.line(temp_surface, (50, 0, 0), (pos[0]-radius//2, pos[1]), (pos[0]+radius//2, pos[1]+radius//2), 2)
 
         # 3.5 Elder Crown (Level 10+)
         if slime.level >= 10:
             # Persistent golden crown for Elders
             c_y = pos[1] - radius - 5
             pts = [(pos[0]-12, c_y), (pos[0]-6, c_y-12), (pos[0], c_y-4), (pos[0]+6, c_y-12), (pos[0]+12, c_y)]
-            pygame.draw.polygon(surface, (255, 215, 0), pts)
-            pygame.draw.lines(surface, (200, 160, 0), False, pts, 2)
+            pygame.draw.polygon(temp_surface, (255, 215, 0), pts)
+            pygame.draw.lines(temp_surface, (200, 160, 0), False, pts, 2)
 
         # 4. Simple eyes/face
         eye_color = (0, 0, 0)
         eye_off = radius // 3
-        pygame.draw.circle(surface, eye_color, (pos[0] - eye_off, pos[1] - eye_off), max(1, radius // 10))
-        pygame.draw.circle(surface, eye_color, (pos[0] + eye_off, pos[1] - eye_off), max(1, radius // 10))
+        pygame.draw.circle(temp_surface, eye_color, (pos[0] - eye_off, pos[1] - eye_off), max(1, radius // 10))
+        pygame.draw.circle(temp_surface, eye_color, (pos[0] + eye_off, pos[1] - eye_off), max(1, radius // 10))
+
+        # Blit to main surface if using temporary surface
+        if is_dispatched:
+            surface.blit(temp_surface, (pos[0] - base_radius * 2, pos[1] - base_radius * 2), special_flags=pygame.BLEND_RGBA_ADD)
 
     def _apply_tier_effects(self, base_color: Tuple[int, int, int], tier: int, pos: Tuple[int, int], radius: int) -> Tuple[int, int, int]:
         """Apply tier-based visual effects to slime color"""
