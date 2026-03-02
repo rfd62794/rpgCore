@@ -48,6 +48,11 @@ class RacingSession:
         if filepath is None and seed is not None:
             filepath = Path(f"saves/racing_session_{seed}.json")
         
+        # Handle case where filepath is still None
+        if filepath is None:
+            logger.info("No filepath provided and no seed, creating new session")
+            return cls()
+        
         if not filepath.exists():
             logger.info(f"No racing session file found at {filepath}, creating new session")
             return cls()
