@@ -501,12 +501,12 @@ class GardenScene(GardenSceneBase):
                 self.resource_indicators.remove(indicator)
     
     def _render_resource_indicators(self, surface: pygame.Surface):
-        """Render floating resource indicators"""
+        """Render floating resource indicators with enhanced visuals"""
         for indicator in self.resource_indicators:
             # Calculate alpha based on lifetime
             alpha = min(255, int(indicator['lifetime'] * 255))
             
-            # Resource colors
+            # Resource colors with enhanced visibility
             colors = {
                 'gold': (255, 215, 0),
                 'food': (139, 69, 19),
@@ -514,16 +514,68 @@ class GardenScene(GardenSceneBase):
             }
             color = colors.get(indicator['resource_type'], (255, 255, 255))
             
-            # Create text surface
-            font = pygame.font.Font(None, 16)
+            # Create text surface with shadow effect
+            font = pygame.font.Font(None, 18)
             text = f"+{indicator['amount']} {indicator['resource_type'].title()}"
+            
+            # Shadow for better visibility
+            shadow_surface = font.render(text, True, (0, 0, 0))
+            shadow_surface.set_alpha(alpha // 2)
+            shadow_pos = [indicator['pos'][0] + 1, indicator['pos'][1] + 1]
+            surface.blit(shadow_surface, shadow_pos)
+            
+            # Main text
             text_surface = font.render(text, True, color)
-            
-            # Apply alpha
             text_surface.set_alpha(alpha)
-            
-            # Render at position
             surface.blit(text_surface, indicator['pos'])
+            
+            # Add sparkle effect for gold
+            if indicator['resource_type'] == 'gold' and indicator['lifetime'] > 1.5:
+                sparkle_size = int(4 * (indicator['lifetime'] - 1.5))
+                sparkle_color = (255, 255, 200)
+                sparkle_alpha = int(alpha * 0.7)
+                pygame.draw.circle(surface, sparkle_color, 
+                                 (int(indicator['pos'][0] + 60), int(indicator['pos'][1])), 
+                                 sparkle_size)
+    
+    def _render_idle_zone_overlays(self, surface: pygame.Surface):
+        """Render subtle overlays for idle zones to show activity"""
+        if not self.garden_renderer:
+            return
+        
+        # Get zone rectangles from garden renderer
+        zones = [
+            ('nursery', self.garden_renderer.nursery_rect, (100, 200, 255)),
+            ('training', self.garden_renderer.training_rect, (255, 100, 100)),
+            ('foraging', self.garden_renderer.foraging_rect, (100, 255, 100))
+        ]
+        
+        for zone_name, zone_rect, zone_color in zones:
+            # Count slimes in this zone
+            slimes_in_zone = 0
+            for slime in self.garden_state.slimes:
+                idle_target = self.garden_renderer.get_idle_zone_target(slime)
+                if idle_target and zone_rect.collidepoint(idle_target):
+                    slimes_in_zone += 1
+            
+            # Draw subtle overlay if zone is active
+            if slimes_in_zone > 0:
+                # Create pulsing effect
+                pulse = abs(pygame.time.get_ticks() / 1000.0 % 2.0 - 1.0)  # 0 to 1 pulse
+                alpha = int(20 + pulse * 30)  # 20 to 50 alpha
+                
+                overlay_surface = pygame.Surface((zone_rect.width, zone_rect.height), pygame.SRCALPHA)
+                overlay_color = (*zone_color, alpha)
+                pygame.draw.rect(overlay_surface, overlay_color, overlay_surface.get_rect(), border_radius=8)
+                surface.blit(overlay_surface, zone_rect.topleft)
+                
+                # Draw zone label with activity
+                font = pygame.font.Font(None, 14)
+                label = f"{zone_name.title()} ({slimes_in_zone})"
+                label_surface = font.render(label, True, zone_color)
+                label_surface.set_alpha(alpha * 2)
+                label_pos = (zone_rect.x + 5, zone_rect.y + 5)
+                surface.blit(label_surface, label_pos)
 
     def render_garden(self, surface: pygame.Surface):
         # Render environmental elements before slimes
@@ -541,6 +593,9 @@ class GardenScene(GardenSceneBase):
         for slime in self.garden_state.slimes:
             is_selected = (slime in self.selected_entities)
             self.renderer.render(surface, slime, is_selected)
+        
+        # Render idle zone overlays (before resource indicators)
+        self._render_idle_zone_overlays(surface)
         
         # Render resource indicators (after slimes, before UI)
         self._render_resource_indicators(surface)
