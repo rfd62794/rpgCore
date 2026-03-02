@@ -43,6 +43,11 @@ class GardenScene(GardenSceneBase):
         # Initialize resource indicators for idle zones
         self.resource_indicators = []  # List of (pos, resource_type, amount, lifetime) tuples
         
+        # Initialize hover tooltip system
+        self.hover_timer = 0.0
+        self.hovered_slime = None
+        self.tooltip_delay = 0.5  # 0.5 seconds delay
+        
         # Initialize garden renderer with level
         self.garden_level = 0
         try:
@@ -451,6 +456,9 @@ class GardenScene(GardenSceneBase):
         # Only pass cursor if in garden area
         cursor = mouse_pos if self.garden_rect.collidepoint(mouse_pos) else None
         self.garden_state.update(dt, cursor)
+        
+        # Update hover tooltip
+        self._update_hover_tooltip(dt, mouse_pos)
 
     def _update_idle_zones(self, dt: float):
         """Update idle zone resource generation and visual indicators"""
@@ -599,6 +607,9 @@ class GardenScene(GardenSceneBase):
         
         # Render resource indicators (after slimes, before UI)
         self._render_resource_indicators(surface)
+        
+        # Render hover tooltip (on top of everything)
+        self._render_hover_tooltip(surface)
             
         self._render_banner(surface)
         self._render_right_panel(surface)
