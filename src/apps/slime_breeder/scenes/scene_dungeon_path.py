@@ -346,7 +346,7 @@ class DungeonPathScene(Scene):
         card_h = self.layout.team_bar.height - 10
         card_w = (self.spec.screen_width - 50) // 4
         
-        for i, slime in enumerate(self.team[:4]):
+        for i, entry in enumerate(self.team[:4]):
             card_x = 10 + i * (card_w + 10)
             card_rect = pygame.Rect(card_x, bar_y, card_w, card_h)
             
@@ -362,16 +362,18 @@ class DungeonPathScene(Scene):
             
             # Name & LV
             name = slime.name if slime else entry.slime_id
+            level = slime.level if slime else 1
             render_text(surface, name, (card_x + 55, bar_y + 10), size=14, bold=True, color=(255,255,255))
-            render_text(surface, f"Lv.{slime.level}", (card_x + 55, bar_y + 26), size=12, color=(180, 180, 200))
+            render_text(surface, f"Lv.{level}", (card_x + 55, bar_y + 26), size=12, color=(180, 180, 200))
             
             # HP Bar
-            hp_pct = max(0.0, min(1.0, slime.current_hp / slime.max_hp))
-            bar_rect = pygame.Rect(card_x + 55, bar_y + 44, card_w - 65, 8)
-            pygame.draw.rect(surface, (20, 15, 25), bar_rect, border_radius=4)
-            if hp_pct > 0:
-                hp_color = (100, 255, 100) if hp_pct > 0.5 else (255, 200, 0) if hp_pct > 0.2 else (255, 50, 50)
-                pygame.draw.rect(surface, hp_color, (bar_rect.x, bar_rect.y, int(bar_rect.width * hp_pct), bar_rect.height), border_radius=4)
+            if slime:
+                hp_pct = max(0.0, min(1.0, slime.current_hp / slime.max_hp))
+                bar_rect = pygame.Rect(card_x + 55, bar_y + 44, card_w - 65, 8)
+                pygame.draw.rect(surface, (20, 15, 25), bar_rect, border_radius=4)
+                if hp_pct > 0:
+                    hp_color = (100, 255, 100) if hp_pct > 0.5 else (255, 200, 0) if hp_pct > 0.2 else (255, 50, 50)
+                    pygame.draw.rect(surface, hp_color, (bar_rect.x, bar_rect.y, int(bar_rect.width * hp_pct), bar_rect.height), border_radius=4)
 
     def _render_hud(self, surface):
         # HUD Information in team_bar
