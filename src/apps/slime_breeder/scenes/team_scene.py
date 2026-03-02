@@ -347,6 +347,11 @@ class TeamScene(Scene):
             if hasattr(comp, "handle_event") and comp.handle_event(event):
                 break
 
+    def update(self, dt: float) -> None:
+        """Update scene state"""
+        for comp in self.ui_components:
+            comp.update(int(dt * 1000))
+
     def render(self, surface: pygame.Surface) -> None:
         surface.fill(self.spec.color_bg)
         for comp in self.ui_components:
