@@ -342,15 +342,17 @@ class GardenScene(GardenSceneBase):
         slime = Slime(name, genome, pos, level=1)
         self.garden_state.add_slime(slime)
         
-        # Add to roster
-        from src.shared.teams.roster import RosterSlime
+        # Add to roster and auto-save
         rs = RosterSlime(
-            slime_id=name.lower().replace(" ", "_"),
-            name=name,
-            genome=genome
+            slime_id=slime.id,
+            name=slime.name,
+            genome=slime.genome
         )
         self.roster.add_slime(rs)
-        save_roster(self.roster)
+        
+        # Auto-save using SaveManager
+        if self.context:
+            self.context.save_roster()
 
     def _go_to_breeding(self):
         self.request_scene("breeding")
@@ -536,6 +538,11 @@ class GardenScene(GardenSceneBase):
             
             # Update idle zone resource generation
             self._update_idle_zones(dt)
+            
+            # Auto-save after dispatch completion
+            if len(self.dispatch_system.completed_dispatches) > 0:
+                if self.context:
+                    self.context.save_roster()
             
         # Update garden renderer animations
         if self.garden_renderer:
