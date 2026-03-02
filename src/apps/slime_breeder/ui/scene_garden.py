@@ -288,13 +288,27 @@ class GardenScene(GardenSceneBase):
         if self._banner_timer > 0:
             self._banner_timer -= dt
             
+        # Update garden renderer animations
+        if self.garden_renderer:
+            self.garden_renderer.update(dt)
+            
         mouse_pos = pygame.mouse.get_pos()
         # Only pass cursor if in garden area
         cursor = mouse_pos if self.garden_rect.collidepoint(mouse_pos) else None
         self.garden_state.update(dt, cursor)
 
     def render_garden(self, surface: pygame.Surface):
-        # Background color is handled by base
+        # Render environmental elements before slimes
+        if self.garden_renderer:
+            try:
+                self.garden_renderer.render_ground(surface, self.garden_level)
+                self.garden_renderer.render_ship(surface)
+                self.garden_renderer.render_environment(surface, self.garden_level)
+            except Exception as e:
+                logger.warning(f"Garden renderer failed: {e}")
+                # Fallback to simple background
+                surface.fill((20, 20, 30), self.garden_rect)
+        
         # Render Slimes
         for slime in self.garden_state.slimes:
             is_selected = (slime in self.selected_entities)
