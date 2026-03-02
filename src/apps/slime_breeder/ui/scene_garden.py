@@ -3,6 +3,9 @@ import random
 from loguru import logger
 from typing import Optional, List, Tuple
 from src.shared.engine.scene_templates.garden_scene import GardenSceneBase
+from src.shared.engine.scene_context import SceneContext
+from src.shared.engine.render_pipeline import RenderPipeline, RenderLayer
+from src.shared.engine.input_router import InputRouter, InputPriority
 from src.shared.ui.label import Label
 from src.shared.ui.button import Button
 from src.shared.ui.layouts import HubLayout
@@ -24,10 +27,27 @@ class GardenScene(GardenSceneBase):
         super().__init__(manager, spec, **kwargs)
         self.layout = HubLayout(spec)
         
-        # Get shared systems
+        # Set up SceneContext for ECS interaction
+        context = SceneContext(
+            entity_registry=kwargs.get('entity_registry'),
+            game_session=kwargs.get('game_session'),
+            dispatch_system=kwargs.get('dispatch_system'),
+            roster=None,  # Will be set in on_enter
+            theme=None   # Will be set in on_enter
+        )
+        self.set_context(context)
+        
+        # Set up formalized components
+        self.use_pipeline()
+        self.use_router()
+        
+        # Legacy compatibility - keep direct references for now
         self.entity_registry = kwargs.get('entity_registry')
         self.game_session = kwargs.get('game_session')
         self.dispatch_system = kwargs.get('dispatch_system')
+        
+        # Input handlers for the router
+        self._setup_input_handlers()
         
         # Garden area (center of screen, excluding right panel)
         self.garden_rect = pygame.Rect(
@@ -93,6 +113,12 @@ class GardenScene(GardenSceneBase):
             
         self._sync_roster_with_garden()
         
+        # Update SceneContext with loaded roster and theme
+        if self.context:
+            self.context.roster = self.roster
+            from src.shared.ui.theme import DEFAULT_THEME
+            self.context.theme = DEFAULT_THEME
+        
         # 1. Right Panel Layout (Exactly as sketched)
         padding = 8
         right_x = 880
@@ -118,6 +144,55 @@ class GardenScene(GardenSceneBase):
         btn_y = self.actions_rect.y + 10
         btn_w = self.actions_rect.width - 20
         btn_h = 40
+
+    def _setup_input_handlers(self):
+        """Set up input handlers for the InputRouter"""
+        # UI Components Handler (highest priority)
+        class UIComponentsHandler:
+            def handle_event(self, event: pygame.event.Event) -> bool:
+                # Handle specialized team buttons first
+                for btn in [self.dungeon_btn, self.racing_btn, self.remove_btn, self.mission_btn]:
+                    if btn.visible and hasattr(btn, "handle_event") and btn.handle_event(event):
+                        return True
+                
+                # Handle other UI components
+                for comp in reversed(self.ui_components):
+                    if hasattr(comp, 'handle_event') and comp.handle_event(event):
+                        return True
+                return False
+        
+        # Scene Default Handler (lowest priority)
+        class SceneDefaultHandler:
+            def handle_event(self, event: pygame.event.Event) -> bool:
+                # Handle status bar clicks
+                if event.type == pygame.MOUSEBUTTONDOWN:
+                    mouse_pos = event.pos
+                    
+                    # Check if clicking on dungeon status area
+                    if hasattr(self, 'dungeon_status_area') and self.dungeon_status_area.collidepoint(mouse_pos):
+                        self.request_scene("team")
+                        return True
+                    
+                    # Check if clicking on racing status area  
+                    if hasattr(self, 'racing_status_area') and self.racing_status_area.collidepoint(mouse_pos):
+                        self.request_scene("team")
+                        return True
+                    
+                    # Handle slime selection
+                    clicked_slime = self.pick_entity(mouse_pos)
+                    if clicked_slime:
+                        # Toggle selection
+                        if clicked_slime in self.selected_entities:
+                            self.selected_entities.remove(clicked_slime)
+                        else:
+                            self.selected_entities = [clicked_slime]
+                        self.on_selection_changed()
+                        return True
+                return False
+        
+        # Register handlers with router
+        self.router.register(UIComponentsHandler(), InputPriority.UI_COMPONENTS)
+        self.router.register(SceneDefaultHandler(), InputPriority.SCENE_DEFAULT)
         
         # We'll use these specific buttons for the actions area
         self.dungeon_btn = Button("→ Dungeon Team", pygame.Rect(self.actions_rect.x + 10, btn_y, btn_w, btn_h), self._assign_to_dungeon, self.spec)
@@ -808,6 +883,12 @@ class GardenScene(GardenSceneBase):
         pass
 
     def handle_event(self, event: pygame.event.Event) -> None:
+        # Route through InputRouter if available
+        if self.router:
+            if self.router.route(event):
+                return  # Event was consumed
+        
+        # Fallback to legacy handling if router not available
         # First, check specialized team buttons
         for btn in [self.dungeon_btn, self.racing_btn, self.remove_btn, self.mission_btn]:
             if btn.visible and hasattr(btn, "handle_event") and btn.handle_event(event):

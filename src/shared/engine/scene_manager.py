@@ -35,6 +35,11 @@ class Scene(BaseSystem, ABC):
         self.next_scene: Optional[str] = None
         self.next_scene_kwargs: Dict[str, Any] = {}
         self.quit_requested: bool = False
+        
+        # Optional formalization components - scenes opt in
+        self.context: Optional['SceneContext'] = None
+        self.pipeline: Optional['RenderPipeline'] = None
+        self.router: Optional['InputRouter'] = None
 
     def request_scene(self, scene_name: str, **kwargs) -> None:
         """Request a transition to another scene after this frame."""
@@ -90,6 +95,28 @@ class Scene(BaseSystem, ABC):
     def render(self, surface: pygame.Surface) -> None:
         """Render scene to the provided surface."""
         pass
+
+    # ---------------------------------------------------------------------------
+    # Optional Formalization Components - Scenes Opt In
+    # ---------------------------------------------------------------------------
+    
+    def set_context(self, ctx: 'SceneContext') -> None:
+        """Set scene context for ECS interaction"""
+        self.context = ctx
+
+    def use_pipeline(self) -> 'RenderPipeline':
+        """Get or create render pipeline"""
+        if not self.pipeline:
+            from src.shared.engine.render_pipeline import RenderPipeline
+            self.pipeline = RenderPipeline()
+        return self.pipeline
+
+    def use_router(self) -> 'InputRouter':
+        """Get or create input router"""
+        if not self.router:
+            from src.shared.engine.input_router import InputRouter
+            self.router = InputRouter()
+        return self.router
 
 
 class SceneManager:
