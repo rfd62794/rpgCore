@@ -263,7 +263,14 @@ class BreedingScene(Scene):
             level=start_level,
             generation=self.offspring_genome.generation
         )
-        self.roster.add_slime(self.offspring_slime)
+        # Add to both roster and registry using sync service
+        if self.context and self.context.roster_sync:
+            success = self.context.roster_sync.add_slime(self.offspring_slime)
+            if not success:
+                logger.error(f"Failed to add offspring {self.offspring_slime.slime_id} via sync service")
+        else:
+            # Fallback to direct roster.add for backward compatibility
+            self.roster.add_slime(self.offspring_slime)
         
         # Auto-save using SaveManager
         if self.context and hasattr(self.context, 'save_roster'):
