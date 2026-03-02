@@ -14,6 +14,8 @@ from src.shared.engine.scene_manager import SceneManager
 from src.shared.ui.spec import SPEC_720
 from src.shared.state.entity_registry import EntityRegistry
 from src.shared.teams.roster_save import load_roster
+from src.shared.session.game_session import GameSession
+from src.shared.dispatch.dispatch_system import DispatchSystem
 
 def create_app() -> SceneManager:
     """Create and configure the Slime Breeder app."""
@@ -25,6 +27,10 @@ def create_app() -> SceneManager:
         fps=60,
         spec=SPEC_720
     )
+    
+    # Create shared systems
+    game_session = GameSession.new_game()
+    dispatch_system = DispatchSystem()
     
     # Create shared entity registry from existing roster
     roster = load_roster()
@@ -42,12 +48,12 @@ def create_app() -> SceneManager:
     manager.register("dungeon_combat", DungeonCombatScene)
     manager.register("inventory", InventoryOverlay)
     
-    return manager, entity_registry
+    return manager, entity_registry, game_session, dispatch_system
 
 def main():
     logger.info("🚀 Launching Slime Breeder...")
-    app, entity_registry = create_app()
-    app.run("garden", entity_registry=entity_registry)
+    app, entity_registry, game_session, dispatch_system = create_app()
+    app.run("garden", entity_registry=entity_registry, game_session=game_session, dispatch_system=dispatch_system)
 
 if __name__ == "__main__":
     main()

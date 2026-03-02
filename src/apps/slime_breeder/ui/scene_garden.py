@@ -23,8 +23,10 @@ class GardenScene(GardenSceneBase):
         super().__init__(manager, spec, **kwargs)
         self.layout = HubLayout(spec)
         
-        # Get shared entity registry
+        # Get shared systems
         self.entity_registry = kwargs.get('entity_registry')
+        self.game_session = kwargs.get('game_session')
+        self.dispatch_system = kwargs.get('dispatch_system')
         
         # Garden area (center of screen, excluding right panel)
         self.garden_rect = pygame.Rect(
@@ -400,6 +402,32 @@ class GardenScene(GardenSceneBase):
     def update_garden(self, dt: float):
         if self._banner_timer > 0:
             self._banner_timer -= dt
+        
+        # Update ResourceFlow systems
+        if self.game_session and self.dispatch_system:
+            # Update game session tick
+            self.game_session.current_tick += 1
+            
+            # Update active dispatches
+            self.dispatch_system.current_tick = self.game_session.current_tick
+            for dispatch in self.dispatch_system.active_dispatches[:]:  # Copy list to avoid modification during iteration
+                if dispatch.end_tick <= self.game_session.current_tick:
+                    # Dispatch completed
+                    result = self.dispatch_system.resolve_dispatch(dispatch)
+                    if result.success:
+                        # Add resources to game session
+                        for resource, amount in result.resource_gains.items():
+                            self.game_session.resources[resource] = self.game_session.resources.get(resource, 0) + int(amount)
+                    
+                    # Move to completed
+                    self.dispatch_system.active_dispatches.remove(dispatch)
+                    self.dispatch_system.completed_dispatches.append(dispatch)
+                    
+                    # Update UI
+                    self._show_banner(f"Dispatch complete! Gained: {result.message}")
+            
+            # Update idle zone resource generation
+            self._update_idle_zones(dt)
             
         # Update garden renderer animations
         if self.garden_renderer:
