@@ -6,7 +6,7 @@ import pytest
 import pygame
 from src.shared.ui.theme import DEFAULT_THEME
 from src.apps.slime_breeder.entities.slime import Slime
-from src.shared.genetics.genome import SlimeGenome, CulturalBase, Stage
+from src.shared.genetics.genome import SlimeGenome, CulturalBase
 
 
 class TestGardenIndicators:
@@ -31,8 +31,7 @@ class TestGardenIndicators:
             shape="round",
             size="medium",
             pattern="spotted",
-            accessory="none",
-            stage=Stage.YOUNG
+            accessory="none"
         )
         
         slime = Slime("Test Slime", genome, (100, 100))
@@ -118,8 +117,7 @@ class TestGardenIndicators:
             shape="round",
             size="medium",
             pattern="spotted",
-            accessory="none",
-            stage=Stage.YOUNG
+            accessory="none"
         )
         
         slime = Slime("Test Slime", genome, (100, 100))
@@ -145,8 +143,7 @@ class TestGardenIndicators:
             shape="round",
             size="medium",
             pattern="spotted",
-            accessory="none",
-            stage=Stage.YOUNG
+            accessory="none"
         )
         
         slime = Slime("Test Slime", genome, (100, 100))
@@ -169,8 +166,7 @@ class TestGardenIndicators:
             shape="round",
             size="medium",
             pattern="spotted",
-            accessory="none",
-            stage=Stage.ELDER  # Elder stage
+            accessory="none"
         )
         
         slime = Slime("Test Slime", genome, (100, 100))
