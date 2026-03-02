@@ -1,10 +1,8 @@
-from abc import ABC, abstractmethod
-import pygame
+"""
+Legacy base component - maintained for backward compatibility.
 
-class UIComponent(ABC):
-    """Legacy base component - maintained for backward compatibility.
-
-New components should use UIComponent from base_component.py."""
+New components should use UIComponent from base_component.py.
+"""
 
 from typing import Any, Optional
 import pygame
@@ -28,11 +26,6 @@ class UIComponent:
     def handle_event(self, event: pygame.event.Event) -> bool:
         """Override in subclasses. Return True if event consumed."""
         return False
-
-    @abstractmethod
-    def render(self, surface: pygame.Surface) -> None:
-        """Render component to the target surface."""
-        pass
 
     def contains_point(self, x: int, y: int) -> bool:
         """Check if a point is within the component's rect."""
