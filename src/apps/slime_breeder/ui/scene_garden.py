@@ -168,21 +168,24 @@ class GardenScene(GardenSceneBase):
 
     def _setup_input_handlers(self):
         """Set up input handlers for the InputRouter"""
+        # Capture self for the handlers
+        scene = self
+        
         # UI Components Handler (highest priority)
         class UIComponentsHandler:
             def handle_event(self, event: pygame.event.Event) -> bool:
                 # Handle specialized team buttons first
-                if hasattr(self, 'dungeon_btn') and self.dungeon_btn.visible and hasattr(self.dungeon_btn, "handle_event") and self.dungeon_btn.handle_event(event):
+                if hasattr(scene, 'dungeon_btn') and scene.dungeon_btn.visible and hasattr(scene.dungeon_btn, "handle_event") and scene.dungeon_btn.handle_event(event):
                     return True
-                if hasattr(self, 'racing_btn') and self.racing_btn.visible and hasattr(self.racing_btn, "handle_event") and self.racing_btn.handle_event(event):
+                if hasattr(scene, 'racing_btn') and scene.racing_btn.visible and hasattr(scene.racing_btn, "handle_event") and scene.racing_btn.handle_event(event):
                     return True
-                if hasattr(self, 'remove_btn') and self.remove_btn.visible and hasattr(self.remove_btn, "handle_event") and self.remove_btn.handle_event(event):
+                if hasattr(scene, 'remove_btn') and scene.remove_btn.visible and hasattr(scene.remove_btn, "handle_event") and scene.remove_btn.handle_event(event):
                     return True
-                if hasattr(self, 'mission_btn') and self.mission_btn.visible and hasattr(self.mission_btn, "handle_event") and self.mission_btn.handle_event(event):
+                if hasattr(scene, 'mission_btn') and scene.mission_btn.visible and hasattr(scene.mission_btn, "handle_event") and scene.mission_btn.handle_event(event):
                     return True
                 
                 # Handle other UI components
-                for comp in reversed(self.ui_components):
+                for comp in reversed(scene.ui_components):
                     if hasattr(comp, 'handle_event') and comp.handle_event(event):
                         return True
                 return False
@@ -195,24 +198,24 @@ class GardenScene(GardenSceneBase):
                     mouse_pos = event.pos
                     
                     # Check if clicking on dungeon status area
-                    if hasattr(self, 'dungeon_status_area') and self.dungeon_status_area.collidepoint(mouse_pos):
-                        self.request_scene("team")
+                    if hasattr(scene, 'dungeon_status_area') and scene.dungeon_status_area.collidepoint(mouse_pos):
+                        scene.request_scene("team")
                         return True
                     
                     # Check if clicking on racing status area  
-                    if hasattr(self, 'racing_status_area') and self.racing_status_area.collidepoint(mouse_pos):
-                        self.request_scene("team")
+                    if hasattr(scene, 'racing_status_area') and scene.racing_status_area.collidepoint(mouse_pos):
+                        scene.request_scene("team")
                         return True
                     
                     # Handle slime selection
-                    clicked_slime = self.pick_entity(mouse_pos)
+                    clicked_slime = scene.pick_entity(mouse_pos)
                     if clicked_slime:
                         # Toggle selection
-                        if clicked_slime in self.selected_entities:
-                            self.selected_entities.remove(clicked_slime)
+                        if clicked_slime in scene.selected_entities:
+                            scene.selected_entities.remove(clicked_slime)
                         else:
-                            self.selected_entities = [clicked_slime]
-                        self.on_selection_changed()
+                            scene.selected_entities = [clicked_slime]
+                        scene.on_selection_changed()
                         return True
                 return False
         
