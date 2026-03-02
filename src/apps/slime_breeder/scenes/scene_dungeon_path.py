@@ -260,7 +260,13 @@ class DungeonPathScene(Scene):
                 if hasattr(self.manager, '_scenes') and 'garden' in self.manager._scenes:
                     garden_scene = self.manager._scenes['garden']
                     if hasattr(garden_scene, 'garden_state'):
-                        slime = garden_scene.garden_state.get_slime(entry.slime_id)
+                        # Try to get the original slime first
+                        creature = garden_scene.garden_state.get_creature(entry.slime_id)
+                        if creature and hasattr(creature, '_original_slime'):
+                            slime = creature._original_slime
+                        else:
+                            # Try to get creature directly
+                            slime = creature
             except:
                 pass
             
@@ -350,7 +356,13 @@ class DungeonPathScene(Scene):
                 if hasattr(self.manager, '_scenes') and 'garden' in self.manager._scenes:
                     garden_scene = self.manager._scenes['garden']
                     if hasattr(garden_scene, 'garden_state'):
-                        slime = garden_scene.garden_state.get_slime(entry.slime_id)
+                        # Try to get the original slime first
+                        creature = garden_scene.garden_state.get_creature(entry.slime_id)
+                        if creature and hasattr(creature, '_original_slime'):
+                            slime = creature._original_slime
+                        else:
+                            # Try to get creature directly
+                            slime = creature
             except:
                 pass
             
@@ -406,7 +418,13 @@ class DungeonPathScene(Scene):
                 if hasattr(self.manager, '_scenes') and 'garden' in self.manager._scenes:
                     garden_scene = self.manager._scenes['garden']
                     if hasattr(garden_scene, 'garden_state'):
-                        slime = garden_scene.garden_state.get_slime(entry.slime_id)
+                        # Try to get the original slime first
+                        creature = garden_scene.garden_state.get_creature(entry.slime_id)
+                        if creature and hasattr(creature, '_original_slime'):
+                            slime = creature._original_slime
+                        else:
+                            # Try to get creature directly
+                            slime = creature
             except:
                 pass
             
