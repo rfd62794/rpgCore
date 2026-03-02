@@ -454,20 +454,21 @@ class GardenScene(GardenSceneBase):
         if not self.game_session or not self.garden_renderer:
             return
         
-        # Get idle zone target from garden renderer
-        idle_target = self.garden_renderer.get_idle_zone_target()
-        if not idle_target:
-            return
-        
-        # Simple resource generation for idle zones
-        # In a full implementation, this would check zone type and generate appropriate resources
-        resource_generation_rate = 0.1  # Resources per second
-        
-        # Generate small amounts of resources
-        if random.random() < resource_generation_rate * dt:
-            resource_type = random.choice(['gold', 'food', 'scrap'])
-            amount = random.randint(1, 3)
-            self.game_session.resources[resource_type] = self.game_session.resources.get(resource_type, 0) + amount
+        # Get idle zone target from garden renderer for each slime
+        for slime in self.garden_state.slimes:
+            idle_target = self.garden_renderer.get_idle_zone_target(slime)
+            if not idle_target:
+                continue
+            
+            # Simple resource generation for idle zones
+            # In a full implementation, this would check zone type and generate appropriate resources
+            resource_generation_rate = 0.1  # Resources per second
+            
+            # Generate small amounts of resources
+            if random.random() < resource_generation_rate * dt:
+                resource_type = random.choice(['gold', 'food', 'scrap'])
+                amount = random.randint(1, 3)
+                self.game_session.resources[resource_type] = self.game_session.resources.get(resource_type, 0) + amount
 
     def render_garden(self, surface: pygame.Surface):
         # Render environmental elements before slimes
