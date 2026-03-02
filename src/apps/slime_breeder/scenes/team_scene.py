@@ -34,101 +34,101 @@ class TeamScene(Scene):
     def _setup_ui(self):
         self.ui_components = []
         
-        # 1. Panels
-        self.left_panel = Panel(self.layout.left_panel, self.spec, variant="surface", theme=DEFAULT_THEME)
-        self.ui_components.append(self.left_panel)
+        # Create tab definitions
+        tabs = [
+            TabDef("dungeon", "DUNGEON", DEFAULT_THEME.team_colors["dungeon"]),
+            TabDef("racing", "RACING", DEFAULT_THEME.team_colors["racing"]),
+            TabDef("conquest", "CONQUEST", DEFAULT_THEME.team_colors["conquest"])
+        ]
         
-        self.center_panel = Panel(self.layout.center_area, self.spec, variant="surface", theme=DEFAULT_THEME)
-        self.ui_components.append(self.center_panel)
+        # Create tabbed panel (left 65% of screen)
+        tabbed_rect = pygame.Rect(
+            self.layout.left_panel.x,
+            self.layout.left_panel.y,
+            int(self.spec.screen_width * 0.65),
+            self.layout.left_panel.height
+        )
+        self.tabbed_panel = TabbedPanel(tabbed_rect, tabs, theme=DEFAULT_THEME)
+        self.ui_components.append(self.tabbed_panel)
         
-        self.right_panel = Panel(self.layout.right_panel, self.spec, variant="surface", theme=DEFAULT_THEME)
-        self.ui_components.append(self.right_panel)
+        # Set content callbacks for each tab
+        self.tabbed_panel.set_content_callback("dungeon", self._render_dungeon_content)
+        self.tabbed_panel.set_content_callback("racing", self._render_racing_content)
+        self.tabbed_panel.set_content_callback("conquest", self._render_conquest_content)
         
+        # Update badge counts
+        self.tabbed_panel.set_badge("dungeon", len(self.dungeon_team.members))
+        self.tabbed_panel.set_badge("racing", len(self.racing_team.members))
+        self.tabbed_panel.set_badge("conquest", 0)  # Future content
+        
+        # Available Slimes panel (right 35%)
+        available_rect = pygame.Rect(
+            tabbed_rect.right + 10,
+            self.layout.right_panel.y,
+            self.spec.screen_width - tabbed_rect.width - 20,
+            self.layout.right_panel.height
+        )
+        self.available_panel = Panel(available_rect, self.spec, variant="surface", theme=DEFAULT_THEME)
+        self.ui_components.append(self.available_panel)
+        
+        # Action buttons (bottom)
         self.action_panel = Panel(self.layout.action_bar, self.spec, variant="surface", theme=DEFAULT_THEME)
         self.ui_components.append(self.action_panel)
         
-        # 2. Headers
-        dungeon_header = Label("DUNGEON TEAM", (self.layout.left_panel.x + 20, 15), self.spec, size="lg", bold=True, theme=DEFAULT_THEME)
-        self.ui_components.append(dungeon_header)
-        
-        dungeon_subtext = Label("4 slots — enters the ruins together", (self.layout.left_panel.x + 20, 35), self.spec, size="sm", color=(160, 160, 180))
-        self.ui_components.append(dungeon_subtext)
-        
-        racing_header = Label("RACING TEAM", (self.layout.center_area.x + 20, 15), self.spec, size="lg", bold=True, theme=DEFAULT_THEME)
-        self.ui_components.append(racing_header)
-        
-        racing_subtext = Label("1 slot — competes in the derby", (self.layout.center_area.x + 20, 35), self.spec, size="sm", color=(160, 160, 180), theme=DEFAULT_THEME)
-        self.ui_components.append(racing_subtext)
-        
-        # 3. Action Buttons
+        # Back button
         back_btn = Button("← Back", self.layout.action_bar, lambda: self.request_scene("garden"), self.spec, variant="ghost", theme=DEFAULT_THEME)
         self.ui_components.append(back_btn)
         
-        if self.dungeon_team.members:
-            enter_btn = Button("ENTER DUNGEON →", 
+        # Context-aware Enter button
+        self.enter_btn = Button("ENTER DUNGEON ⚔", 
                                pygame.Rect(self.layout.action_bar.width - 220, self.layout.action_bar.y + 10, 200, 44),
-                               lambda: self._enter_dungeon(), self.spec, variant="primary", theme=DEFAULT_THEME)
-            self.ui_components.append(enter_btn)
-
-        # 4. Dungeon Team Slots (Left Panel)
-        for i in range(4):
-            slot_y = self.layout.left_panel.y + 60 + (i * (self.spec.card_height + 20))
-            if i < len(self.dungeon_team.members):
-                slime = self.dungeon_team.members[i]
-                card = ProfileCard(slime, (self.layout.left_panel.x + 20, slot_y), self.spec, theme=DEFAULT_THEME)
-                self.ui_components.append(card)
-                
-                if not slime.locked:
-                    rem_btn = Button("Remove", pygame.Rect(self.layout.left_panel.x + 20, slot_y + self.spec.card_height + 5, 100, 30),
-                                     lambda s=slime: self._remove_from_dungeon(s), self.spec, variant="ghost", theme=DEFAULT_THEME)
-                    self.ui_components.append(rem_btn)
-            else:
-                # Empty Slot
-                empty_rect = pygame.Rect(self.layout.left_panel.x + 20, slot_y, self.spec.card_width, self.spec.card_height)
-                Panel(empty_rect, self.spec, variant="surface", border=True, theme=DEFAULT_THEME).add_to(self.ui_components)
-                Label("EMPTY", (empty_rect.centerx, empty_rect.centery), self.spec, centered=True, theme=DEFAULT_THEME).add_to(self.ui_components)
-
-        # 5. Racing Team Slot (Center Panel - larger)
-        racing_slot_y = self.layout.center_area.y + 60
-        racing_slot_rect = pygame.Rect(self.layout.center_area.x + 20, racing_slot_y, 
-                                      self.layout.center_area.width - 40, self.spec.card_height + 40)
+                               self._handle_enter_button, self.spec, variant="primary", theme=DEFAULT_THEME)
+        self.ui_components.append(self.enter_btn)
         
-        if self.racing_team.members:
-            slime = self.racing_team.members[0]
-            # Create larger racing card
-            racing_card = self._create_racing_card(slime, racing_slot_rect)
-            self.ui_components.append(racing_card)
-            
-            if not slime.locked:
-                rem_btn = Button("Remove", pygame.Rect(racing_slot_rect.x + 20, racing_slot_rect.bottom - 35, 100, 30),
-                                     lambda s=slime: self._remove_from_racing(s), self.spec, variant="ghost", theme=DEFAULT_THEME)
-                self.ui_components.append(rem_btn)
-        else:
-            # Empty Racing Slot
-            Panel(racing_slot_rect, self.spec, variant="surface", border=True, theme=DEFAULT_THEME).add_to(self.ui_components)
-            Label("EMPTY", (racing_slot_rect.centerx, racing_slot_rect.centery), self.spec, centered=True, size="lg", theme=DEFAULT_THEME).add_to(self.ui_components)
+        # Update enter button text based on active tab
+        self._update_enter_button()
         
-                
-        # 6. Available Slimes (Right Panel)
-        Label("AVAILABLE SLIMES", (self.layout.right_panel.x + 20, self.layout.right_panel.y + 10), 
-               self.spec, size="md", bold=True, theme=DEFAULT_THEME).add_to(self.ui_components)
+        # Setup available slimes
+        self._setup_available_slimes()
+    
+    def _update_enter_button(self):
+        """Update enter button based on active tab"""
+        if self.tabbed_panel.active_tab_id == "dungeon":
+            self.enter_btn.label_comp.text = "ENTER DUNGEON ⚔"
+            self.enter_btn.visible = len(self.dungeon_team.members) > 0
+        elif self.tabbed_panel.active_tab_id == "racing":
+            self.enter_btn.label_comp.text = "ENTER RACING 🏁"
+            self.enter_btn.visible = len(self.racing_team.members) > 0
+        elif self.tabbed_panel.active_tab_id == "conquest":
+            self.enter_btn.label_comp.text = "ENTER CONQUEST ⚔"
+            self.enter_btn.visible = False  # Future content
+    
+    def _handle_enter_button(self):
+        """Handle enter button click based on active tab"""
+        if self.tabbed_panel.active_tab_id == "dungeon":
+            self._enter_dungeon()
+        elif self.tabbed_panel.active_tab_id == "racing":
+            self._enter_racing()
+        # Conquest future
+    
+    def _setup_available_slimes(self):
+        """Setup available slimes panel"""
+        # Clear existing available slimes components
+        self.available_panel.children = []
         
-        # Team assignment rules
-        rules_y = self.layout.right_panel.y + self.layout.right_panel.height - 80
-        Label("ASSIGNMENT RULES:", (self.layout.right_panel.x + 20, rules_y), self.spec, size="sm", bold=True, theme=DEFAULT_THEME).add_to(self.ui_components)
-        Label("• Dungeon: 4 slimes, locked during runs", (self.layout.right_panel.x + 20, rules_y + 20), self.spec, size="xs", color=(140, 140, 160), theme=DEFAULT_THEME).add_to(self.ui_components)
-        Label("• Racing: 1 slime, speed determines performance", (self.layout.right_panel.x + 20, rules_y + 35), self.spec, size="xs", color=(140, 140, 160), theme=DEFAULT_THEME).add_to(self.ui_components)
+        # Header
+        Label("AVAILABLE SLIMES", (self.available_panel.rect.x + 20, self.available_panel.rect.y + 10), 
+              self.spec, size="md", bold=True, theme=DEFAULT_THEME).add_to(self.available_panel.children)
         
         # Available slimes list
         unassigned = self.roster.unassigned()
         for i, slime in enumerate(unassigned):
             if i >= 4: break
-            row_y = self.layout.right_panel.y + 40 + (i * 70)
-            row_rect = pygame.Rect(self.layout.right_panel.x + 10, row_y, self.layout.right_panel.width - 20, 65)
-            Panel(row_rect, self.spec, variant="surface", border=True, theme=DEFAULT_THEME).add_to(self.ui_components)
+            row_y = self.available_panel.rect.y + 40 + (i * 70)
+            row_rect = pygame.Rect(self.available_panel.rect.x + 10, row_y, self.available_panel.rect.width - 20, 65)
+            Panel(row_rect, self.spec, variant="surface", border=True, theme=DEFAULT_THEME).add_to(self.available_panel.children)
             
             # Mini info: name, level, culture
-            # Get the actual slime from roster to access genome
             actual_slime = self.roster.get_creature(slime.slime_id)
             if actual_slime:
                 name = actual_slime.name
@@ -139,9 +139,9 @@ class TeamScene(Scene):
                 level = 1
                 culture = "Unknown"
             
-            Label(name, (row_rect.x + 10, row_rect.y + 5), self.spec, size="sm", bold=True, theme=DEFAULT_THEME).add_to(self.ui_components)
+            Label(name, (row_rect.x + 10, row_rect.y + 5), self.spec, size="sm", bold=True, theme=DEFAULT_THEME).add_to(self.available_panel.children)
             Label(f"Lv.{level} {culture}", 
-                  (row_rect.x + 10, row_rect.y + 22), self.spec, size="xs", color=(160, 160, 180), theme=DEFAULT_THEME).add_to(self.ui_components)
+                  (row_rect.x + 10, row_rect.y + 22), self.spec, size="xs", color=(160, 160, 180), theme=DEFAULT_THEME).add_to(self.available_panel.children)
             
             # Assign buttons
             btn_y = row_rect.y + 40
@@ -149,13 +149,88 @@ class TeamScene(Scene):
             
             if not self.dungeon_team.is_full():
                 dungeon_btn = Button("⚔", pygame.Rect(row_rect.x + 10, btn_y, btn_width, 20),
-                                         lambda s=slime: self._assign_to_dungeon(s), self.spec, variant="primary", theme=DEFAULT_THEME)
-                self.ui_components.append(dungeon_btn)
+                                     lambda s=slime: self._assign_to_dungeon(s), self.spec, variant="primary", theme=DEFAULT_THEME)
+                dungeon_btn.add_to(self.available_panel.children)
             
             if not self.racing_team.is_full():
                 racing_btn = Button("◎", pygame.Rect(row_rect.x + 80, btn_y, btn_width, 20),
-                                        lambda s=slime: self._assign_to_racing(s), self.spec, variant="secondary", theme=DEFAULT_THEME)
-                self.ui_components.append(racing_btn)
+                                    lambda s=slime: self._assign_to_racing(s), self.spec, variant="secondary", theme=DEFAULT_THEME)
+                racing_btn.add_to(self.available_panel.children)
+        
+        # Team assignment rules
+        rules_y = self.available_panel.rect.y + self.available_panel.rect.height - 80
+        Label("ASSIGNMENT RULES:", (self.available_panel.rect.x + 20, rules_y), self.spec, size="sm", bold=True, theme=DEFAULT_THEME).add_to(self.available_panel.children)
+        Label("• Dungeon: 4 slimes, locked during runs", (self.available_panel.rect.x + 20, rules_y + 20), self.spec, size="xs", color=(140, 140, 160), theme=DEFAULT_THEME).add_to(self.available_panel.children)
+        Label("• Racing: 1 slime, speed determines performance", (self.available_panel.rect.x + 20, rules_y + 35), self.spec, size="xs", color=(140, 140, 160), theme=DEFAULT_THEME).add_to(self.available_panel.children)
+    
+    def _render_dungeon_content(self, surface: pygame.Surface):
+        """Render dungeon team content"""
+        # Clear surface
+        surface.fill((0, 0, 0, 0))
+        
+        # Header
+        Label("DUNGEON TEAM", (20, 15), self.spec, size="lg", bold=True, theme=DEFAULT_THEME).render(surface)
+        Label("4 slots — enters the ruins together", (20, 35), self.spec, size="sm", color=(160, 160, 180), theme=DEFAULT_THEME).render(surface)
+        
+        # Team slots
+        for i in range(4):
+            slot_y = 60 + (i * (self.spec.card_height + 20))
+            if i < len(self.dungeon_team.members):
+                slime = self.dungeon_team.members[i]
+                card = ProfileCard(slime, (20, slot_y), self.spec, theme=DEFAULT_THEME)
+                card.render(surface)
+                
+                if not slime.locked:
+                    rem_btn = Button("Remove", pygame.Rect(20, slot_y + self.spec.card_height + 5, 100, 30),
+                                     lambda s=slime: self._remove_from_dungeon(s), self.spec, variant="ghost", theme=DEFAULT_THEME)
+                    rem_btn.render(surface)
+            else:
+                # Empty Slot
+                empty_rect = pygame.Rect(20, slot_y, self.spec.card_width, self.spec.card_height)
+                Panel(empty_rect, self.spec, variant="surface", border=True, theme=DEFAULT_THEME).render(surface)
+                Label("EMPTY", (empty_rect.centerx, empty_rect.centery), self.spec, centered=True, theme=DEFAULT_THEME).render(surface)
+    
+    def _render_racing_content(self, surface: pygame.Surface):
+        """Render racing team content"""
+        # Clear surface
+        surface.fill((0, 0, 0, 0))
+        
+        # Header
+        Label("RACING TEAM", (20, 15), self.spec, size="lg", bold=True, theme=DEFAULT_THEME).render(surface)
+        Label("1 slot — competes in the derby", (20, 35), self.spec, size="sm", color=(160, 160, 180), theme=DEFAULT_THEME).render(surface)
+        
+        # Racing slot (larger)
+        racing_slot_y = 60
+        racing_slot_rect = pygame.Rect(20, racing_slot_y, surface.get_width() - 40, self.spec.card_height + 40)
+        
+        if self.racing_team.members:
+            slime = self.racing_team.members[0]
+            # Create larger racing card
+            racing_card = self._create_racing_card(slime, racing_slot_rect)
+            racing_card.render(surface)
+            
+            if not slime.locked:
+                rem_btn = Button("Remove", pygame.Rect(racing_slot_rect.x + 20, racing_slot_rect.bottom - 35, 100, 30),
+                                     lambda s=slime: self._remove_from_racing(s), self.spec, variant="ghost", theme=DEFAULT_THEME)
+                rem_btn.render(surface)
+        else:
+            # Empty Racing Slot
+            Panel(racing_slot_rect, self.spec, variant="surface", border=True, theme=DEFAULT_THEME).render(surface)
+            Label("EMPTY", (racing_slot_rect.centerx, racing_slot_rect.centery), self.spec, centered=True, size="lg", theme=DEFAULT_THEME).render(surface)
+    
+    def _render_conquest_content(self, surface: pygame.Surface):
+        """Render conquest team content (future)"""
+        # Clear surface
+        surface.fill((0, 0, 0, 0))
+        
+        # Header
+        Label("CONQUEST TEAM", (20, 15), self.spec, size="lg", bold=True, theme=DEFAULT_THEME).render(surface)
+        Label("Coming soon...", (20, 35), self.spec, size="sm", color=(160, 160, 180), theme=DEFAULT_THEME).render(surface)
+        
+        # Future content placeholder
+        placeholder_rect = pygame.Rect(20, 60, surface.get_width() - 40, surface.get_height() - 80)
+        Panel(placeholder_rect, self.spec, variant="surface", border=True, theme=DEFAULT_THEME).render(surface)
+        Label("CONQUEST MODE", (placeholder_rect.centerx, placeholder_rect.centery), self.spec, centered=True, size="lg", theme=DEFAULT_THEME).render(surface)
 
     def _back_to_garden(self):
         self.request_scene("garden")
