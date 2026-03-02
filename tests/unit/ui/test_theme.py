@@ -90,12 +90,12 @@ class TestUITheme:
             assert 'text' in theme.button_colors[variant]
             assert 'border' in theme.button_colors[variant]
             
-            # Check that all colors are valid RGB tuples
+            # Check that all colors are valid RGB/RGBA tuples
             for color_type in ['bg', 'text', 'border']:
                 color = theme.button_colors[variant][color_type]
-                if isinstance(color, tuple):  # Skip alpha tuples
-                    assert len(color) == 3
-                    assert all(0 <= c <= 255 for c in color)
+                assert isinstance(color, tuple)
+                assert len(color) in [3, 4]  # RGB or RGBA
+                assert all(0 <= c <= 255 for c in color[:3])  # Check RGB values
     
     def test_panel_colors_complete(self):
         """Test that all expected panel colors are defined"""
