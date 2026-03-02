@@ -13,6 +13,7 @@ from src.apps.dungeon_crawler.ui.scene_inventory import InventoryOverlay
 from src.shared.engine.scene_manager import SceneManager
 from src.shared.ui.spec import SPEC_720
 from src.shared.state.entity_registry import EntityRegistry
+from src.shared.state.roster_sync import RosterSyncService
 from src.shared.teams.roster_save import load_roster
 from src.shared.session.game_session import GameSession
 from src.shared.dispatch.dispatch_system import DispatchSystem

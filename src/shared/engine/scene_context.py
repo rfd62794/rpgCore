@@ -15,18 +15,18 @@ if TYPE_CHECKING:
 @dataclass
 class SceneContext:
     """
-    Everything a scene needs to interact with the ECS world.
-    Passed explicitly. Replaces ad-hoc kwargs and direct state access.
+    ECS interaction context for scenes.
     
-    SceneContext is optional everywhere. Scenes that don't need ECS access
-    don't need it. Scenes that do have a clean interface instead of reaching
-    into internals.
+    Provides scenes with access to shared systems without
+    requiring direct knowledge of implementation details.
+    Acts as a facade over the ECS infrastructure.
     """
     entity_registry: Optional['EntityRegistry'] = None
     game_session: Optional['GameSession'] = None
     dispatch_system: Optional['DispatchSystem'] = None
     roster: Any = None
     theme: Optional['UITheme'] = None
+    roster_sync: Optional['RosterSyncService'] = None
     
     def __post_init__(self):
         """Ensure roster is available in context for all scenes"""
