@@ -343,7 +343,7 @@ class TeamScene(Scene):
         
         # Name and level
         # Get the actual slime from roster to access genome
-        actual_slime = self.roster.get_slime(slime.slime_id)
+        actual_slime = self.roster.get_creature(slime.slime_id)
         if actual_slime:
             name = actual_slime.name
             level = actual_slime.level
