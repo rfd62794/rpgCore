@@ -248,22 +248,30 @@ class TeamScene(Scene):
     def _assign_to_dungeon(self, slime: RosterSlime):
         if self.dungeon_team.assign(slime):
             save_roster(self.roster)
-            self._setup_ui()
+            self.tabbed_panel.set_badge("dungeon", len(self.dungeon_team.members))
+            self._setup_available_slimes()
+            self._update_enter_button()
 
     def _assign_to_racing(self, slime: RosterSlime):
         if self.racing_team.assign(slime):
             save_roster(self.roster)
-            self._setup_ui()
+            self.tabbed_panel.set_badge("racing", len(self.racing_team.members))
+            self._setup_available_slimes()
+            self._update_enter_button()
 
     def _remove_from_dungeon(self, slime: RosterSlime):
         if self.dungeon_team.remove(slime.slime_id):
             save_roster(self.roster)
-            self._setup_ui()
+            self.tabbed_panel.set_badge("dungeon", len(self.dungeon_team.members))
+            self._setup_available_slimes()
+            self._update_enter_button()
 
     def _remove_from_racing(self, slime: RosterSlime):
         if self.racing_team.remove(slime.slime_id):
             save_roster(self.roster)
-            self._setup_ui()
+            self.tabbed_panel.set_badge("racing", len(self.racing_team.members))
+            self._setup_available_slimes()
+            self._update_enter_button()
 
     def _create_racing_card(self, slime: RosterSlime, rect: pygame.Rect):
         """Create a larger racing-focused profile card"""
