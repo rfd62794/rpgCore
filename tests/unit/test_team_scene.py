@@ -64,10 +64,10 @@ def test_team_scene_assign_slime(mock_manager, sample_roster, monkeypatch):
     assert updated_slime.team == TeamRole.DUNGEON
 
 def test_team_scene_remove_slime(mock_manager, sample_roster, monkeypatch):
-    monkeypatch.setattr("src.apps.slime_breeder.scenes.team_scene.load_roster", lambda: sample_roster)
+    # Mock save_roster for the context
     monkeypatch.setattr("src.apps.slime_breeder.scenes.team_scene.save_roster", MagicMock())
     
-    scene = TeamScene(mock_manager, SPEC_720)
+    scene = TeamScene(mock_manager, SPEC_720, roster=sample_roster)
     scene.on_enter()
     
     # First assign a slime to dungeon team
