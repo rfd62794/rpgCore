@@ -29,11 +29,14 @@ class SlimeRenderer:
         pulse = math.sin(time.time() * pulse_speed) * 0.05
         radius = int(base_radius * (1.0 + pulse))
         
+        # Tier-based visual effects
+        tier = getattr(slime.genome, 'tier', 1)
+        color = self._apply_tier_effects(slime.genome.base_color, tier, pos, radius)
+        
         # Selection highlight
         if selected:
             pygame.draw.circle(surface, (255, 255, 255), pos, radius + 2, 2)
 
-        color = slime.genome.base_color
         p_color = slime.genome.pattern_color
         shape = slime.genome.shape
         seed = sum(color) # Deterministic seed based on color
@@ -70,8 +73,8 @@ class SlimeRenderer:
                 points.append((px, py))
             pygame.draw.polygon(surface, color, points)
 
-        # 2. Pattern Overlay
-        pattern = slime.genome.pattern
+        # 2. Pattern Overlay (Void tier forces iridescent)
+        pattern = 'iridescent' if tier == 8 else slime.genome.pattern
         if pattern == "spotted":
             # 3-5 small circles
             for i in range(4):
@@ -135,6 +138,37 @@ class SlimeRenderer:
         eye_off = radius // 3
         pygame.draw.circle(surface, eye_color, (pos[0] - eye_off, pos[1] - eye_off), max(1, radius // 10))
         pygame.draw.circle(surface, eye_color, (pos[0] + eye_off, pos[1] - eye_off), max(1, radius // 10))
+
+    def _apply_tier_effects(self, base_color: Tuple[int, int, int], tier: int, pos: Tuple[int, int], radius: int) -> Tuple[int, int, int]:
+        """Apply tier-based visual effects to slime color"""
+        if tier == 8:  # Void tier - color cycling
+            # Slow color cycling: hue shifts +1 degree per second
+            current_time = time.time()
+            hue_offset = int(current_time * 60) % 360  # 60 degrees per second = 1 degree per frame at 60fps
+            
+            # Convert RGB to HSV, shift hue, convert back
+            r, g, b = base_color
+            # Simple hue shift approximation
+            if hue_offset % 120 < 40:
+                # Shift towards red
+                r = min(255, r + 2)
+                g = max(0, g - 1)
+            elif hue_offset % 120 < 80:
+                # Shift towards green
+                g = min(255, g + 2)
+                b = max(0, b - 1)
+            else:
+                # Shift towards blue
+                b = min(255, b + 2)
+                r = max(0, r - 1)
+            
+            return (r, g, b)
+        elif tier == 7:  # Liminal tier - pulse effect
+            # Alpha oscillation handled in rendering, just return base color
+            return base_color
+        else:
+            # Tier 1-6: no visual changes
+            return base_color
 
     def render_at(self, surface: pygame.Surface, slime: any, x: int, y: int, radius: int = None, selected: bool = False) -> None:
         """Utility to render a slime at a specific coordinate, for UI use."""
