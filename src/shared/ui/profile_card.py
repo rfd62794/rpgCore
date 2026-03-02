@@ -128,10 +128,7 @@ class ProfileCard(UIComponent):
                     (text_x, badge_y), team_color)
         
         # Culture badge - use theme colors
-        culture_color = self.theme.culture_colors.get(
-            self.slime.genome.cultural_base.value, 
-            self.theme.culture_colors.get('mixed', (140, 140, 140))
-        )
+        culture_color = self.theme.culture_color(self.slime.genome.cultural_base.value)
         
         render_badge(surface, self.slime.genome.cultural_base.value.upper(),
                     (text_x + 70, badge_y), culture_color)

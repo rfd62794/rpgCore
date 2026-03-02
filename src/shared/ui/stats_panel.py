@@ -66,12 +66,12 @@ class StatsPanel(UIComponent):
 
     def _render_stat(self, surface, label, value, pos, color):
         # Stat Label
-        self._render_text(surface, label, pos, size=14, color=(160, 160, 180))
+        self._render_text(surface, label, pos, size=14, color=self.theme.text_secondary)
         
         # Bar Placeholder
         bar_x = pos[0] + 60
         bar_w = self.WIDTH - 80
-        pygame.draw.rect(surface, (30, 30, 40), (bar_x, pos[1] + 4, bar_w, 8))
+        pygame.draw.rect(surface, self.theme.surface, (bar_x, pos[1] + 4, bar_w, 8))
         
         # Calculate cultural max (at Lv.10 reference)
         # HP: ~200-300, ATK: ~40-60, SPD: ~15-20
