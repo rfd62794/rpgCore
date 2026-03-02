@@ -1,3 +1,40 @@
 {
-  "slimes": []
+  "slimes": [
+    {
+      "slime_id": "sage_1",
+      "name": "Sage 1",
+      "team": "unassigned",
+      "locked": false,
+      "alive": true,
+      "genome": {
+        "shape": "elongated",
+        "size": "medium",
+        "base_color": [
+          68,
+          165,
+          229
+        ],
+        "pattern": "marbled",
+        "pattern_color": [
+          162,
+          145,
+          209
+        ],
+        "accessory": "none",
+        "curiosity": 0.3953279185871835,
+        "energy": 0.899059816916092,
+        "affection": 0.9814887285122768,
+        "shyness": 0.46863165093193426,
+        "cultural_base": "coastal",
+        "base_hp": 20.0,
+        "base_atk": 5.0,
+        "base_spd": 5.0,
+        "generation": 1
+      },
+      "level": 1,
+      "experience": 0,
+      "breeding_lock_level": 0,
+      "current_hp": 20.0
+    }
+  ]
 }
