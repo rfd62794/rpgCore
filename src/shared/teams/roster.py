@@ -148,6 +148,24 @@ class RosterEntry:
             if roster_slime:
                 return roster_slime.name
         return f"Creature_{self.slime_id}"
+    
+    @property
+    def is_elder(self) -> bool:
+        """Check if this slime is elder (level >= 10)"""
+        if hasattr(self, '_team_ref') and self._team_ref and hasattr(self._team_ref, '_roster_ref') and self._team_ref._roster_ref:
+            roster_slime = self._team_ref._roster_ref._roster_slimes.get(self.slime_id)
+            if roster_slime:
+                return roster_slime.level >= 10
+        return False
+    
+    @property
+    def level(self) -> int:
+        """Get slime level from roster's stored RosterSlime"""
+        if hasattr(self, '_team_ref') and self._team_ref and hasattr(self._team_ref, '_roster_ref') and self._team_ref._roster_ref:
+            roster_slime = self._team_ref._roster_ref._roster_slimes.get(self.slime_id)
+            if roster_slime:
+                return roster_slime.level
+        return 1
 
 @dataclass  
 class Team:
