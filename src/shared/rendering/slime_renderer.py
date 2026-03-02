@@ -29,6 +29,19 @@ class SlimeRenderer:
         pulse = math.sin(time.time() * pulse_speed) * 0.05
         radius = int(base_radius * (1.0 + pulse))
         
+        # Check if slime is dispatched (ghosted state)
+        is_dispatched = hasattr(slime, 'is_dispatched') and slime.is_dispatched
+        
+        # Apply alpha for dispatched slimes
+        alpha = 140 if is_dispatched else 255
+        
+        # Create surface with alpha for dispatched slimes
+        if is_dispatched:
+            temp_surface = pygame.Surface((base_radius * 4, base_radius * 4), pygame.SRCALPHA)
+            temp_surface.fill((0, 0, 0, 0))
+        else:
+            temp_surface = surface
+        
         # Tier-based visual effects
         tier = getattr(slime.genome, 'tier', 1)
         color = self._apply_tier_effects(slime.genome.base_color, tier, pos, radius)
