@@ -34,6 +34,9 @@ class Panel(UIComponent):
         
         self.children: List[UIComponent] = []
         
+        # Add visible attribute for compatibility
+        self.visible = True
+        
         # Simple font for title if provided
         if self.title:
             try:
