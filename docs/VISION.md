@@ -81,7 +81,23 @@ Chocobo Racing energy. FF7 Golden Saucer spirit.
 
 ## The Faction World
 
-### Five Slime Cultures
+### Hexagon World Structure
+
+The world is a hexagon. Six cultures occupy six regions. Between them, wilderness — contested, dangerous, resource-rich. At the center: the Garden.
+
+```
+        Crystal
+       /        \
+  Tundra          Ember
+    |    [GARDEN]    |
+  Marsh           Gale
+       \        /
+        Tide
+```
+
+The world is in turmoil. The cultures have always vied for dominance, but a fracture event — occurring at or near the time of the crash — has tipped a cold war into open conflict. The astronaut did not cause the turmoil. But they may have accelerated it.
+
+### Six Slime Cultures
 Evolved based on regional environmental pressure.
 Tendencies not locks — genetics can override.
 Cultural traits visible in mathematical rendering.
@@ -92,24 +108,48 @@ Ember Slimes (Ember Wastes)
   Warriors. Resource rich. Angular forms.
   Hot color palette. Fast wobble.
   Trade: parts, weapons, combat training.
+  Stat Affinity: Strength, Attack
+  Temperament: Aggressive, impulsive, dominance-seeking
 
 Crystal Slimes (Crystal Caverns)
   Scholars. Ancient knowledge. Geometric forms.
   Cool blues and whites. Deliberate movement.
   Trade: information, maps, dungeon layouts.
   Know more about your crash than they say.
+  Stat Affinity: Defense, Wisdom
+  Temperament: Cautious, loyal, defensive
 
-Moss Slimes (Moss Plains)
+Tundra Slimes (Tundra Wastes)
+  Survivors. Preserved knowledge. Angular crystalline forms.
+  Cool whites and blues. Slow deliberate movement.
+  Trade: preserved materials, rare knowledge.
+  Self-sufficient and hard to pressure.
+  Stat Affinity: Intelligence, Perception
+  Temperament: Independent, calculating, emotionally distant
+
+Marsh Slimes (Marsh Plains)
   Farmers. Abundant. Social. Rounded forms.
   Green and brown palette. Gentle wobble.
   Trade: breeding supplies, genetic materials.
   Most welcoming to outsiders.
+  Stat Affinity: Constitution, Endurance
+  Temperament: Patient, stubborn, resource-hoarding
 
-### Coastal Slimes (Coastal Waters)
-  Traders. Adaptable. Elongated fluid forms.
+Gale Slimes (Gale Highlands)
+  Messengers. Information networks. Elongated fluid forms.
+  Light blues and whites. Rapid rippling movement.
+  Trade: information, routes, light materials.
+  Natural information brokers.
+  Stat Affinity: Dexterity, Speed
+  Temperament: Curious, restless, risk-taking
+
+Tide Slimes (Coastal Waters)
+  Traders. Adaptable. Fluid forms.
   Blue-teal palette. Ripple movement.
   Trade: routes, cargo, rare finds.
   Know every faction's price.
+  Stat Affinity: Charisma, Adaptability
+  Temperament: Sociable, adaptable, opportunistic
 
 Void Slimes (Void Edges)
   Not a culture. A convergent evolution.
@@ -119,6 +159,7 @@ Void Slimes (Void Edges)
   Rarest traits. Most dangerous in dungeon.
   Most valuable in conquest.
   Breed one if you go deep enough.
+  The original unified culture from which all six fractured.
 
 ### Faction Memory
 Factions remember what you did.
