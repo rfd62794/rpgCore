@@ -136,24 +136,39 @@ class GardenScene(GardenSceneBase):
         self.top_bar.add_child(self.racing_nav_btn)
 
         # Sync initial slimes if garden is empty but roster has slimes
-        if not self.garden_state.slimes and self.roster.slimes:
-            for rs in self.roster.slimes:
-                pos = (random.randint(50, self.garden_rect.width - 50), random.randint(50, self.garden_rect.height - 50))
-                slime = Slime(rs.name, rs.genome, pos, level=rs.level)
-                self.garden_state.add_slime(slime)
+        if not self.garden_state.slimes and self.roster.entries:
+            for entry in self.roster.entries:
+                # Try to get the actual slime from garden state or create one
+                slime = self.garden_state.get_slime(entry.slime_id)
+                if not slime:
+                    # Create a new slime from roster entry
+                    # We need to get the genome from somewhere - try garden state first
+                    try:
+                        # If we have garden state, try to get slime from there
+                        existing_slime = self.garden_state.get_slime(entry.slime_id)
+                        if existing_slime:
+                            slime = existing_slime
+                        else:
+                            # Create new slime - we need to get genome data
+                            # This is a fallback - ideally we'd get genome from saved data
+                            from src.shared.genetics import generate_random
+                            genome = generate_random()  # Fallback to random genome
+                            pos = (random.randint(50, self.garden_rect.width - 50), random.randint(50, self.garden_rect.height - 50))
+                            slime = Slime(entry.slime_id, genome, pos, level=1)
+                            self.garden_state.add_slime(slime)
+                    except Exception as e:
+                        logger.warning(f"Could not create slime for {entry.slime_id}: {e}")
         elif not self.garden_state.slimes:
             self._add_new_slime()
 
     def _sync_roster_with_garden(self):
         """Ensure all garden slimes are in the roster."""
         for slime in self.garden_state.slimes:
-            if not any(rs.name == slime.name for rs in self.roster.slimes):
-                rs = RosterSlime(
-                    slime_id=slime.name.lower().replace(" ", "_"),
-                    name=slime.name,
-                    genome=slime.genome
-                )
-                self.roster.add_slime(rs)
+            if not any(entry.slime_id == slime.name.lower().replace(" ", "_") for entry in self.roster.entries):
+                # Create roster entry for this slime
+                from src.shared.teams.roster import RosterEntry
+                entry = RosterEntry(slime_id=slime.name.lower().replace(" ", "_"))
+                self.roster.entries.append(entry)
         save_roster(self.roster)
 
     def _add_new_slime(self):
@@ -164,12 +179,9 @@ class GardenScene(GardenSceneBase):
         self.garden_state.add_slime(slime)
         
         # Add to roster
-        rs = RosterSlime(
-            slime_id=name.lower().replace(" ", "_"),
-            name=name,
-            genome=genome
-        )
-        self.roster.add_slime(rs)
+        from src.shared.teams.roster import RosterEntry
+        entry = RosterEntry(slime_id=name.lower().replace(" ", "_"))
+        self.roster.entries.append(entry)
         save_roster(self.roster)
 
     def _go_to_breeding(self):
