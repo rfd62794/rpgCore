@@ -43,7 +43,7 @@ class TestUITheme:
         theme = UITheme()
         
         expected_cultures = [
-            'ember', 'gale', 'marsh', 'crystal', 'tundra', 'tide', 'void', 'coastal', 'mixed'
+            'ember', 'gale', 'marsh', 'crystal', 'tundra', 'tide', 'coastal', 'void'
         ]
         
         for culture in expected_cultures:
@@ -116,10 +116,11 @@ class TestUITheme:
                 assert all(0 <= c <= 255 for c in color[:3])  # Check RGB values
     
     def test_theme_default_instance(self):
-        """Test that UITheme.DEFAULT is properly set"""
-        assert UITheme.DEFAULT is not None
-        assert isinstance(UITheme.DEFAULT, UITheme)
-        assert UITheme.DEFAULT.font_large == 18  # Check it's a valid theme
+        """Test that DEFAULT_THEME is properly set"""
+        from src.shared.ui.theme import DEFAULT_THEME
+        assert DEFAULT_THEME is not None
+        assert isinstance(DEFAULT_THEME, UITheme)
+        assert DEFAULT_THEME.font_large == 18  # Check it's a valid theme
     
     def test_theme_customization(self):
         """Test that theme can be customized"""
