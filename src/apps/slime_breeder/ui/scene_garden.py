@@ -358,19 +358,25 @@ class GardenScene(GardenSceneBase):
         self.request_scene("breeding")
 
     def _release_selected(self):
-            for s in self.selected_entities:
-                print(f"DEBUG: Releasing {s.name} into the wild...")
-                self.garden_state.remove_slime(s.name)
-                # Remove from roster
-                self.roster.slimes = [rs for rs in self.roster.slimes if rs.slime_id != s.name.lower().replace(" ", "_")]
-                self.roster.entries = [e for e in self.roster.entries if e.slime_id != s.name.lower().replace(" ", "_")]
-                # Also remove from any team
-                for team in self.roster.teams.values():
-                    team.members = [m for m in team.members if m.slime_id != s.name.lower().replace(" ", "_")]
+        if len(self.selected_entities) == 0:
+            return
             
-            save_roster(self.roster)
-            self.selected_entities = []
-            self.on_selection_changed()
+        for s in self.selected_entities:
+            print(f"DEBUG: Releasing {s.name} into the wild...")
+            self.garden_state.remove_slime(s.name)
+            # Remove from roster
+            self.roster.slimes = [rs for rs in self.roster.slimes if rs.slime_id != s.name.lower().replace(" ", "_")]
+            self.roster.entries = [e for e in self.roster.entries if e.slime_id != s.name.lower().replace(" ", "_")]
+            # Also remove from any team
+            for team in self.roster.teams.values():
+                team.members = [m for m in team.members if m.slime_id != s.name.lower().replace(" ", "_")]
+        
+        # Auto-save using SaveManager
+        if self.context:
+            self.context.save_roster()
+        
+        self.selected_entities = []
+        self.on_selection_changed()
 
     def _go_to_teams(self):
         self.request_scene("teams")
@@ -990,8 +996,9 @@ class GardenScene(GardenSceneBase):
                     size=20, color=(*self._banner_color, alpha), center=True)
 
     def on_exit(self):
-        """Cleanup logic."""
-        pass
+        """Auto-save when exiting scene"""
+        if self.context:
+            self.context.save_roster()
 
     def handle_event(self, event: pygame.event.Event) -> None:
         # Route through InputRouter if available
