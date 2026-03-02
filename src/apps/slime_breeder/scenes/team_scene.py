@@ -405,4 +405,8 @@ class TeamScene(Scene):
             comp.render(surface)
 
     def on_exit(self):
-        save_roster(self.roster)
+        """Auto-save when exiting scene"""
+        if self.context and hasattr(self.context, 'save_roster'):
+            self.context.save_roster()
+        else:
+            save_roster(self.roster)

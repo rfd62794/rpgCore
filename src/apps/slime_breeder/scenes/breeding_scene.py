@@ -265,7 +265,7 @@ class BreedingScene(Scene):
         )
         self.roster.add_slime(self.offspring_slime)
         
-        # Save through context if available, otherwise fallback
+        # Auto-save using SaveManager
         if self.context and hasattr(self.context, 'save_roster'):
             self.context.save_roster()
         else:
