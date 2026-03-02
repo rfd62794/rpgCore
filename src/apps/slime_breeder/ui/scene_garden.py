@@ -15,6 +15,7 @@ from src.shared.teams.roster import Roster, RosterSlime, TeamRole
 from src.shared.teams.roster_save import load_roster, save_roster
 from src.shared.ui.profile_card import ProfileCard, render_text
 from src.shared.ui.panel import Panel
+from src.apps.slime_breeder.ui.dispatch_panel import DispatchPanel
 
 NAMES = ["Mochi", "Pip", "Glimmer", "Bloop", "Sage", "Dew", "Ember", "Fizz", "Lumen", "Nook"]
 
@@ -208,6 +209,16 @@ class GardenScene(GardenSceneBase):
         # Add pending action buttons to action_bar
         for button in self._pending_action_buttons:
             self.action_bar.add_child(button)
+        
+        # Create and add DispatchPanel
+        dispatch_rect = pygame.Rect(
+            self.actions_rect.x + 10,
+            self.actions_rect.y + 150,  # Position below action buttons
+            self.actions_rect.width - 20,
+            200
+        )
+        self.dispatch_panel = DispatchPanel(dispatch_rect, self.spec)
+        self.ui_components.append(self.dispatch_panel)
 
     def _sync_roster_with_garden(self):
         """Ensure all garden slimes are in the roster."""
@@ -478,6 +489,12 @@ class GardenScene(GardenSceneBase):
         self._render_banner(surface)
         self._render_right_panel(surface)
         self._render_team_status_bar(surface)
+        
+        # Update and render DispatchPanel with current resources
+        if hasattr(self, 'dispatch_panel') and self.game_session:
+            available_slimes = [s for s in self.garden_state.slimes if s not in self.selected_entities]
+            self.dispatch_panel.update_data(self.game_session.resources, available_slimes)
+            self.dispatch_panel.render(surface)
 
     def _render_right_panel(self, surface: pygame.Surface):
         from src.shared.ui.profile_card import render_text
