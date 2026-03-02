@@ -29,23 +29,27 @@ class StatsPanel(UIComponent):
         """No periodic updates needed for this static panel."""
         pass
 
-    def render(self, surface: pygame.Surface):
+    def render(self, surface: pygame.Surface, data: Any = None) -> None:
+        """Render the stats panel using theme colors."""
         x, y = self.position
         
-        # Panel Background
+        # Panel Background - use theme colors
         panel_rect = pygame.Rect(x, y, self.WIDTH, self.HEIGHT)
-        pygame.draw.rect(surface, (40, 45, 55), panel_rect, border_radius=6)
-        pygame.draw.rect(surface, (100, 110, 130), panel_rect, width=1, border_radius=6)
+        pygame.draw.rect(surface, self.theme.panel_colors['surface']['bg'], panel_rect, border_radius=6)
+        pygame.draw.rect(surface, self.theme.panel_colors['surface']['border'], panel_rect, width=1, border_radius=6)
+        
+        # Title
+        self._render_text(surface, "STATS", (x + self.PADDING, y + self.PADDING), size=12, bold=True, color=self.theme.text_primary)
         
         # Calculate stats
-        hp  = calculate_hp(self.slime.genome, self.slime.level)
+        hp = calculate_hp(self.slime.genome, self.slime.level)
         atk = calculate_attack(self.slime.genome, self.slime.level)
         spd = calculate_speed(self.slime.genome, self.slime.level)
         
-        # Original stats section
-        self._render_stat(surface, "HEALTH", hp,  (x + self.PADDING, y + self.PADDING), (200, 100, 100))
-        self._render_stat(surface, "ATTACK", atk, (x + self.PADDING, y + self.PADDING + 30), (220, 140, 60))
-        self._render_stat(surface, "SPEED",  spd, (x + self.PADDING, y + self.PADDING + 60), (100, 180, 220))
+        # Render stats
+        self._render_stat(surface, "HP", hp, (x + self.PADDING, y + 30))
+        self._render_stat(surface, "ATK", atk, (x + self.PADDING, y + 50))
+        self._render_stat(surface, "SPD", spd, (x + self.PADDING, y + 70))
         
         # Genetic dominance hint
         dominance = self._get_dominance_text()
