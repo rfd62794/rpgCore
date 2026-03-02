@@ -1,7 +1,7 @@
 import pygame
 from typing import Tuple, Optional
 from src.shared.ui.base import UIComponent
-from src.shared.ui.theme import UITheme
+from src.shared.ui.theme import DEFAULT_THEME
 from src.shared.ui.ui_event import UIEvent
 from src.shared.teams.roster import RosterSlime
 from src.shared.teams.stat_calculator import calculate_hp, calculate_attack, calculate_speed
@@ -11,16 +11,16 @@ class StatsPanel(UIComponent):
     Unified stats panel to be reused in Profile, Breeding, and Racing scenes.
     Extended to show culture expression and personality axes.
     """
-    def __init__(self, slime: RosterSlime, position: Tuple[int, int], width: int = 200, theme: Optional[UITheme] = None):
+    def __init__(self, slime: RosterSlime, position: Tuple[int, int], width: int = 200, theme: Optional['UITheme'] = None):
         self.WIDTH = width
         self.HEIGHT = 250  # Extended height for new sections
         self.PADDING = 10
         
         # Use theme or default
-        self.theme = theme or UITheme.DEFAULT
+        self.theme = theme or DEFAULT_THEME
         
         rect = pygame.Rect(position[0], position[1], self.WIDTH, self.HEIGHT)
-        super().__init__(rect, theme, z_order=0)
+        super().__init__(rect, self.theme, z_order=0)
         
         self.slime = slime
         self.position = position
@@ -35,8 +35,8 @@ class StatsPanel(UIComponent):
         
         # Panel Background - use theme colors
         panel_rect = pygame.Rect(x, y, self.WIDTH, self.HEIGHT)
-        pygame.draw.rect(surface, self.theme.panel_colors['surface']['bg'], panel_rect, border_radius=6)
-        pygame.draw.rect(surface, self.theme.panel_colors['surface']['border'], panel_rect, width=1, border_radius=6)
+        pygame.draw.rect(surface, self.theme.surface, panel_rect, border_radius=6)
+        pygame.draw.rect(surface, self.theme.border, panel_rect, width=1, border_radius=6)
         
         # Title
         self._render_text(surface, "STATS", (x + self.PADDING, y + self.PADDING), size=12, bold=True, color=self.theme.text_primary)
