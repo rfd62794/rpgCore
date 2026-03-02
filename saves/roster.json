@@ -1,66 +1,138 @@
 {
   "slimes": [
     {
-      "slime_id": "s0",
-      "name": "Slime 0",
-      "team": "dungeon",
+      "slime_id": "glimmer_1",
+      "name": "Glimmer 1",
+      "team": "unassigned",
       "locked": false,
       "alive": true,
       "genome": {
-        "shape": "round",
+        "shape": "cubic",
         "size": "medium",
         "base_color": [
-          100,
-          200,
-          100
+          124,
+          68,
+          229
         ],
-        "pattern": "spotted",
+        "pattern": "solid",
         "pattern_color": [
-          50,
-          50,
-          50
+          85,
+          129,
+          79
         ],
-        "accessory": "none",
-        "curiosity": 0.8,
-        "energy": 0.2,
-        "affection": 0.1,
-        "shyness": 0.1,
-        "cultural_base": "mixed",
-        "base_hp": 20.0,
-        "base_atk": 5.0,
-        "base_spd": 5.0,
+        "accessory": "shell",
+        "curiosity": 0.8165878901582936,
+        "energy": 0.7923319952659125,
+        "affection": 0.602539891436662,
+        "shyness": 0.8763098144726521,
+        "cultural_base": "void",
+        "base_hp": 24.0,
+        "base_atk": 6.0,
+        "base_spd": 6.0,
         "generation": 1
       },
       "level": 1,
       "experience": 0,
       "breeding_lock_level": 0,
-      "current_hp": 20.0
+      "current_hp": 28.0
     },
     {
-      "slime_id": "ember_2",
-      "name": "Ember 2",
-      "team": "unassigned",
+      "slime_id": "lumen_2",
+      "name": "Lumen 2",
+      "team": "dungeon",
       "locked": false,
       "alive": true,
       "genome": {
         "shape": "amorphous",
-        "size": "small",
+        "size": "massive",
         "base_color": [
+          125,
           68,
-          156,
           229
         ],
         "pattern": "spotted",
         "pattern_color": [
-          120,
-          242,
-          123
+          219,
+          129,
+          164
+        ],
+        "accessory": "glow",
+        "curiosity": 0.6807561251623104,
+        "energy": 0.46323033329972074,
+        "affection": 0.7036498171375083,
+        "shyness": 0.20405386593618036,
+        "cultural_base": "tide",
+        "base_hp": 20.0,
+        "base_atk": 5.0,
+        "base_spd": 6.0,
+        "generation": 1
+      },
+      "level": 1,
+      "experience": 0,
+      "breeding_lock_level": 0,
+      "current_hp": 24.0
+    },
+    {
+      "slime_id": "nook_3",
+      "name": "Nook 3",
+      "team": "dungeon",
+      "locked": false,
+      "alive": true,
+      "genome": {
+        "shape": "cubic",
+        "size": "small",
+        "base_color": [
+          229,
+          97,
+          68
+        ],
+        "pattern": "marbled",
+        "pattern_color": [
+          235,
+          252,
+          134
         ],
         "accessory": "crystals",
-        "curiosity": 0.8415644967456822,
-        "energy": 0.8297252289506064,
-        "affection": 0.9391831690007312,
-        "shyness": 0.9198282249606881,
+        "curiosity": 0.9379159051312629,
+        "energy": 0.8290100485827216,
+        "affection": 0.017340510222134786,
+        "shyness": 0.942074035931501,
+        "cultural_base": "ember",
+        "base_hp": 16.0,
+        "base_atk": 7.0,
+        "base_spd": 5.5,
+        "generation": 1
+      },
+      "level": 1,
+      "experience": 0,
+      "breeding_lock_level": 0,
+      "current_hp": 11.0
+    },
+    {
+      "slime_id": "glimmer_4",
+      "name": "Glimmer 4",
+      "team": "dungeon",
+      "locked": false,
+      "alive": true,
+      "genome": {
+        "shape": "elongated",
+        "size": "small",
+        "base_color": [
+          68,
+          92,
+          229
+        ],
+        "pattern": "striped",
+        "pattern_color": [
+          81,
+          167,
+          121
+        ],
+        "accessory": "none",
+        "curiosity": 0.05536550420834885,
+        "energy": 0.7777493065488034,
+        "affection": 0.5458183306717314,
+        "shyness": 0.21096359475421533,
         "cultural_base": "crystal",
         "base_hp": 28.0,
         "base_atk": 4.0,
@@ -73,66 +145,102 @@
       "current_hp": 35.0
     },
     {
-      "slime_id": "glimmer_3",
-      "name": "Glimmer 3",
-      "team": "unassigned",
-      "locked": false,
-      "alive": true,
-      "genome": {
-        "shape": "crystalline",
-        "size": "medium",
-        "base_color": [
-          229,
-          146,
-          68
-        ],
-        "pattern": "marbled",
-        "pattern_color": [
-          177,
-          106,
-          69
-        ],
-        "accessory": "scar",
-        "curiosity": 0.5011517843745151,
-        "energy": 0.25666480801612823,
-        "affection": 0.871663454439857,
-        "shyness": 0.5408246255895128,
-        "cultural_base": "ember",
-        "base_hp": 16.0,
-        "base_atk": 7.0,
-        "base_spd": 5.5,
-        "generation": 1
-      },
-      "level": 1,
-      "experience": 0,
-      "breeding_lock_level": 0,
-      "current_hp": 12.0
-    },
-    {
-      "slime_id": "dew_4",
-      "name": "Dew 4",
+      "slime_id": "bloop_5",
+      "name": "Bloop 5",
       "team": "unassigned",
       "locked": false,
       "alive": true,
       "genome": {
         "shape": "elongated",
+        "size": "small",
+        "base_color": [
+          68,
+          205,
+          229
+        ],
+        "pattern": "spotted",
+        "pattern_color": [
+          253,
+          82,
+          82
+        ],
+        "accessory": "glow",
+        "curiosity": 0.011337102492601558,
+        "energy": 0.3771669561435077,
+        "affection": 0.4160888258064578,
+        "shyness": 0.23833469410042651,
+        "cultural_base": "crystal",
+        "base_hp": 28.0,
+        "base_atk": 4.0,
+        "base_spd": 3.5,
+        "generation": 1
+      },
+      "level": 1,
+      "experience": 0,
+      "breeding_lock_level": 0,
+      "current_hp": 35.0
+    },
+    {
+      "slime_id": "sage_6",
+      "name": "Sage 6",
+      "team": "racing",
+      "locked": false,
+      "alive": true,
+      "genome": {
+        "shape": "round",
+        "size": "tiny",
+        "base_color": [
+          147,
+          229,
+          68
+        ],
+        "pattern": "spotted",
+        "pattern_color": [
+          107,
+          98,
+          196
+        ],
+        "accessory": "scar",
+        "curiosity": 0.6168320859757663,
+        "energy": 0.29712115177802445,
+        "affection": 0.17110945964472313,
+        "shyness": 0.0533143022627498,
+        "cultural_base": "moss",
+        "base_hp": 20.0,
+        "base_atk": 4.5,
+        "base_spd": 6.5,
+        "generation": 1
+      },
+      "level": 1,
+      "experience": 0,
+      "breeding_lock_level": 0,
+      "current_hp": 16.0
+    },
+    {
+      "slime_id": "pip_7",
+      "name": "Pip 7",
+      "team": "dungeon",
+      "locked": false,
+      "alive": true,
+      "genome": {
+        "shape": "cubic",
         "size": "tiny",
         "base_color": [
           229,
-          101,
+          86,
           68
         ],
-        "pattern": "marbled",
+        "pattern": "spotted",
         "pattern_color": [
-          252,
-          98,
-          95
+          97,
+          158,
+          190
         ],
-        "accessory": "crown",
-        "curiosity": 0.4674736937071151,
-        "energy": 0.24172769934981364,
-        "affection": 0.2390614569900088,
-        "shyness": 0.6042983171757984,
+        "accessory": "crystals",
+        "curiosity": 0.6674725969623932,
+        "energy": 0.8596364153004971,
+        "affection": 0.47725949959949554,
+        "shyness": 0.21823091422777474,
         "cultural_base": "ember",
         "base_hp": 16.0,
         "base_atk": 7.0,
@@ -143,42 +251,6 @@
       "experience": 0,
       "breeding_lock_level": 0,
       "current_hp": 10.0
-    },
-    {
-      "slime_id": "ember_5",
-      "name": "Ember 5",
-      "team": "unassigned",
-      "locked": false,
-      "alive": true,
-      "genome": {
-        "shape": "amorphous",
-        "size": "large",
-        "base_color": [
-          229,
-          128,
-          68
-        ],
-        "pattern": "marbled",
-        "pattern_color": [
-          65,
-          95,
-          247
-        ],
-        "accessory": "crown",
-        "curiosity": 0.44428565409569487,
-        "energy": 0.6195081998514617,
-        "affection": 0.5679009502204173,
-        "shyness": 0.5282758525426365,
-        "cultural_base": "ember",
-        "base_hp": 16.0,
-        "base_atk": 7.0,
-        "base_spd": 5.5,
-        "generation": 1
-      },
-      "level": 1,
-      "experience": 0,
-      "breeding_lock_level": 0,
-      "current_hp": 14.0
     }
   ]
 }

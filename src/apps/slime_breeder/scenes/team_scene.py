@@ -108,22 +108,24 @@ class TeamScene(Scene):
     
     def _update_enter_button(self):
         """Update enter button based on active tab"""
-        if self.tabbed_panel.active_tab_id == "dungeon":
-            self.enter_btn.label_comp.text = "ENTER DUNGEON ⚔"
-            self.enter_btn.visible = len(self.dungeon_team.members) > 0
-        elif self.tabbed_panel.active_tab_id == "racing":
-            self.enter_btn.label_comp.text = "ENTER RACING 🏁"
-            self.enter_btn.visible = len(self.racing_team.members) > 0
-        elif self.tabbed_panel.active_tab_id == "conquest":
-            self.enter_btn.label_comp.text = "ENTER CONQUEST ⚔"
-            self.enter_btn.visible = False  # Future content
+        if hasattr(self, 'tabbed_panel') and self.tabbed_panel:
+            if self.tabbed_panel.active_tab_id == "dungeon":
+                self.enter_btn.label_comp.text = "ENTER DUNGEON ⚔"
+                self.enter_btn.visible = len(self.dungeon_team.members) > 0
+            elif self.tabbed_panel.active_tab_id == "racing":
+                self.enter_btn.label_comp.text = "ENTER RACING 🏁"
+                self.enter_btn.visible = len(self.racing_team.members) > 0
+            elif self.tabbed_panel.active_tab_id == "conquest":
+                self.enter_btn.label_comp.text = "ENTER CONQUEST ⚔"
+                self.enter_btn.visible = False  # Future content
     
     def _handle_enter_button(self):
         """Handle enter button click based on active tab"""
-        if self.tabbed_panel.active_tab_id == "dungeon":
-            self._enter_dungeon()
-        elif self.tabbed_panel.active_tab_id == "racing":
-            self._enter_racing()
+        if hasattr(self, 'tabbed_panel') and self.tabbed_panel:
+            if self.tabbed_panel.active_tab_id == "dungeon":
+                self._enter_dungeon()
+            elif self.tabbed_panel.active_tab_id == "racing":
+                self._enter_racing()
         # Conquest future
     
     def _setup_available_slimes(self):
