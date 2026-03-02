@@ -13,12 +13,15 @@ class TestSceneContext:
     
     def test_scene_context_creation(self):
         """Test SceneContext can be created with all optional fields"""
-        context = SceneContext()
-        assert context.entity_registry is None
-        assert context.game_session is None
-        assert context.dispatch_system is None
-        assert context.roster is None
-        assert context.theme is None
+        # Mock load_roster to avoid loading from file during test
+        import unittest.mock
+        with unittest.mock.patch('src.shared.engine.scene_context.load_roster', return_value=None):
+            context = SceneContext()
+            assert context.entity_registry is None
+            assert context.game_session is None
+            assert context.dispatch_system is None
+            assert context.roster is None
+            assert context.theme is None
     
     def test_scene_context_with_values(self):
         """Test SceneContext with actual values"""
