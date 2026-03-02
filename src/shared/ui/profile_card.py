@@ -1,7 +1,7 @@
 import pygame
 import math
 from dataclasses import dataclass
-from typing import Tuple, Optional
+from typing import Tuple, Optional, Any 
 from src.shared.ui.base import UIComponent
 from src.shared.ui.theme import UITheme
 from src.shared.ui.ui_event import UIEvent

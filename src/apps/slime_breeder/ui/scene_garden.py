@@ -19,6 +19,7 @@ from src.shared.teams.roster_save import load_roster, save_roster
 from src.shared.ui.profile_card import ProfileCard, render_text
 from src.shared.ui.panel import Panel
 from src.apps.slime_breeder.ui.dispatch_panel import DispatchPanel
+from src.shared.ui.spec import UISpec
 
 NAMES = ["Mochi", "Pip", "Glimmer", "Bloop", "Sage", "Dew", "Ember", "Fizz", "Lumen", "Nook"]
 
