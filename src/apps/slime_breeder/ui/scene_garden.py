@@ -35,7 +35,7 @@ class GardenScene(GardenSceneBase):
         )
         
         # Initialize garden state
-        self.garden_state = GardenState(self.garden_rect)
+        self.garden_state = GardenState()
         
         # Initialize garden renderer with level
         self.garden_level = 0
@@ -95,8 +95,7 @@ class GardenScene(GardenSceneBase):
         self.actions_rect = pygame.Rect(self.right_panel_rect.x + padding, self.profile_rect.bottom + padding, self.right_panel_rect.width - padding * 2, bottom_h)
 
         # Disable base detail_panel background to prevent overdrawing our custom sub-panels
-        self.detail_panel.bg_color = None
-        self.detail_panel.border_width = 0
+        # This will be set in on_garden_enter after base setup
 
         # 2. Team Buttons (Stacked in actions_rect)
         btn_y = self.actions_rect.y + 10
@@ -115,25 +114,29 @@ class GardenScene(GardenSceneBase):
         self.remove_btn.set_visible(False)
         self.mission_btn.set_visible(False)
         
-        # Add to detail panel (assuming detail_panel is the right panel)
-        self.detail_panel.add_child(self.dungeon_btn)
-        self.detail_panel.add_child(self.racing_btn)
-        self.detail_panel.add_child(self.remove_btn)
-        self.detail_panel.add_child(self.mission_btn)
+        # Store buttons for later addition to detail_panel
+        self._pending_buttons = [
+            self.dungeon_btn,
+            self.racing_btn, 
+            self.remove_btn,
+            self.mission_btn
+        ]
         
         # 3. Custom Action Bar Buttons
         btn_y = self.bar_rect.y + 10
         btn_w, btn_h = 130, 44
         
         self.new_btn = Button("New Slime", pygame.Rect(20, btn_y, btn_w, btn_h), self._add_new_slime, self.spec)
-        self.action_bar.add_child(self.new_btn)
-        
         self.breed_btn = Button("Breed", pygame.Rect(160, btn_y, btn_w, btn_h), self._go_to_breeding, self.spec)
-        self.action_bar.add_child(self.breed_btn)
-
         self.release_btn = Button("Release", pygame.Rect(300, btn_y, btn_w, btn_h), self._release_selected, self.spec, variant="danger")
         self.release_btn.set_enabled(False)
-        self.action_bar.add_child(self.release_btn)
+        
+        # Store buttons for later addition to action_bar
+        self._pending_action_buttons = [
+            self.new_btn,
+            self.breed_btn,
+            self.release_btn
+        ]
 
         # 3. Top Navigation Bar (Using HubLayout.top_bar)
         self.top_bar = Panel(self.layout.top_bar, self.spec, variant="surface")
@@ -186,6 +189,20 @@ class GardenScene(GardenSceneBase):
                         logger.warning(f"Could not create slime for {entry.slime_id}: {e}")
         elif not self.garden_state.slimes:
             self._add_new_slime()
+
+    def on_garden_enter(self):
+        """Set up UI components after base initialization"""
+        # Disable base detail_panel background to prevent overdrawing our custom sub-panels
+        self.detail_panel.bg_color = None
+        self.detail_panel.border_width = 0
+        
+        # Add pending buttons to detail_panel
+        for button in self._pending_buttons:
+            self.detail_panel.add_child(button)
+            
+        # Add pending action buttons to action_bar
+        for button in self._pending_action_buttons:
+            self.action_bar.add_child(button)
 
     def _sync_roster_with_garden(self):
         """Ensure all garden slimes are in the roster."""
