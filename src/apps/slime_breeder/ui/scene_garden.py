@@ -34,7 +34,7 @@ class GardenScene(GardenSceneBase):
             game_session=kwargs.get('game_session'),
             dispatch_system=kwargs.get('dispatch_system'),
             roster=kwargs.get('roster'),  # Use shared roster
-            theme=None   # Will be set in on_enter
+            roster_sync=kwargs.get('roster_sync')  # Add sync service
         )
         self.set_context(context)
         
@@ -342,13 +342,21 @@ class GardenScene(GardenSceneBase):
         slime = Slime(name, genome, pos, level=1)
         self.garden_state.add_slime(slime)
         
-        # Add to roster and auto-save
+        # Add to both roster and registry using sync service
         rs = RosterSlime(
             slime_id=slime.name.lower().replace(" ", "_"),
             name=slime.name,
             genome=slime.genome
         )
-        self.roster.add_slime(rs)
+        
+        # Use RosterSyncService if available, fallback to direct roster.add
+        if self.context and self.context.roster_sync:
+            success = self.context.roster_sync.add_slime(rs)
+            if not success:
+                logger.error(f"Failed to add slime {rs.slime_id} via sync service")
+        else:
+            # Fallback to direct roster.add for backward compatibility
+            self.roster.add_slime(rs)
         
         # Auto-save using SaveManager
         if self.context:
@@ -364,12 +372,19 @@ class GardenScene(GardenSceneBase):
         for s in self.selected_entities:
             print(f"DEBUG: Releasing {s.name} into the wild...")
             self.garden_state.remove_slime(s.name)
-            # Remove from roster
-            self.roster.slimes = [rs for rs in self.roster.slimes if rs.slime_id != s.name.lower().replace(" ", "_")]
-            self.roster.entries = [e for e in self.roster.entries if e.slime_id != s.name.lower().replace(" ", "_")]
-            # Also remove from any team
-            for team in self.roster.teams.values():
-                team.members = [m for m in team.members if m.slime_id != s.name.lower().replace(" ", "_")]
+            
+            # Remove from both roster and registry using sync service
+            slime_id = s.name.lower().replace(" ", "_")
+            
+            # Use RosterSyncService if available, fallback to manual removal
+            if self.context and self.context.roster_sync:
+                success = self.context.roster_sync.remove_slime(slime_id)
+                if not success:
+                    logger.warning(f"Failed to remove slime {slime_id} via sync service")
+            else:
+                # Fallback to manual roster removal for backward compatibility
+                # This is the bug we're fixing - use proper roster.remove_creature()
+                self.roster.remove_creature(slime_id)
         
         # Auto-save using SaveManager
         if self.context:

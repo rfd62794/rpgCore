@@ -51,6 +51,12 @@ def create_app() -> SceneManager:
     # Create shared entity registry from roster
     entity_registry = EntityRegistry.from_roster(roster)
     
+    # Create RosterSyncService to keep both systems in sync
+    roster_sync = RosterSyncService(roster, entity_registry)
+    
+    # Sync registry from roster (ensure consistency)
+    roster_sync.sync_from_roster()
+    
     # Register scenes
     manager.register("garden", GardenScene)
     manager.register("teams", TeamScene)
@@ -63,18 +69,19 @@ def create_app() -> SceneManager:
     manager.register("dungeon_combat", DungeonCombatScene)
     manager.register("inventory", InventoryOverlay)
     
-    return manager, entity_registry, game_session, dispatch_system, roster
+    return manager, entity_registry, game_session, dispatch_system, roster, roster_sync
 
 def main():
     logger.info("🚀 Launching Slime Breeder...")
-    app, entity_registry, game_session, dispatch_system, roster = create_app()
+    app, entity_registry, game_session, dispatch_system, roster, roster_sync = create_app()
     
     # Set shared state that gets passed to all scenes
     app.set_shared_state(
         entity_registry=entity_registry,
         game_session=game_session,
         dispatch_system=dispatch_system,
-        roster=roster
+        roster=roster,
+        roster_sync=roster_sync
     )
     
     app.run("garden")
