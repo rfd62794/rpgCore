@@ -257,6 +257,79 @@ class CultureGenes:
 
 ---
 
+## 10. Lifecycle System Specifications
+
+### 10.1 Lifecycle Architecture
+```python
+@dataclass
+class LifecycleComponent:
+    """Lifecycle state and progression"""
+    level: int
+    experience: int
+    stage: LifecycleStage  # HATCHLING, JUVENILE, YOUNG, PRIME, VETERAN, ELDER
+    age_days: int
+    total_dispatches: int
+    successful_dispatches: int
+    
+    # Stage-specific capabilities
+    can_dispatch: bool
+    can_breed: bool
+    can_equip: bool
+    mentoring_bonus: float
+
+@dataclass
+class MentoringComponent:
+    """Mentoring relationships and bonuses"""
+    mentor_id: Optional[UUID]
+    mentees: List[UUID]
+    mentoring_strength: float
+    remembered_lessons: List[str]
+
+@dataclass
+class LoreRecordComponent:
+    """Garden lore and history tracking"""
+    is_named: bool
+    name: Optional[str]
+    notable_achievements: List[str]
+    offspring_achievements: List[str]
+    garden_history_entries: List[str]
+    relationship_depth: Dict[str, float]
+```
+
+### 10.2 Six Lifecycle Stages
+| Stage | Levels | Dispatch | Breeding | Equipment | Mentoring | Key Trait |
+|-------|--------|----------|----------|-----------|-----------|-----------|
+| Hatchling | 0-1 | ✗ | ✗ | ✗ | ✗ | Forming |
+| Juvenile | 2-3 | Low-risk | ✗ | ✗ | ✗ | Learning |
+| Young | 4-5 | Most zones | ✓ | ✓ | ✗ | Established |
+| Prime | 6-7 | All zones | ✓ (optimal) | ✓ | ✗ | Peak |
+| Veteran | 8-9 | All zones | ✓ | ✓ | Passive | Wise |
+| Elder | 10 | Discouraged | ✓ (rare outcomes) | ✓ | Maximum | Legacy |
+
+### 10.3 Tier × Lifecycle Interactions
+- **Tier 1 Blooded**: Standard lifecycle, predictable progression
+- **Tier 2 Bordered**: Extended Juvenile phase, stronger Prime
+- **Tier 3 Sundered**: Unpredictable stat spikes, volatile behavior
+- **Tier 4 Drifted**: Most stable progression curve
+- **Tier 5 Threaded**: Early mentoring bonus, cultural influence
+- **Tier 6 Convergent**: Slower early leveling, higher ceiling
+- **Tier 7 Liminal**: Accelerated post-Juvenile, narrative charge
+- **Tier 8 Void**: Smooth balanced progression, world events at Elder
+
+### 10.4 ECS Integration
+- **LifecycleSystem**: Experience processing and stage advancement
+- **MentoringSystem**: Elder-mentee relationships and bonuses
+- **LoreSystem**: Garden history and achievement tracking
+- **StageBehaviorSystem**: Stage-specific behavior modifications
+
+### 10.5 Performance Specifications
+- **Memory**: ~200 bytes per slime lifecycle data
+- **Computation**: <0.1ms experience, <0.5ms stage transitions
+- **Storage**: Compact JSON format for save files
+- **Mentoring**: <0.2ms per mentor-mentee pair
+
+---
+
 ## 🎯 Implementation Priority
 
 ### Phase 1: Core Geography
