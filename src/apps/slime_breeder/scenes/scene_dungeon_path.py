@@ -27,6 +27,9 @@ class DungeonPathScene(Scene):
         self.layout = ArenaLayout(spec)
         self.session = kwargs.get('session')
         
+        # Get shared entity registry
+        self.entity_registry = kwargs.get('entity_registry')
+        
         # Load team if not provided
         team = kwargs.get('team', [])
         if not team:
@@ -38,19 +41,6 @@ class DungeonPathScene(Scene):
             # Load roster to get access to creatures
             from src.shared.teams.roster_save import load_roster
             self.roster = load_roster()
-        
-        # Connect roster to garden state for creature access
-        # Try to get garden state from manager or create a temporary one
-        try:
-            from src.apps.slime_breeder.garden.garden_state import GardenState
-            # Try to access garden state from the scene manager's garden scene
-            if hasattr(self.manager, '_scenes') and 'garden' in self.manager._scenes:
-                garden_scene = self.manager._scenes['garden']
-                if hasattr(garden_scene, 'garden_state'):
-                    self.roster.set_garden_ref(garden_scene.garden_state)
-        except:
-            # If we can't connect to garden state, we'll handle gracefully
-            pass
         
         # Store team on session for combat access
         self.session.team = team
@@ -252,27 +242,8 @@ class DungeonPathScene(Scene):
         # Cluster of dots for party
         for i, entry in enumerate(self.team[:4]):
             offset = (i - 1.5) * 4
-            # Get the actual slime from garden state to access genome
-            # Try to get from garden state first, then fallback to roster
-            slime = None
-            try:
-                # Try to get garden state from manager
-                if hasattr(self.manager, '_scenes') and 'garden' in self.manager._scenes:
-                    garden_scene = self.manager._scenes['garden']
-                    if hasattr(garden_scene, 'garden_state'):
-                        # Try to get the original slime first
-                        creature = garden_scene.garden_state.get_creature(entry.slime_id)
-                        if creature and hasattr(creature, '_original_slime'):
-                            slime = creature._original_slime
-                        else:
-                            # Try to get creature directly
-                            slime = creature
-            except:
-                pass
-            
-            # Fallback to roster method
-            if not slime:
-                slime = self.roster.get_creature(entry.slime_id)
+            # Get the actual slime from entity registry
+            slime = self.entity_registry.get(entry.slime_id) if self.entity_registry else None
             if slime:
                 color = slime.genome.base_color
             else:
@@ -348,27 +319,8 @@ class DungeonPathScene(Scene):
         
         for i, entry in enumerate(self.team[:5]):
             sy = start_y + i * SLIME_SPACING
-            # Get the actual slime from garden state to access genome
-            # Try to get from garden state first, then fallback to roster
-            slime = None
-            try:
-                # Try to get garden state from manager
-                if hasattr(self.manager, '_scenes') and 'garden' in self.manager._scenes:
-                    garden_scene = self.manager._scenes['garden']
-                    if hasattr(garden_scene, 'garden_state'):
-                        # Try to get the original slime first
-                        creature = garden_scene.garden_state.get_creature(entry.slime_id)
-                        if creature and hasattr(creature, '_original_slime'):
-                            slime = creature._original_slime
-                        else:
-                            # Try to get creature directly
-                            slime = creature
-            except:
-                pass
-            
-            # Fallback to roster method
-            if not slime:
-                slime = self.roster.get_creature(entry.slime_id)
+            # Get the actual slime from entity registry
+            slime = self.entity_registry.get(entry.slime_id) if self.entity_registry else None
             if slime:
                 render_slime_from_genome(surface, slime.genome, int(px), int(sy), radius=16)
 
@@ -410,27 +362,8 @@ class DungeonPathScene(Scene):
             pygame.draw.rect(surface, (70, 60, 90), card_rect, width=1, border_radius=6)
             
             # Portrait
-            # Get the actual slime from garden state to access genome
-            # Try to get from garden state first, then fallback to roster
-            slime = None
-            try:
-                # Try to get garden state from manager
-                if hasattr(self.manager, '_scenes') and 'garden' in self.manager._scenes:
-                    garden_scene = self.manager._scenes['garden']
-                    if hasattr(garden_scene, 'garden_state'):
-                        # Try to get the original slime first
-                        creature = garden_scene.garden_state.get_creature(entry.slime_id)
-                        if creature and hasattr(creature, '_original_slime'):
-                            slime = creature._original_slime
-                        else:
-                            # Try to get creature directly
-                            slime = creature
-            except:
-                pass
-            
-            # Fallback to roster method
-            if not slime:
-                slime = self.roster.get_creature(entry.slime_id)
+            # Get the actual slime from entity registry
+            slime = self.entity_registry.get(entry.slime_id) if self.entity_registry else None
             if slime:
                 render_slime_from_genome(surface, slime.genome, card_x + 25, bar_y + card_h // 2, radius=18)
             
