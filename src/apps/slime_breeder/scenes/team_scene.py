@@ -60,13 +60,13 @@ class TeamScene(Scene):
         self.ui_components.append(racing_subtext)
         
         # 3. Action Buttons
-        back_btn = Button("← Back", self.layout.action_bar, self.request_scene("garden"), self.spec, variant="ghost", theme=DEFAULT_THEME)
+        back_btn = Button("← Back", self.layout.action_bar, lambda: self.request_scene("garden"), self.spec, variant="ghost", theme=DEFAULT_THEME)
         self.ui_components.append(back_btn)
         
         if self.dungeon_team.members:
             enter_btn = Button("ENTER DUNGEON →", 
                                pygame.Rect(self.layout.action_bar.width - 220, self.layout.action_bar.y + 10, 200, 44),
-                               self._enter_dungeon, self.spec, variant="primary")
+                               lambda: self._enter_dungeon(), self.spec, variant="primary", theme=DEFAULT_THEME)
             self.ui_components.append(enter_btn)
 
         # 4. Dungeon Team Slots (Left Panel)
