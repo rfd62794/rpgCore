@@ -144,12 +144,12 @@ class StatsPanel(UIComponent):
         
         # Culture colors
         culture_colors = {
-            'ember':   (220, 80, 40),    # warm red
-            'gale':    (135, 206, 235),  # sky blue
-            'marsh':   (60, 140, 60),    # deep green
-            'crystal': (220, 220, 240),  # pale white
-            'tundra':  (180, 200, 220),  # silver blue
-            'tide':    (80, 80, 220),    # electric blue
+            'ember':   self.theme.culture_color('ember'),
+            'gale':    self.theme.culture_color('gale'),
+            'marsh':   self.theme.culture_color('marsh'),
+            'crystal': self.theme.culture_color('crystal'),
+            'tundra':  self.theme.culture_color('tundra'),
+            'tide':    self.theme.culture_color('tide'),
         }
         
         # Filter and sort cultures by expression (> 0.05 threshold)
