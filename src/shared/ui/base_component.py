@@ -36,7 +36,7 @@ class UIComponent(ABC):
         """
         pass
     
-    def handle_event(self, event: pygame.Event) -> Optional['UIEvent']:
+    def handle_event(self, event: pygame.event.Event) -> Optional['UIEvent']:
         """
         Returns UIEvent if something happened
         Returns None if event not consumed
