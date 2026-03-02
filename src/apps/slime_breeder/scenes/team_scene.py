@@ -8,6 +8,7 @@ from src.shared.ui.label import Label
 from src.shared.ui.spec import UISpec
 from src.shared.ui.layouts import SelectionLayout
 from src.shared.ui.profile_card import ProfileCard
+from src.shared.ui.theme import DEFAULT_THEME
 from src.shared.teams.roster import Roster, TeamRole, RosterSlime
 from src.shared.teams.roster_save import load_roster, save_roster
 
@@ -33,34 +34,33 @@ class TeamScene(Scene):
         self.ui_components = []
         
         # 1. Panels
-        self.left_panel = Panel(self.layout.left_panel, self.spec, variant="surface")
+        self.left_panel = Panel(self.layout.left_panel, self.spec, variant="surface", theme=DEFAULT_THEME)
         self.ui_components.append(self.left_panel)
         
-        self.center_panel = Panel(self.layout.center_area, self.spec, variant="surface")
+        self.center_panel = Panel(self.layout.center_area, self.spec, variant="surface", theme=DEFAULT_THEME)
         self.ui_components.append(self.center_panel)
         
-        self.right_panel = Panel(self.layout.right_panel, self.spec, variant="surface")
+        self.right_panel = Panel(self.layout.right_panel, self.spec, variant="surface", theme=DEFAULT_THEME)
         self.ui_components.append(self.right_panel)
         
-        self.action_panel = Panel(self.layout.action_bar, self.spec, variant="surface")
+        self.action_panel = Panel(self.layout.action_bar, self.spec, variant="surface", theme=DEFAULT_THEME)
         self.ui_components.append(self.action_panel)
         
         # 2. Headers
-        dungeon_header = Label("DUNGEON TEAM", (self.layout.left_panel.x + 20, 15), self.spec, size="lg", bold=True)
+        dungeon_header = Label("DUNGEON TEAM", (self.layout.left_panel.x + 20, 15), self.spec, size="lg", bold=True, theme=DEFAULT_THEME)
         self.ui_components.append(dungeon_header)
         
         dungeon_subtext = Label("4 slots — enters the ruins together", (self.layout.left_panel.x + 20, 35), self.spec, size="sm", color=(160, 160, 180))
         self.ui_components.append(dungeon_subtext)
         
-        racing_header = Label("RACING TEAM", (self.layout.center_area.x + 20, 15), self.spec, size="lg", bold=True)
+        racing_header = Label("RACING TEAM", (self.layout.center_area.x + 20, 15), self.spec, size="lg", bold=True, theme=DEFAULT_THEME)
         self.ui_components.append(racing_header)
         
-        racing_subtext = Label("1 slot — competes in the derby", (self.layout.center_area.x + 20, 35), self.spec, size="sm", color=(160, 160, 180))
+        racing_subtext = Label("1 slot — competes in the derby", (self.layout.center_area.x + 20, 35), self.spec, size="sm", color=(160, 160, 180), theme=DEFAULT_THEME)
         self.ui_components.append(racing_subtext)
         
         # 3. Action Buttons
-        back_btn = Button("← Garden", pygame.Rect(20, self.layout.action_bar.y + 10, 150, 44), 
-                          self._back_to_garden, self.spec, variant="secondary")
+        back_btn = Button("← Back", self.layout.action_bar, self.request_scene("garden"), self.spec, variant="ghost", theme=DEFAULT_THEME)
         self.ui_components.append(back_btn)
         
         if self.dungeon_team.members:
