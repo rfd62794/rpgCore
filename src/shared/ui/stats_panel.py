@@ -106,38 +106,108 @@ class StatsPanel(UIComponent):
         top = max(traits, key=traits.get)
         return f"{top} ({int(traits[top]*100)}%)"
     
-    def _render_truncated_text(self, surface, text, pos, max_width, size=12, color=(255, 255, 255), bold=False):
-        """Render text with ellipsis truncation if it exceeds max_width."""
+    def _render_truncated_text(self, surface, text, pos, max_width, size=12, color=(255, 255, 255)):
+        """Render text with truncation if it exceeds max_width"""
         try:
             font = pygame.font.Font(None, size)
-            if bold: font.set_bold(True)
-            
-            # Check if text fits
-            text_surf = font.render(text, True, color)
-            if text_surf.get_width() <= max_width:
-                surface.blit(text_surf, pos)
-                return
-            
-            # Truncate with ellipsis
-            ellipsis = font.render("...", True, color)
-            ellipsis_width = ellipsis.get_width()
-            
-            # Binary search for truncation point
-            low, high = 0, len(text)
-            best_text = text
-            
-            while low <= high:
-                mid = (low + high) // 2
-                test_text = text[:mid] + "..."
-                test_surf = font.render(test_text, True, color)
-                
-                if test_surf.get_width() <= max_width:
-                    best_text = test_text
-                    low = mid + 1
-                else:
-                    high = mid - 1
-            
-            final_surf = font.render(best_text, True, color)
-            surface.blit(final_surf, pos)
+            rendered = font.render(text, True, color)
+            if rendered.get_width() > max_width:
+                # Truncate and add ellipsis
+                truncated = text
+                while font.render(truncated + "...", True, color).get_width() > max_width and len(truncated) > 0:
+                    truncated = truncated[:-1]
+                text = truncated + "..."
+                rendered = font.render(text, True, color)
+            surface.blit(rendered, pos)
         except:
             pass
+
+    def _render_culture_expression(self, surface: pygame.Surface, x: int, y: int):
+        """Render culture expression mini-chart"""
+        # Header
+        self._render_text(surface, "CULTURE", (x, y), size=11, color=(120, 120, 140))
+        
+        # Get culture expression data
+        culture_expression = getattr(self.slime.genome, 'culture_expression', {})
+        if not culture_expression:
+            return
+        
+        # Culture colors
+        culture_colors = {
+            'ember':   (220, 80, 40),    # warm red
+            'gale':    (135, 206, 235),  # sky blue
+            'marsh':   (60, 140, 60),    # deep green
+            'crystal': (220, 220, 240),  # pale white
+            'tundra':  (180, 200, 220),  # silver blue
+            'tide':    (80, 80, 220),    # electric blue
+        }
+        
+        # Filter and sort cultures by expression (> 0.05 threshold)
+        active_cultures = [(c, w) for c, w in culture_expression.items() if w > 0.05]
+        active_cultures.sort(key=lambda x: x[1], reverse=True)
+        
+        # Render bars
+        bar_y = y + 15
+        max_bar_width = self.WIDTH - (self.PADDING * 2) - 40  # Leave room for percentage
+        
+        for culture, weight in active_cultures[:6]:  # Max 6 cultures
+            color = culture_colors.get(culture, (140, 140, 140))
+            
+            # Culture name (abbreviated to 3 chars)
+            name = culture[:3].upper()
+            self._render_text(surface, name, (x, bar_y), size=9, color=color)
+            
+            # Bar
+            bar_width = int(max_bar_width * weight)
+            bar_rect = pygame.Rect(x + 20, bar_y, bar_width, 6)
+            pygame.draw.rect(surface, color, bar_rect)
+            
+            # Percentage
+            pct_text = f"{weight:.0%}"
+            self._render_text(surface, pct_text, (x + 20 + bar_width + 5, bar_y), size=9, color=(160, 160, 180))
+            
+            bar_y += 8
+
+    def _render_personality_axes(self, surface: pygame.Surface, x: int, y: int):
+        """Render personality axes as mini-bars"""
+        # Header
+        self._render_text(surface, "PERSONALITY", (x, y), size=11, color=(120, 120, 140))
+        
+        # Get personality axes data
+        personality_axes = getattr(self.slime.genome, 'personality_axes', {})
+        if not personality_axes:
+            return
+        
+        # Axis definitions and abbreviations
+        axes_info = {
+            'aggression': ('AGG', (200, 100, 100)),
+            'curiosity': ('CUR', (100, 200, 100)),
+            'patience': ('PAT', (100, 150, 200)),
+            'caution': ('CAU', (200, 200, 100)),
+            'independence': ('IND', (200, 150, 100)),
+            'sociability': ('SOC', (150, 100, 200))
+        }
+        
+        # Render bars
+        bar_y = y + 15
+        max_bar_width = self.WIDTH - (self.PADDING * 2) - 35  # Leave room for value
+        
+        for axis, value in personality_axes.items():
+            if axis not in axes_info:
+                continue
+                
+            abbrev, color = axes_info[axis]
+            
+            # Axis abbreviation
+            self._render_text(surface, abbrev, (x, bar_y), size=9, color=color)
+            
+            # Bar (0.0-1.0 range)
+            bar_width = int(max_bar_width * min(1.0, max(0.0, value)))
+            bar_rect = pygame.Rect(x + 25, bar_y, bar_width, 6)
+            pygame.draw.rect(surface, color, bar_rect)
+            
+            # Value (1 decimal)
+            value_text = f"{value:.1f}"
+            self._render_text(surface, value_text, (x + 25 + bar_width + 5, bar_y), size=9, color=(160, 160, 180))
+            
+            bar_y += 8
