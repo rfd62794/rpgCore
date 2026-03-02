@@ -182,21 +182,74 @@ class NarrativeState:
 - **Choice Consequences**: Actions have lasting world impacts
 - **Emotional Arc**: From "want to leave" to "understand why I stay"
 
-### 8. Integration with Existing Systems
+### 8. Genetics System Specifications
 
-#### 8.1 ECS Integration
+#### 8.1 Genetic Architecture
+```python
+@dataclass
+class SlimeGenome:
+    """Complete genetic profile of a slime"""
+    culture: CultureGenes
+    stats: StatGenes
+    shape: ShapeGenes
+    color: ColorGenes
+    lineage: LineageRecord
+
+@dataclass
+class CultureGenes:
+    """Culture inheritance using dominant/recessive alleles"""
+    allele_a: tuple[str, float]  # (culture_name, expression_weight)
+    allele_b: tuple[str, float]
+    expression: dict[str, float]  # Resolved weights (sums to 1.0)
+    tier: int  # 1-8 genetic complexity
+    tier_name: str  # 'Blooded', 'Bordered', 'Sundered', etc.
+```
+
+#### 8.2 Eight-Tier Genetic System
+| Tier | Count | Description | Visual Expression |
+|------|-------|-------------|-------------------|
+| 1 - Blooded | 6 | Single culture heritage | Solid, vivid culture color |
+| 2 - Bordered | 6 | Two adjacent cultures | Blended color gradient |
+| 3 - Sundered | 3 | Two opposite cultures | Sectional color, hard boundary |
+| 4 - Drifted | 6 | Skip-one cultures | Partial blend, soft edges |
+| 5 - Threaded | 20 | Three culture heritage | Complex color mixing |
+| 6 - Convergent | 15 | Four culture heritage | Void characteristics begin |
+| 7 - Liminal | 6 | Five culture heritage | Almost Void, one color missing |
+| 8 - Void | 1 | All six cultures unified | Full iridescent spectrum |
+
+#### 8.3 Breeding Mechanics
+- **Allele Resolution**: Each parent contributes one allele, dominant expresses more strongly
+- **Stat Inheritance**: Weighted average + random variance + mutation chance
+- **Visual Inheritance**: Color blend + shape selection + pattern expression
+- **Mutation Factors**: Sundered parents, high generation, Void proximity
+
+#### 8.4 ECS Integration
+- **GeneticsComponent**: Complete genome + level + experience
+- **BreedingComponent**: Fertility + cooldown + offspring history
+- **GeneticsSystem**: Inheritance calculations + tier determination
+- **BreedingSystem**: Breeding operations + cooldown management
+
+#### 8.5 Performance Specifications
+- **Memory**: ~1KB per slime genome
+- **Computation**: <1ms breeding calculation, <0.1ms tier calc
+- **Storage**: Compact JSON format for save files
+- **Rendering**: <2ms visual profile generation
+
+### 9. Integration with Existing Systems
+
+#### 9.1 ECS Integration
 - **CultureComponent**: Cultural affiliation and traits
 - **ResourceComponent**: Resource inventory and production
 - **WorldPositionComponent**: Position in hexagon world
 - **RelationshipComponent**: Diplomatic standing data
 
-#### 8.2 Rendering Integration
+#### 9.2 Rendering Integration
 - **Cultural Visuals**: Color palettes and movement patterns per culture
 - **Environmental Rendering**: Different terrain per region
 - **Void Effects**: Special rendering for void traits
 - **Garden Expansion**: Visual progression as rooms unlock
 
-#### 8.3 Save System Integration
+#### 9.3 Save System Integration
 - **World State**: Complete world state persistence
 - **Cultural Memory**: Faction relationships saved
 - **Player Progress**: Narrative state and achievements
