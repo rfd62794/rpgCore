@@ -166,6 +166,51 @@ class RosterEntry:
             if roster_slime:
                 return roster_slime.level
         return 1
+    
+    @property
+    def genome(self):
+        """Get slime genome from roster's stored RosterSlime"""
+        if hasattr(self, '_team_ref') and self._team_ref and hasattr(self._team_ref, '_roster_ref') and self._team_ref._roster_ref:
+            roster_slime = self._team_ref._roster_ref._roster_slimes.get(self.slime_id)
+            if roster_slime:
+                return roster_slime.genome
+        return None
+    
+    @property
+    def generation(self) -> int:
+        """Get slime generation from roster's stored RosterSlime"""
+        if hasattr(self, '_team_ref') and self._team_ref and hasattr(self._team_ref, '_roster_ref') and self._team_ref._roster_ref:
+            roster_slime = self._team_ref._roster_ref._roster_slimes.get(self.slime_id)
+            if roster_slime:
+                return roster_slime.generation
+        return 1
+    
+    @property
+    def experience(self) -> int:
+        """Get slime experience from roster's stored RosterSlime"""
+        if hasattr(self, '_team_ref') and self._team_ref and hasattr(self._team_ref, '_roster_ref') and self._team_ref._roster_ref:
+            roster_slime = self._team_ref._roster_ref._roster_slimes.get(self.slime_id)
+            if roster_slime:
+                return roster_slime.experience
+        return 0
+    
+    @property
+    def xp_to_next_level(self) -> int:
+        """Get slime XP to next level from roster's stored RosterSlime"""
+        if hasattr(self, '_team_ref') and self._team_ref and hasattr(self._team_ref, '_roster_ref') and self._team_ref._roster_ref:
+            roster_slime = self._team_ref._roster_ref._roster_slimes.get(self.slime_id)
+            if roster_slime:
+                return roster_slime.xp_to_next_level
+        return 100
+    
+    @property
+    def can_breed(self) -> bool:
+        """Get slime breeding status from roster's stored RosterSlime"""
+        if hasattr(self, '_team_ref') and self._team_ref and hasattr(self._team_ref, '_roster_ref') and self._team_ref._roster_ref:
+            roster_slime = self._team_ref._roster_ref._roster_slimes.get(self.slime_id)
+            if roster_slime:
+                return roster_slime.can_breed
+        return False
 
 @dataclass  
 class Team:
