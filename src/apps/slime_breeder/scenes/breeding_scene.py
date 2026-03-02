@@ -11,6 +11,7 @@ from src.shared.ui.button import Button
 from src.shared.ui.label import Label
 from src.shared.ui.spec import UISpec
 from src.shared.ui.layouts import SelectionLayout, OverlayLayout
+from src.shared.ui.theme import DEFAULT_THEME
 from src.shared.teams.roster import Roster, RosterSlime, TeamRole
 from src.shared.genetics.inheritance import breed, generate_random
 from src.shared.genetics.genome import SlimeGenome, CulturalBase
@@ -62,20 +63,20 @@ class BreedingScene(Scene):
         self.ui_components = []
         
         # 1. Base Layout Panels
-        Panel(self.layout.header, self.spec, variant="surface").add_to(self.ui_components)
-        Panel(self.layout.action_bar, self.spec, variant="surface").add_to(self.ui_components)
+        Panel(self.layout.header, self.spec, variant="surface", theme=DEFAULT_THEME).add_to(self.ui_components)
+        Panel(self.layout.action_bar, self.spec, variant="surface", theme=DEFAULT_THEME).add_to(self.ui_components)
         
         # 2. Title and Status
-        Label("BREEDING CHAMBER", (self.layout.header.centerx, 20), self.spec, size="xl", bold=True, centered=True).add_to(self.ui_components)
+        Label("BREEDING CHAMBER", (self.layout.header.centerx, 20), self.spec, size="xl", bold=True, centered=True, theme=DEFAULT_THEME).add_to(self.ui_components)
         
         status_text = self.get_status_text()
         status_color = self.spec.color_text_dim
         if self.state == BreedingState.PREVIEW: status_color = self.spec.color_warning
         
-        Label(status_text, (self.layout.header.centerx, 50), self.spec, size="md", color=status_color, centered=True).add_to(self.ui_components)
+        Label(status_text, (self.layout.header.centerx, 50), self.spec, size="md", color=status_color, centered=True, theme=DEFAULT_THEME).add_to(self.ui_components)
 
         # 3. Global Navigation
-        Button("BACK", pygame.Rect(20, 10, 100, 44), self._handle_back, self.spec, variant="secondary").add_to(self.ui_components)
+        Button("BACK", pygame.Rect(20, 10, 100, 44), self._handle_back, self.spec, variant="secondary", theme=DEFAULT_THEME).add_to(self.ui_components)
 
         # 4. State-Specific Content
         if self.state in [BreedingState.SELECT_A, BreedingState.SELECT_B]:
@@ -87,48 +88,48 @@ class BreedingScene(Scene):
 
     def _setup_selection_view(self):
         # Left Panel: Parent Slots
-        Panel(self.layout.left_panel, self.spec, variant="surface").add_to(self.ui_components)
-        Label("PARENT A", (self.layout.left_panel.x + 20, self.layout.left_panel.y + 10), self.spec, bold=True).add_to(self.ui_components)
+        Panel(self.layout.left_panel, self.spec, variant="surface", theme=DEFAULT_THEME).add_to(self.ui_components)
+        Label("PARENT A", (self.layout.left_panel.x + 20, self.layout.left_panel.y + 10), self.spec, bold=True, theme=DEFAULT_THEME).add_to(self.ui_components)
         
         if self.parent_a:
-            ProfileCard(self.parent_a, (self.layout.left_panel.x + 20, self.layout.left_panel.y + 40), self.spec).add_to(self.ui_components)
+            ProfileCard(self.parent_a, (self.layout.left_panel.x + 20, self.layout.left_panel.y + 40), self.spec, theme=DEFAULT_THEME).add_to(self.ui_components)
         else:
             p_rect = pygame.Rect(self.layout.left_panel.x + 20, self.layout.left_panel.y + 40, self.spec.card_width, self.spec.card_height)
-            Panel(p_rect, self.spec, variant="surface", border=True).add_to(self.ui_components)
-            Label("NONE SELECTED", (p_rect.centerx, p_rect.centery), self.spec, centered=True).add_to(self.ui_components)
+            Panel(p_rect, self.spec, variant="surface", border=True, theme=DEFAULT_THEME).add_to(self.ui_components)
+            Label("NONE SELECTED", (p_rect.centerx, p_rect.centery), self.spec, centered=True, theme=DEFAULT_THEME).add_to(self.ui_components)
 
         # Right Panel: Selection Grid
-        Panel(self.layout.right_panel, self.spec, variant="surface").add_to(self.ui_components)
-        Label("AVAILABLE PARTNERS", (self.layout.right_panel.x + 20, self.layout.right_panel.y + 10), self.spec, bold=True).add_to(self.ui_components)
+        Panel(self.layout.right_panel, self.spec, variant="surface", theme=DEFAULT_THEME).add_to(self.ui_components)
+        Label("AVAILABLE PARTNERS", (self.layout.right_panel.x + 20, self.layout.right_panel.y + 10), self.spec, bold=True, theme=DEFAULT_THEME).add_to(self.ui_components)
         
         slimes = [s for s in self.roster.slimes if s.alive and s != self.parent_a]
         self.cards = []
         for i, slime in enumerate(slimes):
             if i >= 6: break
             row_y = self.layout.right_panel.y + 40 + (i * 90)
-            card = ProfileCard(slime, (self.layout.right_panel.x + 20, row_y), self.spec).add_to(self.ui_components)
+            card = ProfileCard(slime, (self.layout.right_panel.x + 20, row_y), self.spec, theme=DEFAULT_THEME).add_to(self.ui_components)
             self.cards.append(card)
             
             if not slime.can_breed:
                 # Ghost button to show why can't select
-                Label("(Need Lv.3)", (card.rect.right - 80, card.rect.y + 10), self.spec, size="sm", color=self.spec.color_danger).add_to(self.ui_components)
+                Label("(Need Lv.3)", (card.rect.right - 80, card.rect.y + 10), self.spec, size="sm", color=self.spec.color_danger, theme=DEFAULT_THEME).add_to(self.ui_components)
             else:
                 Button("Select", pygame.Rect(card.rect.right - 70, card.rect.y + 10, 60, 30),
-                       lambda s=slime: self.handle_card_click(s), self.spec, variant="primary").add_to(self.ui_components)
+                       lambda s=slime: self.handle_card_click(s), self.spec, variant="primary", theme=DEFAULT_THEME).add_to(self.ui_components)
 
     def _setup_preview_view(self):
         # Show both parents in side panels, preview in center
-        Panel(self.layout.left_panel, self.spec, variant="surface").add_to(self.ui_components)
-        ProfileCard(self.parent_a, (self.layout.left_panel.x + 20, self.layout.left_panel.y + 40), self.spec).add_to(self.ui_components)
+        Panel(self.layout.left_panel, self.spec, variant="surface", theme=DEFAULT_THEME).add_to(self.ui_components)
+        ProfileCard(self.parent_a, (self.layout.left_panel.x + 20, self.layout.left_panel.y + 40), self.spec, theme=DEFAULT_THEME).add_to(self.ui_components)
         
-        Panel(self.layout.right_panel, self.spec, variant="surface").add_to(self.ui_components)
-        ProfileCard(self.parent_b, (self.layout.right_panel.x + 20, self.layout.right_panel.y + 40), self.spec).add_to(self.ui_components)
+        Panel(self.layout.right_panel, self.spec, variant="surface", theme=DEFAULT_THEME).add_to(self.ui_components)
+        ProfileCard(self.parent_b, (self.layout.right_panel.x + 20, self.layout.right_panel.y + 40), self.spec, theme=DEFAULT_THEME).add_to(self.ui_components)
         
         # Center Preview Table
         center_rect = self.layout.center_area.inflate(-40, -40)
-        preview_panel = Panel(center_rect, self.spec, variant="card").add_to(self.ui_components)
+        preview_panel = Panel(center_rect, self.spec, variant="card", theme=DEFAULT_THEME).add_to(self.ui_components)
         
-        Label("POTENTIAL OFFSPRING", (center_rect.centerx, center_rect.y + 20), self.spec, size="lg", bold=True, centered=True).add_to(self.ui_components)
+        Label("POTENTIAL OFFSPRING", (center_rect.centerx, center_rect.y + 20), self.spec, size="lg", bold=True, centered=True, theme=DEFAULT_THEME).add_to(self.ui_components)
         
         y_off = center_rect.y + 60
         stats = [
@@ -137,26 +138,26 @@ class BreedingScene(Scene):
             ("SPD", self.offspring_genome.base_spd)
         ]
         for label, val in stats:
-            Label(f"{label}: {int(val*0.95)}-{int(val*1.05)}", (center_rect.centerx, y_off), self.spec, centered=True).add_to(self.ui_components)
+            Label(f"{label}: {int(val*0.95)}-{int(val*1.05)}", (center_rect.centerx, y_off), self.spec, centered=True, theme=DEFAULT_THEME).add_to(self.ui_components)
             y_off += 30
             
-        Label(f"Culture: {self.offspring_genome.cultural_base.value.upper()}", (center_rect.centerx, y_off + 20), self.spec, color=self.spec.color_accent, centered=True).add_to(self.ui_components)
+        Label(f"Culture: {self.offspring_genome.cultural_base.value.upper()}", (center_rect.centerx, y_off + 20), self.spec, color=self.spec.color_accent, centered=True, theme=DEFAULT_THEME).add_to(self.ui_components)
         
         Button("BEGIN RITUAL", pygame.Rect(center_rect.centerx - 100, center_rect.bottom - 60, 200, 44),
-               self.start_breeding, self.spec, variant="primary").add_to(self.ui_components)
+               self.start_breeding, self.spec, variant="primary", theme=DEFAULT_THEME).add_to(self.ui_components)
 
     def _setup_complete_view(self):
         # Show Offspring in center
         center_rect = self.layout.center_area.inflate(-20, -100)
-        Panel(center_rect, self.spec, variant="card").add_to(self.ui_components)
+        Panel(center_rect, self.spec, variant="card", theme=DEFAULT_THEME).add_to(self.ui_components)
         
-        Label("BREEDING COMPLETE", (center_rect.centerx, center_rect.y + 20), self.spec, size="lg", bold=True, centered=True).add_to(self.ui_components)
+        Label("BREEDING COMPLETE", (center_rect.centerx, center_rect.y + 20), self.spec, size="lg", bold=True, centered=True, theme=DEFAULT_THEME).add_to(self.ui_components)
         
         if self.offspring_slime:
-            ProfileCard(self.offspring_slime, (center_rect.centerx - self.spec.card_width//2, center_rect.y + 60), self.spec).add_to(self.ui_components)
+            ProfileCard(self.offspring_slime, (center_rect.centerx - self.spec.card_width//2, center_rect.y + 60), self.spec, theme=DEFAULT_THEME).add_to(self.ui_components)
             
         Button("RETURN TO GARDEN", pygame.Rect(center_rect.centerx - 100, center_rect.bottom - 60, 200, 44),
-               lambda: self.manager.switch_to("garden"), self.spec, variant="primary").add_to(self.ui_components)
+               lambda: self.manager.switch_to("garden"), self.spec, variant="primary", theme=DEFAULT_THEME).add_to(self.ui_components)
 
     def get_status_text(self) -> str:
         if self.state == BreedingState.SELECT_A:
