@@ -168,6 +168,16 @@ class RosterEntry:
         return 1
     
     @property
+    def team(self) -> Optional[str]:
+        """Get current team assignment from roster"""
+        if hasattr(self, '_team_ref') and self._team_ref and hasattr(self._team_ref, '_roster_ref') and self._team_ref._roster_ref:
+            # Check all teams for this slime
+            for team_name, team in self._team_ref._roster_ref.teams.items():
+                if self.slime_id in team.members:
+                    return team_name.value
+        return None
+    
+    @property
     def genome(self):
         """Get slime genome from roster's stored RosterSlime"""
         if hasattr(self, '_team_ref') and self._team_ref and hasattr(self._team_ref, '_roster_ref') and self._team_ref._roster_ref:

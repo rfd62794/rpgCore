@@ -48,6 +48,9 @@ class GardenScene(GardenSceneBase):
         self.hovered_slime = None
         self.tooltip_delay = 0.5  # 0.5 seconds delay
         
+        # Initialize dispatched slimes tracking
+        self.dispatched_slimes = {}  # slime_id -> zone_type string
+        
         # Initialize garden renderer with level
         self.garden_level = 0
         try:

@@ -30,7 +30,9 @@ class SlimeRenderer:
         radius = int(base_radius * (1.0 + pulse))
         
         # Check if slime is dispatched (ghosted state)
-        is_dispatched = hasattr(slime, 'is_dispatched') and slime.is_dispatched
+        is_dispatched = (hasattr(slime, 'is_dispatched') and slime.is_dispatched) or \
+                       (hasattr(slime, 'dispatched') and slime.dispatched) or \
+                       (hasattr(slime, '_dispatched') and slime._dispatched)
         
         # Apply alpha for dispatched slimes
         alpha = 140 if is_dispatched else 255
