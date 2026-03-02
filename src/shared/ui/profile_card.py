@@ -160,18 +160,10 @@ class ProfileCard(UIComponent):
                         (x + self.PADDING + trait_width + 8, y + self.HEIGHT - 20), age_color)
 
     def _render_stage_tier_row(self, surface: pygame.Surface, x: int, y: int):
-        """Render stage and tier badges in a compact row"""
+        """Render stage and tier badges in a compact row using theme colors."""
         # Stage badge (left)
         stage = getattr(self.slime.genome, 'stage', 'Unknown')
-        stage_colors = {
-            'Hatchling': (255, 182, 193),  # soft pink
-            'Juvenile':  (173, 216, 230),  # light blue
-            'Young':     (144, 238, 144),  # green
-            'Prime':     (255, 215, 0),    # gold
-            'Veteran':   (100, 149, 237),  # deep blue
-            'Elder':     (147, 112, 219),  # purple
-        }
-        stage_color = stage_colors.get(stage, (140, 140, 140))
+        stage_color = self.theme.stage_colors.get(stage, (140, 140, 140))
         render_badge(surface, stage.upper(), (x, y), stage_color)
         
         # Tier badge (right of stage)
@@ -179,17 +171,7 @@ class ProfileCard(UIComponent):
         tier_name = getattr(self.slime.genome, 'tier_name', '')
         tier_text = f"T{tier} {tier_name}" if tier_name else f"T{tier}"
         
-        tier_colors = {
-            1: (200, 200, 200),  # white/grey
-            2: (200, 200, 200),  # white/grey
-            3: (144, 238, 144),  # green
-            4: (144, 238, 144),  # green
-            5: (100, 149, 237),  # blue
-            6: (100, 149, 237),  # blue
-            7: (147, 112, 219),  # purple
-            8: (255, 215, 0),    # gold
-        }
-        tier_color = tier_colors.get(tier, (200, 200, 200))
+        tier_color = self.theme.tier_colors.get(tier, (200, 200, 200))
         
         # Position tier badge after stage badge
         stage_width = len(stage) * 8 + 16  # Approximate
