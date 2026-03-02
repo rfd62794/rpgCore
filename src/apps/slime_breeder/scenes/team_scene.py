@@ -120,12 +120,18 @@ class TeamScene(Scene):
         Label("AVAILABLE SLIMES", (self.available_panel.rect.x + 20, self.available_panel.rect.y + 10), 
               self.spec, size="md", bold=True, theme=DEFAULT_THEME).add_to(self.available_panel.children)
         
-        # Available slimes list
+        # Available slimes list - show more slimes with scrolling
         unassigned = self.roster.unassigned()
-        for i, slime in enumerate(unassigned):
-            if i >= 4: break
-            row_y = self.available_panel.rect.y + 40 + (i * 70)
-            row_rect = pygame.Rect(self.available_panel.rect.x + 10, row_y, self.available_panel.rect.width - 20, 65)
+        
+        # Calculate how many slimes can fit in the panel
+        panel_height = self.available_panel.rect.height - 60  # 60px for header and padding
+        slime_height = 70  # Height per slime entry
+        max_visible = max(1, panel_height // slime_height)
+        
+        # Show all unassigned slimes (or as many as fits)
+        for i, slime in enumerate(unassigned[:max_visible]):
+            row_y = self.available_panel.rect.y + 40 + (i * slime_height)
+            row_rect = pygame.Rect(self.available_panel.rect.x + 10, row_y, self.available_panel.rect.width - 20, slime_height - 5)
             Panel(row_rect, self.spec, variant="surface", border=True, theme=DEFAULT_THEME).add_to(self.available_panel.children)
             
             # Mini info: name, level, culture
@@ -141,7 +147,28 @@ class TeamScene(Scene):
             
             Label(name, (row_rect.x + 10, row_rect.y + 5), self.spec, size="sm", bold=True, theme=DEFAULT_THEME).add_to(self.available_panel.children)
             Label(f"Lv.{level} {culture}", 
-                  (row_rect.x + 10, row_rect.y + 22), self.spec, size="xs", color=(160, 160, 180), theme=DEFAULT_THEME).add_to(self.available_panel.children)
+                  (row_rect.x + 10, row_rect.y + 25), self.spec, size="sm", color=self.spec.color_text_dim, theme=DEFAULT_THEME).add_to(self.available_panel.children)
+            
+            # Add click handler for assignment
+            def make_click_handler(target_slime):
+                def click_handler():
+                    if self.active_tab_id == "dungeon":
+                        self._assign_to_dungeon(target_slime)
+                    elif self.active_tab_id == "racing":
+                        self._assign_to_racing(target_slime)
+                    elif self.active_tab_id == "conquest":
+                        # TODO: Implement conquest team assignment
+                        pass
+                return click_handler
+            
+            Button("Assign", pygame.Rect(row_rect.right - 70, row_rect.y + 35, 60, 25), 
+                   make_click_handler(slime), self.spec, variant="primary", theme=DEFAULT_THEME).add_to(self.available_panel.children)
+        
+        # If there are more slimes than can fit, show indicator
+        if len(unassigned) > max_visible:
+            Label(f"... and {len(unassigned) - max_visible} more", 
+                  (self.available_panel.rect.x + 20, self.available_panel.rect.bottom - 25), 
+                  self.spec, size="sm", color=self.spec.color_text_dim, theme=DEFAULT_THEME).add_to(self.available_panel.children)
             
             # Assign buttons
             btn_y = row_rect.y + 40
