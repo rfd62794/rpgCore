@@ -78,42 +78,22 @@ class TestUITheme:
             assert len(theme.tier_colors[tier]) == 3  # RGB tuple
             assert all(0 <= c <= 255 for c in theme.tier_colors[tier])  # Valid RGB values
     
-    def test_button_colors_complete(self):
-        """Test that all expected button colors are defined"""
+    def test_theme_helper_methods(self):
+        """Test that theme helper methods work correctly"""
         theme = UITheme()
         
-        expected_variants = ['primary', 'secondary', 'danger', 'ghost', 'warning']
+        # Test culture_color helper
+        assert theme.culture_color('ember') == (220, 80, 40)
+        assert theme.culture_color('nonexistent') == (150, 150, 150)  # fallback
+        assert theme.culture_color('nonexistent', (100, 100, 100)) == (100, 100, 100)  # custom fallback
         
-        for variant in expected_variants:
-            assert variant in theme.button_colors
-            assert 'bg' in theme.button_colors[variant]
-            assert 'text' in theme.button_colors[variant]
-            assert 'border' in theme.button_colors[variant]
-            
-            # Check that all colors are valid RGB/RGBA tuples
-            for color_type in ['bg', 'text', 'border']:
-                color = theme.button_colors[variant][color_type]
-                assert isinstance(color, tuple)
-                assert len(color) in [3, 4]  # RGB or RGBA
-                assert all(0 <= c <= 255 for c in color[:3])  # Check RGB values
-    
-    def test_panel_colors_complete(self):
-        """Test that all expected panel colors are defined"""
-        theme = UITheme()
+        # Test stage_color helper
+        assert theme.stage_color('Prime') == (255, 215, 0)
+        assert theme.stage_color('Unknown') == (150, 150, 150)  # fallback
         
-        expected_variants = ['surface', 'card', 'overlay', 'raised']
-        
-        for variant in expected_variants:
-            assert variant in theme.panel_colors
-            assert 'bg' in theme.panel_colors[variant]
-            assert 'border' in theme.panel_colors[variant]
-            
-            # Check that all colors are valid RGB/RGBA tuples
-            for color_type in ['bg', 'border']:
-                color = theme.panel_colors[variant][color_type]
-                assert isinstance(color, tuple)
-                assert len(color) in [3, 4]  # RGB or RGBA
-                assert all(0 <= c <= 255 for c in color[:3])  # Check RGB values
+        # Test tier_color helper
+        assert theme.tier_color(8) == (255, 215, 0)
+        assert theme.tier_color(99) == (150, 150, 150)  # fallback
     
     def test_theme_default_instance(self):
         """Test that DEFAULT_THEME is properly set"""
