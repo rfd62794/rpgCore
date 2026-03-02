@@ -136,7 +136,13 @@ class GardenScene(GardenSceneBase):
         self.top_bar.add_child(self.racing_nav_btn)
 
         # Sync initial slimes if garden is empty but roster has slimes
-        if not self.garden_state.slimes and self.roster.entries:
+        if not self.garden_state.slimes and self.roster.slimes:
+            for rs in self.roster.slimes:
+                pos = (random.randint(50, self.garden_rect.width - 50), random.randint(50, self.garden_rect.height - 50))
+                slime = Slime(rs.name, rs.genome, pos, level=rs.level)
+                self.garden_state.add_slime(slime)
+        elif not self.garden_state.slimes and self.roster.entries:
+            # Fallback for new format - create slimes from entries
             for entry in self.roster.entries:
                 # Try to get the actual slime from garden state or create one
                 slime = self.garden_state.get_slime(entry.slime_id)
@@ -164,11 +170,20 @@ class GardenScene(GardenSceneBase):
     def _sync_roster_with_garden(self):
         """Ensure all garden slimes are in the roster."""
         for slime in self.garden_state.slimes:
-            if not any(entry.slime_id == slime.name.lower().replace(" ", "_") for entry in self.roster.entries):
-                # Create roster entry for this slime
-                from src.shared.teams.roster import RosterEntry
-                entry = RosterEntry(slime_id=slime.name.lower().replace(" ", "_"))
-                self.roster.entries.append(entry)
+            # Check both old and new formats
+            slime_id = slime.name.lower().replace(" ", "_")
+            has_old_format = any(rs.slime_id == slime_id for rs in self.roster.slimes)
+            has_new_format = any(entry.slime_id == slime_id for entry in self.roster.entries)
+            
+            if not has_old_format and not has_new_format:
+                # Create roster entry for this slime using old format for compatibility
+                from src.shared.teams.roster import RosterSlime
+                rs = RosterSlime(
+                    slime_id=slime_id,
+                    name=slime.name,
+                    genome=slime.genome
+                )
+                self.roster.add_slime(rs)
         save_roster(self.roster)
 
     def _add_new_slime(self):
@@ -179,9 +194,13 @@ class GardenScene(GardenSceneBase):
         self.garden_state.add_slime(slime)
         
         # Add to roster
-        from src.shared.teams.roster import RosterEntry
-        entry = RosterEntry(slime_id=name.lower().replace(" ", "_"))
-        self.roster.entries.append(entry)
+        from src.shared.teams.roster import RosterSlime
+        rs = RosterSlime(
+            slime_id=name.lower().replace(" ", "_"),
+            name=name,
+            genome=genome
+        )
+        self.roster.add_slime(rs)
         save_roster(self.roster)
 
     def _go_to_breeding(self):
