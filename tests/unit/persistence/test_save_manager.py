@@ -179,7 +179,7 @@ class TestSaveManager:
         with tempfile.TemporaryDirectory() as temp_dir:
             SaveManager.SAVE_DIR = Path(temp_dir)
             SaveManager.SAVE_FILE = SaveManager.SAVE_DIR / 'player.json'
-            SaveManager.BACKUP_FILE = SaveManager_DIR / 'player.backup.json'
+            SaveManager.BACKUP_FILE = SaveManager.SAVE_DIR / 'player.backup.json'
             
             result = SaveManager.load()
             assert result is None
@@ -189,7 +189,7 @@ class TestSaveManager:
         with tempfile.TemporaryDirectory() as temp_dir:
             SaveManager.SAVE_DIR = Path(temp_dir)
             SaveManager.SAVE_FILE = SaveManager.SAVE_DIR / 'player.json'
-            SaveManager.BACKUP_FILE = SaveManager_DIR / 'player.backup.json'
+            SaveManager.BACKUP_FILE = SaveManager.SAVE_DIR / 'player.backup.json'
             
             # Initially no save
             assert not SaveManager.has_save()
@@ -396,6 +396,7 @@ class TestSaveManager:
             assert session_data['world']['active_events'] == [{'type': 'festival', 'name': 'Crystal Festival'}]
             assert session_data['current_tick'] == 1000
             
-            # Verify timestamp
-            assert 'saved_at' in session_data
-            datetime.fromisoformat(session_data['saved_at'])
+            # Verify timestamp - it's in the top-level save data, not session_data
+            full_data = json.loads(SaveManager.SAVE_FILE.read_text())
+            assert 'saved_at' in full_data
+            datetime.fromisoformat(full_data['saved_at'])
