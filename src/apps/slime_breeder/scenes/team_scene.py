@@ -126,8 +126,19 @@ class TeamScene(Scene):
             Panel(row_rect, self.spec, variant="surface", border=True).add_to(self.ui_components)
             
             # Mini info: name, level, culture
-            Label(slime.name, (row_rect.x + 10, row_rect.y + 5), self.spec, size="sm", bold=True).add_to(self.ui_components)
-            Label(f"Lv.{slime.level} {slime.genome.cultural_base.value.title()}", 
+            # Get the actual slime from roster to access genome
+            actual_slime = self.roster.get_slime(slime.slime_id)
+            if actual_slime:
+                name = actual_slime.name
+                level = actual_slime.level
+                culture = actual_slime.genome.cultural_base.value.title()
+            else:
+                name = slime.slime_id
+                level = 1
+                culture = "Unknown"
+            
+            Label(name, (row_rect.x + 10, row_rect.y + 5), self.spec, size="sm", bold=True).add_to(self.ui_components)
+            Label(f"Lv.{level} {culture}", 
                   (row_rect.x + 10, row_rect.y + 22), self.spec, size="xs", color=(160, 160, 180)).add_to(self.ui_components)
             
             # Assign buttons
@@ -195,20 +206,34 @@ class TeamScene(Scene):
         # We'll render this in the panel's render method
         
         # Name and level
+        # Get the actual slime from roster to access genome
+        actual_slime = self.roster.get_slime(slime.slime_id)
+        if actual_slime:
+            name = actual_slime.name
+            level = actual_slime.level
+            culture = actual_slime.genome.cultural_base.value
+        else:
+            name = slime.slime_id
+            level = 1
+            culture = "unknown"
+        
         name_x = rect.x + portrait_size + 40
-        Label(slime.name, (name_x, rect.y + 20), self.spec, size="lg", bold=True).add_to(card.children)
-        Label(f"Lv.{slime.level}", (rect.right - 80, rect.y + 20), self.spec, size="md", color=(200, 200, 100)).add_to(card.children)
+        Label(name, (name_x, rect.y + 20), self.spec, size="lg", bold=True).add_to(card.children)
+        Label(f"Lv.{level}", (rect.right - 80, rect.y + 20), self.spec, size="md", color=(200, 200, 100)).add_to(card.children)
         
         # Culture badge
         culture_color = {
             "ember": (200, 80, 40), "crystal": (140, 200, 255), "moss": (80, 180, 80),
-            "coastal": (80, 140, 180), "void": (100, 40, 140), "mixed": (140, 140, 140)
-        }.get(slime.genome.cultural_base.value, (140, 140, 140))
+            "coastal": (80, 140, 180), "void": (100, 40, 140), "unknown": (140, 140, 140)
+        }.get(culture, (140, 140, 140))
         
         # Stats (racing focused)
-        hp = calculate_hp(slime.genome, slime.level)
-        atk = calculate_attack(slime.genome, slime.level)
-        spd = calculate_speed(slime.genome, slime.level)
+        if actual_slime:
+            hp = calculate_hp(actual_slime.genome, actual_slime.level)
+            atk = calculate_attack(actual_slime.genome, actual_slime.level)
+            spd = calculate_speed(actual_slime.genome, actual_slime.level)
+        else:
+            hp = atk = spd = 0
         
         stats_y = rect.y + 60
         Label(f"HP: {hp}", (name_x, stats_y), self.spec, size="sm", color=(200, 100, 100)).add_to(card.children)
