@@ -7,7 +7,7 @@ import json
 import tempfile
 import shutil
 from pathlib import Path
-from datetime import datetime
+from datetime import datetime, timezone
 from unittest.mock import patch, MagicMock
 
 from src.shared.persistence.save_manager import SaveManager
@@ -252,7 +252,6 @@ class TestSaveManager:
             datetime.fromisoformat(data['saved_at'])
             
             # Check that timestamp was updated (within reasonable range)
-            from datetime import datetime, timezone
             saved_data = json.loads(SaveManager.SAVE_FILE.read_text())
             saved_at = datetime.fromisoformat(saved_data['saved_at'])
             now = datetime.now(timezone.utc)
