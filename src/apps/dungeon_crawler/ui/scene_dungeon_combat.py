@@ -30,6 +30,12 @@ class DungeonCombatScene(CombatSceneBase):
         self.roster = kwargs.get("roster")
         self.team = kwargs.get("team")
         
+        print(f"[DEBUG] Combat scene - kwargs keys: {list(kwargs.keys())}")
+        print(f"[DEBUG] Combat scene - team from kwargs: {self.team}")
+        if self.team:
+            print(f"[DEBUG] Combat scene - team type: {type(self.team)}")
+            print(f"[DEBUG] Combat scene - team members count: {len(self.team.members)}")
+        
         if not self.session:
             # Fallback for direct testing
             self.session = DungeonSession()
@@ -44,6 +50,9 @@ class DungeonCombatScene(CombatSceneBase):
             # Fallback for direct testing
             from src.shared.teams.roster import TeamRole
             self.team = self.roster.get_dungeon_team()
+            print(f"[DEBUG] Combat scene - fallback team: {self.team}")
+            if self.team:
+                print(f"[DEBUG] Combat scene - fallback team members: {len(self.team.members)}")
             
         self.slime_renderer = SlimeRenderer()
         
