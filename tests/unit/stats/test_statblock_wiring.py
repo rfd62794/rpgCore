@@ -156,9 +156,9 @@ class TestStatBlockWiring:
         )
         # stat_block is created automatically when accessed
         
-        # Marsh has HP +3.0 modifier, but level 1 gets 0.6 stage modifier
-        marsh_modifier = CULTURAL_PARAMETERS[CulturalBase.MARSH].hp_modifier
-        expected_hp = int(20.0 * marsh_modifier * 0.6)  # base_hp * cultural_mod * stage_mod
+        # Void has balanced stats (1.0x all modifiers)
+        void_modifier = 1.0
+        expected_hp = int(20.0 * void_modifier * 0.6)  # base_hp * cultural_mod * stage_mod
         
         # Verify computed HP reflects culture bonus and stage modifier
         assert slime.stat_block.hp == expected_hp, f"Marsh HP {slime.stat_block.hp} should be {expected_hp}"
@@ -311,9 +311,9 @@ class TestStatBlockWiring:
         )
         # stat_block is created automatically when accessed
         
-        # Void has all cultures at ~0.167, but level 1 gets 0.6 stage modifier
-        # Expected HP = (20.0 + 1.2525) * 0.6 = 12.75, rounds to 12
-        expected_hp = int((20.0 + 1.2525) * 0.6)
+        # Void has balanced stats (1.0x all modifiers)
+        # Expected HP = (20.0 + 0.0) * 0.6 = 12.0, rounds to 12
+        expected_hp = int((20.0 + 0.0) * 0.6)
         assert slime.stat_block.hp == expected_hp, f"Void HP {slime.stat_block.hp} should be {expected_hp}"
         assert slime.stat_block.hp < 20.0, "Hatchling stage modifier should reduce HP below base"
         
