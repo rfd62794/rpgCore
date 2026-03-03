@@ -76,11 +76,11 @@ class TestStatsPanelExtensions:
         # Should filter out cultures below 0.05
         active_cultures = [(c, w) for c, w in culture_expression.items() if w > 0.05]
         
-        # Should only include ember, crystal, moss
-        expected_active = [('ember', 0.6), ('crystal', 0.3), ('moss', 0.1)]
+        # Should only include ember, crystal, marsh
+        expected_active = [('ember', 0.6), ('crystal', 0.3), ('marsh', 0.1)]
         
         assert len(active_cultures) == 3
-        assert set(c for c, w in active_cultures) == {'ember', 'crystal', 'moss'}
+        assert set(c for c, w in active_cultures) == {'ember', 'crystal', 'marsh'}
 
     def test_culture_expression_sorting(self):
         """Test cultures are sorted by expression weight"""
@@ -88,8 +88,8 @@ class TestStatsPanelExtensions:
         active_cultures = [(c, w) for c, w in culture_expression.items() if w > 0.05]
         active_cultures.sort(key=lambda x: x[1], reverse=True)
         
-        # Should be sorted: ember (0.6), crystal (0.3), moss (0.1)
-        expected_order = [('ember', 0.6), ('crystal', 0.3), ('moss', 0.1)]
+        # Should be sorted: ember (0.6), crystal (0.3), marsh (0.1)
+        expected_order = [('ember', 0.6), ('crystal', 0.3), ('marsh', 0.1)]
         
         assert active_cultures == expected_order
 
