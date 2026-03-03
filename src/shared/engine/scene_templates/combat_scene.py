@@ -114,12 +114,14 @@ class CombatSceneBase(Scene):
         # Party (Left)
         for i in range(5):
             y = self.party_rect.y + i * (slot_h + self.spec.margin_sm)
-            self._draw_unit_slot(surface, self.party_rect.x, y, self.party_rect.width, slot_h, self.party[i], side="party")
+            unit = self.party[i] if i < len(self.party) else None
+            self._draw_unit_slot(surface, self.party_rect.x, y, self.party_rect.width, slot_h, unit, side="party")
             
         # Enemies (Right)
         for i in range(5):
             y = self.enemy_rect.y + i * (slot_h + self.spec.margin_sm)
-            self._draw_unit_slot(surface, self.enemy_rect.x, y, self.enemy_rect.width, slot_h, self.enemies[i], side="enemy")
+            unit = self.enemies[i] if i < len(self.enemies) else None
+            self._draw_unit_slot(surface, self.enemy_rect.x, y, self.enemy_rect.width, slot_h, unit, side="enemy")
 
     def _draw_unit_slot(self, surface: pygame.Surface, x: int, y: int, w: int, h: int, entity: Optional[Any], side: str):
         rect = pygame.Rect(x, y, w, h)

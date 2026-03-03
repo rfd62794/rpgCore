@@ -90,7 +90,8 @@ class DungeonCombatScene(CombatSceneBase):
                     "speed": hero.stat_block.spd,
                     "stance": "Aggressive"
                 }
-            else:
+            elif hasattr(hero, 'genome'):
+                # Hero has genome (RosterSlime case)
                 from src.shared.teams.stat_calculator import calculate_hp, calculate_attack, calculate_speed
                 hero_stats = {
                     "hp": calculate_hp(hero.genome, hero.level),
@@ -98,6 +99,16 @@ class DungeonCombatScene(CombatSceneBase):
                     "attack": calculate_attack(hero.genome, hero.level),
                     "defense": 2,
                     "speed": calculate_speed(hero.genome, hero.level),
+                    "stance": "Aggressive"
+                }
+            else:
+                # Hero is a basic Hero class with stats dict
+                hero_stats = {
+                    "hp": hero.stats["hp"],
+                    "max_hp": hero.stats["max_hp"],
+                    "attack": hero.stats["attack"],
+                    "defense": hero.stats["defense"],
+                    "speed": hero.stats["speed"],
                     "stance": "Aggressive"
                 }
             
@@ -187,7 +198,12 @@ class DungeonCombatScene(CombatSceneBase):
         
         # 3. Setup Turn Order
         self.session.turn_manager.reset()
-        self.session.turn_manager.add_combatant("hero", hero.stats["speed"])
+        
+        # Add hero to turn order if present
+        hero_unit = next((unit for unit in self.party if unit.id == "hero"), None)
+        if hero_unit:
+            self.session.turn_manager.add_combatant("hero", hero_unit.stats["speed"])
+        
         for unit in self.party:
             if unit and unit.id != "hero":
                 self.session.turn_manager.add_combatant(unit.id, unit.stats["speed"])
