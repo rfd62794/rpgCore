@@ -68,11 +68,44 @@ Tide      CHM       PWR         Charismatic fighter
 Ember      1.0   1.25  1.1   0.9   0.9   1.0
 Gale       0.9   0.9   1.25  1.1   1.0   1.0
 Marsh      1.25  1.0   1.0   0.9   1.0   1.1
-Crystal    1.0   0.9   0.9   1.25  1.1   1.0
-Tundra     1.1   0.9   0.9   1.0   1.25  1.0
+Crystal    1.0   0.9   0.9   1.25  1.1   0.8
+Tundra     1.1   0.9   0.9   1.0   1.25  0.9
 Tide       1.0   1.1   1.0   1.0   0.9   1.25
 Void       1.0   1.0   1.0   1.0   1.0   1.0  (no amplification)
 ```
+
+### Philosophy B — Complete RPS Web (15% bonus to attacker)
+
+Every culture has 2 wins, 2 losses, 2 neutrals. Void draws with all.
+
+```
+FULL MATCHUP TABLE (15% bonus to attacker):
+
+ember   beats: gale, marsh
+gale    beats: tundra, tide
+marsh   beats: crystal, gale
+crystal beats: tide, ember
+tundra  beats: ember, crystal
+tide    beats: marsh, tundra
+void    draws: all
+```
+
+**Thematic Logic (World Justification):**
+- **ember > gale**: fire consumes wind
+- **ember > marsh**: fire burns swamp
+- **gale > tundra**: wind erodes ice  
+- **gale > tide**: wind scatters water
+- **marsh > crystal**: roots crack stone
+- **marsh > gale**: roots ground wind
+- **crystal > tide**: stone channels water
+- **crystal > ember**: structure contains fire
+- **tundra > ember**: cold smothers flame
+- **tundra > crystal**: frost shatters crystal
+- **tide > marsh**: water drowns roots
+- **tide > tundra**: current melts ice
+- **void draws all**: void absorbs everything, threatens nothing
+
+**Void Design**: Void is genuinely interesting — not weak but unpredictable. Every other culture has known counters. Void has none, making it the wildcard that breaks preparation in competitive play.
 
 Mixed culture slimes get weighted amplification:
 ```python
@@ -221,6 +254,7 @@ class XPResult:
     stage_advanced: bool
     new_stage: str
     culture_bonuses: dict[str, float]  # for display
+    critical_training: bool = False  # NEW: Breakthrough moment
 
 def award_xp(
     slime: RosterSlime,
@@ -231,6 +265,8 @@ def award_xp(
     Single point of truth for all XP awards.
     Called from every activity.
     Applies culture amplification.
+    Applies training efficiency modifier.
+    Checks for critical training breakthroughs.
     Checks level and stage advancement.
     Returns XPResult with all events.
     
@@ -248,6 +284,69 @@ Performance multipliers:
 ```
 
 Location: `src/shared/progression/xp_system.py` 
+
+### 5.5 Training Efficiency Modifier
+
+Each stat XP pool has a training efficiency that decreases with use and resets on stage advancement:
+
+```python
+def training_efficiency(stat_xp: int) -> float:
+    """
+    Returns efficiency modifier [0.7, 1.0]
+    Decreases as stat XP accumulates, resets on stage advance.
+    """
+    return max(0.7, 1.0 - (stat_xp / 200) * 0.3)
+```
+
+Applied to incoming stat XP before culture amplification:
+```python
+adjusted_stat_xp = raw_stat_xp * efficiency * culture_amp
+```
+
+**Efficiency Tiers:**
+- **0-50 XP**: 1.0x efficiency (fresh training)
+- **50-100 XP**: 0.9x efficiency (getting harder)
+- **100-200 XP**: 0.8x efficiency (diminishing returns)
+- **200+ XP**: 0.7x efficiency (expert level)
+
+**Stage advancement resets all efficiency modifiers to 1.0** (the "evolution moment" — the slime is ready to learn again).
+
+### 5.6 Critical Training (Breakthrough Moments)
+
+On any XP award, chance for breakthrough training:
+
+```python
+def critical_training_chance(
+    activity: str, 
+    slime_culture: str, 
+    performance: str
+) -> float:
+    """
+    Returns chance [0.05, 0.10] for critical training
+    """
+    base_chance = 0.05  # 5%
+    
+    # Culture affinity bonus (primary stat matches activity)
+    if activity_matches_primary_stat(activity, slime_culture):
+        base_chance += 0.03  # +3%
+    
+    # Perfect performance bonus
+    if performance == "perfect":
+        base_chance += 0.05  # +5%
+    
+    return min(0.10, base_chance)  # Cap at 10%
+```
+
+**Critical Training Effects:**
+- **2x XP** for all stat gains in that award
+- **Display**: "BREAKTHROUGH!" floating text
+- **Visual**: Culture color flash on the slime
+- **Sound**: Special breakthrough sound effect
+
+**Critical Training Examples:**
+- Ember slime in Sumo: 8% chance (5% + 3% culture affinity)
+- Gale slime in perfect race: 10% chance (5% + 5% perfect)
+- Random activity: 5% base chance 
 
 ---
 
@@ -351,7 +450,75 @@ refreshes and feels stronger across all dimensions.
 
 ---
 
-## 8. Mini-Game Stat Training Matrix
+## 8. Kairosoft-Inspired Design Principles
+
+### 8.1 Transparent Stat Purpose (Lesson 1)
+Every stat needs visible "this is what I train this for" labeling in the UI. Players shouldn't have to figure out that racing builds AGI — it should say so explicitly.
+
+**StatsPanel Training Labels:**
+```
+AGI  ████░░  "Trained by: Racing, Obstacle Course"
+PWR  ██░░░░  "Trained by: Sumo, Training Dummy"  
+VIT  ████░░  "Trained by: Sumo (endurance)"
+MND  █░░░░░  "Trained by: Dungeon, Foraging"
+RES  ███░░░  "Trained by: Dungeon, Training Dummy"
+CHM  ████░░  "Trained by: Garden, Social Interactions"
+```
+
+**Mini-Game Stat Training Matrix (Player-Facing):**
+```
+MINI-GAME          PRIMARY   SECONDARY   UI LABEL
+Sumo               VIT+PWR   RES+CHM     "Builds toughness and power"
+Racing             AGI       MND+CHM     "Builds speed and cleverness"
+Dungeon combat     PWR+MND   VIT+AGI     "Builds strength and wisdom"
+Training Dummy     PWR       AGI         "Builds power and reflexes"
+Obstacle Course    AGI+RES   MND         "Builds agility and resilience"
+Foraging zone      MND       AGI+CHM     "Builds cleverness and charm"
+Garden idle        CHM+RES   MND         "Builds social bonds and wisdom"
+Player interaction CHM       MND         "Builds charm and cleverness"
+```
+
+### 8.2 Diminishing Returns & Reset Rhythm (Lesson 2)
+Training efficiency decreases with repeated use, but stage advancement resets the cycle, creating natural training rhythm.
+
+**Training Cycle:**
+1. **Train Hard**: Fresh slime gets 1.0x efficiency
+2. **Efficiency Drops**: As XP accumulates, efficiency falls to 0.7x
+3. **Stage Advance**: Evolution moment resets all efficiency to 1.0x
+4. **Repeat**: Slime is ready to learn effectively again
+
+This makes stage advancement meaningful not just for stat boosts but for training reset — players look forward to the "fresh start" moment.
+
+### 8.3 Critical Training Breakthroughs (Lesson 3)
+Random breakthrough moments create memorable training sessions and excitement.
+
+**Breakthrough Display:**
+- Floating "BREAKTHROUGH!" text in culture color
+- Culture color flash effect on slime sprite
+- Special breakthrough sound effect
+- 2x XP multiplier for that training session
+
+**Breakthrough Chances:**
+- Base: 5% on any XP award
+- Culture affinity: +3% (8% total)
+- Perfect performance: +5% (10% total cap)
+
+### 8.4 Roster Specialization > Balance (Lesson 4)
+A 6-slime roster should develop natural role differentiation through focused training, not be identical units.
+
+**Specialization Examples:**
+- **Ember Sumo Specialist**: High VIT/PWR, your arena fighter
+- **Gale Racing Scout**: High AGI/MND, your speed runner  
+- **Tide Social Anchor**: High CHM/MND, your dispatch morale leader
+- **Crystal Dungeon Crawler**: High MND/RES, your tactical explorer
+- **Marsh Breeding Partner**: High VIT/CHM, your stable parent
+- **Tundra Tank**: High VIT/RES, your defensive wall
+
+**Roster Composition**: Players naturally build teams with complementary specialists rather than balanced generalists. The roster becomes "this is my team composition" rather than "these are my slimes."
+
+---
+
+## 9. Mini-Game Stat Training Matrix
 
 Which stats each mini-game primarily trains:
 
