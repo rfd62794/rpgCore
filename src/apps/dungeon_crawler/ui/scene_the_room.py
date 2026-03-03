@@ -111,13 +111,23 @@ class TheRoomScene(Scene):
         else:
             self.session.descend()
         
-        # Get roster and team from session or create defaults
-        roster = getattr(self.session, 'roster', None)
-        if not roster:
+        # Get roster and team from main save system
+        from shared.persistence.save_manager import SaveManager
+        save_result = SaveManager.load()
+        if save_result:
+            roster_data, session_data = save_result
+            from shared.teams.roster import Roster
+            roster = Roster.from_dict(roster_data)
+        else:
             from shared.teams.roster_save import load_roster
             roster = load_roster()
         
         team = roster.get_dungeon_team() if roster else None
+        
+        print(f"[DEBUG] TheRoom - roster: {roster}")
+        print(f"[DEBUG] TheRoom - team: {team}")
+        if roster:
+            print(f"[DEBUG] TheRoom - dungeon team members: {len(roster.get_dungeon_team().members)}")
         
         self.request_scene("dungeon_room", session=self.session, roster=roster, team=team)
 
