@@ -161,7 +161,7 @@ class TestStatBlockWiring:
         expected_hp = int(20.0 * moss_modifier * 0.6)  # base_hp * cultural_mod * stage_mod
         
         # Verify computed HP reflects culture bonus and stage modifier
-        assert slime.stat_block.hp == expected_hp, f"Moss HP {slime.stat_block.hp} should be {expected_hp}"
+        assert slime.stat_block.hp == expected_hp, f"Marsh HP {slime.stat_block.hp} should be {expected_hp}"
         assert slime.stat_block.hp < 20.0, "Hatchling stage modifier should reduce HP below base"
     
     def test_stage_affects_displayed_stats(self):
