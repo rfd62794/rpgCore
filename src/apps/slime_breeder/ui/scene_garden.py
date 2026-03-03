@@ -335,6 +335,18 @@ class GardenScene(GardenSceneBase):
                                      self._open_dungeon_carousel, self.spec, variant="ghost")
         self.hub_bar.add_child(self.dungeon_hub_btn)
         
+        # Add "COMING SOON" badge to dungeon button
+        from src.shared.ui.label import Label
+        badge_rect = pygame.Rect(
+            self.dungeon_hub_btn.rect.right - 70,
+            self.dungeon_hub_btn.rect.y - 8,
+            65,
+            16
+        )
+        self.dungeon_badge = Label("COMING SOON", badge_rect, self.spec, size="xs", 
+                                   color=self.spec.color_warning, centered=True)
+        self.hub_bar.add_child(self.dungeon_badge)
+        
         # SUMO button
         self.sumo_hub_btn = Button("🥊 SUMO", pygame.Rect(start_x + 3*(button_width + button_spacing), button_y, button_width, button_height),
                                   self._open_sumo_carousel, self.spec, variant="ghost")
@@ -1153,10 +1165,28 @@ class GardenScene(GardenSceneBase):
         render_text(surface, self._banner_msg, (banner_rect.centerx, banner_rect.centery), 
                     size=20, color=(*self._banner_color, alpha), center=True)
 
+    def render(self, surface: pygame.Surface) -> None:
+        """Render garden and overlay carousel if active."""
+        # Render garden first
+        super().render(surface)
+        
+        # Render carousel overlay on top if active
+        if self.active_carousel:
+            self.active_carousel.render(surface)
+
     def on_exit(self):
         """Auto-save when exiting scene"""
         if self.context:
             self.context.save_roster()
+
+    def update(self, dt: float) -> None:
+        """Update garden and carousel if active."""
+        # Update carousel first
+        if self.active_carousel:
+            self.active_carousel.update(dt)
+        
+        # Update garden
+        super().update(dt)
 
     def handle_event(self, event: pygame.event.Event) -> None:
         # Handle carousel overlay first (highest priority)
