@@ -110,7 +110,16 @@ class TheRoomScene(Scene):
             self.session.start_run("fighter") # Default to fighter for now
         else:
             self.session.descend()
-        self.request_scene("dungeon_room", session=self.session, roster=self.session.roster, team=self.session.roster.get_team(TeamRole.DUNGEON))
+        
+        # Get roster and team from session or create defaults
+        roster = getattr(self.session, 'roster', None)
+        if not roster:
+            from shared.teams.roster_save import load_roster
+            roster = load_roster()
+        
+        team = roster.get_team(TeamRole.DUNGEON) if roster else None
+        
+        self.request_scene("dungeon_room", session=self.session, roster=roster, team=team)
 
 
     def handle_events(self, events: list[pygame.event.Event]) -> None:

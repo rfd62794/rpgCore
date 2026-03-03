@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "saved_at": "2026-03-03T03:15:34.023587+00:00",
+  "saved_at": "2026-03-03T03:15:47.891338+00:00",
   "roster": {
     "slimes": [
       {
@@ -35,7 +35,7 @@
           "generation": 1
         },
         "level": 1,
-        "experience": 0,
+        "experience": 20,
         "breeding_lock_level": 0,
         "current_hp": 10.0
       },
@@ -143,7 +143,7 @@
           "generation": 1
         },
         "level": 1,
-        "experience": 0,
+        "experience": 50,
         "breeding_lock_level": 0,
         "current_hp": 10.0
       },
@@ -224,9 +224,9 @@
   "session": {
     "session_id": "9df3e41a-8b3a-4360-9808-fd443b98e8cd",
     "resources": {
-      "gold": 145,
+      "gold": 148,
       "scrap": 40,
-      "food": 85
+      "food": 93
     },
     "garden": {
       "room_level": 0,
@@ -241,6 +241,6 @@
       "active_events": []
     },
     "active_dispatches": [],
-    "current_tick": 5802
+    "current_tick": 6255
   }
 }
