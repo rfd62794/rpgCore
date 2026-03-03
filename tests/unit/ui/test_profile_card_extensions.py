@@ -55,7 +55,7 @@ class TestProfileCardExtensions:
         self.mock_genome.culture_expression = {
             'ember': 0.6,
             'crystal': 0.3,
-            'moss': 0.1
+            'marsh': 0.1
         }
         self.mock_genome.personality_axes = {
             'aggression': 0.4,
