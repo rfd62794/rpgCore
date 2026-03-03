@@ -102,6 +102,16 @@ class RosterSlime:
     def xp_to_next_level(self) -> int:
         return 5 + (self.level * 2)
 
+    @property
+    def stat_block(self) -> 'StatBlock':
+        """
+        Computed stats for this slime.
+        Derived from genome on access.
+        No caching — always fresh.
+        """
+        from src.shared.stats.stat_block import StatBlock
+        return StatBlock.from_genome(self.genome)
+
     def gain_exp(self, amount: int) -> bool:
         """Adds exp and returns True if leveled up."""
         self.experience += amount
