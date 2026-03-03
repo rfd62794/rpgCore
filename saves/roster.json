@@ -3,7 +3,7 @@
     {
       "slime_id": "mochi_1",
       "name": "Mochi 1",
-      "team": "unassigned",
+      "team": "dungeon",
       "locked": false,
       "alive": true,
       "genome": {
@@ -39,7 +39,7 @@
     {
       "slime_id": "pip_2",
       "name": "Pip 2",
-      "team": "unassigned",
+      "team": "dungeon",
       "locked": false,
       "alive": true,
       "genome": {
@@ -75,7 +75,7 @@
     {
       "slime_id": "fizz_3",
       "name": "Fizz 3",
-      "team": "unassigned",
+      "team": "dungeon",
       "locked": false,
       "alive": true,
       "genome": {
@@ -147,7 +147,7 @@
     {
       "slime_id": "bloop_5",
       "name": "Bloop 5",
-      "team": "unassigned",
+      "team": "dungeon",
       "locked": false,
       "alive": true,
       "genome": {
@@ -183,7 +183,7 @@
     {
       "slime_id": "lumen_6",
       "name": "Lumen 6",
-      "team": "unassigned",
+      "team": "dungeon",
       "locked": false,
       "alive": true,
       "genome": {

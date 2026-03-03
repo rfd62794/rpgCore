@@ -11,8 +11,6 @@ from src.apps.dungeon_crawler.world.room_generator import RoomGenerator
 from src.apps.dungeon_crawler.hub.the_room import TheRoom
 from src.shared.combat.turn_order import TurnOrderManager
 from src.shared.teams.roster import Roster, TeamRole, RosterSlime
-from src.shared.teams.roster_save import load_roster, save_roster
-from src.shared.teams.stat_calculator import calculate_hp, calculate_attack, calculate_speed
 
 FIRST_NAMES = ["Aldric", "Maren", "Thorn", "Vex", "Sable", "Dusk"]
 LAST_NAMES  = ["the Bold", "the Unlucky", "of the Deep", 
@@ -41,8 +39,14 @@ class DungeonSession:
         self.turn_manager: Optional[TurnOrderManager] = None
         self.ancestors: List[dict] = []
         
-        # Team Roster Integration
-        self.roster = load_roster()
+        # Team Roster Integration - use main save system
+        from src.shared.persistence.save_manager import SaveManager
+        save_result = SaveManager.load()
+        if save_result:
+            roster_data, session_data = save_result
+            self.roster = Roster.from_dict(roster_data)
+        else:
+            self.roster = Roster()
         self.party_slimes = self.team  # Alias for compatibility
 
     def generate_hero_name(self) -> str:
@@ -69,7 +73,12 @@ class DungeonSession:
             if slime.alive:
                 slime.locked = True
                 self.party_slimes.append(slime)
-        save_roster(self.roster)
+        # Save roster via main save system
+        from src.shared.persistence.save_manager import SaveManager
+        from src.shared.session.game_session import GameSession
+        # Create a dummy game session for save
+        dummy_session = GameSession.new_game()
+        SaveManager.save(self.roster, dummy_session)
 
     def descend(self) -> Floor:
         if not self.floor_obj:
@@ -96,7 +105,12 @@ class DungeonSession:
             # We'll assume casualties are registered via cause or specific result calls.
             rs.locked = False
         
-        save_roster(self.roster)
+        # Save roster via main save system
+        from src.shared.persistence.save_manager import SaveManager
+        from src.shared.session.game_session import GameSession
+        # Create a dummy game session for save
+        dummy_session = GameSession.new_game()
+        SaveManager.save(self.roster, dummy_session)
         
         # Record ancestor
         ancestor_record = {

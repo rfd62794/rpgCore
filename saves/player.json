@@ -1,12 +1,12 @@
 {
   "version": 1,
-  "saved_at": "2026-03-03T03:21:37.467049+00:00",
+  "saved_at": "2026-03-03T03:23:34.986782+00:00",
   "roster": {
     "slimes": [
       {
         "slime_id": "mochi_1",
         "name": "Mochi 1",
-        "team": "unassigned",
+        "team": "dungeon",
         "locked": false,
         "alive": true,
         "genome": {
@@ -42,7 +42,7 @@
       {
         "slime_id": "pip_2",
         "name": "Pip 2",
-        "team": "unassigned",
+        "team": "dungeon",
         "locked": false,
         "alive": true,
         "genome": {
@@ -78,7 +78,7 @@
       {
         "slime_id": "fizz_3",
         "name": "Fizz 3",
-        "team": "unassigned",
+        "team": "dungeon",
         "locked": false,
         "alive": true,
         "genome": {
@@ -150,7 +150,7 @@
       {
         "slime_id": "bloop_5",
         "name": "Bloop 5",
-        "team": "unassigned",
+        "team": "dungeon",
         "locked": false,
         "alive": true,
         "genome": {
@@ -186,7 +186,7 @@
       {
         "slime_id": "lumen_6",
         "name": "Lumen 6",
-        "team": "unassigned",
+        "team": "dungeon",
         "locked": false,
         "alive": true,
         "genome": {
@@ -222,11 +222,11 @@
     ]
   },
   "session": {
-    "session_id": "9df3e41a-8b3a-4360-9808-fd443b98e8cd",
+    "session_id": "633aed8e-88a9-4595-8658-229cf026a8d3",
     "resources": {
-      "gold": 157,
-      "scrap": 44,
-      "food": 100
+      "gold": 100,
+      "scrap": 0,
+      "food": 50
     },
     "garden": {
       "room_level": 0,
@@ -241,6 +241,6 @@
       "active_events": []
     },
     "active_dispatches": [],
-    "current_tick": 8125
+    "current_tick": 0
   }
 }
