@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "saved_at": "2026-03-03T02:43:27.774912",
+  "saved_at": "2026-03-03T03:15:34.023587+00:00",
   "roster": {
     "slimes": [
       {
@@ -100,7 +100,7 @@
           "energy": 0.01812584260227601,
           "affection": 0.6456059092271252,
           "shyness": 0.05592499121812533,
-          "cultural_base": "moss",
+          "cultural_base": "marsh",
           "base_hp": 20.0,
           "base_atk": 4.5,
           "base_spd": 6.5,
@@ -208,7 +208,7 @@
           "energy": 0.8183709566814519,
           "affection": 0.47414284342543045,
           "shyness": 0.2732068650024718,
-          "cultural_base": "moss",
+          "cultural_base": "marsh",
           "base_hp": 20.0,
           "base_atk": 4.5,
           "base_spd": 6.5,
@@ -224,9 +224,9 @@
   "session": {
     "session_id": "9df3e41a-8b3a-4360-9808-fd443b98e8cd",
     "resources": {
-      "gold": 138,
-      "scrap": 30,
-      "food": 81
+      "gold": 145,
+      "scrap": 40,
+      "food": 85
     },
     "garden": {
       "room_level": 0,
@@ -241,6 +241,6 @@
       "active_events": []
     },
     "active_dispatches": [],
-    "current_tick": 5228
+    "current_tick": 5802
   }
 }

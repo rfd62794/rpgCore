@@ -3,7 +3,7 @@
     {
       "slime_id": "mochi_1",
       "name": "Mochi 1",
-      "team": "dungeon",
+      "team": "unassigned",
       "locked": false,
       "alive": true,
       "genome": {
@@ -32,14 +32,14 @@
         "generation": 1
       },
       "level": 1,
-      "experience": 0,
+      "experience": 20,
       "breeding_lock_level": 0,
       "current_hp": 10.0
     },
     {
       "slime_id": "pip_2",
       "name": "Pip 2",
-      "team": "dungeon",
+      "team": "unassigned",
       "locked": false,
       "alive": true,
       "genome": {
@@ -75,7 +75,7 @@
     {
       "slime_id": "fizz_3",
       "name": "Fizz 3",
-      "team": "dungeon",
+      "team": "unassigned",
       "locked": false,
       "alive": true,
       "genome": {
@@ -140,7 +140,7 @@
         "generation": 1
       },
       "level": 1,
-      "experience": 0,
+      "experience": 50,
       "breeding_lock_level": 0,
       "current_hp": 10.0
     },
@@ -183,7 +183,7 @@
     {
       "slime_id": "lumen_6",
       "name": "Lumen 6",
-      "team": "dungeon",
+      "team": "unassigned",
       "locked": false,
       "alive": true,
       "genome": {

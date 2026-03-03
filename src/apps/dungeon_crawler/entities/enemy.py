@@ -1,6 +1,6 @@
-from src.shared.items.loot_table import LootTable
-from src.shared.items.item import Item
-from src.shared.combat.stance import StanceController
+from shared.items.loot_table import LootTable
+from shared.items.item import Item
+from shared.combat.stance import StanceController
 import random
 
 class Enemy:

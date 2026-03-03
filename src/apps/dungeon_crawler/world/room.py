@@ -1,5 +1,5 @@
 from dataclasses import dataclass, field
-from src.apps.dungeon_crawler.entities.enemy import Enemy
+from apps.dungeon_crawler.entities.enemy import Enemy
 
 @dataclass
 class Room:

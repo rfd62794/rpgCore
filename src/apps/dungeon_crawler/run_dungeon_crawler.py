@@ -418,14 +418,14 @@ def main(args=None):
         session = DungeonSession()
         
         # Get the roster and team from the session
-        from src.shared.teams.roster import TeamRole
+        from shared.teams.roster import TeamRole
         roster = session.roster
         team = roster.get_team(TeamRole.DUNGEON)
         
         # Local imports to avoid circular deps if they occur
-        from src.apps.dungeon_crawler.ui.scene_dungeon_room import DungeonRoomScene
-        from src.apps.dungeon_crawler.ui.scene_inventory import InventoryOverlay
-        from src.apps.dungeon_crawler.ui.scene_dungeon_combat import DungeonCombatScene
+        from apps.dungeon_crawler.ui.scene_dungeon_room import DungeonRoomScene
+        from apps.dungeon_crawler.ui.scene_inventory import InventoryOverlay
+        from apps.dungeon_crawler.ui.scene_dungeon_combat import DungeonCombatScene
 
         manager = SceneManager(width=800, height=600, title="rpgCore — Dungeon Crawler")
         manager.register("the_room", TheRoomScene)
