@@ -32,7 +32,7 @@ class TestStatsPanelExtensions:
         self.mock_genome.culture_expression = {
             'ember': 0.6,
             'crystal': 0.3,
-            'moss': 0.1,
+            'marsh': 0.1,
             'gale': 0.05,  # Below threshold
             'marsh': 0.02,  # Below threshold
             'tundra': 0.01   # Below threshold
