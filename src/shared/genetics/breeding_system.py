@@ -9,7 +9,7 @@ import random
 from typing import Optional, Tuple, Dict
 from dataclasses import dataclass
 
-from src.apps.slime_breeder.entities.slime import RosterSlime
+from src.shared.teams.roster import RosterSlime
 from src.shared.genetics.genome import SlimeGenome
 from src.shared.genetics.cultural_base import CulturalBase
 
@@ -90,7 +90,7 @@ class BreedingSystem:
         expr = getattr(genome, 'culture_expression', {})
         if not expr:
             # Derive from cultural_base
-            base = getattr(genome, 'cultural_base', CulturalBase.MARSH)
+            base = getattr(genome, 'cultural_base', CulturalBase.MOSS)
             if hasattr(base, 'value'):
                 base = base.value
             key = base.lower().replace('culturalbase.', '').strip()
@@ -100,6 +100,11 @@ class BreedingSystem:
                 'moss': 'marsh',
                 'coastal': 'tide',
                 'mixed': 'marsh',
+                # Handle enum to expression mapping
+                'ember': 'ember',
+                'crystal': 'crystal',
+                'tide': 'tide',
+                'void': 'void',
             }
             key = aliases.get(key, key)
             
@@ -223,7 +228,18 @@ class BreedingSystem:
         dominant = max(culture_expression.items(), key=lambda x: x[1])
         culture_name = dominant[0].upper()
         
+        # Map expression keys back to CulturalBase enum values
+        expression_to_enum = {
+            'EMBER': CulturalBase.EMBER,
+            'CRYSTAL': CulturalBase.CRYSTAL,
+            'MARSH': CulturalBase.MOSS,  # marsh -> moss
+            'TIDE': CulturalBase.TIDE,
+            'VOID': CulturalBase.VOID,
+            'GALE': CulturalBase.MOSS,   # gale -> moss (fallback)
+            'TUNDRA': CulturalBase.MOSS, # tundra -> moss (fallback)
+        }
+        
         try:
-            return CulturalBase[culture_name]
+            return expression_to_enum[culture_name]
         except KeyError:
             return CulturalBase.MIXED
