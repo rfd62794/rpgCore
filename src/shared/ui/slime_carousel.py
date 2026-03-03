@@ -62,6 +62,7 @@ class SlimeCarousel:
         self.current_index = 0
         self.selected_slimes: List[RosterSlime] = []
         self.is_complete = False
+        self.ui_components = []  # Initialize UI components list
         self.result: Optional[CarouselResult] = None
         
         # Animation
@@ -69,8 +70,7 @@ class SlimeCarousel:
         self.target_offset = 0.0
         self.slide_speed = 800.0  # pixels per second
         
-        # UI Components
-        self.ui_components: List[Any] = []
+        # Setup UI
         self._setup_ui()
         
         # Apply initial filter
@@ -91,6 +91,7 @@ class SlimeCarousel:
         
         # Create main panel
         self.main_panel = Panel(self.panel_rect, self.spec, variant="card", theme=self.theme)
+        self.ui_components.append(self.main_panel)
         
         # Filter buttons (top of panel)
         self.filter_buttons: Dict[str, Button] = {}
@@ -109,6 +110,7 @@ class SlimeCarousel:
             btn = Button(label, btn_rect, lambda f=filter_type: self._apply_filter(f), 
                        self.spec, variant="ghost", theme=self.theme)
             self.filter_buttons[label] = btn
+            self.ui_components.append(btn)
         
         # Navigation arrows
         arrow_size = 40
@@ -118,9 +120,13 @@ class SlimeCarousel:
         self.right_arrow = Button("▶", pygame.Rect(panel_x + panel_width + 10, arrow_y, arrow_size, arrow_size),
                                 self._next_slime, self.spec, variant="secondary", theme=self.theme)
         
+        self.ui_components.append(self.left_arrow)
+        self.ui_components.append(self.right_arrow)
+        
         # Counter
         self.counter_label = Label("1 / 1", (panel_x + panel_width // 2, panel_y + panel_height - 30),
                                   self.spec, centered=True, theme=self.theme)
+        self.ui_components.append(self.counter_label)
         
         # Action buttons (bottom)
         button_y = panel_y + panel_height - 60
@@ -133,6 +139,7 @@ class SlimeCarousel:
                                      pygame.Rect(panel_x + panel_width // 2 - button_width // 2, button_y, 
                                               button_width, button_height),
                                      self._cancel, self.spec, variant="primary", theme=self.theme)
+            self.ui_components.append(self.cancel_btn)
         else:
             self.select_btn = Button("SELECT", 
                                      pygame.Rect(panel_x + panel_width // 2 - button_width - button_spacing // 2, 
@@ -142,6 +149,8 @@ class SlimeCarousel:
                                      pygame.Rect(panel_x + panel_width // 2 + button_spacing // 2, 
                                               button_y, button_width, button_height),
                                      self._cancel, self.spec, variant="secondary", theme=self.theme)
+            self.ui_components.append(self.select_btn)
+            self.ui_components.append(self.cancel_btn)
     
     def _apply_filter(self, filter_type: CarouselFilter):
         """Apply filter to slime list."""
