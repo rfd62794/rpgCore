@@ -38,7 +38,7 @@ class SaveManager:
             cls.SAVE_DIR.mkdir(exist_ok=True)
             data = {
                 'version': 1,
-                'saved_at': datetime.now(datetime.UTC).isoformat(),
+                'saved_at': datetime.now(timezone.utc).isoformat(),
                 'roster': cls._serialize_roster(roster),
                 'session': session.to_dict(),
             }

@@ -250,6 +250,13 @@ class TestSaveManager:
             assert 'saved_at' in data
             # Should be valid ISO format timestamp
             datetime.fromisoformat(data['saved_at'])
+            
+            # Check that timestamp was updated (within reasonable range)
+            from datetime import datetime, timezone
+            saved_data = json.loads(SaveManager.SAVE_FILE.read_text())
+            saved_at = datetime.fromisoformat(saved_data['saved_at'])
+            now = datetime.now(timezone.utc)
+            assert abs((now - saved_at).total_seconds()) < 60, "Timestamp should be recent"
     
     @patch('os.getenv')
     def test_skip_save_flag(self, mock_getenv):
