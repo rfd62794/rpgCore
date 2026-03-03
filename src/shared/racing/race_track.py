@@ -12,9 +12,9 @@ SEGMENT_LENGTH = 10
 
 class TerrainType(Enum):
     GRASS = "grass"        # normal speed
-    WATER = "water"        # slow, Coastal advantage
+    WATER = "water"        # slow, Tundra advantage
     ROCK = "rock"          # rough, Ember advantage  
-    MUD = "mud"           # slow, Moss advantage
+    MUD = "mud"           # slow, Marsh advantage
     HURDLE = "hurdle"      # jump required (future)
     PUSHBLOCK = "push_block"  # interactive (future)
     VOID = "void"          # shortcut/hazard (future)
@@ -40,12 +40,13 @@ TERRAIN_SPEED_MOD = {
 
 # Cultural advantage — double the modifier benefit
 CULTURAL_TERRAIN_BONUS = {
-    "coastal": TerrainType.WATER,
+    "tundra": TerrainType.WATER,
     "ember": TerrainType.ROCK,
-    "moss": TerrainType.MUD,
+    "marsh": TerrainType.MUD,
     "crystal": None,  # no terrain advantage
+    "gale": None,  # no terrain advantage
+    "tide": None,  # no terrain advantage
     "void": None,  # random advantage each race
-    "mixed": None,  # no terrain advantage
 }
 
 def generate_zones(track_length: float, total_laps: int = 3) -> list[TerrainZone]:

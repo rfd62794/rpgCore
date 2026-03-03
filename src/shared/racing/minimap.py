@@ -35,10 +35,9 @@ class RaceMinimap:
         cultural_colors = {
             "ember": (220, 80, 40),
             "crystal": (80, 160, 220),
-            "moss": (80, 180, 80),
-            "coastal": (60, 180, 200),
+            "marsh": (80, 180, 80),
+            "tundra": (60, 180, 200),
             "void": (140, 60, 200),
-            "mixed": (160, 160, 160),
         }
         
         # Debug: print values to check progress calculation

@@ -58,9 +58,9 @@ class RaceHUD:
         # Terrain warning
         if terrain_ahead:
             warning_colors = {
-                "water": self.spec.color_coastal,
+                "water": self.spec.color_tundra,
                 "rock":  self.spec.color_ember,
-                "mud":   self.spec.color_moss,
+                "mud":   self.spec.color_marsh,
             }
             color = warning_colors.get(terrain_ahead, self.spec.color_warning)
             warning_text = f"⚠ {terrain_ahead.upper()} AHEAD"

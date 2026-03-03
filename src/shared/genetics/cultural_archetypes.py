@@ -2,9 +2,10 @@ from enum import Enum
 from .cultural_base import CulturalBase
 
 class CulturalArchetype(Enum):
-    MOSS    = CulturalBase.MOSS
+    MARSH    = CulturalBase.MARSH
     EMBER   = CulturalBase.EMBER
     CRYSTAL = CulturalBase.CRYSTAL
-    COASTAL = CulturalBase.COASTAL
+    GALE    = CulturalBase.GALE
+    TUNDRA  = CulturalBase.TUNDRA
+    TIDE    = CulturalBase.TIDE
     VOID    = CulturalBase.VOID
-    MIXED   = CulturalBase.MIXED
