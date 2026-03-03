@@ -388,8 +388,14 @@ class DungeonCombatScene(CombatSceneBase):
         for unit in self.party:
             if unit and unit.id.startswith("party_"):
                 # Find matching team slime by name
-                rs = next((s for s in self.team if s.name == unit.name), None)
+                rs = next((s for s in self.team.members if s.name == unit.name), None)
                 if rs:
-                    rs.current_hp = float(unit.stats["hp"])
-                    if rs.current_hp <= 0:
-                        rs.alive = False
+                    slime = self.roster.get_creature(rs.slime_id)
+                    if slime:
+                        slime.current_hp = float(unit.stats["hp"])
+                        if slime.current_hp <= 0:
+                            slime.alive = False
+                        # Update roster entry too
+                        roster_entry = self.roster.get_entry(rs.slime_id)
+                        if roster_entry:
+                            roster_entry.alive = False
