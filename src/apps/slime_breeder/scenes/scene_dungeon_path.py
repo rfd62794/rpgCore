@@ -30,17 +30,20 @@ class DungeonPathScene(Scene):
         # Get shared entity registry
         self.entity_registry = kwargs.get('entity_registry')
         
-        # Load team if not provided
-        team = kwargs.get('team', [])
-        if not team:
+        # Load roster and team from main save system
+        from src.shared.persistence.save_manager import SaveManager
+        save_result = SaveManager.load()
+        if save_result:
+            roster_data, session_data = save_result
+            self.roster = Roster.from_dict(roster_data)
+            dungeon_team = self.roster.get_dungeon_team()
+            team = dungeon_team.members if dungeon_team else []
+        else:
+            # Fallback to old method
             from src.shared.teams.roster_save import load_roster
             self.roster = load_roster()
             d_team = self.roster.teams.get(TeamRole.DUNGEON)
             team = d_team.members if d_team else []
-        else:
-            # Load roster to get access to creatures
-            from src.shared.teams.roster_save import load_roster
-            self.roster = load_roster()
         
         # Store team on session for combat access
         self.session.team = team
