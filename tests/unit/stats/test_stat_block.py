@@ -110,15 +110,15 @@ class TestStatBlock:
         assert stat_block.spd == 8
         assert stat_block.spd > base_genome.base_spd   # Major speed bonus
     
-    def test_from_genome_mixed_culture(self, base_genome):
-        """Test mixed culture expression gives multiple bonuses."""
-        # Mixed culture: 50% ember, 50% marsh
-        mixed_genome = replace(base_genome,
-            cultural_base=CulturalBase.MIXED,
+    def test_from_genome_void_culture(self, base_genome):
+        """Test void culture expression gives multiple bonuses."""
+        # Void culture: 50% ember, 50% marsh
+        void_genome = replace(base_genome,
+            cultural_base=CulturalBase.VOID,
             culture_expression={'ember': 0.5, 'gale': 0.0, 'marsh': 0.5, 'crystal': 0.0, 'tundra': 0.0, 'tide': 0.0}
         )
         
-        stat_block = StatBlock.from_genome(mixed_genome)
+        stat_block = StatBlock.from_genome(void_genome)
         
         # Ember: atk=3.0, hp=0.5, spd=0.5 * 0.5 weight = 1.5, 0.25, 0.25
         # Marsh: atk=0.5, hp=3.0, spd=0.5 * 0.5 weight = 0.25, 1.5, 0.25

@@ -13,17 +13,17 @@ def test_cultural_inheritance():
     assert offspring.cultural_base == CulturalBase.EMBER
 
 def test_mixed_culture_inheritance():
-    # Two different cultures should mostly produce MIXED
+    # Two different cultures should mostly produce VOID (replacing MIXED)
     g1 = generate_random(CulturalBase.EMBER)
     g2 = generate_random(CulturalBase.CRYSTAL)
     
-    mixed_found = False
+    void_found = False
     for i in range(100):
         offspring = breed(g1, g2)
-        if offspring.cultural_base == CulturalBase.MIXED:
-            mixed_found = True
+        if offspring.cultural_base == CulturalBase.VOID:
+            void_found = True
             break
-    assert mixed_found
+    assert void_found
 
 def test_stat_modifiers():
     # Ember should have high ATK but lower HP

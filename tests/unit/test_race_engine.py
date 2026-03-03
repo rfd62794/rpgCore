@@ -19,7 +19,7 @@ def test_race_engine_simulation():
         shape="round", size="small", base_color=(100, 100, 100),
         pattern="solid", pattern_color=(0,0,0), accessory="none",
         curiosity=0.5, energy=1.0, affection=0.5, shyness=0.1,
-        cultural_base=CulturalBase.MOSS # Moss has speed modifier 1.3
+        cultural_base=CulturalBase.MARSH # Marsh has speed modifier 1.3
     ), level=1)
     
     s2 = RosterSlime("s2", "Heavy", SlimeGenome(
@@ -55,7 +55,7 @@ def test_jumper_classification():
         shape="round", size="medium", base_color=(100, 100, 100),
         pattern="solid", pattern_color=(0,0,0), accessory="none",
         curiosity=0.5, energy=1.5, affection=0.5, shyness=0.1,
-        cultural_base=CulturalBase.MOSS
+        cultural_base=CulturalBase.MARSH
     ), level=1)
     
     from src.shared.racing.race_engine import RaceParticipant
