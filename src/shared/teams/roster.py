@@ -406,7 +406,23 @@ class Roster:
                     "locked": entry.locked
                 }
                 for entry in self.entries
-            ]
+            ],
+            "teams": {
+                role.value: {
+                    "role": team.role.value,
+                    "slots": team.slots,
+                    "members": [
+                        {
+                            "slime_id": member.slime_id,
+                            "team": member.team.value,
+                            "locked": member.locked,
+                            "alive": member.alive
+                        }
+                        for member in team.members
+                    ]
+                }
+                for role, team in self.teams.items()
+            }
         }
     
     @classmethod
