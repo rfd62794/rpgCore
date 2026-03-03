@@ -469,6 +469,7 @@ class GardenScene(GardenSceneBase):
     def _open_breed_carousel(self):
         """Open carousel for breeding pair selection."""
         from src.shared.ui.slime_carousel import SlimeCarousel, CarouselMode, CarouselFilter
+        self._last_carousel_source = 'breed'
         self.active_carousel = SlimeCarousel(
             self.roster, 
             CarouselMode.PAIR, 
@@ -479,6 +480,7 @@ class GardenScene(GardenSceneBase):
     def _open_race_carousel(self):
         """Open carousel for single race slime selection."""
         from src.shared.ui.slime_carousel import SlimeCarousel, CarouselMode
+        self._last_carousel_source = 'race'
         self.active_carousel = SlimeCarousel(
             self.roster, 
             CarouselMode.SINGLE,
@@ -488,6 +490,7 @@ class GardenScene(GardenSceneBase):
     def _open_dungeon_carousel(self):
         """Open carousel for single dungeon slime selection."""
         from src.shared.ui.slime_carousel import SlimeCarousel, CarouselMode
+        self._last_carousel_source = 'dungeon'
         self.active_carousel = SlimeCarousel(
             self.roster, 
             CarouselMode.SINGLE,
@@ -497,6 +500,7 @@ class GardenScene(GardenSceneBase):
     def _open_sumo_carousel(self):
         """Open carousel for sumo pair selection."""
         from src.shared.ui.slime_carousel import SlimeCarousel, CarouselMode
+        self._last_carousel_source = 'sumo'
         self.active_carousel = SlimeCarousel(
             self.roster, 
             CarouselMode.PAIR,
@@ -506,6 +510,7 @@ class GardenScene(GardenSceneBase):
     def _open_roster_carousel(self):
         """Open carousel for roster browsing."""
         from src.shared.ui.slime_carousel import SlimeCarousel, CarouselMode
+        self._last_carousel_source = 'roster'
         self.active_carousel = SlimeCarousel(
             self.roster, 
             CarouselMode.BROWSE,
