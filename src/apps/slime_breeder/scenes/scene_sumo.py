@@ -81,7 +81,7 @@ class SumoScene(Scene):
             CulturalBase.MOSS: CulturalBase.EMBER
         }
         
-        # Tactical triangle: tide beats coastal, coastal beats moss, moss beats tide
+        # Tactical triangle: tide beats coastal, coastal beats marsh (moss), marsh (moss) beats tide
         tactical_advantages = {
             CulturalBase.TIDE: CulturalBase.COASTAL,
             CulturalBase.COASTAL: CulturalBase.MOSS,
