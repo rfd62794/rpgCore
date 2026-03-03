@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "saved_at": "2026-03-03T03:28:37.052825+00:00",
+  "saved_at": "2026-03-03T03:31:11.277737+00:00",
   "roster": {
     "slimes": [
       {
@@ -222,7 +222,7 @@
     ]
   },
   "session": {
-    "session_id": "83e46d2c-d52f-4f25-976c-f8b24878183b",
+    "session_id": "559919f0-cb95-45a2-b72c-3f76f5ef8f6c",
     "resources": {
       "gold": 100,
       "scrap": 0,

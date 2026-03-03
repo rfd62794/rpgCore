@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "saved_at": "2026-03-03T03:28:37.927650+00:00",
+  "saved_at": "2026-03-03T03:31:14.143479+00:00",
   "roster": {
     "slimes": [
       {
@@ -224,9 +224,9 @@
   "session": {
     "session_id": "8a844894-dff7-49de-86f4-a4b317dc69f4",
     "resources": {
-      "gold": 100,
-      "scrap": 0,
-      "food": 50
+      "gold": 103,
+      "scrap": 3,
+      "food": 54
     },
     "garden": {
       "room_level": 0,
@@ -241,6 +241,6 @@
       "active_events": []
     },
     "active_dispatches": [],
-    "current_tick": 0
+    "current_tick": 219
   }
 }

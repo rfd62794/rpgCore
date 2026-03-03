@@ -124,16 +124,13 @@ class DungeonRoomScene(Scene):
 
     def _handle_flee(self):
         logger.info("🏃 Flee from encounter")
-        # Return to the_room (hub) if session exists, else garden
-        if self.session:
-            self.manager.switch_to("the_room", session=self.session)
-        else:
-            self.manager.switch_to("garden")
+        # Return to garden directly
+        self.manager.switch_to("garden")
 
     def _on_run_complete(self, result):
         if result == "victory":
             logger.info("🏆 Encounter cleared!")
-            self.manager.switch_to("dungeon_path", session=self.session, encounter_result="victory")
+            self.manager.switch_to("dungeon_path", session=self.session, encounter_result="victory", roster=self.roster, team=self.team)
         else:
             from dataclasses import dataclass
             @dataclass

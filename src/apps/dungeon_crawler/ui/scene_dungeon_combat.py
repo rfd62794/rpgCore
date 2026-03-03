@@ -397,8 +397,8 @@ class DungeonCombatScene(CombatSceneBase):
         self._sync_back_hp()
         if self.session:
             self.session.last_combat_result = "flee"
-        # Return to dungeon room scene with combat result
-        self.manager.switch_to("dungeon_room", session=self.session, combat_result="flee")
+        # Return to garden directly
+        self.manager.switch_to("garden")
 
     def _sync_back_hp(self):
         """Copies combat HP back to roster slimes."""
