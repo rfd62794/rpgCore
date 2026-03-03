@@ -195,7 +195,7 @@ class TestBreedingSystem:
         # Should still work and have both cultures
         assert len(result) == 6
         assert result['gale'] > 0.0  # From valid parent
-        assert result['void'] > 0.0 or result['marsh'] > 0.0  # From fallback (void -> void or marsh)
+        assert result['marsh'] > 0.0  # From fallback (void -> marsh)
     
     def test_resolve_stats_inheritance(self, sample_parents):
         """Test stat inheritance from parents."""

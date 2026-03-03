@@ -38,7 +38,7 @@ class TestCultureExpressionMigration:
     def test_migrate_genome_empty_expression(self):
         """Test migration when culture_expression is empty."""
         genome_data = {
-            'cultural_base': CulturalBase.MARSH,
+            'cultural_base': CulturalBase.MOSS,
             'culture_expression': {},
             'shape': 'round',
             'size': 'medium',
