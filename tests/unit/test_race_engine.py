@@ -70,7 +70,7 @@ def test_scooter_classification():
         shape="round", size="small", base_color=(100, 100, 100),
         pattern="solid", pattern_color=(0,0,0), accessory="none",
         curiosity=0.5, energy=0.3, affection=0.5, shyness=0.1,
-        cultural_base=CulturalBase.COASTAL
+        cultural_base=CulturalBase.TUNDRA
     ), level=1)
     
     from src.shared.racing.race_engine import RaceParticipant

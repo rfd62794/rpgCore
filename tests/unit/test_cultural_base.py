@@ -43,7 +43,7 @@ def test_stat_modifiers():
     assert crystal_hp > ember_hp
 
 def test_level_progression():
-    genome = generate_random(CulturalBase.MOSS)
+    genome = generate_random(CulturalBase.MARSH)
     hp_lv1 = calculate_hp(genome, 1)
     hp_lv10 = calculate_hp(genome, 10)
     

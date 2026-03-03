@@ -43,7 +43,7 @@ class TestUITheme:
         theme = UITheme()
         
         expected_cultures = [
-            'ember', 'gale', 'marsh', 'crystal', 'tundra', 'tide', 'coastal', 'void'
+            'ember', 'gale', 'marsh', 'crystal', 'tundra', 'tide', 'void'
         ]
         
         for culture in expected_cultures:

@@ -155,7 +155,7 @@ class TestStatsPanelExtensions:
         """Test maximum 6 cultures are displayed"""
         # Create culture expression with more than 6 active cultures
         self.mock_genome.culture_expression = {
-            'ember': 0.3, 'crystal': 0.25, 'moss': 0.2, 'gale': 0.15,
+            'ember': 0.3, 'crystal': 0.25, 'marsh': 0.2, 'gale': 0.15,
             'marsh': 0.1, 'tundra': 0.08, 'tide': 0.06, 'void': 0.05
         }
         
