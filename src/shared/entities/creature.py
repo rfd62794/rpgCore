@@ -246,9 +246,22 @@ class Creature:
         """Restore creature from save data"""
         from src.shared.genetics.cultural_base import CulturalBase
         
-        # Restore genome
+        # Restore genome with migration support
         g_data = data["genome"]
-        g_data["cultural_base"] = CulturalBase(g_data.get("cultural_base", "void"))
+        culture_value = g_data.get("cultural_base", "void")
+        # Handle old culture names during migration
+        culture_aliases = {
+            'moss': 'marsh',
+            'coastal': 'tundra',
+            'mixed': 'void'
+        }
+        culture_value = culture_aliases.get(culture_value, culture_value)
+        
+        try:
+            g_data["cultural_base"] = CulturalBase(culture_value)
+        except ValueError:
+            # Fallback to void if culture is invalid
+            g_data["cultural_base"] = CulturalBase.VOID
         genome = SlimeGenome(**g_data)
         
         # Create creature

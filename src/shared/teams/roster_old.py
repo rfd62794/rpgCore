@@ -376,9 +376,23 @@ class Roster:
         roster = cls()
         for s in data.get("slimes", []):
             g_data = s["genome"]
-            # Cast culture string back to Enum
+            # Cast culture string back to Enum with migration support
             from src.shared.genetics.cultural_base import CulturalBase
-            g_data["cultural_base"] = CulturalBase(g_data.get("cultural_base", "void"))
+            
+            culture_value = g_data.get("cultural_base", "void")
+            # Handle old culture names during migration
+            culture_aliases = {
+                'moss': 'marsh',
+                'coastal': 'tundra',
+                'mixed': 'void'
+            }
+            culture_value = culture_aliases.get(culture_value, culture_value)
+            
+            try:
+                g_data["cultural_base"] = CulturalBase(culture_value)
+            except ValueError:
+                # Fallback to void if culture is invalid
+                g_data["cultural_base"] = CulturalBase.VOID
             
             # Ensure base stats exist (for backward compatibility if needed)
             if "base_hp" not in g_data: g_data["base_hp"] = 20.0
