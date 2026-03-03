@@ -89,7 +89,7 @@ class TestStatBlockWiring:
             energy=0.5,
             affection=0.5,
             shyness=0.5,
-            cultural_base=CulturalBase.TUNDRA,
+            cultural_base=CulturalBase.VOID,
             base_hp=20.0,
             base_atk=5.0,
             base_spd=5.0,
