@@ -26,6 +26,18 @@ class RosterSyncService:
         Returns True if added successfully.
         """
         try:
+            # Validate slime using template (warn-only for now)
+            from src.shared.genetics.entity_template import SlimeEntityTemplate
+            errors = SlimeEntityTemplate.validate(slime)
+            if errors:
+                logger.warning(
+                    f"Slime {slime.slime_id} failed "
+                    f"validation: {errors}"
+                )
+                # Do NOT reject — warn only.
+                # Hard rejection comes in Phase 4B
+                # after all creation sites migrated.
+            
             self.roster.add_slime(slime)
             self.registry.register(slime)
             logger.debug(f"Added slime {slime.slime_id} to both roster and registry")
