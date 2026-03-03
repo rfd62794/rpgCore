@@ -411,6 +411,9 @@ class Roster:
                 if "base_spd" not in g_data: g_data["base_spd"] = 5.0
                 if "generation" not in g_data: g_data["generation"] = 1
                 
+                # Migrate culture_expression if missing
+                g_data = Roster._migrate_genome(g_data)
+                
                 genome = SlimeGenome(**g_data)
                 rs = RosterSlime(
                     slime_id=s["slime_id"],
@@ -429,7 +432,9 @@ class Roster:
                 # Set back-reference for the entry that was created by add_slime
                 for entry in roster.entries:
                     if entry.slime_id == rs.slime_id:
-                        entry._team_ref = roster.teams[rs.team]
+                        # Only set team_ref if not UNASSIGNED
+                        if rs.team != TeamRole.UNASSIGNED and rs.team in roster.teams:
+                            entry._team_ref = roster.teams[rs.team]
                         break
         else:
             # New format - restore entries only
@@ -460,6 +465,32 @@ class Roster:
         for entry in self.entries:
             if entry.team != TeamRole.UNASSIGNED:
                 entry._team_ref = self.teams[entry.team]
+
+    @staticmethod
+    def _migrate_genome(genome_data: dict) -> dict:
+        """
+        Ensure culture_expression is populated.
+        Runs on every slime loaded from save.
+        """
+        expr = genome_data.get('culture_expression', {})
+        if not expr:
+            # Derive from cultural_base
+            base = genome_data.get('cultural_base', 'marsh')
+            # Handle enum values and normalize key
+            if hasattr(base, 'value'):
+                base = base.value
+            key = base.lower().replace('culturalbase.', '').strip()
+            
+            # Map known aliases
+            aliases = {
+                'moss': 'marsh',
+                'coastal': 'tide',
+                'mixed': 'marsh',
+            }
+            key = aliases.get(key, key)
+            
+            genome_data['culture_expression'] = {key: 1.0}
+        return genome_data
 
     # === Legacy compatibility methods (deprecated) ===
     @property
