@@ -7,7 +7,7 @@ from src.shared.ui.spec import UISpec
 from src.shared.ui.panel import Panel
 from src.shared.ui.button import Button
 from src.shared.ui.label import Label
-from src.shared.ui.layouts import HubLayout
+from src.shared.ui.layouts import SelectionLayout
 from src.shared.ui.profile_card import ProfileCard
 from src.shared.teams.roster import Roster, RosterSlime, TeamRole
 from src.shared.genetics.cultural_base import CulturalBase
@@ -21,7 +21,7 @@ class SumoScene(Scene):
     
     def __init__(self, manager, spec: UISpec, **kwargs):
         super().__init__(manager, spec, **kwargs)
-        self.layout = HubLayout(spec)
+        self.layout = SelectionLayout(spec)
         
         # Get selected pair from context or kwargs
         self.selected_pair = kwargs.get('selected_pair', [])
@@ -189,13 +189,13 @@ class SumoScene(Scene):
             Label(self.culture_advantage, (self.layout.header.centerx, 80), self.spec,
                   size="lg", color=self.spec.color_power, centered=True, bold=True, theme=DEFAULT_THEME).add_to(self.ui_components)
         
-        # Slime cards side by side
+        # Slime cards side by side in center area
         if self.slime_a and self.slime_b:
             card_width = 280
             card_spacing = 100
             total_width = (card_width * 2) + card_spacing
-            start_x = (self.layout.main_area.width - total_width) // 2
-            card_y = self.layout.main_area.y + 50
+            start_x = self.layout.center_area.x + (self.layout.center_area.width - total_width) // 2
+            card_y = self.layout.center_area.y + 50
             
             # Slime A card
             card_a_rect = pygame.Rect(start_x, card_y, card_width, 200)
@@ -227,14 +227,14 @@ class SumoScene(Scene):
         
         # Result display (shown in COMPLETE phase)
         if self.phase == "COMPLETE" and self.winner:
-            result_y = self.layout.main_area.y + 300
+            result_y = self.layout.center_area.y + 300
             result_text = f"{self.winner.name} WINS!"
-            Label(result_text, (self.layout.main_area.centerx, result_y), self.spec,
+            Label(result_text, (self.layout.center_area.centerx, result_y), self.spec,
                   size="xl", bold=True, centered=True, color=self.spec.color_success, theme=DEFAULT_THEME).add_to(self.ui_components)
             
             # XP gained text
             xp_text = f"+50 XP  |  {self.loser.name} +20 XP"
-            Label(xp_text, (self.layout.main_area.centerx, result_y + 40), self.spec,
+            Label(xp_text, (self.layout.center_area.centerx, result_y + 40), self.spec,
                   size="md", centered=True, theme=DEFAULT_THEME).add_to(self.ui_components)
             
             # Action buttons
@@ -242,8 +242,8 @@ class SumoScene(Scene):
             button_spacing = 20
             button_width = 140
             
-            rematch_x = self.layout.main_area.centerx - button_width - button_spacing
-            return_x = self.layout.main_area.centerx + button_spacing
+            rematch_x = self.layout.center_area.centerx - button_width - button_spacing
+            return_x = self.layout.center_area.centerx + button_spacing
             
             self.rematch_btn = Button("REMATCH", pygame.Rect(rematch_x, button_y, button_width, 44),
                                     self._handle_rematch, self.spec, variant="primary", theme=DEFAULT_THEME)
