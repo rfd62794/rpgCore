@@ -140,7 +140,7 @@ class TestCultureExpressionMigration:
     def test_migrate_genome_coastal_alias(self):
         """Test coastal -> tide alias mapping."""
         genome_data = {
-            'cultural_base': CulturalBase.COASTAL,
+            'cultural_base': CulturalBase.TUNDRA,
             'shape': 'elongated',
             'size': 'small',
             'base_color': [100, 150, 255],
@@ -158,14 +158,14 @@ class TestCultureExpressionMigration:
         
         result = Roster._migrate_genome(genome_data)
         
-        # Should map coastal to tide
+        # Should map coastal to tundra
         assert 'culture_expression' in result
-        assert result['culture_expression'] == {'tide': 1.0}
+        assert result['culture_expression'] == {'tundra': 1.0}
     
     def test_migrate_genome_mixed_alias(self):
         """Test mixed -> marsh alias mapping."""
         genome_data = {
-            'cultural_base': CulturalBase.MIXED,
+            'cultural_base': CulturalBase.VOID,
             'shape': 'cubic',
             'size': 'tiny',
             'base_color': [200, 200, 200],
@@ -183,9 +183,9 @@ class TestCultureExpressionMigration:
         
         result = Roster._migrate_genome(genome_data)
         
-        # Should map mixed to marsh
+        # Should map mixed to void
         assert 'culture_expression' in result
-        assert result['culture_expression'] == {'marsh': 1.0}
+        assert result['culture_expression'] == {'void': 1.0}
     
     def test_migrate_genome_unknown_culture_fallback(self):
         """Test fallback for unknown culture names."""
