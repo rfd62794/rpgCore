@@ -8,13 +8,11 @@ should go through this template to ensure consistency.
 
 import uuid
 from typing import Optional, List
-from dataclasses import dataclass
 
 from src.shared.teams.roster import RosterSlime
 from src.shared.genetics.genome import SlimeGenome
 
 
-@dataclass
 class SlimeEntityTemplate:
     """
     Canonical factory for all slime creation.
