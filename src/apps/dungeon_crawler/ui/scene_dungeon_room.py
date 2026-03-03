@@ -53,13 +53,17 @@ class DungeonRoomScene(Scene):
         # Ensure session is captured
         if not self.session:
             self.session = kwargs.get('session')
+        
+        if not self.session:
             logger.error("No session available in DungeonRoomScene, aborting to garden")
             self.manager.switch_to("garden")
             return
         
-        # Capture roster and team from kwargs
-        self.roster = kwargs.get("roster")
-        self.team = kwargs.get("team")
+        # Capture roster and team from kwargs or use existing ones
+        if not self.roster:
+            self.roster = kwargs.get("roster")
+        if not self.team:
+            self.team = kwargs.get("team")
         
         print(f"[DEBUG] Dungeon room on_enter - roster: {self.roster}")
         print(f"[DEBUG] Dungeon room on_enter - team: {self.team}")
