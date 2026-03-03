@@ -172,7 +172,13 @@ class DispatchSystem:
                 power += slime.level * 0.1
             
             # Power from stats (if available)
-            if hasattr(slime, 'genome'):
+            if hasattr(slime, 'stat_block') and slime.stat_block:
+                # Use computed stats from stat_block when available
+                power += slime.stat_block.atk * 0.02
+                power += slime.stat_block.hp * 0.01
+                power += slime.stat_block.spd * 0.02
+            elif hasattr(slime, 'genome'):
+                # TODO Phase 5B: pass RosterSlime here to use stat_block
                 genome = slime.genome
                 if hasattr(genome, 'base_atk'):
                     power += genome.base_atk * 0.02

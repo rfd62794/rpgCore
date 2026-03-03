@@ -36,7 +36,22 @@ class DungeonCombatScene(CombatSceneBase):
         
         # 1. Setup Units
         hero = self.session.hero
-        self.party[0] = DungeonUnit("hero", hero.name, hero.stats, "party", hero)
+        
+        # Check if hero has stat_block and use computed stats
+        if hasattr(hero, 'stat_block') and hero.stat_block:
+            hero_stats = {
+                "hp": hero.stat_block.hp,
+                "max_hp": hero.stat_block.hp,
+                "attack": hero.stat_block.atk,
+                "defense": 2,
+                "speed": hero.stat_block.spd,
+                "stance": "Aggressive"
+            }
+        else:
+            # TODO Phase 5B: pass RosterSlime here to use stat_block
+            hero_stats = hero.stats
+            
+        self.party[0] = DungeonUnit("hero", hero.name, hero_stats, "party", hero)
         
         # Read squad from session.active_zone
         # Same object that path rendered

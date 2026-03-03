@@ -5,6 +5,7 @@ from src.shared.ui.theme import DEFAULT_THEME
 from src.shared.ui.ui_event import UIEvent
 from src.shared.teams.roster import RosterSlime
 from src.shared.teams.stat_calculator import calculate_hp, calculate_attack, calculate_speed
+from src.shared.stats.stat_block import StatBlock
 
 class StatsPanel(UIComponent):
     """
@@ -41,10 +42,16 @@ class StatsPanel(UIComponent):
         # Title
         self._render_text(surface, "STATS", (x + self.PADDING, y + self.PADDING), size=12, bold=True, color=self.theme.text_primary)
         
-        # Calculate stats
-        hp = calculate_hp(self.slime.genome, self.slime.level)
-        atk = calculate_attack(self.slime.genome, self.slime.level)
-        spd = calculate_speed(self.slime.genome, self.slime.level)
+        # Calculate stats - use stat_block if available, fall back to stat_calculator
+        if hasattr(self.slime, 'stat_block') and self.slime.stat_block:
+            hp = self.slime.stat_block.hp
+            atk = self.slime.stat_block.atk
+            spd = self.slime.stat_block.spd
+        else:
+            # Fallback to stat_calculator for backward compatibility
+            hp = calculate_hp(self.slime.genome, self.slime.level)
+            atk = calculate_attack(self.slime.genome, self.slime.level)
+            spd = calculate_speed(self.slime.genome, self.slime.level)
         
         # Render stats
         self._render_stat(surface, "HP", hp, (x + self.PADDING, y + 30), self.theme.success)
@@ -75,18 +82,28 @@ class StatsPanel(UIComponent):
         
         # Calculate cultural max (at Lv.10 reference)
         # HP: ~200-300, ATK: ~40-60, SPD: ~15-20
-        # We'll use a safer relative mapping
+        # Use stat_block base values when available for accurate cultural max
         cultural_max = 100 # Default
         culture = self.slime.genome.cultural_base
         from src.shared.genetics.cultural_base import CULTURAL_PARAMETERS
         params = CULTURAL_PARAMETERS[culture]
         
-        if label == "HEALTH":
-            cultural_max = 200 * params.hp_modifier
-        elif label == "ATTACK":
-            cultural_max = 40 * params.attack_modifier
-        elif label == "SPEED":
-            cultural_max = 15 * params.speed_modifier
+        if label == "HP":
+            if hasattr(self.slime, 'stat_block') and self.slime.stat_block:
+                # Use base_hp from stat_block for accurate cultural max calculation
+                cultural_max = self.slime.stat_block.base_hp * 10 * params.hp_modifier
+            else:
+                cultural_max = 200 * params.hp_modifier
+        elif label == "ATK":
+            if hasattr(self.slime, 'stat_block') and self.slime.stat_block:
+                cultural_max = self.slime.stat_block.base_atk * 8 * params.attack_modifier
+            else:
+                cultural_max = 40 * params.attack_modifier
+        elif label == "SPD":
+            if hasattr(self.slime, 'stat_block') and self.slime.stat_block:
+                cultural_max = self.slime.stat_block.base_spd * 3 * params.speed_modifier
+            else:
+                cultural_max = 15 * params.speed_modifier
             
         fill_w = int(bar_w * (min(1.0, value / cultural_max)))
         # Ensure minimum visible fill of 8px
