@@ -289,6 +289,16 @@ class TestDispatchSystemStatBlock:
         
         # Create test slime with stat_block
         genome = SlimeGenome(
+            shape="round",
+            size="medium",
+            base_color=(255, 0, 0),
+            pattern="solid",
+            pattern_color=(200, 0, 0),
+            accessory="none",
+            curiosity=0.5,
+            energy=0.5,
+            affection=0.5,
+            shyness=0.5,
             cultural_base=CulturalBase.EMBER,
             base_hp=20.0,
             base_atk=5.0,
