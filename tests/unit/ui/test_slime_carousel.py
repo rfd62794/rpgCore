@@ -79,7 +79,7 @@ class TestSlimeCarousel:
                 energy=0.5,
                 affection=0.5,
                 shyness=0.5,
-                cultural_base=CulturalBase.GALE,
+                cultural_base=CulturalBase.TIDE,
                 base_hp=20.0,
                 base_atk=5.0,
                 base_spd=5.0
