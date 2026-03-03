@@ -98,14 +98,14 @@ class TestStatBlockWiring:
     
     def test_ui_reads_stat_block_hp(self):
         """Test UI reads computed HP from stat_block, not raw genome value."""
-        # Create slime with stat_block
+        # Create slime with stat_block (RosterSlime has stat_block property)
         slime = RosterSlime(
             slime_id="test_slime",
             name="TestSlime",
             genome=self.ember_genome,
             level=1
         )
-        slime.stat_block = StatBlock.from_genome(self.ember_genome)
+        # stat_block is created automatically when accessed
         
         # Create StatsPanel
         panel = StatsPanel(slime, (0, 0))
@@ -132,7 +132,7 @@ class TestStatBlockWiring:
             genome=self.ember_genome,
             level=1
         )
-        slime.stat_block = StatBlock.from_genome(self.ember_genome)
+        # stat_block is created automatically when accessed
         
         # Ember has ATK +3.0 modifier
         ember_modifier = CULTURAL_PARAMETERS[CulturalBase.EMBER].attack_modifier
@@ -151,7 +151,7 @@ class TestStatBlockWiring:
             genome=self.marsh_genome,
             level=1
         )
-        slime.stat_block = StatBlock.from_genome(self.marsh_genome)
+        # stat_block is created automatically when accessed
         
         # Moss has HP +3.0 modifier
         moss_modifier = CULTURAL_PARAMETERS[CulturalBase.MOSS].hp_modifier
@@ -285,7 +285,7 @@ class TestStatBlockWiring:
             genome=self.tundra_genome,
             level=1
         )
-        slime.stat_block = StatBlock.from_genome(self.tundra_genome)
+        # stat_block is created automatically when accessed
         
         # Ember has ATK +3.0, so ATK should be higher than base
         assert slime.stat_block.hp > 20.0, "Ember should have HP bonus"
@@ -332,7 +332,7 @@ class TestDispatchSystemStatBlock:
             genome=genome,
             level=1
         )
-        self.slime_with_stat_block.stat_block = StatBlock.from_genome(genome)
+        # stat_block is created automatically when accessed
         
         # Create slime without stat_block
         self.slime_without_stat_block = RosterSlime(
