@@ -249,11 +249,7 @@ class GardenScene(GardenSceneBase):
         self.teams_nav_btn = Button("TEAMS", pygame.Rect(20, nav_y, 100, nav_h), self._go_to_teams, self.spec, variant="ghost")
         self.top_bar.add_child(self.teams_nav_btn)
         
-        self.dungeon_nav_btn = Button("DUNGEON", pygame.Rect(130, nav_y, 120, nav_h), self._go_to_dungeon, self.spec, variant="ghost")
-        self.top_bar.add_child(self.dungeon_nav_btn)
-
-        self.racing_nav_btn = Button("RACING", pygame.Rect(260, nav_y, 100, nav_h), self._go_to_racing, self.spec, variant="ghost")
-        self.top_bar.add_child(self.racing_nav_btn)
+        # Remove DUNGEON and RACING from top nav - they move to bottom hub bar
 
         # Sync initial slimes if garden is empty but entity registry has slimes
         if not self.garden_state.slimes and self.entity_registry:
