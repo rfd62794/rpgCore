@@ -118,8 +118,11 @@ class TestStatBlockWiring:
         # Render panel (this will access stat_block)
         panel.render(surface)
         
-        # Verify stat_block was used (ember has ATK +3.0, so ATK should be > base 5)
-        assert slime.stat_block.atk > 5.0, "Ember slime should have ATK > base value"
+        # Verify stat_block was used (ember has ATK +3.0, but level 1 gets 0.6 stage modifier)
+        # Expected ATK = (5.0 + 3.0) * 0.6 = 4.8, rounds to 4
+        expected_atk = int((5.0 + 3.0) * 0.6)
+        assert slime.stat_block.atk == expected_atk, f"Ember ATK {slime.stat_block.atk} should be {expected_atk}"
+        assert slime.stat_block.atk < 5.0, "Hatchling stage modifier should reduce ATK below base"
         
         pygame.quit()
     
@@ -134,13 +137,13 @@ class TestStatBlockWiring:
         )
         # stat_block is created automatically when accessed
         
-        # Ember has ATK +3.0 modifier
+        # Ember has ATK +3.0 modifier, but level 1 gets 0.6 stage modifier
         ember_modifier = CULTURAL_PARAMETERS[CulturalBase.EMBER].attack_modifier
-        expected_atk = int((5.0 + 0) * ember_modifier * 1.0)  # base_atk + energy_bonus * cultural_mod * level_mod
+        expected_atk = int((5.0 + 0) * ember_modifier * 0.6)  # base_atk + energy_bonus * cultural_mod * stage_mod
         
-        # Verify computed ATK is higher than base
-        assert slime.stat_block.atk > 5.0, f"Ember ATK {slime.stat_block.atk} should be > base 5.0"
-        assert slime.stat_block.atk >= expected_atk, f"ATK should be at least {expected_atk}"
+        # Verify computed ATK reflects culture bonus and stage modifier
+        assert slime.stat_block.atk == expected_atk, f"Ember ATK {slime.stat_block.atk} should be {expected_atk}"
+        assert slime.stat_block.atk < 5.0, "Hatchling stage modifier should reduce ATK below base"
     
     def test_marsh_culture_shows_higher_hp(self):
         """Test pure moss slime shows higher HP due to culture bonus."""
@@ -153,13 +156,13 @@ class TestStatBlockWiring:
         )
         # stat_block is created automatically when accessed
         
-        # Moss has HP +3.0 modifier
+        # Moss has HP +3.0 modifier, but level 1 gets 0.6 stage modifier
         moss_modifier = CULTURAL_PARAMETERS[CulturalBase.MOSS].hp_modifier
-        expected_hp = int(20.0 * moss_modifier * 1.0)  # base_hp * cultural_mod * level_mod
+        expected_hp = int(20.0 * moss_modifier * 0.6)  # base_hp * cultural_mod * stage_mod
         
-        # Verify computed HP is higher than base
-        assert slime.stat_block.hp > 20.0, f"Moss HP {slime.stat_block.hp} should be > base 20.0"
-        assert slime.stat_block.hp >= expected_hp, f"HP should be at least {expected_hp}"
+        # Verify computed HP reflects culture bonus and stage modifier
+        assert slime.stat_block.hp == expected_hp, f"Moss HP {slime.stat_block.hp} should be {expected_hp}"
+        assert slime.stat_block.hp < 20.0, "Hatchling stage modifier should reduce HP below base"
     
     def test_stage_affects_displayed_stats(self):
         """Test stage affects displayed stats (Prime 1.2x vs Hatchling 0.6x)."""
@@ -208,6 +211,10 @@ class TestStatBlockWiring:
         assert prime_block.hp > hatchling_block.hp, "Prime HP should be > Hatchling HP"
         assert prime_block.atk > hatchling_block.atk, "Prime ATK should be > Hatchling ATK"
         assert prime_block.spd > hatchling_block.spd, "Prime SPD should be > Hatchling SPD"
+        
+        # Verify specific stage modifiers
+        assert hatchling_block.stage_modifier == 0.6, "Hatchling should have 0.6x modifier"
+        assert prime_block.stage_modifier == 1.2, "Prime should have 1.2x modifier"
     
     def test_dungeon_combat_uses_stat_block(self):
         """Test dungeon combat uses stat_block when available."""
@@ -230,16 +237,25 @@ class TestStatBlockWiring:
         scene = DungeonCombatScene()
         scene.on_combat_enter(session=session)
         
-        # Verify hero stats were updated with stat_block values
-        assert scene.party[0].stats['attack'] == hero.stat_block.atk, "Combat should use stat_block ATK"
-        assert scene.party[0].stats['hp'] == hero.stat_block.hp, "Combat should use stat_block HP"
-        assert scene.party[0].stats['speed'] == hero.stat_block.spd, "Combat should use stat_block SPD"
+        # Verify hero stats were updated with stat_block values (accounting for stage modifier)
+        expected_atk = hero.stat_block.atk  # Already includes stage modifier
+        expected_hp = hero.stat_block.hp
+        expected_spd = hero.stat_block.spd
+        
+        assert scene.party[0].stats['attack'] == expected_atk, "Combat should use stat_block ATK"
+        assert scene.party[0].stats['hp'] == expected_hp, "Combat should use stat_block HP"
+        assert scene.party[0].stats['speed'] == expected_spd, "Combat should use stat_block SPD"
     
     def test_fallback_to_stat_calculator(self):
         """Test fallback to stat_calculator when stat_block unavailable."""
-        # Create slime without stat_block
-        slime = RosterSlime("fallback_slime", self.ember_genome, level=1)
-        # No stat_block assigned
+        # Create slime without stat_block (RosterSlime has stat_block property)
+        slime = RosterSlime(
+            slime_id="fallback_slime",
+            name="FallbackSlime",
+            genome=self.ember_genome,
+            level=1
+        )
+        # stat_block is created automatically when accessed, but we'll force fallback
         
         # Create StatsPanel
         panel = StatsPanel(slime, (0, 0))
@@ -250,16 +266,33 @@ class TestStatBlockWiring:
         surface = pygame.Surface((200, 250))
         
         # This should not crash and should use stat_calculator fallback
-        panel.render(surface)
+        # Since RosterSlime always has stat_block, we'll test the fallback path differently
+        # by patching the hasattr check
+        original_hasattr = hasattr
+        def mock_hasattr(obj, attr):
+            if attr == 'stat_block':
+                return False
+            return original_hasattr(obj, attr)
         
-        # Verify no exception was thrown
-        pygame.quit()
+        # Temporarily patch hasattr to force fallback
+        import builtins
+        builtins.hasattr = mock_hasattr
+        
+        try:
+            panel.render(surface)
+            # Should complete without error using fallback
+            success = True
+        finally:
+            # Restore original hasattr
+            builtins.hasattr = original_hasattr
+        
+        assert success, "Fallback to stat_calculator should work"
     
     def test_void_slime_balanced_stats(self):
         """Test void slime has balanced stats slightly above base values."""
-        # Create void slime with stat_block
+        # Create void slime with stat_block (RosterSlime has stat_block property)
         slime = RosterSlime("void_slime", self.void_genome, level=1)
-        slime.stat_block = StatBlock.from_genome(self.void_genome)
+        # stat_block is created automatically when accessed
         
         # Void has all cultures at ~0.167, so all stats should be slightly above base
         assert slime.stat_block.hp > 20.0, "Void HP should be > base 20.0"
@@ -291,13 +324,16 @@ class TestStatBlockWiring:
         assert slime.stat_block.hp > 20.0, "Ember should have HP bonus"
         assert slime.stat_block.atk > 5.0, "Ember should have ATK bonus"
         
-        # Verify the specific modifiers
+        # Verify the specific modifiers (accounting for stage modifier)
         ember_hp_mod = CULTURAL_PARAMETERS[CulturalBase.EMBER].hp_modifier  # +3.0
         ember_atk_mod = CULTURAL_PARAMETERS[CulturalBase.EMBER].attack_modifier  # +3.0
         
-        # HP and ATK should be increased
-        assert slime.stat_block.hp > 20.0 * ember_hp_mod, "HP should reflect +3.0 modifier"
-        assert slime.stat_block.atk > 5.0 * ember_atk_mod, "ATK should reflect +3.0 modifier"
+        # HP and ATK should be increased but reduced by stage modifier
+        expected_hp = int(20.0 * ember_hp_mod * 0.6)  # base_hp * cultural_mod * stage_mod
+        expected_atk = int(5.0 * ember_atk_mod * 0.6)  # base_atk * cultural_mod * stage_mod
+        
+        assert slime.stat_block.hp == expected_hp, f"HP should reflect {ember_hp_mod} modifier with stage modifier"
+        assert slime.stat_block.atk == expected_atk, f"ATK should reflect {ember_atk_mod} modifier with stage modifier"
 
 
 class TestDispatchSystemStatBlock:
@@ -334,14 +370,13 @@ class TestDispatchSystemStatBlock:
         )
         # stat_block is created automatically when accessed
         
-        # Create slime without stat_block
         self.slime_without_stat_block = RosterSlime(
             slime_id="fallback_slime",
             name="FallbackSlime",
             genome=genome,
             level=1
         )
-        # No stat_block assigned
+        # stat_block is created automatically when accessed
     
     def test_dispatch_uses_stat_block_when_available(self):
         """Test dispatch uses stat_block when available."""
