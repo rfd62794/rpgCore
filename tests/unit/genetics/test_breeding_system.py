@@ -137,12 +137,23 @@ class TestBreedingSystem:
         """Test breeding level requirements."""
         parent_a, parent_b = sample_parents
         
-        # Mock can_breed to False for one parent
-        with patch.object(parent_a.genome, 'can_breed', False):
-            eligible, reason = BreedingSystem.can_breed(parent_a, parent_b)
-            
-            assert eligible is False
-            assert "not old enough" in reason
+        # Create a parent with low level genome (can't breed)
+        low_level_genome = SlimeGenome(
+            shape='round', size='tiny', base_color=(100, 100, 100),
+            pattern='solid', pattern_color=(50, 50, 50), accessory='none',
+            curiosity=0.5, energy=0.5, affection=0.5, shyness=0.5,
+            base_hp=10.0, base_atk=3.0, base_spd=3.0,
+            cultural_base=CulturalBase.EMBER,
+            culture_expression={'ember': 1.0, 'gale': 0.0, 'marsh': 0.0, 'crystal': 0.0, 'tundra': 0.0, 'tide': 0.0},
+            generation=1,
+            level=1  # Too low to breed
+        )
+        parent_low = RosterSlime('low', 'Low Parent', low_level_genome, 'unassigned', 1, 1)
+        
+        eligible, reason = BreedingSystem.can_breed(parent_low, parent_b)
+        
+        assert eligible is False
+        assert "not old enough" in reason
     
     def test_resolve_culture_expression_blending(self, sample_parents):
         """Test culture expression blending between parents."""
