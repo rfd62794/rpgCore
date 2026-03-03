@@ -171,9 +171,11 @@ class DungeonPathScene(Scene):
                 else:
                     print(f"[DEBUG]   Member {i}: {member.name}, genome not accessible")
         
-        # Push to combat scene
+        # Push to combat scene with full roster and team
         self.manager.push("dungeon_combat", 
-                          session=self.session)  # session carries everything
+                          session=self.session,  # session carries everything
+                          roster=self.roster,
+                          team=self.team)
 
     def _generate_enemy_group(self, zone, depth: int) -> List[dict]:
         """No longer used, replaced by pre-generation in _generate_zone_visuals."""
