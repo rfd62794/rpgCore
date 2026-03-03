@@ -347,7 +347,7 @@ class TestSaveManager:
                         accessory="scar", curiosity=0.5, energy=0.5,
                         affection=0.5, shyness=0.5,
                         base_hp=10.0, base_atk=10.0, base_spd=10.0,
-                        generation=3, cultural_base=CulturalBase.MOSS
+                        generation=3, cultural_base=CulturalBase.MARSH
                     ),
                     team=TeamRole.UNASSIGNED,
                     locked=False,
