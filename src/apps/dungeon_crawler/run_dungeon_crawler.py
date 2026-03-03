@@ -7,19 +7,19 @@ import argparse
 import sys
 from pathlib import Path
 
-from src.apps.dungeon_crawler.world.room_generator import RoomGenerator
-from src.apps.dungeon_crawler.world.floor import Floor
-from src.apps.dungeon_crawler.hub.the_room import TheRoom
-from src.apps.dungeon_crawler.entities.hero import Hero
-from src.apps.dungeon_crawler.entities.enemy import Enemy
-from src.shared.items.item import Item
-from src.shared.items.loot_table import LootTable
-from src.shared.combat.turn_order import TurnOrderManager
-from src.shared.combat.d20_resolver import D20Resolver
+from apps.dungeon_crawler.world.room_generator import RoomGenerator
+from apps.dungeon_crawler.world.floor import Floor
+from apps.dungeon_crawler.hub.the_room import TheRoom
+from apps.dungeon_crawler.entities.hero import Hero
+from apps.dungeon_crawler.entities.enemy import Enemy
+from shared.items.item import Item
+from shared.items.loot_table import LootTable
+from shared.combat.turn_order import TurnOrderManager
+from shared.combat.d20_resolver import D20Resolver
 
-from src.shared.engine.scene_manager import SceneManager
-from src.apps.dungeon_crawler.ui.dungeon_session import DungeonSession
-from src.apps.dungeon_crawler.ui.scene_the_room import TheRoomScene
+from shared.engine.scene_manager import SceneManager
+from apps.dungeon_crawler.ui.dungeon_session import DungeonSession
+from apps.dungeon_crawler.ui.scene_the_room import TheRoomScene
 
 logging.basicConfig(level=logging.ERROR) # Suppress normal engine logs in REPL
 
