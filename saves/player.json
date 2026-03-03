@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "saved_at": "2026-03-03T03:18:26.239195+00:00",
+  "saved_at": "2026-03-03T03:19:51.877044+00:00",
   "roster": {
     "slimes": [
       {
@@ -226,7 +226,7 @@
     "resources": {
       "gold": 153,
       "scrap": 42,
-      "food": 93
+      "food": 94
     },
     "garden": {
       "room_level": 0,
@@ -241,6 +241,6 @@
       "active_events": []
     },
     "active_dispatches": [],
-    "current_tick": 6961
+    "current_tick": 7181
   }
 }
