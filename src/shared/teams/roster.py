@@ -71,6 +71,14 @@ class RosterSlime:
     breeding_lock_level: int = 0
     current_hp: float = -1.0
     
+    # Stat XP fields (new for six-stat system)
+    vit_xp: int = 0
+    pwr_xp: int = 0
+    agi_xp: int = 0
+    mnd_xp: int = 0
+    res_xp: int = 0
+    chm_xp: int = 0
+    
     def __post_init__(self):
         if self.current_hp < 0:
             from src.shared.teams.stat_calculator import calculate_hp

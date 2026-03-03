@@ -40,6 +40,11 @@ class RaceScene(Scene):
             self.roster = load_roster()
             # Set garden reference for roster
             self.roster.set_garden_reference(kwargs.get("garden_state"))
+        
+        # Store selected slime from carousel if provided
+        selected_slime = kwargs.get("selected_slime")
+        if selected_slime and self.context:
+            self.context.selected_slime = selected_slime
             
         self.engine: Optional[RaceEngine] = None
         self.track = generate_track(self.session.track_length, 3)
@@ -94,12 +99,23 @@ class RaceScene(Scene):
                self._exit_race, self.spec, variant="secondary").add_to(self.ui_components)
 
     def on_enter(self) -> None:
+        # Check for pre-selected slime from carousel
+        selected_slime = None
+        if hasattr(self, 'context') and self.context and hasattr(self.context, 'selected_slime'):
+            selected_slime = self.context.selected_slime
+        
         # Get racing team from roster (using new reference layer)
         racing_team = self.roster.get_racing_team()
         participants = []
         
-        # Add player's creature if assigned
-        if racing_team.members:
+        # Add player's creature - use carousel selection if available, otherwise fall back to racing team
+        if selected_slime:
+            # Use pre-selected slime from carousel
+            player_creature = self.roster.get_creature(selected_slime.slime_id)
+            if player_creature:
+                participants.append(player_creature)
+        elif racing_team.members:
+            # Fall back to racing team first member (backward compatibility)
             player_creature = self.roster.get_creature(racing_team.members[0].slime_id)
             if player_creature:
                 participants.append(player_creature)
