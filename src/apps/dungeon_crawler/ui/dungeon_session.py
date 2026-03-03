@@ -45,8 +45,10 @@ class DungeonSession:
         if save_result:
             roster_data, session_data = save_result
             self.roster = Roster.from_dict(roster_data)
+            print(f"[DEBUG] Dungeon session - loaded roster with {len(self.roster.get_dungeon_team().members)} dungeon team members")
         else:
             self.roster = Roster()
+            print("[DEBUG] Dungeon session - created fresh roster")
         self.party_slimes = self.team  # Alias for compatibility
 
     def generate_hero_name(self) -> str:
