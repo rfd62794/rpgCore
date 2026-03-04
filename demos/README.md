@@ -11,6 +11,7 @@ Each demo proves a mechanic before it enters the engine.
   python demos/culture_node_wars.py
   python demos/dice_roller.py
   python demos/dice_roller_v2.py
+  python demos/slime_soccer.py
 
 ## What each demo proves
 
@@ -45,3 +46,12 @@ dice_roller_v2.py  ← CANONICAL dice visualizer
   and stutter-settle decel animation.
   Teaches: animation state machines, visual feedback for chance.
   → Shared Die class for all game mode outcome visualization
+
+slime_soccer.py
+  Slime volleyball/soccer with physics, AI opponent, and team themes.
+  Teaches: semicircle collision, ball physics constants, trajectory
+           prediction, phase-based AI state machine, zone event triggers.
+  Engine bleed: SumoPhysics collision, ball_physics constants,
+                PersonalityComponent behavior modes, dispatch prediction.
+  SDD: /docs/engine/SDD/SUMO_PHYSICS.md
+       /docs/engine/SDD/SLIME_AI_BEHAVIOR.md
