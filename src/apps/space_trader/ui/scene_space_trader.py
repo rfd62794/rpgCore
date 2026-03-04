@@ -9,12 +9,14 @@ from src.shared.ui.scroll_list import ScrollList
 from src.apps.space_trader.session import SpaceTraderSession
 from src.apps.space_trader.ui.hud import SpaceTraderHUD
 
+from src.shared.ui.spec import UISpec
+
 class SpaceTraderScene(Scene):
     """Main UI scene orchestrating the visual Space Trader loop."""
     
-    def __init__(self, manager, session: SpaceTraderSession, **kwargs):
-        super().__init__(manager, **kwargs)
-        self.session = session
+    def __init__(self, manager, spec: UISpec, session: SpaceTraderSession = None, **kwargs):
+        super().__init__(manager, spec, **kwargs)
+        self.session = session or kwargs.get('session')
         
         self.width = self.manager.width
         self.height = self.manager.height
