@@ -33,8 +33,10 @@ from src.shared.physics.kinematics import Vector2
 class TowerDefenseScene(Scene):
     """Tower Defense game scene"""
     
-    def __init__(self, manager, spec: UISpec, **kwargs):
-        super().__init__(manager, spec, **kwargs)
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        from src.shared.ui.spec import SPEC_720
+        self.spec = SPEC_720
         
         # Load roster for tower selection
         self.roster = load_roster()
@@ -240,7 +242,8 @@ class TowerDefenseScene(Scene):
                     self.session.pause_game()
         
         elif self.menu_button.is_clicked(mouse_x, mouse_y):
-            self.request_scene("garden")
+            from src.apps.slime_breeder.ui.scene_garden import GardenScene
+            self.context.manager.switch_to(GardenScene(**self.context.resources))
         
         elif self.show_game_over:
             self._handle_game_over_click(mouse_x, mouse_y)
@@ -249,7 +252,8 @@ class TowerDefenseScene(Scene):
         """Handle game over click"""
         # Check for menu button
         if self.menu_button.is_clicked(mouse_x, mouse_y):
-            self.request_scene("garden")
+            from src.apps.slime_breeder.ui.scene_garden import GardenScene
+            self.context.manager.switch_to(GardenScene(**self.context.resources))
         else:
             # Close game over panel
             self.show_game_over = False
@@ -268,7 +272,8 @@ class TowerDefenseScene(Scene):
             elif self.session.game_active:
                 self.session.pause_game()
             else:
-                self.request_scene("garden")
+                from src.apps.slime_breeder.ui.scene_garden import GardenScene
+                self.context.manager.switch_to(GardenScene(**self.context.resources))
         
         elif event.key == pygame.K_SPACE:
             if not self.session.game_active:
@@ -278,7 +283,7 @@ class TowerDefenseScene(Scene):
             elif self.session.game_paused:
                 self.session.resume_game()
     
-    def update(self, dt: float) -> None:
+    def tick(self, dt: float) -> None:
         """Update game logic"""
         if not self.session.game_active:
             return

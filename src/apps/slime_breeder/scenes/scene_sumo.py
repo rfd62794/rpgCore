@@ -19,9 +19,11 @@ import math
 class SumoScene(Scene):
     """Sumo combat scene with stat-driven resolution and culture advantages."""
     
-    def __init__(self, manager, spec: UISpec, **kwargs):
-        super().__init__(manager, spec, **kwargs)
-        self.layout = SelectionLayout(spec)
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        from src.shared.ui.spec import SPEC_720
+        self.spec = SPEC_720
+        self.layout = SelectionLayout(self.spec)
         
         # Get selected pair from context or kwargs
         self.selected_pair = kwargs.get('selected_pair', [])
@@ -277,9 +279,10 @@ class SumoScene(Scene):
     
     def _handle_return(self):
         """Return to garden."""
-        self.request_scene("garden")
+        from src.apps.slime_breeder.ui.scene_garden import GardenScene
+        self.context.manager.switch_to(GardenScene(**self.context.resources))
     
-    def update(self, dt: float) -> None:
+    def tick(self, dt: float) -> None:
         """Update combat phase timers."""
         if self.phase == "COUNTDOWN":
             self.countdown_timer -= dt
@@ -317,4 +320,5 @@ class SumoScene(Scene):
         # Handle ESC to return to garden
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_ESCAPE:
-                self.request_scene("garden")
+                from src.apps.slime_breeder.ui.scene_garden import GardenScene
+                self.context.manager.switch_to(GardenScene(**self.context.resources))

@@ -22,9 +22,11 @@ class DungeonPathScene(Scene):
     Dungeon traversal scene based on a linear path simulation.
     Reuses racing engine patterns for autonomous party movement.
     """
-    def __init__(self, manager, spec: UISpec, **kwargs):
-        super().__init__(manager, spec, **kwargs)
-        self.layout = ArenaLayout(spec)
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        from src.shared.ui.spec import SPEC_720
+        self.spec = SPEC_720
+        self.layout = ArenaLayout(self.spec)
         self.session = kwargs.get('session')
         
         # Create session if not provided
@@ -136,7 +138,7 @@ class DungeonPathScene(Scene):
             if event.key == pygame.K_ESCAPE:
                 self._retreat()
 
-    def update(self, dt: float) -> None:
+    def tick(self, dt: float) -> None:
         dt_ms = int(dt * 1000)
         for comp in self.ui_components:
             comp.update(dt_ms)
@@ -179,10 +181,12 @@ class DungeonPathScene(Scene):
                     print(f"[DEBUG]   Member {i}: {member.name}, genome not accessible")
         
         # Push to combat scene with full roster and team
-        self.manager.push("dungeon_combat", 
-                          session=self.session,  # session carries everything
-                          roster=self.roster,
-                          team=self.team)
+        from src.apps.dungeon_crawler.ui.scene_dungeon_combat import DungeonCombatScene
+        kwargs = self.context.resources.copy()
+        kwargs["session"] = self.session
+        kwargs["roster"] = self.roster
+        kwargs["team"] = self.team
+        self.context.manager.overlay(DungeonCombatScene(**kwargs))
 
     def _generate_enemy_group(self, zone, depth: int) -> List[dict]:
         """No longer used, replaced by pre-generation in _generate_zone_visuals."""
@@ -204,12 +208,18 @@ class DungeonPathScene(Scene):
         self._handle_combat() # Reuses combat for now
 
     def _on_complete(self):
-        self.manager.switch_to("garden", run_result={"floors_cleared": getattr(self.track, 'depth', 1)})
+        kwargs = self.context.resources.copy()
+        kwargs["run_result"] = {"floors_cleared": getattr(self.track, 'depth', 1)}
+        from src.apps.slime_breeder.ui.scene_garden import GardenScene
+        self.context.manager.switch_to(GardenScene(**kwargs))
 
     def _retreat(self):
         floors = len([r for r in self.session.combat_results
                      if r['result'] == 'victory'])
-        self.manager.switch_to("garden", message=f"Team retreated — {floors} encounters cleared")
+        kwargs = self.context.resources.copy()
+        kwargs["message"] = f"Team retreated — {floors} encounters cleared"
+        from src.apps.slime_breeder.ui.scene_garden import GardenScene
+        self.context.manager.switch_to(GardenScene(**kwargs))
 
     def render(self, surface: pygame.Surface):
         surface.fill((20, 15, 25)) # Background: Dark Abyss
