@@ -246,7 +246,7 @@ class TestSaveManager:
             
             data = json.loads(SaveManager.SAVE_FILE.read_text())
             
-            assert data['version'] == 1
+            assert data['version'] == 2
             assert 'saved_at' in data
             # Should be valid ISO format timestamp
             datetime.fromisoformat(data['saved_at'])
@@ -293,7 +293,7 @@ class TestSaveManager:
             assert SaveManager.SAVE_FILE.exists()
             
             data = json.loads(SaveManager.SAVE_FILE.read_text())
-            assert data['version'] == 1
+            assert data['version'] == 2
             assert 'roster' in data
             assert 'session' in data
     
