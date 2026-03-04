@@ -209,7 +209,7 @@ class MainMenuScene(Scene):
             else:
                 print(f"Warning: Demo '{target}' not found in registry.")
 
-    def update(self, dt: float) -> None:
+    def tick(self, dt: float) -> None:
         self.time_acc += dt
         self.garden_renderer.update(dt)
         

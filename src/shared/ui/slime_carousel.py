@@ -248,7 +248,7 @@ class SlimeCarousel:
         
         return None
     
-    def update(self, dt: float):
+    def tick(self, dt: float):
         """Update animations."""
         # Smooth slide animation
         if abs(self.slide_offset - self.target_offset) > 1:

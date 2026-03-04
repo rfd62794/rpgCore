@@ -47,7 +47,7 @@ class SceneBase(ABC):
         """Update all visible components."""
         for component in self.components:
             if component.visible:
-                component.update(dt_ms)
+                component.tick(dt_ms)
 
     def render(self) -> None:
         """Render all visible components to surface."""

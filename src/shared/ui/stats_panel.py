@@ -26,7 +26,7 @@ class StatsPanel(UIComponent):
         self.slime = slime
         self.position = position
 
-    def update(self, dt_ms: int):
+    def tick(self, dt_ms: int):
         """No periodic updates needed for this static panel."""
         pass
 

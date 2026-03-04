@@ -55,7 +55,7 @@ class TextWindow(Panel):
             self.is_finished = True
             self.label.set_text(self.current_text)
 
-    def update(self, dt_ms: int) -> None:
+    def tick(self, dt_ms: int) -> None:
         if not self.visible or self.is_finished:
             return
             
