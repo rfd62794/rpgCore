@@ -156,6 +156,9 @@ The six wilderness intersection zones are the true conquest territory.
 
 Same map. Same units. Different verb depending on whether you're attacking or defending.
 
+### Overnight Simulation (The Conquest Tick)
+The world map does not react to player actions in real-time. The game operates in discrete **Days**. While the player manages the garden, breeds slimes, and issues dispatch orders during the day, the broader geopolitical state—territory expansion, border pressure, collapse recoveries, and supply line checks—is simulated globally overnight during the **Conquest Tick**. This creates a concrete gameplay rhythm: set your defensive towers or offensive squads by day, and observe the macro consequences by morning.
+
 ### Culture Hub Diplomacy
 
 Culture hubs are not capturable. They are relationship targets reached through:

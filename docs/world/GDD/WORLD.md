@@ -7,6 +7,13 @@ Nobody has translated it correctly.
 The word seems to mean something between
 "home" and "inevitable."
 
+## The World Map Structure (The Node Network)
+The planet is not a continuous open field; it is conceptualized as a vast network graph of distinct **World Nodes** connected by traversable **Channels**. 
+- **Nodes** represent regions, battlefields, or resource points.
+- **Channels** act as supply lines connecting friendly territory. If a frontier region is cut off from the interior (e.g. >12 traversals away), overextension decay begins destroying the vanguard.
+- **Culture Hubs** are permanent, unconquerable origin nodes (Capitols) for each culture. They act as the anchor from which all regional pressure originates. Dislodging a culture requires severing its supply to these hubs.
+- **Void Zones** function as unconquerable, neutral barrier nodes. They act as ceasefire boundaries, halting continuous culture spread and fracturing the map into tactical sectors.
+
 ## The Five Regions
 
 ### The Ember Wastes
