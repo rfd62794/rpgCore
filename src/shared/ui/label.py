@@ -128,7 +128,7 @@ class Label(UIComponent):
             return 0
         return len(self._rendered_lines) * self.font.get_linesize()
 
-    def update(self, dt_ms: int) -> None:
+    def tick(self, dt_ms: int) -> None:
         pass
 
     def render(self, surface: pygame.Surface) -> None:

@@ -19,7 +19,7 @@ class UIComponent:
         """Override in subclasses."""
         pass
 
-    def update(self, dt_ms: int) -> None:
+    def tick(self, dt_ms: int) -> None:
         """Override in subclasses."""
         pass
 
