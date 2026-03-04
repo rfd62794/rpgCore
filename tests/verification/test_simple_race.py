@@ -109,7 +109,7 @@ def test_race_components():
     print("\n🌍 Testing Terrain System...")
     terrain_system = create_terrain_system()
     
-    # Create mixed terrain
+    # Create varied terrain
     terrain_segments = [
         TerrainSegment(0.0, 300.0, TerrainType.GRASS),
         TerrainSegment(300.0, 600.0, TerrainType.WATER),

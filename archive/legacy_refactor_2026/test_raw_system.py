@@ -75,7 +75,7 @@ def test_raw_system():
     print('\n=== Test Complete ===')
     print('✅ Raw File System working correctly!')
     print('✅ Inheritance fields absorbed without errors!')
-    print('✅ Mixed version files loaded successfully!')
+    print('✅ Varied version files loaded successfully!')
     print('✅ Schema drift handled gracefully!')
 
 if __name__ == '__main__':

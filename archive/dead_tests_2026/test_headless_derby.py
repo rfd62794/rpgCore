@@ -1,7 +1,7 @@
 """
 Headless Derby Verification - Phase 2 Engine Test
 
-Simulates a race between 3 specialized turtles across mixed terrain.
+Simulates a race between 3 specialized turtles across varied terrain.
 Verifies genetics-to-physics mapping and logs RaceSnapshot every 30 ticks.
 
 Test Turtles:
@@ -156,7 +156,7 @@ class HeadlessDerby:
                 )
                 self.turtles.append(turtle_state)
             
-            # Create race config with mixed terrain
+            # Create race config with varied terrain
             self.race_config = RaceConfig(
                 track_length=1200.0,
                 lane_count=3,
@@ -429,7 +429,7 @@ def print_derby_results(results: Dict[str, Any]) -> None:
 def main():
     """Run the headless derby verification"""
     print("🏁 Headless Derby Verification - Phase 2 Engine Test")
-    print("Testing 3 specialized turtles across mixed terrain")
+    print("Testing 3 specialized turtles across varied terrain")
     print("=" * 60)
     
     derby = HeadlessDerby()

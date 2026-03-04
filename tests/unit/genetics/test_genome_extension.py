@@ -21,7 +21,7 @@ class TestSlimeGenomeExtension:
         assert all(expr == 0.0 for culture, expr in genome_ember.culture_expression.items() 
                   if culture != 'ember')
         
-        # Test mixed culture
+        # Test varied culture
         genome_mixed = SlimeGenome(
             shape="round", size="medium", base_color=(128, 128, 128),
             pattern="solid", pattern_color=(0, 0, 0), accessory="none",

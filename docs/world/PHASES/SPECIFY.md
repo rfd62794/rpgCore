@@ -391,7 +391,7 @@ class RenderingContextComponent:
 | Scared | Wide, pupils small | Raised high | Open O | Sweat drop |
 | Content | Closed/squint | Soft | Gentle curve | None |
 | Excited | Stars/sparkles | Raised | Wide open | Bounce |
-| Confused | Asymmetric | Mixed | Crooked | Spiral |
+| Confused | Asymmetric | Varied | Crooked | Spiral |
 
 ### 11.5 Rendering Contexts
 | Context | Scale | Mode | Detail Level |
@@ -554,7 +554,7 @@ class ConquestSystem:
 | **Foraging** | Resource gathering | Constitution, Perception | Food, materials | Marsh, Tundra |
 | **Trade Route** | Economy, diplomacy | Charisma, Adaptability | Gold, standing | Tide |
 | **Mission** | Narrative quest | Varied | Story rewards | Varied |
-| **Arena** | Structured combat | Combat stats | Gold, fame | Mixed |
+| **Arena** | Structured combat | Combat stats | Gold, fame | Varied |
 
 ### 13.5 Resource Economy
 | Resource | Source | Use | Flow Type |

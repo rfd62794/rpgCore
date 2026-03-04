@@ -147,7 +147,7 @@ def process_action(self, player_input: str):
     intent = self.resolver.resolve_intent(player_input)
     arbiter_result = self.arbiter.resolve_action(...)
     outcome = self.quartermaster.calculate_outcome(...)
-    # ... 200 lines of mixed concerns
+    # ... 200 lines of varied concerns
     narrative = self.chronicler.narrate(...)
 ```
 
@@ -178,8 +178,8 @@ async def process_action(self, player_input: str) -> bool:
 
 ### Before Refactoring
 - Every action: 3 LLM calls (Arbiter + Chronicler + Voyager)
-- Mixed sync/async causing complexity
-- Hard to profile due to mixed concerns
+- Varied sync/async causing complexity
+- Hard to profile due to varied concerns
 
 ### After Refactoring
 - Every action: 1 LLM call (Narrator only)

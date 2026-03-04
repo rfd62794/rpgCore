@@ -146,7 +146,7 @@ class TestProfileCardExtensions:
         
         # Should show all flags in full color
         
-        # Test mixed capabilities
+        # Test varied capabilities
         self.mock_genome.can_dispatch = True
         self.mock_genome.can_breed = False
         self.mock_genome.can_mentor = False

@@ -54,7 +54,7 @@ def test_format_alignment():
             entity_id = f"test_entity_{i+1}"
             registry.register(entity_id, entity, RegistryType.ENTITY, {})
         
-        print("✅ Mixed entity formats registered")
+        print("✅ Varied entity formats registered")
         
         # Get world snapshot
         snapshot_result = registry.get_world_snapshot()

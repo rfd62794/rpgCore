@@ -53,8 +53,8 @@
 |----------|------|--------|
 | Ember Slimes | Ember — Fire | ✅ Perfect Match |
 | Crystal Slimes | Crystal — Earth | ✅ Perfect Match |
-| Moss Slimes | Marsh — Water | 🔄 Rename Required |
-| Coastal Slimes | Tide — Lightning | ✅ Perfect Match |
+| Marsh Slimes | Marsh — Water | 🔄 Rename Required |
+| Tundra Slimes | Tide — Lightning | ✅ Perfect Match |
 | Void Slimes | Void — Seventh | ✅ Perfect Match |
 | **Missing** | Tundra — Ice | 🔄 New Culture Needed |
 | **Missing** | Gale — Wind | 🔄 New Culture Needed |
@@ -106,7 +106,7 @@ CULTURAL_STATS = {
 3. **Performance**: World state management across 6 regions
 
 ### **Low Priority Considerations**
-1. **Cultural Rename**: Moss → Marsh requires minimal changes
+1. **Cultural Rename**: Marsh → Marsh requires minimal changes
 2. **Documentation**: Existing docs need updates for new cultures
 
 ---

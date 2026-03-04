@@ -354,7 +354,7 @@ class TerrainSystem:
     
     def create_mixed_terrain_track(self, track_length: float, 
                                   segment_length: float = 200.0) -> List[TerrainSegment]:
-        """Create a mixed terrain track for testing"""
+        """Create a varied terrain track for testing"""
         segments = []
         
         # Define terrain sequence for variety

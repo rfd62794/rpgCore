@@ -88,8 +88,8 @@ The underlying system is identical across all zone types. Zone type determines r
 | **Dungeon** | Combat exploration, permanent danger | Strength, Defense | Scrap, rare items | Ember, Void |
 | **Foraging** | Resource gathering, scouting | Constitution, Perception | Food, materials | Marsh, Tundra |
 | **Trade Route** | Economy, diplomacy | Charisma, Adaptability | Gold, culture standing | Tide |
-| **Mission** | Narrative quest, mixed demands | Varied | Story progression, unique rewards | Varied |
-| **Arena/Tournament** | Structured competition, bracket | Combat stats | Gold, fame, breeding access | Mixed |
+| **Mission** | Narrative quest, varied demands | Varied | Story progression, unique rewards | Varied |
+| **Arena/Tournament** | Structured competition, bracket | Combat stats | Gold, fame, breeding access | Varied |
 
 ### Dispatch Mechanics
 
@@ -117,7 +117,7 @@ Minigames are not entertainment bolted onto a management game. They are the stat
 | **Racing** | Dexterity (speed), Gale affinity | Constitution (sustained effort) |
 | **Dungeon** | Strength (combat), Defense (survival) | Intelligence (tactics) |
 | **Foraging** | Constitution (endurance), Perception | Patience personality |
-| **Arena** | Mixed combat stats | Aggression/Caution personality |
+| **Arena** | Varied combat stats | Aggression/Caution personality |
 
 ### Autonomous Training
 

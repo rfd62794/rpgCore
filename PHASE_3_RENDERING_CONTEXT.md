@@ -164,7 +164,7 @@ class RenderComponent:
 
 #### **Current State**
 - **No rendering system** - Scenes handle rendering
-- **Mixed patterns** - Some ECS, some direct
+- **Varied patterns** - Some ECS, some direct
 - **No unified pipeline** - Each scene renders differently
 
 #### **Required Addition**

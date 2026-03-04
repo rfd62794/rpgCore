@@ -382,9 +382,9 @@ class Roster:
             culture_value = g_data.get("cultural_base", "void")
             # Handle old culture names during migration
             culture_aliases = {
-                'moss': 'marsh',
-                'coastal': 'tundra',
-                'mixed': 'void'
+                'marsh': 'marsh',
+                'tundra': 'tundra',
+                'varied': 'void'
             }
             culture_value = culture_aliases.get(culture_value, culture_value)
             

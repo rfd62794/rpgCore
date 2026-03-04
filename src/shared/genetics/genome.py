@@ -54,7 +54,7 @@ class SlimeGenome:
         # This allows manual setting after construction
         if not self.culture_expression:
             if self.cultural_base == CulturalBase.VOID:
-                # Void gets equal distribution (same as mixed for now)
+                # Void gets equal distribution (same as varied for now)
                 self.culture_expression = {
                     'ember': 0.167, 'gale': 0.167, 'crystal': 0.167,
                     'marsh': 0.167, 'tide': 0.167, 'tundra': 0.167

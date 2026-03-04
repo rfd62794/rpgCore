@@ -82,7 +82,7 @@ Everyone has an opinion about the astronaut before they understand why.
 - **Temperament**: Sociable, adaptable, opportunistic
 - **Resources**: Gold (trade and connection)
 - **Role in Conflict**: Wildcard. Traders deal with everyone, which means leverage over everyone and allegiance to none. The natural diplomatic hub.
-- **Culture Hub**: Coastal trading ports, merchant culture, connector of worlds
+- **Culture Hub**: Tundra trading ports, merchant culture, connector of worlds
 
 ---
 

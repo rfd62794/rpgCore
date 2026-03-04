@@ -139,7 +139,7 @@ def test_parse_file_skips_invalid_records(tmp_path):
         _goal_dict(id="G1"),                           # good
         _task_dict(scope="shared", demo="slime_breeder"),  # bad — LAW 1
     ]
-    path = _write_yaml(tmp_path, "mixed.yaml", records)
+    path = _write_yaml(tmp_path, "varied.yaml", records)
     result = parse_file(path)
     assert len(result) == 1
     assert isinstance(result[0], Goal)

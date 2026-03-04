@@ -46,7 +46,7 @@ This Constitution establishes the sovereign architectural principles for rpgCore
 - **Validation**: Same creature must work in any genre without modification
 
 ### Constitutional Principle: Cultural Neutrality
-- **Five Cultures**: Ember, Crystal, Moss, Coastal, Void (per VISION.md)
+- **Five Cultures**: Ember, Crystal, Marsh, Tundra, Void (per VISION.md)
 - **Cultural Parameters**: Ranges, not locked values
 - **Player Agency**: Genetics can override cultural tendencies
 - **Emergent Sub-species**: Player-created variations are valid

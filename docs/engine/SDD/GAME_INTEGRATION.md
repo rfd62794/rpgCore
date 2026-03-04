@@ -76,7 +76,7 @@ class ConquestSystem:
 | **Foraging** | Resource gathering | Constitution, Perception | Food, materials | Marsh, Tundra |
 | **Trade Route** | Economy, diplomacy | Charisma, Adaptability | Gold, standing | Tide |
 | **Mission** | Narrative quest | Varied | Story rewards | Varied |
-| **Arena** | Structured combat | Combat stats | Gold, fame | Mixed |
+| **Arena** | Structured combat | Combat stats | Gold, fame | Varied |
 
 ### Resource Economy
 | Resource | Source | Use | Flow Type |

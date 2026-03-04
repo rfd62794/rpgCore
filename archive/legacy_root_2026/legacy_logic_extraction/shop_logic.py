@@ -392,7 +392,7 @@ class ShopLogicExtractor:
         """
         EXTRACTED: Inventory generation logic
         
-        Creates new shop inventory with mixed item types
+        Creates new shop inventory with varied item types
         """
         # Generate turtle offers (would use base turtle data)
         base_turtles = []  # Would get from game state

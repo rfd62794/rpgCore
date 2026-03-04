@@ -161,7 +161,7 @@ Slimes communicate emotionally through simple visual cues. All are mathematical:
 | **Scared** | Wide, pupils small | Raised high | Open O | Sweat drop symbol |
 | **Content** | Closed/squint | Soft | Gentle curve | Slow body pulse |
 | **Excited** | Stars or sparkles | Raised | Wide open | Bounce animation |
-| **Confused** | Asymmetric | Mixed | Crooked | Spiral symbol above |
+| **Confused** | Asymmetric | Varied | Crooked | Spiral symbol above |
 
 ### Expression Parameters (math)
 

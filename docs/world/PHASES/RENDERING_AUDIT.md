@@ -53,7 +53,7 @@
 ## 2. Rendering Approaches Inventory
 
 The repository renders things in **5 distinct ways**:
-1. **Procedural Inline Pygame (Slime Clan):** Micromanaging `pygame.draw` calls mixed directly inside game scenes and logic. Painful to refactor, impossible to swap out. Layering is entirely implicit by order of execution.
+1. **Procedural Inline Pygame (Slime Clan):** Micromanaging `pygame.draw` calls varied directly inside game scenes and logic. Painful to refactor, impossible to swap out. Layering is entirely implicit by order of execution.
 2. **Abstract Entity Adapters (Shared / Game Engine):** Decoupling game logic from rendering by passing structured data (entities, components) to a backend-agnostic adapter class. 
 3. **Sovereign Surface Scaling (Space / DGT Engine):** Rendering to a low-res fixed coordinate system (`game_surface`), then scaling it to whatever the window size happens to be. Excellent for retro aesthetics and resolution independence.
 4. **Rich Terminal ASCII (DGT / Game Engine):** Using the `rich` library to draw grids and text to standard output.

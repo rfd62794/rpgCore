@@ -143,7 +143,7 @@ Gale Slimes (Gale Highlands)
   Stat Affinity: Dexterity, Speed
   Temperament: Curious, restless, risk-taking
 
-Tide Slimes (Coastal Waters)
+Tide Slimes (Tundra Waters)
   Traders. Adaptable. Fluid forms.
   Blue-teal palette. Ripple movement.
   Trade: routes, cargo, rare finds.

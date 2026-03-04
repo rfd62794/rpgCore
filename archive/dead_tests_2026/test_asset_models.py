@@ -168,7 +168,7 @@ class TestAssetMetadata:
             asset_type=AssetType.OBJECT,
             material_id=MaterialType.ORGANIC,
             description="Test",
-            tags=["  Test  ", "test", "TEST", "", "  ", "a" * 51],  # Mixed case, empty, too long
+            tags=["  Test  ", "test", "TEST", "", "  ", "a" * 51],  # Varied case, empty, too long
             collision=False,
             interaction_hooks=[],
             d20_checks={}

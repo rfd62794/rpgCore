@@ -80,7 +80,7 @@ pulse_speed = 3.0 * (params.wobble_frequency_range[0] + params.wobble_frequency_
 ### **2.2 Dungeon Demo** ✅
 - **Rendering**: Likely uses `SlimeRenderer` for creatures
 - **Environment**: May use sprite sheets for tiles
-- **Pattern**: Mixed pixel-gen + sprite sheets
+- **Pattern**: Varied pixel-gen + sprite sheets
 - **Status**: Needs verification
 
 ### **2.3 Racing Demo** ✅
@@ -96,7 +96,7 @@ pulse_speed = 3.0 * (params.wobble_frequency_range[0] + params.wobble_frequency_
 - **Pattern**: Pixel-gen towers + sprite enemies
 
 ### **2.5 Exploratory Demos** 🚧
-- **Space Demos**: Mixed sprite sheets + procedural
+- **Space Demos**: Varied sprite sheets + procedural
 - **Slime Clan**: Sprite-based tiles + pixel-gen units
 - **Asteroids**: Sprite-based entities
 

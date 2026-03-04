@@ -24,7 +24,7 @@
 - `Kinematics` (`src/shared/physics/kinematics.py`) - Physics state
 - `Vector2` (`src/shared/physics/kinematics.py`) - Math primitive
 
-🔄 **Partial Components (mixed data/behavior):**
+🔄 **Partial Components (varied data/behavior):**
 - `Slime` (`src/apps/slime_breeder/entities/slime.py`) - Contains genome + kinematics + behavior logic
 - `RosterSlime` (`src/shared/teams/roster.py`) - Genome + progression + team state
 
@@ -171,7 +171,7 @@ Roster ←→ Breeding (write/add new)
 **Critical Issues:**
 - Dual entity systems causing data duplication
 - Inconsistent persistence across demos
-- Mixed data/behavior in monolithic classes
+- Varied data/behavior in monolithic classes
 - No unified state management
 
 **Recommended Approach:**

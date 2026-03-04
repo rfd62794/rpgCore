@@ -674,7 +674,7 @@ class ViewportIntegrationTester:
         elif summary["failed_tests"] > summary["passed_tests"]:
             summary["overall_status"] = "failed"
         else:
-            summary["overall_status"] = "mixed"
+            summary["overall_status"] = "varied"
         
         return summary
 

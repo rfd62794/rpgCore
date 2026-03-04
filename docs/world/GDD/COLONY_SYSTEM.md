@@ -80,7 +80,7 @@ Colony terrain reflects cultural personality:
 - **Marsh colonies**: Wetlands, natural barriers
 - **Gale colonies**: Open terrain, movement advantages
 - **Crystal colonies**: Ancient ruins, mysterious features
-- **Tide colonies**: Coastal features, trade routes
+- **Tide colonies**: Tundra features, trade routes
 
 ## Buildings System
 

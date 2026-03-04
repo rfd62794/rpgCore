@@ -13,7 +13,7 @@ This document defines the **Master Seed** for the Synthetic Reality Console - th
 world_seed:
   name: "Synthetic Reality Master World"
   founding_vector:
-    resource: "mixed"
+    resource: "varied"
     climate: "temperate"
     terrain: "varied"
     magic: "low"

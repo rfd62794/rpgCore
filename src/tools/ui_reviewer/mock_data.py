@@ -8,7 +8,7 @@ def generate_mock_roster() -> Roster:
     roster = Roster()
     
     # 1. All cultural types represented
-    cultures = ["ember", "coastal", "verdant", "void"]
+    cultures = ["ember", "tundra", "verdant", "void"]
     levels = [1, 3, 5, 10]
     
     for i, culture in enumerate(cultures):

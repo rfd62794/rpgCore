@@ -349,13 +349,13 @@ class TestAsyncPerformance:
             
             execution_time = time.time() - start_time
         
-        # Should complete efficiently despite mixed speeds
-        assert execution_time < 0.3, f"Mixed tasks should complete in <0.3s, took {execution_time:.2f}s"
+        # Should complete efficiently despite varied speeds
+        assert execution_time < 0.3, f"Varied tasks should complete in <0.3s, took {execution_time:.2f}s"
         
         # All tasks should succeed (no timeouts)
         assert len(results) == 6
         for result in results:
             assert result["success"] is True
         
-        print(f"Mixed speed tasks completed in {execution_time:.2f}s")
+        print(f"Varied speed tasks completed in {execution_time:.2f}s")
         print(f"Fast tasks: 4, Slow tasks: 2")

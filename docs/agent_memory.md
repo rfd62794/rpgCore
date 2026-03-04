@@ -88,7 +88,7 @@ No new core mechanics needed — just new arenas.
 
 **Cultural Cup**
 - Ember-only race on rock track
-- Coastal-only race on water track
+- Tundra-only race on water track
 - Cultural specialists compete
 
 **Gauntlet**

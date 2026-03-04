@@ -107,7 +107,7 @@ void    draws: all
 
 **Void Design**: Void is genuinely interesting — not weak but unpredictable. Every other culture has known counters. Void has none, making it the wildcard that breaks preparation in competitive play.
 
-Mixed culture slimes get weighted amplification:
+Varied culture slimes get weighted amplification:
 ```python
 amplification[stat] = sum(
     culture_weight * CULTURE_AMP_TABLE[culture][stat]

@@ -29,18 +29,18 @@ Crystal Slimes did not build them.
 They moved in. They studied what was already there.
 The carvings on the deep walls are not slime-made.
 
-### The Moss Plains
+### The Marsh Plains
 Warm. Abundant. Loud with life.
-Moss Slimes are everywhere.
+Marsh Slimes are everywhere.
 They are the most numerous culture by far.
 They remember every visitor.
 They share information freely.
 This is either generosity or strategy.
 Possibly both.
 
-### The Coastal Waters
+### The Tundra Waters
 Always moving. Always trading.
-Coastal Slimes have routes that predate
+Tundra Slimes have routes that predate
 any known map of the surface.
 They know things about the other regions
 that the other regions do not know about themselves.
@@ -85,9 +85,9 @@ Ships have been arriving for a long time.
 Not frequently. Not on a schedule.
 But consistently enough that
 every living culture has a word for it.
-The Moss Slimes call it "the falling stars."
+The Marsh Slimes call it "the falling stars."
 The Crystal Slimes call it "the returning."
-The Coastal Slimes call it "new cargo."
+The Tundra Slimes call it "new cargo."
 The Ember Slimes do not speak of it.
 The Void Slimes smile when asked.
 

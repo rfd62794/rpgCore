@@ -13,7 +13,7 @@ def test_cultural_inheritance():
     assert offspring.cultural_base == CulturalBase.EMBER
 
 def test_mixed_culture_inheritance():
-    # Two different cultures should mostly produce VOID (replacing MIXED)
+    # Two different cultures should mostly produce VOID (replacing VARIED)
     g1 = generate_random(CulturalBase.EMBER)
     g2 = generate_random(CulturalBase.CRYSTAL)
     
