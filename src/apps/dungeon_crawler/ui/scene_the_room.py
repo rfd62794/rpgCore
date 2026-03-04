@@ -12,9 +12,14 @@ class TheRoomScene(Scene):
     The Hub scene — The Room.
     A dark bedroom with interactive elements.
     """
-    def __init__(self, manager, spec: UISpec, session: DungeonSession = None, **kwargs):
-        super().__init__(manager, spec, **kwargs)
-        self.session = session or DungeonSession()
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        from src.shared.ui.spec import SPEC_720
+        self.spec = SPEC_720
+        self.session = kwargs.get("session")
+        if not self.session:
+            from src.apps.dungeon_crawler.ui.dungeon_session import DungeonSession
+            self.session = DungeonSession()
         
         # Initialize session if not provided
         if not self.session.hero:
@@ -40,7 +45,7 @@ class TheRoomScene(Scene):
             if hasattr(button, 'handle_event') and button.handle_event(event):
                 return
 
-    def update(self, dt: float) -> None:
+    def tick(self, dt: float) -> None:
         """Update scene state."""
         for button in self.buttons:
             if hasattr(button, 'update'):
@@ -103,7 +108,10 @@ class TheRoomScene(Scene):
         self.buttons.append(btn_rope)
 
     def _handle_chest(self):
-        self.request_scene("inventory", session=self.session)
+        from src.apps.dungeon_crawler.ui.scene_inventory import InventoryScene
+        kwargs = self.context.resources.copy()
+        kwargs["session"] = self.session
+        self.context.manager.switch_to(InventoryScene(**kwargs))
 
     def _handle_descend(self):
         if not self.session.hero:
@@ -129,7 +137,12 @@ class TheRoomScene(Scene):
         if roster:
             print(f"[DEBUG] TheRoom - dungeon team members: {len(roster.get_dungeon_team().members)}")
         
-        self.request_scene("dungeon_room", session=self.session, roster=roster, team=team)
+        from src.apps.dungeon_crawler.ui.scene_dungeon_room import DungeonRoomScene
+        kwargs = self.context.resources.copy()
+        kwargs["session"] = self.session
+        kwargs["roster"] = roster
+        kwargs["team"] = team
+        self.context.manager.switch_to(DungeonRoomScene(**kwargs))
 
 
     def handle_events(self, events: list[pygame.event.Event]) -> None:
@@ -139,9 +152,6 @@ class TheRoomScene(Scene):
             
             for btn in self.buttons:
                 btn.handle_event(event)
-
-    def update(self, dt_ms: float) -> None:
-        pass
 
     def render(self, surface: pygame.Surface) -> None:
         surface.fill(self.bg_color)

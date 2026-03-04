@@ -18,10 +18,12 @@ from src.shared.genetics import generate_random
 from src.shared.physics import Vector2
 
 class DungeonRoomScene(Scene):
-    def __init__(self, manager, spec: UISpec, session: DungeonSession, **kwargs):
-        super().__init__(manager, spec, **kwargs)
-        self.layout = HubLayout(spec)
-        self.session = session
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        from src.shared.ui.spec import SPEC_720
+        self.spec = SPEC_720
+        self.layout = HubLayout(self.spec)
+        self.session = kwargs.get("session")
         self.roster = kwargs.get("roster")
         self.team = kwargs.get("team")
         
@@ -56,7 +58,8 @@ class DungeonRoomScene(Scene):
         
         if not self.session:
             logger.error("No session available in DungeonRoomScene, aborting to garden")
-            self.manager.switch_to("garden")
+            from src.apps.slime_breeder.ui.scene_garden import GardenScene
+            self.context.manager.switch_to(GardenScene(**self.context.resources))
             return
         
         # Capture roster and team from kwargs or use existing ones
@@ -125,12 +128,19 @@ class DungeonRoomScene(Scene):
     def _handle_flee(self):
         logger.info("🏃 Flee from encounter")
         # Return to garden directly
-        self.manager.switch_to("garden")
+        from src.apps.slime_breeder.ui.scene_garden import GardenScene
+        self.context.manager.switch_to(GardenScene(**self.context.resources))
 
     def _on_run_complete(self, result):
         if result == "victory":
             logger.info("🏆 Encounter cleared!")
-            self.manager.switch_to("dungeon_path", session=self.session, encounter_result="victory", roster=self.roster, team=self.team)
+            from src.apps.dungeon_crawler.ui.scene_dungeon_path import DungeonPathScene
+            kwargs = self.context.resources.copy()
+            kwargs["session"] = self.session
+            kwargs["encounter_result"] = "victory"
+            kwargs["roster"] = self.roster
+            kwargs["team"] = self.team
+            self.context.manager.switch_to(DungeonPathScene(**kwargs))
         else:
             from dataclasses import dataclass
             @dataclass
@@ -139,7 +149,10 @@ class DungeonRoomScene(Scene):
                 status: str
                 
             res = RunResult(floors_cleared=self.session.floor.depth if self.session.floor else 0, status=result)
-            self.manager.switch_to("garden", run_result=res)
+            from src.apps.slime_breeder.ui.scene_garden import GardenScene
+            kwargs = self.context.resources.copy()
+            kwargs["run_result"] = res
+            self.context.manager.switch_to(GardenScene(**kwargs))
 
     def _handle_move(self, target_id: str):
         if self.session.floor.move_to(target_id):
@@ -195,9 +208,15 @@ class DungeonRoomScene(Scene):
                 dungeon_team = self.roster.get_dungeon_team()
                 print(f"[DEBUG] Dungeon room - dungeon team: {dungeon_team}")
                 print(f"[DEBUG] Dungeon room - dungeon team members: {len(dungeon_team.members)}")
-            self.request_scene("dungeon_combat", session=self.session, enemy_entity=self.slime_entity, roster=self.roster, team=self.team)
+            from src.apps.dungeon_crawler.ui.scene_dungeon_combat import DungeonCombatScene
+            kwargs = self.context.resources.copy()
+            kwargs["session"] = self.session
+            kwargs["enemy_entity"] = self.slime_entity
+            kwargs["roster"] = self.roster
+            kwargs["team"] = self.team
+            self.context.manager.overlay(DungeonCombatScene(**kwargs))
 
-    def update(self, dt: float) -> None:
+    def tick(self, dt: float) -> None:
         self.torch_timer += dt
         self.torch_flicker = 1.0 + math.sin(self.torch_timer * 4.0) * 0.1
         
