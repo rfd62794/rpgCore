@@ -39,7 +39,7 @@ def test_wander_slime_bounces_at_screen_edge():
     ember.vx = -50
     
     # Tick updates
-    scene.update(0.1)
+    scene.tick(0.1)
     
     assert ember.x == ember.radius
     assert ember.vx > 0  # Rebounded right
@@ -48,7 +48,7 @@ def test_wander_slime_bounces_at_screen_edge():
     ember.x = SPEC_720.screen_width + 10
     ember.vx = 50
     
-    scene.update(0.1)
+    scene.tick(0.1)
     
     assert ember.x == SPEC_720.screen_width - ember.radius
     assert ember.vx < 0  # Rebounded left
@@ -69,7 +69,7 @@ def test_tide_slime_targets_nearest_slime():
     scene.slimes[0].x = 150 # close
     scene.slimes[1].x = 500 # far
     
-    scene.update(0.1)
+    scene.tick(0.1)
     
     assert tide.target_id == 0
 

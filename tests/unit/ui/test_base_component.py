@@ -108,7 +108,7 @@ class TestUIComponent:
         rect = pygame.Rect(10, 20, 100, 50)
         component = MockUIComponent(rect)
         
-        component.update(0.016)  # 16ms
+        component.tick(0.016)  # 16ms
         
         assert component.update_called
         assert component.update_dt == 0.016
