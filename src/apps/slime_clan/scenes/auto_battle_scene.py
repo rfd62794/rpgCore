@@ -89,7 +89,7 @@ class AutoBattleScene(Scene):
             elif event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
                 self._return_result("red_win")
 
-    def update(self, dt_ms: float) -> None:
+    def tick(self, dt_ms: float) -> None:
         if self.winner:
             self.win_close_timer += dt_ms
             if self.win_close_timer >= 2000:
@@ -137,24 +137,27 @@ class AutoBattleScene(Scene):
     def _return_result(self, result: str) -> None:
         blue_alive = [u for u in self.blue_squad if u.hp > 0]
         blue_lost = len(blue_alive) < self.initial_blue_count
-        self.request_scene("battle_field",
-            region=self.bf_region,
-            difficulty=self.bf_difficulty,
-            node_id=self.bf_node_id,
-            nodes=self.bf_nodes,
-            auto_battle_result=result,
-            blue_lost=blue_lost,
-            faction_manager=self.faction_manager,
-            day=self.day,
-            actions_remaining=self.actions_remaining,
-            resources=self.resources,
-            ship_parts=self.ship_parts,
-            secured_part_nodes=self.secured_part_nodes,
-            tribe_state=self.tribe_state,
-            player_units=self.player_units,
-            colony_manager=self.colony_manager,
-            stronghold_bonus=self.stronghold_bonus
-        )
+        from src.apps.slime_clan.scenes.battle_field_scene import BattleFieldScene
+        kwargs = self.context.resources.copy()
+        kwargs.update({
+            "region": self.bf_region,
+            "difficulty": self.bf_difficulty,
+            "node_id": self.bf_node_id,
+            "nodes": self.bf_nodes,
+            "auto_battle_result": result,
+            "blue_lost": blue_lost,
+            "faction_manager": self.faction_manager,
+            "day": self.day,
+            "actions_remaining": self.actions_remaining,
+            "resources": self.resources,
+            "ship_parts": self.ship_parts,
+            "secured_part_nodes": self.secured_part_nodes,
+            "tribe_state": self.tribe_state,
+            "player_units": self.player_units,
+            "colony_manager": self.colony_manager,
+            "stronghold_bonus": self.stronghold_bonus
+        })
+        self.context.manager.switch_to(BattleFieldScene(**kwargs))
 
     def render(self, surface: pygame.Surface) -> None:
         render_autobattle(surface, self.font_name, self.font_log, self.font_banner,
