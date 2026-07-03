@@ -125,3 +125,18 @@ archive/**/.mypy_cache/
 archive/**/.tox/
 archive/**/.coverage/
 archive/**/.pytest_cache/
+
+# Session logs
+docs/session_logs/
+
+# Archive logs
+archive/logs/
+
+# Archive data
+archive/data/
+
+# Archive temporary files
+archive/tmp/
+
+# Saves
+saves/
