@@ -28,7 +28,7 @@
 
 **One developer. One engine. Four distinct games.**
 
-rpgCore is not a framework or a tutorial project—it is a working, production-grade game engine built to simultaneously power multiple distinct game experiences from a single, unified codebase. It embraces the "Orange Box" concept: shared core systems natively driving completely different genres of games without repetition.
+rpgCore is not a framework or a tutorial project—it is a working game engine that powered multiple distinct games from a single, unified codebase. It embraces the "Orange Box" concept: shared core systems natively driving completely different genres of games without repetition.
 
 ## Quick Start
 ```bash
@@ -78,7 +78,7 @@ rpgCore strictly adheres to a domain-driven architectural separation:
 *(Future performance layers are planned in Rust)*
 
 ## Testing
-rpgCore maintains a strictly protected baseline of **296 passing tests**.
+While active, rpgCore kept a protected baseline of passing tests (296 at the time this section was written).
 ```bash
 uv run pytest
 ```
