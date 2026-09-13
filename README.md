@@ -8,6 +8,22 @@
 > index. This repository keeps the full commit history and is no longer
 > maintained.
 
+## Portfolio notes
+
+| | |
+|---|---|
+| **Status** | Retired 2026-09-13 · read-only archive |
+| **Built** | February – September 2026 · 3,628 commits |
+| **Size** | 835 Python files and 1,264 pytest test functions (outside its own `archive/` folder), plus Godot C# and Rust experiments |
+| **Successor** | [RFDGameStudio](https://github.com/rfd62794/RFDGameStudio) (snapshot in `archive/rpgCore`) |
+| **Project page** | [rfditservices.com/projects/rpgcore](https://rfditservices.com/projects/rpgcore/) |
+
+**What it demonstrates**
+- One shared engine layer (`src/shared/`) driving games in four different genres — turn-based strategy, narrative dialogue, management simulation and an action roguelike — through a manifest-driven launcher.
+- A "nothing is built twice" rule enforced by architecture: demos consume shared systems instead of re-implementing them.
+- Test coverage kept alongside fast iteration, and architecture decisions written down as ADRs.
+- A clean retirement: history stays here, and a working snapshot moved into the successor with a recovery index and isolation tests so archived code can never leak into live code.
+
 ---
 
 **One developer. One engine. Four distinct games.**
@@ -16,7 +32,7 @@ rpgCore is not a framework or a tutorial project—it is a working, production-g
 
 ## Quick Start
 ```bash
-git clone https://github.com/your-username/rpgCore.get
+git clone https://github.com/rfd62794/rpgCore.git
 cd rpgCore
 pip install -r requirements.txt
 python game.py
