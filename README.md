@@ -1,5 +1,15 @@
 # rpgCore
 
+> **Retired on 2026-09-13.** rpgCore was the precursor to
+> [RFDGameStudio](https://github.com/rfd62794/RFDGameStudio), which continues
+> its work. A snapshot of this repository (commit `02aef64`) is archived at
+> [`RFDGameStudio/archive/rpgCore`](https://github.com/rfd62794/RFDGameStudio/tree/main/archive/rpgCore)
+> for reference, refactoring and recovery — see its `ARCHIVE.md` for a recovery
+> index. This repository keeps the full commit history and is no longer
+> maintained.
+
+---
+
 **One developer. One engine. Four distinct games.**
 
 rpgCore is not a framework or a tutorial project—it is a working, production-grade game engine built to simultaneously power multiple distinct game experiences from a single, unified codebase. It embraces the "Orange Box" concept: shared core systems natively driving completely different genres of games without repetition.
